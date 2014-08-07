@@ -1,0 +1,6 @@
+[submodule "ObjMdl"]
+	path = ObjMdl
+	url = https://ip82@git.code.sf.net/p/objmdl/code
+[submodule "ViewMdl"]
+	path = ViewMdl
+	url = https://ip82@git.code.sf.net/p/viewmdl/code
