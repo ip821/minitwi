@@ -1,0 +1,18 @@
+// twitter.idl : IDL source for twitter
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (twitter.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
+	version(1.0),
+]
+library twitterLib
+{
+	importlib("stdole2.tlb");
+};
+

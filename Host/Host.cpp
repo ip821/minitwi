@@ -53,7 +53,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		HWND hwnd = NULL;
 		RETURN_IF_FAILED(pControl->CreateEx(NULL, &hwnd));
 
-		CString strCaption = L"WinDbgTool";
+		CString strCaption = L"minitwi";
 		if (sizeof(INT_PTR) == 8)
 			strCaption += L" x64";
 		SetWindowText(hwnd, strCaption);
@@ -64,7 +64,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		RETURN_IF_FAILED(pPluginManager->CoCreateInstance(CLSID_RegistrySettings, IID_ISettings, (LPVOID*)&pRootSettings));
 
 		CComPtr<ISettings> pMainWindowSettings;
-		RETURN_IF_FAILED(pRootSettings->OpenSubSettings(L"Software\\IP\\WinDbgTool2\\MainWindow", &pMainWindowSettings));
+		RETURN_IF_FAILED(pRootSettings->OpenSubSettings(L"Software\\IP\\MiniTwi\\MainWindow", &pMainWindowSettings));
 		CComQIPtr<IPersistSettings> pPersistSettings = pWindow;
 		if (pPersistSettings)
 		{
@@ -84,6 +84,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		RETURN_IF_FAILED(pWindow->SetContainerControl(pContainerWindow));
 
 		CComQIPtr<IControl> pTabControl = pContainerWindow;
+
+		::SetMenu(hwnd, NULL);
 
 		BOOL bResult = FALSE;
 		RETURN_IF_FAILED(pWindow->ShowWindow(nCmdShow, &bResult));

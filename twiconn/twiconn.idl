@@ -1,0 +1,18 @@
+// twiconn.idl : IDL source for twiconn
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (twiconn.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	uuid(7622A306-6AF6-4D18-AC9F-A685EAD09458),
+	version(1.0),
+]
+library twiconnLib
+{
+	importlib("stdole2.tlb");
+};
+
