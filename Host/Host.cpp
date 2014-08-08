@@ -77,6 +77,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			return 0;
 		}
 
+		BOOL bResult = FALSE;
+		RETURN_IF_FAILED(pWindow->ShowWindow(nCmdShow, &bResult));
+
 		CComPtr<IUnknown> pUnk2;
 		RETURN_IF_FAILED(pPluginManager->CreatePluginInstance(PNAMESP_HOSTFORM, PVIEWTYPE_CONTAINERWINDOW, CONTROL_TABCONTAINER, &pUnk2));
 		CComQIPtr<IContainerControl> pContainerWindow = pUnk2;
@@ -94,9 +97,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		HWND hWndStatusBar = 0;
 		RETURN_IF_FAILED(pStatusBar->GetHWND(&hWndStatusBar));
 		ShowWindow(hWndStatusBar, SW_HIDE);
-
-		BOOL bResult = FALSE;
-		RETURN_IF_FAILED(pWindow->ShowWindow(nCmdShow, &bResult));
 
 		nRet = theLoop.Run();
 
