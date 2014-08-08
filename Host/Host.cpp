@@ -85,7 +85,15 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 		CComQIPtr<IControl> pTabControl = pContainerWindow;
 
+		//Hide menu
 		::SetMenu(hwnd, NULL);
+
+		//Hide status bar
+		CComPtr<IStatusBar> pStatusBar;
+		RETURN_IF_FAILED(pWindow->GetStatusBar(&pStatusBar));
+		HWND hWndStatusBar = 0;
+		RETURN_IF_FAILED(pStatusBar->GetHWND(&hWndStatusBar));
+		ShowWindow(hWndStatusBar, SW_HIDE);
 
 		BOOL bResult = FALSE;
 		RETURN_IF_FAILED(pWindow->ShowWindow(nCmdShow, &bResult));

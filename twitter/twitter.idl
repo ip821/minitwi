@@ -6,6 +6,8 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
+import "..\ObjMdl\objmdl_contract_i.idl";
+import "..\ViewMdl\viewmdl_contract_i.idl";
 
 [
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
@@ -14,5 +16,21 @@ import "ocidl.idl";
 library twitterLib
 {
 	importlib("stdole2.tlb");
+
+	[
+		uuid(6EA78630-DC6D-4D2B-91F0-686B260F29D6)
+	]
+	coclass PluginTable
+	{
+		[default] interface IPluginTable;
+	};
+	[
+		uuid(75E49C09-05E4-4643-983F-624DC073535A)		
+	]
+	coclass TimelineControl
+	{
+		[default] interface IControl;
+	};
 };
 
+import "shobjidl.idl";

@@ -1,79 +1,132 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="ZZZMisc">
+      <UniqueIdentifier>{e967d9f6-9942-4f80-a49c-c0eeb7502fa8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="ZZZMisc\Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="ZZZMisc\Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ZZZMisc\Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Generated Files">
+    <Filter Include="ZZZMisc\Generated Files">
       <UniqueIdentifier>{0b0b833a-0daa-46a9-956c-cc94ed8fc0a1}</UniqueIdentifier>
       <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="PluginTable">
+      <UniqueIdentifier>{1e38e702-2cea-49dd-bb8b-e89a4ee5c804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TimelineControl">
+      <UniqueIdentifier>{f23e9fc7-ff66-4eb3-be66-6313d24454a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TimelineControl\Controls">
+      <UniqueIdentifier>{a0a23dcf-91ac-4fd6-a9e9-58e22d2ffe25}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="twitter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="xdlldata.c">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="twitter_i.c">
-      <Filter>Generated Files</Filter>
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginTable.cpp">
+      <Filter>PluginTable</Filter>
+    </ClCompile>
+    <ClCompile Include="objmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="viewmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineControl.cpp">
+      <Filter>TimelineControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomListBox.cpp">
+      <Filter>TimelineControl\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dllmain.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xdlldata.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="twitter_i.h">
-      <Filter>Generated Files</Filter>
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginTable.h">
+      <Filter>PluginTable</Filter>
+    </ClInclude>
+    <ClInclude Include="objmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="viewmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineControl.h">
+      <Filter>TimelineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomListBox.h">
+      <Filter>TimelineControl\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
-      <Filter>Resource Files</Filter>
+      <Filter>ZZZMisc\Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="twitter.rgs">
-      <Filter>Resource Files</Filter>
+      <Filter>ZZZMisc\Resource Files</Filter>
     </None>
     <None Include="twitter.def">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
+    </None>
+    <None Include="TimelineControl.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="twitter.idl">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
+    <Midl Include="..\ObjMdl\objmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\ViewMdl\viewmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt">
+      <Filter>ZZZMisc</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,0 +1,16 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {75E49C09-05E4-4643-983F-624DC073535A} = s 'TimelineControl Class'
+		{
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{12BF3C97-9ACD-43C3-9E73-698AF2DAE645}'
+			Version = s '1.0'
+		}
+	}
+}
