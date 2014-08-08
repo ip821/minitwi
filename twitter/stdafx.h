@@ -24,7 +24,6 @@
 #include <atlcom.h>
 #include <atlctl.h>
 
-
 #include <atlhost.h>
 #include <atlwin.h>
 
@@ -36,6 +35,11 @@
 #include <atlmisc.h>
 #include <comdef.h>
 
+#include <gdiplus.h>
+
+#include <vector>
+#include <boost/lexical_cast.hpp>
+
 #include <initguid.h>
 #include "..\ObjMdl\Macros.h"
 #include "..\ObjMdl\ManualComObjectLoader.h"
@@ -44,3 +48,5 @@
 
 #include "..\ViewMdl\Plugins.h"
 #include "..\ViewMdl\Functions.h"
+
+#pragma comment (lib,"Gdiplus.lib")

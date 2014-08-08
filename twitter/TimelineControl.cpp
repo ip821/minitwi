@@ -39,7 +39,43 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 {
 	DlgResize_Init(false);
 	m_listBox.SubclassWindow(GetDlgItem(IDC_LIST1));
-	m_listBox.AddString(L"123123123123123123123123123123123123123123123123123123123");
+	ItemData data1 = { 0 };
+	data1.strName = L"tweet1";
+	data1.strText =
+		CString(L"A communication channel") +
+		L"that uses information routed through a packet-switching" +
+		L"network. This information includes separate packets of " +
+		L"information and the delivery information associated with " +
+		L"those packets, such as the destination address. In a " +
+		L"packet-switching network, data packets are routed independently " +
+		L"of one another and may follow different routes. They may also arrive" +
+		L"in a different order from the one in which they were sent.";
+	m_listBox.AddItem(data1);
+
+	data1.strName = L"tweet2";
+	data1.strText =
+		CString(L"A communication channel") +
+		L"that uses information routed through a packet-switching" +
+		L"network. This information includes separate packets of " +
+		L"information and the delivery information associated with " +
+		L"those packets, such as the destination address. In a " +
+		L"packet-switching network, data packets are routed independently " +
+		L"of one another and may follow different routes. They may also arrive" +
+		L"in a different order from the one in which they were sent.";
+	m_listBox.AddItem(data1);
+
+	data1.strName = L"tweet3";
+	data1.strText =
+		CString(L"A communication channel") +
+		L"that uses information routed through a packet-switching" +
+		L"network. This information includes separate packets of " +
+		L"information and the delivery information associated with " +
+		L"those packets, such as the destination address. In a " +
+		L"packet-switching network, data packets are routed independently " +
+		L"of one another and may follow different routes. They may also arrive" +
+		L"in a different order from the one in which they were sent.";
+	m_listBox.AddItem(data1);
+
 	bHandled = FALSE;
 	return 0;
 }

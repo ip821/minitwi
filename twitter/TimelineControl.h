@@ -41,6 +41,7 @@ public:
 
 	BEGIN_MSG_MAP(CTimelineControl)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(CDialogResize<CTimelineControl>)
 		CHAIN_MSG_MAP(CAxDialogImpl<CTimelineControl>)
 	END_MSG_MAP()
