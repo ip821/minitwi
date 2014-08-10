@@ -123,6 +123,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="FormsService.cpp" />
     <ClCompile Include="objmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -156,7 +157,9 @@
   <ItemGroup>
     <ClInclude Include="CustomListBox.h" />
     <ClInclude Include="dllmain.h" />
+    <ClInclude Include="FormsService.h" />
     <ClInclude Include="objmdl_contract_i.h" />
+    <ClInclude Include="Plugins.h" />
     <ClInclude Include="PluginTable.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -173,6 +176,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="FormsService.rgs" />
     <None Include="TimelineControl.rgs" />
     <None Include="twitter.def" />
     <None Include="twitter.rgs" />

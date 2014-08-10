@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Aug 07 23:09:14 2014
+/* at Sun Aug 10 13:34:12 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -31,6 +31,10 @@
 #error this stub requires an updated version of <rpcndr.h>
 #endif // __RPCNDR_H_VERSION__
 
+#ifndef COM_NO_WINDOWS_H
+#include "windows.h"
+#include "ole2.h"
+#endif /*COM_NO_WINDOWS_H*/
 
 #ifndef __twitter_i_h__
 #define __twitter_i_h__
@@ -40,6 +44,13 @@
 #endif
 
 /* Forward Declarations */ 
+
+#ifndef __IFormsService_FWD_DEFINED__
+#define __IFormsService_FWD_DEFINED__
+typedef interface IFormsService IFormsService;
+
+#endif 	/* __IFormsService_FWD_DEFINED__ */
+
 
 #ifndef __PluginTable_FWD_DEFINED__
 #define __PluginTable_FWD_DEFINED__
@@ -65,6 +76,18 @@ typedef struct TimelineControl TimelineControl;
 #endif 	/* __TimelineControl_FWD_DEFINED__ */
 
 
+#ifndef __FormsService_FWD_DEFINED__
+#define __FormsService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class FormsService FormsService;
+#else
+typedef struct FormsService FormsService;
+#endif /* __cplusplus */
+
+#endif 	/* __FormsService_FWD_DEFINED__ */
+
+
 /* header files for imported files */
 #include "oaidl.h"
 #include "ocidl.h"
@@ -75,6 +98,76 @@ typedef struct TimelineControl TimelineControl;
 #ifdef __cplusplus
 extern "C"{
 #endif 
+
+
+#ifndef __IFormsService_INTERFACE_DEFINED__
+#define __IFormsService_INTERFACE_DEFINED__
+
+/* interface IFormsService */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IFormsService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("DC001682-90CC-497F-BCE6-D00D712FD241")
+    IFormsService : public IUnknown
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IFormsServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IFormsService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IFormsService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IFormsService * This);
+        
+        END_INTERFACE
+    } IFormsServiceVtbl;
+
+    interface IFormsService
+    {
+        CONST_VTBL struct IFormsServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IFormsService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IFormsService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IFormsService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IFormsService_INTERFACE_DEFINED__ */
 
 
 
@@ -101,6 +194,14 @@ EXTERN_C const CLSID CLSID_TimelineControl;
 
 class DECLSPEC_UUID("75E49C09-05E4-4643-983F-624DC073535A")
 TimelineControl;
+#endif
+
+EXTERN_C const CLSID CLSID_FormsService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("5BEE1835-5D53-48C0-AB58-05EC1513010F")
+FormsService;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 

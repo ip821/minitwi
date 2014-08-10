@@ -14,8 +14,8 @@
 #define _ATL_NO_AUTOMATIC_NAMESPACE
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
 #define ATL_NO_ASSERT_ON_DESTROY_NONEXISTENT_WINDOW
-#define __VIEWMDL__
 #define _WTL_NO_CSTRING
+#define __TWITTER__
 
 #include "resource.h"
 #include <atlstr.h>

@@ -10,6 +10,16 @@ import "..\ObjMdl\objmdl_contract_i.idl";
 import "..\ViewMdl\viewmdl_contract_i.idl";
 
 [
+	object,
+	uuid(DC001682-90CC-497F-BCE6-D00D712FD241),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IFormsService : IUnknown
+{
+};
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -30,6 +40,13 @@ library twitterLib
 	coclass TimelineControl
 	{
 		[default] interface IControl;
+	};
+	[
+		uuid(5BEE1835-5D53-48C0-AB58-05EC1513010F)		
+	]
+	coclass FormsService
+	{
+		[default] interface IFormsService;
 	};
 };
 
