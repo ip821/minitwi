@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Sun Aug 10 13:34:12 2014
+/* at Sun Aug 10 14:35:04 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -86,6 +86,18 @@ typedef struct FormsService FormsService;
 #endif /* __cplusplus */
 
 #endif 	/* __FormsService_FWD_DEFINED__ */
+
+
+#ifndef __SettingsControl_FWD_DEFINED__
+#define __SettingsControl_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class SettingsControl SettingsControl;
+#else
+typedef struct SettingsControl SettingsControl;
+#endif /* __cplusplus */
+
+#endif 	/* __SettingsControl_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -202,6 +214,14 @@ EXTERN_C const CLSID CLSID_FormsService;
 
 class DECLSPEC_UUID("5BEE1835-5D53-48C0-AB58-05EC1513010F")
 FormsService;
+#endif
+
+EXTERN_C const CLSID CLSID_SettingsControl;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("6AFA6FA2-12D6-450E-AEFF-60B66F8B7574")
+SettingsControl;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 

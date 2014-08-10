@@ -35,6 +35,9 @@
     <Filter Include="Include">
       <UniqueIdentifier>{80d5c463-863b-4e80-a453-88648f089221}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SettingsControl">
+      <UniqueIdentifier>{d749962b-4157-4fa8-8efc-9efc7aed1a41}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -69,6 +72,9 @@
     </ClCompile>
     <ClCompile Include="FormsService.cpp">
       <Filter>FormsService</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsControl.cpp">
+      <Filter>SettingsControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +116,9 @@
     </ClInclude>
     <ClInclude Include="Plugins.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsControl.h">
+      <Filter>SettingsControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

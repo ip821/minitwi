@@ -23,6 +23,14 @@ STDMETHODIMP CFormsService::OnInitialized(IServiceProvider* pServiceProvider)
 
 	RETURN_IF_FAILED(pWindow->SetContainerControl(pContainerWindow));
 
+	CComQIPtr<IControl> pControl = pContainerWindow;
+	HWND hwnd = 0;
+	RETURN_IF_FAILED(pControl->GetHWND(&hwnd));
+
+	LONG lStyle = GetWindowLong(hwnd, GWL_STYLE);
+	lStyle &= ~(WS_BORDER);
+	SetWindowLong(hwnd, GWL_STYLE, lStyle);
+
 	CComPtr<IFormManager> pFormManager;
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
 
@@ -40,6 +48,8 @@ STDMETHODIMP CFormsService::OnInitialized(IServiceProvider* pServiceProvider)
 		CComPtr<IControl> pControl;
 		RETURN_IF_FAILED(pFormManager->OpenForm(gId, &pControl));
 	}
+
+	RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_TimelineControl));
 
 	return S_OK;
 }

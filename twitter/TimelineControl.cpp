@@ -6,6 +6,12 @@
 
 // CTimelineControl
 
+STDMETHODIMP CTimelineControl::GetText(BSTR* pbstr)
+{
+	*pbstr = CComBSTR(L"Home").Detach();
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::GetHWND(HWND *hWnd)
 {
 	CHECK_E_POINTER(hWnd);

@@ -13,7 +13,7 @@ using namespace ATL;
 class ATL_NO_VTABLE CTimelineControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CTimelineControl, &CLSID_TimelineControl>,
-	public IControl,
+	public IControl2,
 	public IContainerControl,
 	public IMsgHandler,
 	public CAxDialogImpl<CTimelineControl>,
@@ -31,6 +31,7 @@ public:
 
 	BEGIN_COM_MAP(CTimelineControl)
 		COM_INTERFACE_ENTRY(IControl)
+		COM_INTERFACE_ENTRY(IControl2)
 		COM_INTERFACE_ENTRY(IContainerControl)
 		COM_INTERFACE_ENTRY(IMsgHandler)
 	END_COM_MAP()
@@ -60,6 +61,13 @@ public:
 	STDMETHOD(ProcessWindowMessage)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* plResult, BOOL* bResult);
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
+	STDMETHOD(GetText)(BSTR* pbstr);
+	METHOD_EMPTY(STDMETHOD(OnActivate)());
+	METHOD_EMPTY(STDMETHOD(OnDeactivate)());
+	METHOD_EMPTY(STDMETHOD(OnClose)());
+
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControl), CTimelineControl)

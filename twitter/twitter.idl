@@ -48,6 +48,13 @@ library twitterLib
 	{
 		[default] interface IFormsService;
 	};
+	[
+		uuid(6AFA6FA2-12D6-450E-AEFF-60B66F8B7574)
+	]
+	coclass SettingsControl
+	{
+		[default] interface IControl;
+	};
 };
 
 import "shobjidl.idl";

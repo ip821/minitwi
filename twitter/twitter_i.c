@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Sun Aug 10 13:34:12 2014
+/* at Sun Aug 10 14:35:04 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -80,6 +80,9 @@ MIDL_DEFINE_GUID(CLSID, CLSID_TimelineControl,0x75E49C09,0x05E4,0x4643,0x98,0x3F
 
 
 MIDL_DEFINE_GUID(CLSID, CLSID_FormsService,0x5BEE1835,0x5D53,0x48C0,0xAB,0x58,0x05,0xEC,0x15,0x13,0x01,0x0F);
+
+
+MIDL_DEFINE_GUID(CLSID, CLSID_SettingsControl,0x6AFA6FA2,0x12D6,0x450E,0xAE,0xFF,0x60,0xB6,0x6F,0x8B,0x75,0x74);
 
 #undef MIDL_DEFINE_GUID
 
