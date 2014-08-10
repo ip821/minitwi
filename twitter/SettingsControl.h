@@ -11,9 +11,10 @@ using namespace ATL;
 class ATL_NO_VTABLE CSettingsControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CSettingsControl, &CLSID_SettingsControl>,
+	public CAxDialogImpl<CSettingsControl>,
+	public CDialogResize<CSettingsControl>,
 	public IControl2,
 	public IPersistSettings,
-	public CAxDialogImpl<CSettingsControl>,
 	public IMsgHandler
 {
 public:
@@ -26,11 +27,21 @@ public:
 	BEGIN_COM_MAP(CSettingsControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPersistSettings)
 		COM_INTERFACE_ENTRY(IMsgHandler)
 	END_COM_MAP()
 
+	BEGIN_DLGRESIZE_MAP(CSettingsControl)
+		DLGRESIZE_CONTROL(IDC_EDITUSER, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_EDITPASSWORD, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_BUTTON1, DLSZ_CENTER_X)
+	END_DLGRESIZE_MAP()
+
 	BEGIN_MSG_MAP(CSettingsControl)
+		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		COMMAND_HANDLER(IDC_BUTTON1, BN_CLICKED, OnClickedOK)
+		CHAIN_MSG_MAP(CDialogResize<CSettingsControl>)
 	END_MSG_MAP()
 
 private:
@@ -38,6 +49,10 @@ private:
 	HRESULT SaveEditBoxText(int id, BSTR bstrKey, ISettings* pSettings);
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+	CComPtr<ISettings> m_pSettings;
+
 public:
 	enum { IDD = IDD_SETTINGSCONTROL };
 

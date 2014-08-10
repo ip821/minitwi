@@ -35,6 +35,7 @@ STDMETHODIMP CSettingsControl::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM
 LRESULT CSettingsControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	CAxDialogImpl<CSettingsControl>::OnInitDialog(uMsg, wParam, lParam, bHandled);
+	DlgResize_Init(false);
 	return 0;
 }
 
@@ -43,42 +44,26 @@ STDMETHODIMP CSettingsControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 	return E_NOTIMPL;
 }
 
+LRESULT CSettingsControl::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	Save(m_pSettings);
+	return 0;
+}
+
 STDMETHODIMP CSettingsControl::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
-	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITSERVER, KEY_SERVER, pSettings));
+	m_pSettings = pSettings;
 	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITUSER, KEY_USER, pSettings));
 	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettings));
-
-	UINT uTimeout = 1;
-	CComVariant vTimeout;
-	if (SUCCEEDED(pSettings->GetVariantValue(L"TimerInterval", &vTimeout)) && vTimeout.vt == VT_I4)
-		uTimeout = vTimeout.intVal;
-
-	CEdit wndTimeout = GetDlgItem(IDC_EDITCHECKINTERVAL);
-
-	TCHAR buf[512] = { 0 };
-	_itow_s(uTimeout, buf, 10);
-	wndTimeout.SetWindowText(buf);
 	return S_OK;
 }
 
 STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
-	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITSERVER, KEY_SERVER, pSettings));
 	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, KEY_USER, pSettings));
 	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettings));
-
-	CEdit wndTimeout = GetDlgItem(IDC_EDITCHECKINTERVAL);
-	CComBSTR bstrTimeout;
-	wndTimeout.GetWindowText(&bstrTimeout);
-
-	if (bstrTimeout == NULL)
-		bstrTimeout = "";
-
-	int val = _wtoi(bstrTimeout);
-	RETURN_IF_FAILED(pSettings->SetVariantValue(L"TimerInterval", &CComVariant(val)));
 	return S_OK;
 }
 

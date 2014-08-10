@@ -6,6 +6,12 @@
 
 // CFormsService
 
+STDMETHODIMP CFormsService::Load(ISettings* pSettings)
+{
+	m_pSettings = pSettings;
+	return S_OK;
+}
+
 STDMETHODIMP CFormsService::OnInitializing(IServiceProvider* pServiceProvider)
 {
 	CComQIPtr<IMainWindow> pWindow = m_pControl;

@@ -15,7 +15,8 @@ class ATL_NO_VTABLE CFormsService :
 	public IFormsService,
 	public IPluginSupportNotifications,
 	public IPluginSupportNotifications2,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public IInitializeWithSettings
 {
 public:
 	CFormsService()
@@ -29,14 +30,19 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications2)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 	END_COM_MAP()
 
-public:
+private:
+	CComPtr<ISettings> m_pSettings;
 
+public:
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(OnInitializing)(IServiceProvider* pServiceProvider);
+
+	STDMETHOD(Load)(ISettings* pSettings);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(FormsService), CFormsService)
