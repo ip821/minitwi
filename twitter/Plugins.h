@@ -10,3 +10,5 @@ DEFINE_GUID(SERVICE_FORMS_SERVICE, 0x9c884e2a, 0x2cbc, 0x41eb, 0xa2, 0x71, 0xfa,
 #define KEY_PIN L"Pin"
 #define KEY_USER L"User"
 #define KEY_PASSWORD L"Password"
+#define KEY_TWITTERKEY L"TwitterKey"
+#define KEY_TWITTERSECRET L"TwitterSecret"

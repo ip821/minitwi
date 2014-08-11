@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Mon Aug 11 11:37:52 2014
+/* at Mon Aug 11 12:27:10 2014
  */
 /* Compiler settings for twiconn.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -71,6 +71,9 @@ MIDL_DEFINE_GUID(IID, LIBID_twiconnLib,0x7622A306,0x6AF6,0x4D18,0xAC,0x9F,0xA6,0
 
 
 MIDL_DEFINE_GUID(CLSID, CLSID_TwitterConnection,0x20841FB0,0x9F07,0x4DA6,0xA8,0x78,0x41,0x92,0x1C,0x82,0xC4,0x40);
+
+
+MIDL_DEFINE_GUID(CLSID, CLSID_PluginTable,0x6EA78630,0xDC6D,0x4D2B,0x91,0xF0,0x68,0x6B,0x26,0x0F,0x29,0xD6);
 
 #undef MIDL_DEFINE_GUID
 

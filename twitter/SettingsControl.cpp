@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "SettingsControl.h"
 #include "Plugins.h"
+#include "twitconn_contract_i.h"
 
 // CSettingsControl
 
@@ -64,6 +65,23 @@ STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 	CHECK_E_POINTER(pSettings);
 	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, KEY_USER, pSettings));
 	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettings));
+
+	CEdit wnd1 = GetDlgItem(IDC_EDITUSER);
+	CComBSTR bstrUser;
+	wnd1.GetWindowText(&bstrUser);
+
+	CEdit wnd2 = GetDlgItem(IDC_EDITPASSWORD);
+	CComBSTR bstrPass;
+	wnd2.GetWindowText(&bstrPass);
+
+	CComPtr<ITwitterConnection> pTwitterConnection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pTwitterConnection));
+	CComBSTR bstrKey, bstrSecret;
+	RETURN_IF_FAILED(pTwitterConnection->GetAuthKeys(bstrUser, bstrPass, &bstrKey, &bstrSecret));
+
+	RETURN_IF_FAILED(pSettings->SetVariantValue(KEY_TWITTERKEY, &CComVariant(bstrKey)));
+	RETURN_IF_FAILED(pSettings->SetVariantValue(KEY_TWITTERSECRET, &CComVariant(bstrSecret)));
+
 	return S_OK;
 }
 

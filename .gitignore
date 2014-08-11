@@ -281,3 +281,17 @@
 /twitter/viewmdl_contract_p.c
 /twiconn/twitter_contract_i.c
 /twiconn/twitter_contract_i.h
+/DLL Debug - DLL Windows SSPI
+/LIB Debug - DLL Windows SSPI/libcurl.lib
+/curl/build/Win32/VC12/DLL Debug - DLL Windows SSPI/lib/libcurl.log
+/curl/projects/Windows/VC12/lib/DLL Debug - DLL Windows SSPI/libcurl.log
+/curl/projects/Windows/VC12/lib/LIB Debug - DLL Windows SSPI/libcurl.log
+/twiconn/twiconn.aps
+/twiconn/twitconn_contract_i.c
+/twiconn/twitconn_contract_i.h
+/twiconn/twitconn_contract_i.idl
+/twitcurl/libtwitcurl/lib/!libcurl.lib
+/twitcurl/libtwitcurl/twitcurl.vcxproj.user
+/twitter/twitconn_contract_i.c
+/twitter/twitconn_contract_i.h
+/twitter/twitconn_contract_p.c

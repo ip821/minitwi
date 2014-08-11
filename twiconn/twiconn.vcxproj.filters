@@ -23,6 +23,21 @@
     <Filter Include="Connection">
       <UniqueIdentifier>{fa0699b0-84d8-4e4b-9b2b-d34c24b1f4ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ZZZMisc\twitcurl">
+      <UniqueIdentifier>{bee61e8b-061f-45e6-bbd4-55842d2a5a76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ZZZMisc\twitcurl\Header Files">
+      <UniqueIdentifier>{64ae0a05-4660-4c14-80e8-f3a97764e345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ZZZMisc\twitcurl\Source Files">
+      <UniqueIdentifier>{97f8c773-73de-4a2a-b700-66aa06f52893}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PluginTable">
+      <UniqueIdentifier>{524dfed8-a5e4-444b-9721-bd9beae74477}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{6b6a1670-3ab9-4c69-a49f-211678eaf66e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -42,6 +57,30 @@
     </ClCompile>
     <ClCompile Include="TwitterConnection.cpp">
       <Filter>Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\twitcurl\libtwitcurl\base64.cpp">
+      <Filter>ZZZMisc\twitcurl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\twitcurl\libtwitcurl\HMAC_SHA1.cpp">
+      <Filter>ZZZMisc\twitcurl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\twitcurl\libtwitcurl\oauthlib.cpp">
+      <Filter>ZZZMisc\twitcurl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\twitcurl\libtwitcurl\SHA1.cpp">
+      <Filter>ZZZMisc\twitcurl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\twitcurl\libtwitcurl\twitcurl.cpp">
+      <Filter>ZZZMisc\twitcurl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\twitcurl\libtwitcurl\urlencode.cpp">
+      <Filter>ZZZMisc\twitcurl\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginTable.cpp">
+      <Filter>PluginTable</Filter>
+    </ClCompile>
+    <ClCompile Include="objmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +104,36 @@
     </ClInclude>
     <ClInclude Include="TwitterConnection.h">
       <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\twitcurl\libtwitcurl\base64.h">
+      <Filter>ZZZMisc\twitcurl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\twitcurl\libtwitcurl\HMAC_SHA1.h">
+      <Filter>ZZZMisc\twitcurl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\twitcurl\libtwitcurl\oauthlib.h">
+      <Filter>ZZZMisc\twitcurl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\twitcurl\libtwitcurl\SHA1.h">
+      <Filter>ZZZMisc\twitcurl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\twitcurl\libtwitcurl\twitcurl.h">
+      <Filter>ZZZMisc\twitcurl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\twitcurl\libtwitcurl\twitcurlurls.h">
+      <Filter>ZZZMisc\twitcurl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\twitcurl\libtwitcurl\urlencode.h">
+      <Filter>ZZZMisc\twitcurl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginTable.h">
+      <Filter>PluginTable</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="objmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

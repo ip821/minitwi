@@ -14,6 +14,7 @@
 #define _ATL_NO_AUTOMATIC_NAMESPACE
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
 #define ATL_NO_ASSERT_ON_DESTROY_NONEXISTENT_WINDOW
+#define __TWITCONN__
 
 #include "resource.h"
 #include <atlbase.h>
@@ -26,3 +27,7 @@
 #include <fstream>
 #include <twitcurl.h>
 
+#include <initguid.h>
+#include "..\ObjMdl\Macros.h"
+#include "..\ObjMdl\Plugins.h"
+#include "..\ObjMdl\Functions.h"

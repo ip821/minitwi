@@ -76,6 +76,9 @@
     <ClCompile Include="SettingsControl.cpp">
       <Filter>SettingsControl</Filter>
     </ClCompile>
+    <ClCompile Include="twitconn_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -120,6 +123,9 @@
     <ClInclude Include="SettingsControl.h">
       <Filter>SettingsControl</Filter>
     </ClInclude>
+    <ClInclude Include="twitconn_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -148,6 +154,9 @@
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
     <Midl Include="..\ViewMdl\viewmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\twiconn\twitconn_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

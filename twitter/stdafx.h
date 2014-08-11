@@ -49,4 +49,6 @@
 #include "..\ViewMdl\Plugins.h"
 #include "..\ViewMdl\Functions.h"
 
+#include "..\twiconn\Plugins.h"
+
 #pragma comment (lib,"Gdiplus.lib")

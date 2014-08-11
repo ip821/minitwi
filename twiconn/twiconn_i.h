@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Mon Aug 11 11:37:52 2014
+/* at Mon Aug 11 12:27:10 2014
  */
 /* Compiler settings for twiconn.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -53,10 +53,23 @@ typedef struct TwitterConnection TwitterConnection;
 #endif 	/* __TwitterConnection_FWD_DEFINED__ */
 
 
+#ifndef __PluginTable_FWD_DEFINED__
+#define __PluginTable_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class PluginTable PluginTable;
+#else
+typedef struct PluginTable PluginTable;
+#endif /* __cplusplus */
+
+#endif 	/* __PluginTable_FWD_DEFINED__ */
+
+
 /* header files for imported files */
 #include "oaidl.h"
 #include "ocidl.h"
-#include "twitter_contract_i.h"
+#include "twitconn_contract_i.h"
+#include "objmdl_contract_i.h"
 #include "shobjidl.h"
 
 #ifdef __cplusplus
@@ -80,6 +93,14 @@ EXTERN_C const CLSID CLSID_TwitterConnection;
 
 class DECLSPEC_UUID("20841FB0-9F07-4DA6-A878-41921C82C440")
 TwitterConnection;
+#endif
+
+EXTERN_C const CLSID CLSID_PluginTable;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("6EA78630-DC6D-4D2B-91F0-686B260F29D6")
+PluginTable;
 #endif
 #endif /* __twiconnLib_LIBRARY_DEFINED__ */
 
