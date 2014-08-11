@@ -279,3 +279,5 @@
 /twitter/viewmdl_contract_i.c
 /twitter/viewmdl_contract_i.h
 /twitter/viewmdl_contract_p.c
+/twiconn/twitter_contract_i.c
+/twiconn/twitter_contract_i.h

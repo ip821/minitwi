@@ -6,7 +6,7 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
-
+import "twitter_contract_i.idl";
 [
 	uuid(7622A306-6AF6-4D18-AC9F-A685EAD09458),
 	version(1.0),
@@ -14,5 +14,13 @@ import "ocidl.idl";
 library twiconnLib
 {
 	importlib("stdole2.tlb");
+	[
+		uuid(20841FB0-9F07-4DA6-A878-41921C82C440)		
+	]
+	coclass TwitterConnection
+	{
+		[default] interface ITwitterConnection;
+	};
 };
 
+import "shobjidl.idl";

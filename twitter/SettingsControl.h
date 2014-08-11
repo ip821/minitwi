@@ -71,7 +71,6 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnActivate)());
 	METHOD_EMPTY(STDMETHOD(OnDeactivate)());
 	METHOD_EMPTY(STDMETHOD(OnClose)());
-
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SettingsControl), CSettingsControl)

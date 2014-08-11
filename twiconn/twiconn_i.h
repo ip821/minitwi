@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Aug 07 21:51:46 2014
+/* at Mon Aug 11 11:37:52 2014
  */
 /* Compiler settings for twiconn.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -41,9 +41,23 @@
 
 /* Forward Declarations */ 
 
+#ifndef __TwitterConnection_FWD_DEFINED__
+#define __TwitterConnection_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class TwitterConnection TwitterConnection;
+#else
+typedef struct TwitterConnection TwitterConnection;
+#endif /* __cplusplus */
+
+#endif 	/* __TwitterConnection_FWD_DEFINED__ */
+
+
 /* header files for imported files */
 #include "oaidl.h"
 #include "ocidl.h"
+#include "twitter_contract_i.h"
+#include "shobjidl.h"
 
 #ifdef __cplusplus
 extern "C"{
@@ -59,6 +73,14 @@ extern "C"{
 
 
 EXTERN_C const IID LIBID_twiconnLib;
+
+EXTERN_C const CLSID CLSID_TwitterConnection;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("20841FB0-9F07-4DA6-A878-41921C82C440")
+TwitterConnection;
+#endif
 #endif /* __twiconnLib_LIBRARY_DEFINED__ */
 
 /* Additional Prototypes for ALL interfaces */
