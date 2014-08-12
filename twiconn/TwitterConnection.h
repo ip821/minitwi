@@ -24,10 +24,15 @@ public:
 		COM_INTERFACE_ENTRY(ITwitterConnection)
 	END_COM_MAP()
 
+private:
+
+	std::shared_ptr<twitCurl> m_pTwitObj;
+	STDMETHOD(HandleError)(JSONValue* value);
+
 public:
 
 	STDMETHOD(GetAuthKeys)(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrKey, BSTR* pbstrSecret);
-
+	STDMETHOD(OpenConnection)(BSTR bstrKey, BSTR bstrSecret);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterConnection), CTwitterConnection)

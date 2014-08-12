@@ -82,6 +82,8 @@ STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 	RETURN_IF_FAILED(pSettings->SetVariantValue(KEY_TWITTERKEY, &CComVariant(bstrKey)));
 	RETURN_IF_FAILED(pSettings->SetVariantValue(KEY_TWITTERSECRET, &CComVariant(bstrSecret)));
 
+	pTwitterConnection->OpenConnection(bstrKey, bstrSecret);
+
 	return S_OK;
 }
 

@@ -38,6 +38,9 @@
     <Filter Include="Include">
       <UniqueIdentifier>{6b6a1670-3ab9-4c69-a49f-211678eaf66e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ZZZMisc\json">
+      <UniqueIdentifier>{ac0f905b-f9ec-4baa-b946-45b352611147}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -81,6 +84,12 @@
     </ClCompile>
     <ClCompile Include="objmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\json\src\JSON.cpp">
+      <Filter>ZZZMisc\json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\json\src\JSONValue.cpp">
+      <Filter>ZZZMisc\json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +144,12 @@
     <ClInclude Include="objmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\json\src\JSON.h">
+      <Filter>ZZZMisc\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\json\src\JSONValue.h">
+      <Filter>ZZZMisc\json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twiconn.rc">
@@ -159,7 +174,7 @@
     <Midl Include="..\ObjMdl\objmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="twitter_contract_i.idl">
+    <Midl Include="twitconn_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

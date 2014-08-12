@@ -25,9 +25,13 @@
 #include <cstdio>
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <twitcurl.h>
 
 #include <initguid.h>
 #include "..\ObjMdl\Macros.h"
 #include "..\ObjMdl\Plugins.h"
 #include "..\ObjMdl\Functions.h"
+
+#include "..\json\src\JSON.h"
+#include "..\json\src\JSONValue.h"
