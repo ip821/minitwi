@@ -4,3 +4,6 @@
 [submodule "ObjMdl"]
 	path = ObjMdl
 	url = https://ip82@git.code.sf.net/p/objmdl/code
+[submodule "NotificationServices"]
+	path = NotificationServices
+	url = https://ip82@git.code.sf.net/p/notificationservices/code

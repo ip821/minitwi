@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Mon Aug 11 12:18:31 2014
+/* at Tue Aug 12 14:45:08 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -50,6 +50,13 @@
 typedef interface IFormsService IFormsService;
 
 #endif 	/* __IFormsService_FWD_DEFINED__ */
+
+
+#ifndef __ITimelineService_FWD_DEFINED__
+#define __ITimelineService_FWD_DEFINED__
+typedef interface ITimelineService ITimelineService;
+
+#endif 	/* __ITimelineService_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -98,6 +105,18 @@ typedef struct SettingsControl SettingsControl;
 #endif /* __cplusplus */
 
 #endif 	/* __SettingsControl_FWD_DEFINED__ */
+
+
+#ifndef __TimelineService_FWD_DEFINED__
+#define __TimelineService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class TimelineService TimelineService;
+#else
+typedef struct TimelineService TimelineService;
+#endif /* __cplusplus */
+
+#endif 	/* __TimelineService_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -182,6 +201,92 @@ EXTERN_C const IID IID_IFormsService;
 #endif 	/* __IFormsService_INTERFACE_DEFINED__ */
 
 
+#ifndef __ITimelineService_INTERFACE_DEFINED__
+#define __ITimelineService_INTERFACE_DEFINED__
+
+/* interface ITimelineService */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_ITimelineService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("03F5DD74-E610-409A-991F-20BDDBA9A625")
+    ITimelineService : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Start( void) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE Stop( void) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct ITimelineServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            ITimelineService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            ITimelineService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            ITimelineService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *Start )( 
+            ITimelineService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *Stop )( 
+            ITimelineService * This);
+        
+        END_INTERFACE
+    } ITimelineServiceVtbl;
+
+    interface ITimelineService
+    {
+        CONST_VTBL struct ITimelineServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define ITimelineService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define ITimelineService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define ITimelineService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define ITimelineService_Start(This)	\
+    ( (This)->lpVtbl -> Start(This) ) 
+
+#define ITimelineService_Stop(This)	\
+    ( (This)->lpVtbl -> Stop(This) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __ITimelineService_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __twitterLib_LIBRARY_DEFINED__
 #define __twitterLib_LIBRARY_DEFINED__
@@ -222,6 +327,14 @@ EXTERN_C const CLSID CLSID_SettingsControl;
 
 class DECLSPEC_UUID("6AFA6FA2-12D6-450E-AEFF-60B66F8B7574")
 SettingsControl;
+#endif
+
+EXTERN_C const CLSID CLSID_TimelineService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("FB68EE85-7555-407C-BECA-64406C74F1BC")
+TimelineService;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 

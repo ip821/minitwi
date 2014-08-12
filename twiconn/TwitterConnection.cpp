@@ -81,3 +81,21 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 		return hr;
 	return S_OK;
 }
+
+STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId)
+{
+	USES_CONVERSION;
+
+	m_pTwitObj->timelineHomeGet(std::string(W2A(bstrSinceId)));
+	std::string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = std::shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+
+
+	return S_OK;
+}

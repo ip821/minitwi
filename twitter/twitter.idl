@@ -20,6 +20,18 @@ interface IFormsService : IUnknown
 {
 };
 [
+	object,
+	uuid(03F5DD74-E610-409A-991F-20BDDBA9A625),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface ITimelineService : IUnknown
+{
+	HRESULT Start();
+	HRESULT Stop();
+};
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -54,6 +66,13 @@ library twitterLib
 	coclass SettingsControl
 	{
 		[default] interface IControl;
+	};
+	[
+		uuid(FB68EE85-7555-407C-BECA-64406C74F1BC)		
+	]
+	coclass TimelineService
+	{
+		[default] interface ITimelineService;
 	};
 };
 

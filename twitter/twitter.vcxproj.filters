@@ -38,6 +38,9 @@
     <Filter Include="SettingsControl">
       <UniqueIdentifier>{d749962b-4157-4fa8-8efc-9efc7aed1a41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TimelineService">
+      <UniqueIdentifier>{57624c7f-3f1a-4485-b166-ee74d919ca54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -77,6 +80,12 @@
       <Filter>SettingsControl</Filter>
     </ClCompile>
     <ClCompile Include="twitconn_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineService.cpp">
+      <Filter>TimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationServices_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -126,6 +135,12 @@
     <ClInclude Include="twitconn_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="TimelineService.h">
+      <Filter>TimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationServices_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -145,6 +160,9 @@
     <None Include="FormsService.rgs">
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
+    <None Include="TimelineService.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="twitter.idl">
@@ -157,6 +175,9 @@
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
     <Midl Include="..\twiconn\twitconn_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\NotificationServices\NotificationServices_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

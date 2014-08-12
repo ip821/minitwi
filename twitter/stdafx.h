@@ -51,4 +51,6 @@
 
 #include "..\twiconn\Plugins.h"
 
+#include "..\NotificationServices\Plugins.h"
+
 #pragma comment (lib,"Gdiplus.lib")

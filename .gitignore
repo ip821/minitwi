@@ -295,3 +295,6 @@
 /twitter/twitconn_contract_i.c
 /twitter/twitconn_contract_i.h
 /twitter/twitconn_contract_p.c
+/twitter/NotificationServices_contract_i.c
+/twitter/NotificationServices_contract_i.h
+/twitter/NotificationServices_contract_p.c
