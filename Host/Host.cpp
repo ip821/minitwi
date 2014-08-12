@@ -11,6 +11,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	int nRet = 0;
 	{
+		CoInitialize(NULL);
+
 		TCHAR lpszCurrentDir[MAX_PATH];
 		if (GetModuleFileName(NULL, lpszCurrentDir, MAX_PATH))
 		{
@@ -48,6 +50,16 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		icon.LoadIcon(IDR_MAINFRAME);
 		RETURN_IF_FAILED(pWindow->SetMessageLoop(pMessageLoop));
 
+		CComPtr<ISettings> pRootSettings;
+		RETURN_IF_FAILED(pPluginManager->CoCreateInstance(CLSID_RegistrySettings, IID_ISettings, (LPVOID*)&pRootSettings));
+		CComPtr<ISettings> pMainWindowSettings;
+		RETURN_IF_FAILED(pRootSettings->OpenSubSettings(L"Software\\IP\\MiniTwi\\MainWindow", &pMainWindowSettings));
+		CComQIPtr<IPersistSettings> pPersistSettings = pWindow;
+		if (pPersistSettings)
+		{
+			RETURN_IF_FAILED(pPersistSettings->Load(pMainWindowSettings));
+		}
+
 		CComQIPtr<IControl> pControl = pWindow;
 
 		HWND hwnd = NULL;
@@ -59,17 +71,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		SetWindowText(hwnd, strCaption);
 		RETURN_IF_FAILED(pWindow->SetIcon(icon, TRUE));
 		RETURN_IF_FAILED(pWindow->SetIcon(icon, FALSE));
-
-		CComPtr<ISettings> pRootSettings;
-		RETURN_IF_FAILED(pPluginManager->CoCreateInstance(CLSID_RegistrySettings, IID_ISettings, (LPVOID*)&pRootSettings));
-
-		CComPtr<ISettings> pMainWindowSettings;
-		RETURN_IF_FAILED(pRootSettings->OpenSubSettings(L"Software\\IP\\MiniTwi\\MainWindow", &pMainWindowSettings));
-		CComQIPtr<IPersistSettings> pPersistSettings = pWindow;
-		if (pPersistSettings)
-		{
-			RETURN_IF_FAILED(pPersistSettings->Load(pMainWindowSettings));
-		}
 
 		if (hwnd == NULL)
 		{

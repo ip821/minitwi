@@ -1,0 +1,16 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {A31AF0A5-BE10-46FE-974F-55E0AA68070D} = s 'ViewControllerService Class'
+		{
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{12BF3C97-9ACD-43C3-9E73-698AF2DAE645}'
+			Version = s '1.0'
+		}
+	}
+}

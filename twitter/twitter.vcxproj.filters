@@ -23,23 +23,32 @@
     <Filter Include="PluginTable">
       <UniqueIdentifier>{1e38e702-2cea-49dd-bb8b-e89a4ee5c804}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TimelineControl">
-      <UniqueIdentifier>{f23e9fc7-ff66-4eb3-be66-6313d24454a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="TimelineControl\Controls">
-      <UniqueIdentifier>{a0a23dcf-91ac-4fd6-a9e9-58e22d2ffe25}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FormsService">
-      <UniqueIdentifier>{e5f89bd7-1909-4ed0-94ee-bcd4c89794c0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Include">
       <UniqueIdentifier>{80d5c463-863b-4e80-a453-88648f089221}</UniqueIdentifier>
     </Filter>
-    <Filter Include="SettingsControl">
+    <Filter Include="Controls">
+      <UniqueIdentifier>{608aaf79-5e61-45d0-8a62-4dec66bd2eae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\TimelineControl">
+      <UniqueIdentifier>{f23e9fc7-ff66-4eb3-be66-6313d24454a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\TimelineControl\Controls">
+      <UniqueIdentifier>{a0a23dcf-91ac-4fd6-a9e9-58e22d2ffe25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\SettingsControl">
       <UniqueIdentifier>{d749962b-4157-4fa8-8efc-9efc7aed1a41}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TimelineService">
+    <Filter Include="Services">
+      <UniqueIdentifier>{c16ae913-2fe4-4e5b-9e70-567c02ec20fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\TimelineService">
       <UniqueIdentifier>{57624c7f-3f1a-4485-b166-ee74d919ca54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\FormsService">
+      <UniqueIdentifier>{e5f89bd7-1909-4ed0-94ee-bcd4c89794c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\ViewControllerService">
+      <UniqueIdentifier>{0c8cc8dd-e4ef-4d0f-93d8-421f83c3cd06}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -68,25 +77,28 @@
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="TimelineControl.cpp">
-      <Filter>TimelineControl</Filter>
+      <Filter>Controls\TimelineControl</Filter>
     </ClCompile>
     <ClCompile Include="CustomListBox.cpp">
-      <Filter>TimelineControl\Controls</Filter>
+      <Filter>Controls\TimelineControl\Controls</Filter>
     </ClCompile>
     <ClCompile Include="FormsService.cpp">
-      <Filter>FormsService</Filter>
+      <Filter>Services\FormsService</Filter>
     </ClCompile>
     <ClCompile Include="SettingsControl.cpp">
-      <Filter>SettingsControl</Filter>
+      <Filter>Controls\SettingsControl</Filter>
     </ClCompile>
     <ClCompile Include="twitconn_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="TimelineService.cpp">
-      <Filter>TimelineService</Filter>
+      <Filter>Services\TimelineService</Filter>
     </ClCompile>
     <ClCompile Include="NotificationServices_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewControllerService.cpp">
+      <Filter>Services\ViewControllerService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -118,28 +130,31 @@
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="TimelineControl.h">
-      <Filter>TimelineControl</Filter>
+      <Filter>Controls\TimelineControl</Filter>
     </ClInclude>
     <ClInclude Include="CustomListBox.h">
-      <Filter>TimelineControl\Controls</Filter>
+      <Filter>Controls\TimelineControl\Controls</Filter>
     </ClInclude>
     <ClInclude Include="FormsService.h">
-      <Filter>FormsService</Filter>
+      <Filter>Services\FormsService</Filter>
     </ClInclude>
     <ClInclude Include="Plugins.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="SettingsControl.h">
-      <Filter>SettingsControl</Filter>
+      <Filter>Controls\SettingsControl</Filter>
     </ClInclude>
     <ClInclude Include="twitconn_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="TimelineService.h">
-      <Filter>TimelineService</Filter>
+      <Filter>Services\TimelineService</Filter>
     </ClInclude>
     <ClInclude Include="NotificationServices_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewControllerService.h">
+      <Filter>Services\ViewControllerService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +176,9 @@
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
     <None Include="TimelineService.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="ViewControllerService.rgs">
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "TwitterConnection.h"
+#include "Plugins.h"
 
 // CTwitterConnection
 
@@ -82,11 +83,17 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId)
+STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray** ppObjectArray)
 {
 	USES_CONVERSION;
 
-	m_pTwitObj->timelineHomeGet(std::string(W2A(bstrSinceId)));
+	std::string strId;
+	if (bstrSinceId)
+	{
+		strId = W2A(bstrSinceId);
+	}
+
+	m_pTwitObj->timelineHomeGet(strId);
 	std::string strResponse;
 	m_pTwitObj->getLastWebResponse(strResponse);
 
@@ -95,7 +102,23 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId)
 	if (FAILED(hr))
 		return hr;
 
+	CComPtr<IObjectCollection> pObjectCollection;
+	RETURN_IF_FAILED(CoCreateInstance(CLSID_EnumerableObjectCollection, NULL, CLSCTX_INPROC_SERVER, IID_IObjectCollection, (LPVOID*)&pObjectCollection));
+	RETURN_IF_FAILED(pObjectCollection->QueryInterface(ppObjectArray));
 
+	auto valueArray = value->AsArray();
+	for (auto it = valueArray.begin(); it != valueArray.end(); it++)
+	{
+		auto pItem = (*it);
+		auto itemObject = pItem->AsObject();
+
+		CComPtr<IVariantObject> pVariantObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
+
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(itemObject[L"id_str"]->AsString().c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TEXT, &CComVariant(itemObject[L"text"]->AsString().c_str())));
+	}
 
 	return S_OK;
 }

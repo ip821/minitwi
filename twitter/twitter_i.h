@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue Aug 12 14:45:08 2014
+/* at Tue Aug 12 17:52:19 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -57,6 +57,13 @@ typedef interface IFormsService IFormsService;
 typedef interface ITimelineService ITimelineService;
 
 #endif 	/* __ITimelineService_FWD_DEFINED__ */
+
+
+#ifndef __IViewControllerService_FWD_DEFINED__
+#define __IViewControllerService_FWD_DEFINED__
+typedef interface IViewControllerService IViewControllerService;
+
+#endif 	/* __IViewControllerService_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -117,6 +124,18 @@ typedef struct TimelineService TimelineService;
 #endif /* __cplusplus */
 
 #endif 	/* __TimelineService_FWD_DEFINED__ */
+
+
+#ifndef __ViewControllerService_FWD_DEFINED__
+#define __ViewControllerService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class ViewControllerService ViewControllerService;
+#else
+typedef struct ViewControllerService ViewControllerService;
+#endif /* __cplusplus */
+
+#endif 	/* __ViewControllerService_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -216,10 +235,6 @@ EXTERN_C const IID IID_ITimelineService;
     ITimelineService : public IUnknown
     {
     public:
-        virtual HRESULT STDMETHODCALLTYPE Start( void) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE Stop( void) = 0;
-        
     };
     
     
@@ -239,12 +254,6 @@ EXTERN_C const IID IID_ITimelineService;
             ITimelineService * This);
         
         ULONG ( STDMETHODCALLTYPE *Release )( 
-            ITimelineService * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *Start )( 
-            ITimelineService * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *Stop )( 
             ITimelineService * This);
         
         END_INTERFACE
@@ -270,12 +279,6 @@ EXTERN_C const IID IID_ITimelineService;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ITimelineService_Start(This)	\
-    ( (This)->lpVtbl -> Start(This) ) 
-
-#define ITimelineService_Stop(This)	\
-    ( (This)->lpVtbl -> Stop(This) ) 
-
 #endif /* COBJMACROS */
 
 
@@ -285,6 +288,76 @@ EXTERN_C const IID IID_ITimelineService;
 
 
 #endif 	/* __ITimelineService_INTERFACE_DEFINED__ */
+
+
+#ifndef __IViewControllerService_INTERFACE_DEFINED__
+#define __IViewControllerService_INTERFACE_DEFINED__
+
+/* interface IViewControllerService */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IViewControllerService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("27812A7C-A85F-4184-B1DA-7E9EA55B5816")
+    IViewControllerService : public IUnknown
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IViewControllerServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IViewControllerService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IViewControllerService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IViewControllerService * This);
+        
+        END_INTERFACE
+    } IViewControllerServiceVtbl;
+
+    interface IViewControllerService
+    {
+        CONST_VTBL struct IViewControllerServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IViewControllerService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IViewControllerService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IViewControllerService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IViewControllerService_INTERFACE_DEFINED__ */
 
 
 
@@ -335,6 +408,14 @@ EXTERN_C const CLSID CLSID_TimelineService;
 
 class DECLSPEC_UUID("FB68EE85-7555-407C-BECA-64406C74F1BC")
 TimelineService;
+#endif
+
+EXTERN_C const CLSID CLSID_ViewControllerService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("A31AF0A5-BE10-46FE-974F-55E0AA68070D")
+ViewControllerService;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 

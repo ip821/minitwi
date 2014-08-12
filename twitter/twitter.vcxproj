@@ -153,6 +153,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ViewControllerService.cpp" />
     <ClCompile Include="viewmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -181,6 +182,7 @@
     <ClInclude Include="TimelineService.h" />
     <ClInclude Include="twitconn_contract_i.h" />
     <ClInclude Include="twitter_i.h" />
+    <ClInclude Include="ViewControllerService.h" />
     <ClInclude Include="viewmdl_contract_i.h" />
     <ClInclude Include="xdlldata.h" />
   </ItemGroup>
@@ -196,6 +198,7 @@
     <None Include="TimelineService.rgs" />
     <None Include="twitter.def" />
     <None Include="twitter.rgs" />
+    <None Include="ViewControllerService.rgs" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\NotificationServices\NotificationServices_contract_i.idl">
