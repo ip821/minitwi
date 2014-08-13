@@ -38,6 +38,8 @@
 #include <gdiplus.h>
 
 #include <vector>
+#include <map>
+#include <list>
 #include <boost/lexical_cast.hpp>
 
 #include <initguid.h>

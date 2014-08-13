@@ -7,9 +7,20 @@
 
 // CViewControllerService
 
+STDMETHODIMP CViewControllerService::Load(ISettings* pSettings)
+{
+	CHECK_E_POINTER(pSettings);
+	m_pSettings = pSettings;
+}
+
 STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
+
+	CComPtr<IThemeService> pThemeService;
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
+	RETURN_IF_FAILED(pThemeService->ApplyThemeFromSettings());
+
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ThreadService, &m_pThreadService));

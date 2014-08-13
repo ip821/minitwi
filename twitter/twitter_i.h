@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue Aug 12 19:31:02 2014
+/* at Wed Aug 13 16:17:33 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -66,11 +66,39 @@ typedef interface IViewControllerService IViewControllerService;
 #endif 	/* __IViewControllerService_FWD_DEFINED__ */
 
 
+#ifndef __IThemeColorMap_FWD_DEFINED__
+#define __IThemeColorMap_FWD_DEFINED__
+typedef interface IThemeColorMap IThemeColorMap;
+
+#endif 	/* __IThemeColorMap_FWD_DEFINED__ */
+
+
+#ifndef __ISkinTimeline_FWD_DEFINED__
+#define __ISkinTimeline_FWD_DEFINED__
+typedef interface ISkinTimeline ISkinTimeline;
+
+#endif 	/* __ISkinTimeline_FWD_DEFINED__ */
+
+
 #ifndef __ITimelineControl_FWD_DEFINED__
 #define __ITimelineControl_FWD_DEFINED__
 typedef interface ITimelineControl ITimelineControl;
 
 #endif 	/* __ITimelineControl_FWD_DEFINED__ */
+
+
+#ifndef __ITheme_FWD_DEFINED__
+#define __ITheme_FWD_DEFINED__
+typedef interface ITheme ITheme;
+
+#endif 	/* __ITheme_FWD_DEFINED__ */
+
+
+#ifndef __IThemeService_FWD_DEFINED__
+#define __IThemeService_FWD_DEFINED__
+typedef interface IThemeService IThemeService;
+
+#endif 	/* __IThemeService_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -145,6 +173,54 @@ typedef struct ViewControllerService ViewControllerService;
 #endif 	/* __ViewControllerService_FWD_DEFINED__ */
 
 
+#ifndef __ThemeService_FWD_DEFINED__
+#define __ThemeService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class ThemeService ThemeService;
+#else
+typedef struct ThemeService ThemeService;
+#endif /* __cplusplus */
+
+#endif 	/* __ThemeService_FWD_DEFINED__ */
+
+
+#ifndef __ThemeDefault_FWD_DEFINED__
+#define __ThemeDefault_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class ThemeDefault ThemeDefault;
+#else
+typedef struct ThemeDefault ThemeDefault;
+#endif /* __cplusplus */
+
+#endif 	/* __ThemeDefault_FWD_DEFINED__ */
+
+
+#ifndef __SkinTimeline_FWD_DEFINED__
+#define __SkinTimeline_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class SkinTimeline SkinTimeline;
+#else
+typedef struct SkinTimeline SkinTimeline;
+#endif /* __cplusplus */
+
+#endif 	/* __SkinTimeline_FWD_DEFINED__ */
+
+
+#ifndef __ThemeColorMap_FWD_DEFINED__
+#define __ThemeColorMap_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class ThemeColorMap ThemeColorMap;
+#else
+typedef struct ThemeColorMap ThemeColorMap;
+#endif /* __cplusplus */
+
+#endif 	/* __ThemeColorMap_FWD_DEFINED__ */
+
+
 /* header files for imported files */
 #include "oaidl.h"
 #include "ocidl.h"
@@ -156,6 +232,37 @@ typedef struct ViewControllerService ViewControllerService;
 extern "C"{
 #endif 
 
+
+/* interface __MIDL_itf_twitter_0000_0000 */
+/* [local] */ 
+
+typedef struct TtagDRAWITEMSTRUCT
+    {
+    UINT CtlType;
+    UINT CtlID;
+    UINT itemID;
+    UINT itemAction;
+    UINT itemState;
+    HWND hwndItem;
+    HDC hDC;
+    RECT rcItem;
+    ULONG_PTR itemData;
+    } 	TDRAWITEMSTRUCT;
+
+typedef struct TtagMEASUREITEMSTRUCT
+    {
+    UINT CtlType;
+    UINT CtlID;
+    UINT itemID;
+    UINT itemWidth;
+    UINT itemHeight;
+    ULONG_PTR itemData;
+    } 	TMEASUREITEMSTRUCT;
+
+
+
+extern RPC_IF_HANDLE __MIDL_itf_twitter_0000_0000_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_twitter_0000_0000_v0_0_s_ifspec;
 
 #ifndef __IFormsService_INTERFACE_DEFINED__
 #define __IFormsService_INTERFACE_DEFINED__
@@ -367,6 +474,208 @@ EXTERN_C const IID IID_IViewControllerService;
 #endif 	/* __IViewControllerService_INTERFACE_DEFINED__ */
 
 
+#ifndef __IThemeColorMap_INTERFACE_DEFINED__
+#define __IThemeColorMap_INTERFACE_DEFINED__
+
+/* interface IThemeColorMap */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IThemeColorMap;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("627BE6CD-5CB1-4364-817A-1EABA04B52C9")
+    IThemeColorMap : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE GetColor( 
+            BSTR bstrColorName,
+            DWORD *dwColor) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE SetColor( 
+            BSTR bstrColorName,
+            DWORD dwColor) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IThemeColorMapVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IThemeColorMap * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IThemeColorMap * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IThemeColorMap * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetColor )( 
+            IThemeColorMap * This,
+            BSTR bstrColorName,
+            DWORD *dwColor);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetColor )( 
+            IThemeColorMap * This,
+            BSTR bstrColorName,
+            DWORD dwColor);
+        
+        END_INTERFACE
+    } IThemeColorMapVtbl;
+
+    interface IThemeColorMap
+    {
+        CONST_VTBL struct IThemeColorMapVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IThemeColorMap_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IThemeColorMap_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IThemeColorMap_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IThemeColorMap_GetColor(This,bstrColorName,dwColor)	\
+    ( (This)->lpVtbl -> GetColor(This,bstrColorName,dwColor) ) 
+
+#define IThemeColorMap_SetColor(This,bstrColorName,dwColor)	\
+    ( (This)->lpVtbl -> SetColor(This,bstrColorName,dwColor) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IThemeColorMap_INTERFACE_DEFINED__ */
+
+
+#ifndef __ISkinTimeline_INTERFACE_DEFINED__
+#define __ISkinTimeline_INTERFACE_DEFINED__
+
+/* interface ISkinTimeline */
+/* [local][unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_ISkinTimeline;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("CAE8EE20-A39A-4677-A9C0-FDD8D3D7015E")
+    ISkinTimeline : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE SetColorMap( 
+            IThemeColorMap *pThemeColorMap) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE DrawItem( 
+            HWND hwndControl,
+            IVariantObject *pItemObject,
+            TDRAWITEMSTRUCT *lpdi) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE MeasureItem( 
+            HWND hwndControl,
+            IVariantObject *pItemObject,
+            TMEASUREITEMSTRUCT *lpMeasureItemStruct) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct ISkinTimelineVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            ISkinTimeline * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            ISkinTimeline * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            ISkinTimeline * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetColorMap )( 
+            ISkinTimeline * This,
+            IThemeColorMap *pThemeColorMap);
+        
+        HRESULT ( STDMETHODCALLTYPE *DrawItem )( 
+            ISkinTimeline * This,
+            HWND hwndControl,
+            IVariantObject *pItemObject,
+            TDRAWITEMSTRUCT *lpdi);
+        
+        HRESULT ( STDMETHODCALLTYPE *MeasureItem )( 
+            ISkinTimeline * This,
+            HWND hwndControl,
+            IVariantObject *pItemObject,
+            TMEASUREITEMSTRUCT *lpMeasureItemStruct);
+        
+        END_INTERFACE
+    } ISkinTimelineVtbl;
+
+    interface ISkinTimeline
+    {
+        CONST_VTBL struct ISkinTimelineVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define ISkinTimeline_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define ISkinTimeline_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define ISkinTimeline_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define ISkinTimeline_SetColorMap(This,pThemeColorMap)	\
+    ( (This)->lpVtbl -> SetColorMap(This,pThemeColorMap) ) 
+
+#define ISkinTimeline_DrawItem(This,hwndControl,pItemObject,lpdi)	\
+    ( (This)->lpVtbl -> DrawItem(This,hwndControl,pItemObject,lpdi) ) 
+
+#define ISkinTimeline_MeasureItem(This,hwndControl,pItemObject,lpMeasureItemStruct)	\
+    ( (This)->lpVtbl -> MeasureItem(This,hwndControl,pItemObject,lpMeasureItemStruct) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __ISkinTimeline_INTERFACE_DEFINED__ */
+
+
 #ifndef __ITimelineControl_INTERFACE_DEFINED__
 #define __ITimelineControl_INTERFACE_DEFINED__
 
@@ -384,6 +693,9 @@ EXTERN_C const IID IID_ITimelineControl;
     public:
         virtual HRESULT STDMETHODCALLTYPE SetItems( 
             IObjectArray *pObjectArray) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE SetSkinTimeline( 
+            ISkinTimeline *pSkinTimeline) = 0;
         
     };
     
@@ -443,6 +755,10 @@ EXTERN_C const IID IID_ITimelineControl;
             ITimelineControl * This,
             IObjectArray *pObjectArray);
         
+        HRESULT ( STDMETHODCALLTYPE *SetSkinTimeline )( 
+            ITimelineControl * This,
+            ISkinTimeline *pSkinTimeline);
+        
         END_INTERFACE
     } ITimelineControlVtbl;
 
@@ -495,6 +811,9 @@ EXTERN_C const IID IID_ITimelineControl;
 #define ITimelineControl_SetItems(This,pObjectArray)	\
     ( (This)->lpVtbl -> SetItems(This,pObjectArray) ) 
 
+#define ITimelineControl_SetSkinTimeline(This,pSkinTimeline)	\
+    ( (This)->lpVtbl -> SetSkinTimeline(This,pSkinTimeline) ) 
+
 #endif /* COBJMACROS */
 
 
@@ -504,6 +823,238 @@ EXTERN_C const IID IID_ITimelineControl;
 
 
 #endif 	/* __ITimelineControl_INTERFACE_DEFINED__ */
+
+
+#ifndef __ITheme_INTERFACE_DEFINED__
+#define __ITheme_INTERFACE_DEFINED__
+
+/* interface ITheme */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_ITheme;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("825B6027-F439-4586-8DAE-DF9AE8527ABD")
+    ITheme : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE SetColorMap( 
+            IThemeColorMap *pThemeColorMap) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetTimelineSkin( 
+            ISkinTimeline **ppSkinTimeline) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IThemeVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            ITheme * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            ITheme * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            ITheme * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetColorMap )( 
+            ITheme * This,
+            IThemeColorMap *pThemeColorMap);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTimelineSkin )( 
+            ITheme * This,
+            ISkinTimeline **ppSkinTimeline);
+        
+        END_INTERFACE
+    } IThemeVtbl;
+
+    interface ITheme
+    {
+        CONST_VTBL struct IThemeVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define ITheme_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define ITheme_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define ITheme_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define ITheme_SetColorMap(This,pThemeColorMap)	\
+    ( (This)->lpVtbl -> SetColorMap(This,pThemeColorMap) ) 
+
+#define ITheme_GetTimelineSkin(This,ppSkinTimeline)	\
+    ( (This)->lpVtbl -> GetTimelineSkin(This,ppSkinTimeline) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __ITheme_INTERFACE_DEFINED__ */
+
+
+#ifndef __IThemeService_INTERFACE_DEFINED__
+#define __IThemeService_INTERFACE_DEFINED__
+
+/* interface IThemeService */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IThemeService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("3A2E1784-55A2-4075-8617-2253A70762FF")
+    IThemeService : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE AddColorMap( 
+            GUID gThemeId,
+            IThemeColorMap *pThemeColorMap) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE RemoveColorMap( 
+            GUID gThemeId) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE AddTheme( 
+            GUID gThemeId,
+            ITheme *pTheme) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE RemoveTheme( 
+            GUID gThemeId) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetThemes( 
+            IObjectArray **ppObjectArray) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE ApplyTheme( 
+            GUID gId) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE ApplyThemeFromSettings( void) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IThemeServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IThemeService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IThemeService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IThemeService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *AddColorMap )( 
+            IThemeService * This,
+            GUID gThemeId,
+            IThemeColorMap *pThemeColorMap);
+        
+        HRESULT ( STDMETHODCALLTYPE *RemoveColorMap )( 
+            IThemeService * This,
+            GUID gThemeId);
+        
+        HRESULT ( STDMETHODCALLTYPE *AddTheme )( 
+            IThemeService * This,
+            GUID gThemeId,
+            ITheme *pTheme);
+        
+        HRESULT ( STDMETHODCALLTYPE *RemoveTheme )( 
+            IThemeService * This,
+            GUID gThemeId);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetThemes )( 
+            IThemeService * This,
+            IObjectArray **ppObjectArray);
+        
+        HRESULT ( STDMETHODCALLTYPE *ApplyTheme )( 
+            IThemeService * This,
+            GUID gId);
+        
+        HRESULT ( STDMETHODCALLTYPE *ApplyThemeFromSettings )( 
+            IThemeService * This);
+        
+        END_INTERFACE
+    } IThemeServiceVtbl;
+
+    interface IThemeService
+    {
+        CONST_VTBL struct IThemeServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IThemeService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IThemeService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IThemeService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IThemeService_AddColorMap(This,gThemeId,pThemeColorMap)	\
+    ( (This)->lpVtbl -> AddColorMap(This,gThemeId,pThemeColorMap) ) 
+
+#define IThemeService_RemoveColorMap(This,gThemeId)	\
+    ( (This)->lpVtbl -> RemoveColorMap(This,gThemeId) ) 
+
+#define IThemeService_AddTheme(This,gThemeId,pTheme)	\
+    ( (This)->lpVtbl -> AddTheme(This,gThemeId,pTheme) ) 
+
+#define IThemeService_RemoveTheme(This,gThemeId)	\
+    ( (This)->lpVtbl -> RemoveTheme(This,gThemeId) ) 
+
+#define IThemeService_GetThemes(This,ppObjectArray)	\
+    ( (This)->lpVtbl -> GetThemes(This,ppObjectArray) ) 
+
+#define IThemeService_ApplyTheme(This,gId)	\
+    ( (This)->lpVtbl -> ApplyTheme(This,gId) ) 
+
+#define IThemeService_ApplyThemeFromSettings(This)	\
+    ( (This)->lpVtbl -> ApplyThemeFromSettings(This) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IThemeService_INTERFACE_DEFINED__ */
 
 
 
@@ -563,9 +1114,46 @@ EXTERN_C const CLSID CLSID_ViewControllerService;
 class DECLSPEC_UUID("A31AF0A5-BE10-46FE-974F-55E0AA68070D")
 ViewControllerService;
 #endif
+
+EXTERN_C const CLSID CLSID_ThemeService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("C4587505-CBA9-4583-A0F0-CA7BEF457FA0")
+ThemeService;
+#endif
+
+EXTERN_C const CLSID CLSID_ThemeDefault;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("A7C215DD-BB09-4045-9029-9EE9D1D0A389")
+ThemeDefault;
+#endif
+
+EXTERN_C const CLSID CLSID_SkinTimeline;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("B682B92C-ACB3-446D-A37D-E11C901385CA")
+SkinTimeline;
+#endif
+
+EXTERN_C const CLSID CLSID_ThemeColorMap;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("41F33BEE-3D82-4173-9F5E-79C91523843B")
+ThemeColorMap;
+#endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 
 /* Additional Prototypes for ALL interfaces */
+
+unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long *, unsigned long            , BSTR * ); 
+unsigned char * __RPC_USER  BSTR_UserMarshal(  unsigned long *, unsigned char *, BSTR * ); 
+unsigned char * __RPC_USER  BSTR_UserUnmarshal(unsigned long *, unsigned char *, BSTR * ); 
+void                      __RPC_USER  BSTR_UserFree(     unsigned long *, BSTR * ); 
 
 /* end of Additional Prototypes */
 

@@ -59,14 +59,9 @@ STDMETHODIMP CTimelineControl::SetItems(IObjectArray* pObjectArray)
 	{
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(pObjectArray->GetAt(i, IID_IVariantObject, (LPVOID*)&pVariantObject));
-		CComVariant vText;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TEXT, &vText));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_NAME, &CComVariant(L"tweet")));
 
-		ItemData itemData = { 0 };
-		itemData.strName = L"tweet";
-		itemData.strText = vText.bstrVal;
-
-		m_listBox.AddItem(itemData);
+		m_listBox.AddItem(pVariantObject);
 	}
 	m_listBox.SetRedraw();
 	return S_OK;
@@ -74,5 +69,11 @@ STDMETHODIMP CTimelineControl::SetItems(IObjectArray* pObjectArray)
 
 STDMETHODIMP CTimelineControl::UpdateControl(IControl *pControl)
 {
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::SetSkinTimeline(ISkinTimeline* pSkinTimeline)
+{
+	m_listBox.SetSkinTimeline(pSkinTimeline);
 	return S_OK;
 }

@@ -1,12 +1,7 @@
 #pragma once
 
 #include "atlctrls.h"
-
-struct ItemData
-{
-	CString strName;
-	CString strText;
-};
+#include "twitter_i.h"
 
 class CCustomListBox : 
 	public CWindowImpl<CCustomListBox, CListBox>,
@@ -22,14 +17,15 @@ public:
 	END_MSG_MAP()
 
 private:
-	std::vector<ItemData> m_items;
+	std::vector<CAdapt<CComPtr<IVariantObject> > > m_items;
+	CComPtr<ISkinTimeline> m_pSkinTimeline;
 public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	void AddItem(ItemData& itemData);
-
+	void AddItem(IVariantObject* pItemObject);
+	void SetSkinTimeline(ISkinTimeline* pSkin);
 };
 

@@ -9,6 +9,27 @@ import "ocidl.idl";
 import "..\ObjMdl\objmdl_contract_i.idl";
 import "..\ViewMdl\viewmdl_contract_i.idl";
 
+typedef struct TtagDRAWITEMSTRUCT {
+	UINT        CtlType;
+	UINT        CtlID;
+	UINT        itemID;
+	UINT        itemAction;
+	UINT        itemState;
+	HWND        hwndItem;
+	HDC         hDC;
+	RECT        rcItem;
+	ULONG_PTR   itemData;
+} TDRAWITEMSTRUCT;
+
+typedef struct TtagMEASUREITEMSTRUCT {
+	UINT       CtlType;
+	UINT       CtlID;
+	UINT       itemID;
+	UINT       itemWidth;
+	UINT       itemHeight;
+	ULONG_PTR  itemData;
+} TMEASUREITEMSTRUCT;
+
 [
 	object,
 	uuid(DC001682-90CC-497F-BCE6-D00D712FD241),
@@ -38,12 +59,67 @@ interface IViewControllerService : IUnknown
 
 [
 	object,
+	uuid(627BE6CD-5CB1-4364-817A-1EABA04B52C9),
+	pointer_default(unique)
+]
+interface IThemeColorMap : IUnknown
+{
+	HRESULT GetColor(BSTR bstrColorName, DWORD* dwColor);
+	HRESULT SetColor(BSTR bstrColorName, DWORD dwColor);
+};
+
+[
+	object,
+	uuid(CAE8EE20-A39A-4677-A9C0-FDD8D3D7015E),
+	pointer_default(unique),
+	local
+]
+interface ISkinTimeline : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT DrawItem(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi);
+	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct);
+};
+
+[
+	object,
 	uuid(304C4130-701C-4951-AF30-2A38A0A51D31),
 	pointer_default(unique)
 ]
 interface ITimelineControl : IControl2
 {
 	HRESULT SetItems(IObjectArray* pObjectArray);
+	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
+};
+
+[
+	object,
+	uuid(825B6027-F439-4586-8DAE-DF9AE8527ABD),
+	pointer_default(unique)
+]
+interface ITheme : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
+};
+
+[
+	object,
+	uuid(3A2E1784-55A2-4075-8617-2253A70762FF),
+	pointer_default(unique)
+]
+interface IThemeService : IUnknown
+{
+	HRESULT AddColorMap(GUID gThemeId, IThemeColorMap* pThemeColorMap);
+	HRESULT RemoveColorMap(GUID gThemeId);
+
+	HRESULT AddTheme(GUID gThemeId, ITheme* pTheme);
+	HRESULT RemoveTheme(GUID gThemeId);
+
+	HRESULT GetThemes(IObjectArray** ppObjectArray);
+	HRESULT ApplyTheme(GUID gId);
+
+	HRESULT ApplyThemeFromSettings();
 };
 
 [
@@ -95,6 +171,34 @@ library twitterLib
 	coclass ViewControllerService
 	{
 		[default] interface IViewControllerService;
+	};
+	[
+		uuid(C4587505-CBA9-4583-A0F0-CA7BEF457FA0)		
+	]
+	coclass ThemeService
+	{
+		[default] interface IThemeService;
+	};
+	[
+		uuid(A7C215DD-BB09-4045-9029-9EE9D1D0A389)		
+	]
+	coclass ThemeDefault
+	{
+		[default] interface ITheme;
+	};
+	[
+		uuid(B682B92C-ACB3-446D-A37D-E11C901385CA)		
+	]
+	coclass SkinTimeline
+	{
+		[default] interface ISkinTimeline;
+	};
+	[
+		uuid(41F33BEE-3D82-4173-9F5E-79C91523843B)		
+	]
+	coclass ThemeColorMap
+	{
+		[default] interface IThemeColorMap;
 	};
 };
 

@@ -50,6 +50,12 @@
     <Filter Include="Services\ViewControllerService">
       <UniqueIdentifier>{0c8cc8dd-e4ef-4d0f-93d8-421f83c3cd06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\SkinService">
+      <UniqueIdentifier>{093f2170-3e53-4ffa-bcad-8d8a211ecafa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\SkinService\Default">
+      <UniqueIdentifier>{1c700d2e-5a19-4ae8-a485-e0246a353dbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -99,6 +105,18 @@
     </ClCompile>
     <ClCompile Include="ViewControllerService.cpp">
       <Filter>Services\ViewControllerService</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinTimeline.cpp">
+      <Filter>Services\SkinService\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeDefault.cpp">
+      <Filter>Services\SkinService\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeService.cpp">
+      <Filter>Services\SkinService</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeColorMap.cpp">
+      <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +174,18 @@
     <ClInclude Include="ViewControllerService.h">
       <Filter>Services\ViewControllerService</Filter>
     </ClInclude>
+    <ClInclude Include="SkinTimeline.h">
+      <Filter>Services\SkinService\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeDefault.h">
+      <Filter>Services\SkinService\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeService.h">
+      <Filter>Services\SkinService</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeColorMap.h">
+      <Filter>Services\SkinService\Default</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -179,6 +209,18 @@
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
     <None Include="ViewControllerService.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="SkinService.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="SkinDefault.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="SkinTimeline.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="ThemeColorMap.rgs">
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>

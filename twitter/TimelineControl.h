@@ -70,6 +70,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	STDMETHOD(SetItems)(IObjectArray* pObjectArray);
+	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControl), CTimelineControl)

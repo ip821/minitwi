@@ -16,7 +16,8 @@ class ATL_NO_VTABLE CViewControllerService :
 	public IViewControllerService,
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public IInitializeWithSettings
 {
 public:
 	CViewControllerService()
@@ -30,17 +31,21 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 	END_COM_MAP()
 
 private:
 	CComPtr<ITimerService> m_pTimerService;
 	CComPtr<IThreadService> m_pThreadService;
 	DWORD m_dwAdvice = 0;
+	CComPtr<ISettings> m_pSettings;
 
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
+
+	STDMETHOD(Load)(ISettings* pSettings);
 
 	METHOD_EMPTY(STDMETHOD(OnStart)(IVariantObject *pResult));
 	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
