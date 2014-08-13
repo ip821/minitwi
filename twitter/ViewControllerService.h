@@ -4,6 +4,7 @@
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 #include "NotificationServices_contract_i.h"
+#include "..\ViewMdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;
 
@@ -13,7 +14,9 @@ class ATL_NO_VTABLE CViewControllerService :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CViewControllerService, &CLSID_ViewControllerService>,
 	public IViewControllerService,
-	public IPluginSupportNotifications
+	public IPluginSupportNotifications,
+	public IThreadServiceEventSink,
+	public IInitializeWithControlImpl
 {
 public:
 	CViewControllerService()
@@ -25,16 +28,23 @@ public:
 	BEGIN_COM_MAP(CViewControllerService)
 		COM_INTERFACE_ENTRY(IViewControllerService)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(IInitializeWithControl)
+		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 	END_COM_MAP()
 
 private:
 	CComPtr<ITimerService> m_pTimerService;
+	CComPtr<IThreadService> m_pThreadService;
+	DWORD m_dwAdvice = 0;
 
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
+	METHOD_EMPTY(STDMETHOD(OnStart)(IVariantObject *pResult));
+	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
+	STDMETHOD(OnFinish)(IVariantObject *pResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ViewControllerService), CViewControllerService)

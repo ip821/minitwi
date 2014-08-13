@@ -12,33 +12,40 @@ import "..\ViewMdl\viewmdl_contract_i.idl";
 [
 	object,
 	uuid(DC001682-90CC-497F-BCE6-D00D712FD241),
-	dual,
-	nonextensible,
 	pointer_default(unique)
 ]
 interface IFormsService : IUnknown
 {
 };
+
 [
 	object,
 	uuid(03F5DD74-E610-409A-991F-20BDDBA9A625),
-	dual,
-	nonextensible,
 	pointer_default(unique)
 ]
 interface ITimelineService : IUnknown
 {
 };
+
 [
 	object,
 	uuid(27812A7C-A85F-4184-B1DA-7E9EA55B5816),
-	dual,
-	nonextensible,
 	pointer_default(unique)
 ]
 interface IViewControllerService : IUnknown
 {
 };
+
+[
+	object,
+	uuid(304C4130-701C-4951-AF30-2A38A0A51D31),
+	pointer_default(unique)
+]
+interface ITimelineControl : IControl2
+{
+	HRESULT SetItems(IObjectArray* pObjectArray);
+};
+
 [
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
@@ -59,7 +66,7 @@ library twitterLib
 	]
 	coclass TimelineControl
 	{
-		[default] interface IControl;
+		[default] interface ITimelineControl;
 	};
 	[
 		uuid(5BEE1835-5D53-48C0-AB58-05EC1513010F)		

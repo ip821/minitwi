@@ -55,16 +55,22 @@ STDMETHODIMP CSettingsControl::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	m_pSettings = pSettings;
-	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITUSER, KEY_USER, pSettings));
-	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettings));
+	CComPtr<ISettings> pSettingsTwitter;
+	RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITUSER, KEY_USER, pSettingsTwitter));
+	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettingsTwitter));
 	return S_OK;
 }
 
 STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
-	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, KEY_USER, pSettings));
-	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettings));
+
+	CComPtr<ISettings> pSettingsTwitter;
+	RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+
+	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, KEY_USER, pSettingsTwitter));
+	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettingsTwitter));
 
 	CEdit wnd1 = GetDlgItem(IDC_EDITUSER);
 	CComBSTR bstrUser;
@@ -79,8 +85,8 @@ STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 	CComBSTR bstrKey, bstrSecret;
 	RETURN_IF_FAILED(pTwitterConnection->GetAuthKeys(bstrUser, bstrPass, &bstrKey, &bstrSecret));
 
-	RETURN_IF_FAILED(pSettings->SetVariantValue(KEY_TWITTERKEY, &CComVariant(bstrKey)));
-	RETURN_IF_FAILED(pSettings->SetVariantValue(KEY_TWITTERSECRET, &CComVariant(bstrSecret)));
+	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(KEY_TWITTERKEY, &CComVariant(bstrKey)));
+	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(KEY_TWITTERSECRET, &CComVariant(bstrSecret)));
 
 	pTwitterConnection->OpenConnection(bstrKey, bstrSecret);
 

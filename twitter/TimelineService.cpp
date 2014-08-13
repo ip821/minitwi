@@ -53,11 +53,14 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 		pSettings = m_pSettings;
 	}
 
+	CComPtr<ISettings> pSettingsTwitter;
+	RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+
 	CComBSTR bstrKey;
-	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettings, KEY_TWITTERKEY, &bstrKey));
+	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, KEY_TWITTERKEY, &bstrKey));
 
 	CComBSTR bstrSecret;
-	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettings, KEY_TWITTERSECRET, &bstrSecret));
+	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, KEY_TWITTERSECRET, &bstrSecret));
 
 	CComPtr<ITwitterConnection> pConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
@@ -65,6 +68,7 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 
 	CComPtr<IObjectArray> pObjectArray;
 	RETURN_IF_FAILED(pConnection->GetHomeTimeline(NULL, &pObjectArray));
+	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 	return S_OK;
 }
 

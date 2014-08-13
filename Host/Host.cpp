@@ -53,7 +53,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		CComPtr<ISettings> pRootSettings;
 		RETURN_IF_FAILED(pPluginManager->CoCreateInstance(CLSID_RegistrySettings, IID_ISettings, (LPVOID*)&pRootSettings));
 		CComPtr<ISettings> pMainWindowSettings;
-		RETURN_IF_FAILED(pRootSettings->OpenSubSettings(L"Software\\IP\\MiniTwi\\MainWindow", &pMainWindowSettings));
+		RETURN_IF_FAILED(pRootSettings->OpenSubSettings(L"Software\\IP\\MiniTwi", &pMainWindowSettings));
 		CComQIPtr<IPersistSettings> pPersistSettings = pWindow;
 		if (pPersistSettings)
 		{

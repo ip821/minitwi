@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue Aug 12 17:52:19 2014
+/* at Tue Aug 12 19:31:02 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -64,6 +64,13 @@ typedef interface ITimelineService ITimelineService;
 typedef interface IViewControllerService IViewControllerService;
 
 #endif 	/* __IViewControllerService_FWD_DEFINED__ */
+
+
+#ifndef __ITimelineControl_FWD_DEFINED__
+#define __ITimelineControl_FWD_DEFINED__
+typedef interface ITimelineControl ITimelineControl;
+
+#endif 	/* __ITimelineControl_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -154,7 +161,7 @@ extern "C"{
 #define __IFormsService_INTERFACE_DEFINED__
 
 /* interface IFormsService */
-/* [unique][nonextensible][dual][uuid][object] */ 
+/* [unique][uuid][object] */ 
 
 
 EXTERN_C const IID IID_IFormsService;
@@ -224,7 +231,7 @@ EXTERN_C const IID IID_IFormsService;
 #define __ITimelineService_INTERFACE_DEFINED__
 
 /* interface ITimelineService */
-/* [unique][nonextensible][dual][uuid][object] */ 
+/* [unique][uuid][object] */ 
 
 
 EXTERN_C const IID IID_ITimelineService;
@@ -294,7 +301,7 @@ EXTERN_C const IID IID_ITimelineService;
 #define __IViewControllerService_INTERFACE_DEFINED__
 
 /* interface IViewControllerService */
-/* [unique][nonextensible][dual][uuid][object] */ 
+/* [unique][uuid][object] */ 
 
 
 EXTERN_C const IID IID_IViewControllerService;
@@ -358,6 +365,145 @@ EXTERN_C const IID IID_IViewControllerService;
 
 
 #endif 	/* __IViewControllerService_INTERFACE_DEFINED__ */
+
+
+#ifndef __ITimelineControl_INTERFACE_DEFINED__
+#define __ITimelineControl_INTERFACE_DEFINED__
+
+/* interface ITimelineControl */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_ITimelineControl;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("304C4130-701C-4951-AF30-2A38A0A51D31")
+    ITimelineControl : public IControl2
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE SetItems( 
+            IObjectArray *pObjectArray) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct ITimelineControlVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            ITimelineControl * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            ITimelineControl * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            ITimelineControl * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetHWND )( 
+            ITimelineControl * This,
+            HWND *hWnd);
+        
+        HRESULT ( STDMETHODCALLTYPE *CreateEx )( 
+            ITimelineControl * This,
+            HWND hWndParent,
+            HWND *hWnd);
+        
+        HRESULT ( STDMETHODCALLTYPE *PreTranslateMessage )( 
+            ITimelineControl * This,
+            MSG *pMsg,
+            BOOL *pbResult);
+        
+        HRESULT ( STDMETHODCALLTYPE *CreateEx2 )( 
+            ITimelineControl * This,
+            HWND hWndParent,
+            RECT rect,
+            HWND *hWnd);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetText )( 
+            ITimelineControl * This,
+            BSTR *pbstr);
+        
+        HRESULT ( STDMETHODCALLTYPE *OnActivate )( 
+            ITimelineControl * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *OnDeactivate )( 
+            ITimelineControl * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *OnClose )( 
+            ITimelineControl * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetItems )( 
+            ITimelineControl * This,
+            IObjectArray *pObjectArray);
+        
+        END_INTERFACE
+    } ITimelineControlVtbl;
+
+    interface ITimelineControl
+    {
+        CONST_VTBL struct ITimelineControlVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define ITimelineControl_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define ITimelineControl_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define ITimelineControl_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define ITimelineControl_GetHWND(This,hWnd)	\
+    ( (This)->lpVtbl -> GetHWND(This,hWnd) ) 
+
+#define ITimelineControl_CreateEx(This,hWndParent,hWnd)	\
+    ( (This)->lpVtbl -> CreateEx(This,hWndParent,hWnd) ) 
+
+#define ITimelineControl_PreTranslateMessage(This,pMsg,pbResult)	\
+    ( (This)->lpVtbl -> PreTranslateMessage(This,pMsg,pbResult) ) 
+
+
+#define ITimelineControl_CreateEx2(This,hWndParent,rect,hWnd)	\
+    ( (This)->lpVtbl -> CreateEx2(This,hWndParent,rect,hWnd) ) 
+
+#define ITimelineControl_GetText(This,pbstr)	\
+    ( (This)->lpVtbl -> GetText(This,pbstr) ) 
+
+#define ITimelineControl_OnActivate(This)	\
+    ( (This)->lpVtbl -> OnActivate(This) ) 
+
+#define ITimelineControl_OnDeactivate(This)	\
+    ( (This)->lpVtbl -> OnDeactivate(This) ) 
+
+#define ITimelineControl_OnClose(This)	\
+    ( (This)->lpVtbl -> OnClose(This) ) 
+
+
+#define ITimelineControl_SetItems(This,pObjectArray)	\
+    ( (This)->lpVtbl -> SetItems(This,pObjectArray) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __ITimelineControl_INTERFACE_DEFINED__ */
 
 
 

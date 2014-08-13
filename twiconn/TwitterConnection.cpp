@@ -64,6 +64,9 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 {
 	USES_CONVERSION;
 
+	if (!bstrKey || !bstrSecret)
+		return COMADMIN_E_USERPASSWDNOTVALID;
+
 	m_pTwitObj = std::make_shared<twitCurl>();
 
 	m_pTwitObj->getOAuth().setConsumerKey(std::string(APP_KEY));
