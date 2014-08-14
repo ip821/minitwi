@@ -118,6 +118,9 @@
     <ClCompile Include="ThemeColorMap.cpp">
       <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
+    <ClCompile Include="ColumnRects.cpp">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -186,6 +189,9 @@
     <ClInclude Include="ThemeColorMap.h">
       <Filter>Services\SkinService\Default</Filter>
     </ClInclude>
+    <ClInclude Include="ColumnRects.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -221,6 +227,9 @@
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
     <None Include="ThemeColorMap.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="ColumnRects.rgs">
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>

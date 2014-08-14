@@ -11,6 +11,7 @@ STDMETHODIMP CViewControllerService::Load(ISettings* pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	m_pSettings = pSettings;
+	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServiceProvider)

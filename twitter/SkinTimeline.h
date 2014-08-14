@@ -1,6 +1,9 @@
 // SkinTimeline.h : Declaration of the CSkinTimeline
 
 #pragma once
+
+#include <gdiplus.h>
+
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 
@@ -24,10 +27,12 @@ public:
 		COM_INTERFACE_ENTRY(ISkinTimeline)
 	END_COM_MAP()
 
+private:
+
 public:
 
-	STDMETHOD(DrawItem)(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi);
-	STDMETHOD(MeasureItem)(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct);
+	STDMETHOD(DrawItem)(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
+	STDMETHOD(MeasureItem)(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 	METHOD_EMPTY(STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap));
 };
 

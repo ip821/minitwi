@@ -70,6 +70,20 @@ interface IThemeColorMap : IUnknown
 
 [
 	object,
+	uuid(2EC751CC-D4F3-4B3B-B0C7-862916A085FC),
+	pointer_default(unique),
+	local
+]
+interface IColumnRects : IUnknown
+{
+	HRESULT AddRect(RECT rect);
+	HRESULT GetRect(UINT uiIndex, RECT* rect);
+	HRESULT GetCount(UINT* puiCount);
+	HRESULT Clear();
+};
+
+[
+	object,
 	uuid(CAE8EE20-A39A-4677-A9C0-FDD8D3D7015E),
 	pointer_default(unique),
 	local
@@ -77,8 +91,8 @@ interface IThemeColorMap : IUnknown
 interface ISkinTimeline : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT DrawItem(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi);
-	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct);
+	HRESULT DrawItem(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
+	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 };
 
 [
@@ -199,6 +213,13 @@ library twitterLib
 	coclass ThemeColorMap
 	{
 		[default] interface IThemeColorMap;
+	};
+	[
+		uuid(89CA168E-8568-4653-9DCF-8DEB3CA21A37)		
+	]
+	coclass ColumnRects
+	{
+		[default] interface IColumnRects;
 	};
 };
 

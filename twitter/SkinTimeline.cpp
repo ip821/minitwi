@@ -3,15 +3,16 @@
 #include "stdafx.h"
 #include "SkinTimeline.h"
 
-
 // CSkinTimeline
 
-extern class ItemData;
-
-STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi)
+STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn)
 {
 	CListBox wndListBox(hwndControl);
 	auto selectedItemId = wndListBox.GetCurSel();
+
+	Gdiplus::Font nfont(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold);
+	Gdiplus::Font nfontu(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold | Gdiplus::FontStyle::FontStyleUnderline);
+	Gdiplus::Font tfont(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleRegular);
 
 	Gdiplus::Graphics gfx(lpdi->hDC);
 
@@ -19,10 +20,6 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IVariantObject* pItemObje
 	auto y = lpdi->rcItem.top;
 	auto width = (lpdi->rcItem.right - lpdi->rcItem.left);
 	auto height = (lpdi->rcItem.bottom - lpdi->rcItem.top);
-
-	Gdiplus::FontFamily fontFamily(L"Microsoft Sans Serif");
-	Gdiplus::Font nfont(&fontFamily, 10, Gdiplus::FontStyle::FontStyleBold);
-	Gdiplus::Font tfont(&fontFamily, 10, Gdiplus::FontStyle::FontStyleRegular);
 
 	auto strItemId = boost::lexical_cast<std::wstring>(lpdi->itemID);
 
@@ -63,22 +60,28 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IVariantObject* pItemObje
 	Gdiplus::RectF rectNumber;
 	auto status = gfx.MeasureString(strItemId.c_str(), strItemId.length(), &nfont, Gdiplus::PointF(0, 0), &rectNumber);
 
-	gfx.DrawString(strName, strName.GetLength(), &nfont, Gdiplus::PointF(x + 8 + rectNumber.Width + 8, y + 10), &brushSteelBlue);
+	Gdiplus::Font* pfont = &nfont;
+	if (iHoveredItem == lpdi->itemID && iHoveredColumn == 0) //VAR_NAME
+	{
+		pfont = &nfontu;
+	}
+
+	gfx.DrawString(strName, strName.GetLength(), pfont, Gdiplus::PointF(x + 8 + rectNumber.Width + 8, y + 10), &brushSteelBlue);
 	Gdiplus::RectF rectName;
-	status = gfx.MeasureString(strName, strName.GetLength(), &nfont, Gdiplus::PointF(0, 0), &rectName);
+	status = gfx.MeasureString(strName, strName.GetLength(), pfont, Gdiplus::PointF(0, 0), &rectName);
 
 	Gdiplus::RectF rect(x + 8 + rectNumber.Width + 8, y + 10 + rectNumber.Height + 12, (clientRect.right - clientRect.left) - 28, (clientRect.bottom - clientRect.top));
 	gfx.DrawString(strText, strText.GetLength(), &tfont, rect, &Gdiplus::StringFormat(Gdiplus::StringFormatFlags::StringFormatFlagsNoFitBlackBox), &brushBlack);
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct)
+STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects)
 {
-	Gdiplus::FontFamily fontFamily(L"Microsoft Sans Serif");
-	Gdiplus::Font nfont(&fontFamily, 10, Gdiplus::FontStyle::FontStyleBold);
-	Gdiplus::Font tfont(&fontFamily, 10, Gdiplus::FontStyle::FontStyleRegular);
-
+	pColumnRects->Clear();
 	CListBox wndListBox(hwndControl);
+
+	Gdiplus::Font nfont(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold);
+	Gdiplus::Font tfont(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleRegular);
 
 	CComVariant vName;
 	pItemObject->GetVariantValue(VAR_NAME, &vName);
@@ -100,6 +103,8 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	auto status = gfx.MeasureString(strItemId.c_str(), strItemId.length(), &nfont, Gdiplus::PointF(0, 0), &rectNumber);
 	Gdiplus::RectF rectName;
 	status = gfx.MeasureString(strName, strName.GetLength(), &nfont, Gdiplus::PointF(0, 0), &rectName);
+
+	pColumnRects->AddRect(CRect(rectName.X + 8 + rectNumber.Width + 8, rectName.Y + 10, rectName.X + 8 + rectNumber.Width + 8 + rectName.Width, rectName.Y + 10 + rectName.Height));
 
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
