@@ -2,13 +2,21 @@
 
 #include "stdafx.h"
 #include "ThemeDefault.h"
-
+#include "Plugins.h"
 
 // CSkinDefault
 
 HRESULT CThemeDefault::FinalConstruct()
 {
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinTimeline, &m_pSkinTimeline));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeColorMap, &m_pThemeColorMap));
+	RETURN_IF_FAILED(m_pSkinTimeline->SetColorMap(m_pThemeColorMap));
+
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_BACKGROUND, Gdiplus::Color::White));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_SELECTED, Gdiplus::Color::LightSteelBlue));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_NAME, Gdiplus::Color::Black));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TEXT, Gdiplus::Color::Black));
+
 	return S_OK;
 }
 

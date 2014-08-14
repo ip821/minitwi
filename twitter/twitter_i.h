@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Aug 14 13:11:37 2014
+/* at Thu Aug 14 19:11:44 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -106,6 +106,13 @@ typedef interface ITheme ITheme;
 typedef interface IThemeService IThemeService;
 
 #endif 	/* __IThemeService_FWD_DEFINED__ */
+
+
+#ifndef __IColumnInfo_FWD_DEFINED__
+#define __IColumnInfo_FWD_DEFINED__
+typedef interface IColumnInfo IColumnInfo;
+
+#endif 	/* __IColumnInfo_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -238,6 +245,18 @@ typedef struct ColumnRects ColumnRects;
 #endif /* __cplusplus */
 
 #endif 	/* __ColumnRects_FWD_DEFINED__ */
+
+
+#ifndef __ColumnInfo_FWD_DEFINED__
+#define __ColumnInfo_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class ColumnInfo ColumnInfo;
+#else
+typedef struct ColumnInfo ColumnInfo;
+#endif /* __cplusplus */
+
+#endif 	/* __ColumnInfo_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -603,7 +622,8 @@ EXTERN_C const IID IID_IColumnRects;
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE AddRect( 
-            RECT rect) = 0;
+            RECT rect,
+            UINT *puiIndex) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE GetRect( 
             UINT uiIndex,
@@ -613,6 +633,16 @@ EXTERN_C const IID IID_IColumnRects;
             UINT *puiCount) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE Clear( void) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE SetRectProp( 
+            UINT uiIndex,
+            BSTR bstrKey,
+            BSTR bstrValue) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetRectProp( 
+            UINT uiIndex,
+            BSTR bstrKey,
+            BSTR *bstrValue) = 0;
         
     };
     
@@ -637,7 +667,8 @@ EXTERN_C const IID IID_IColumnRects;
         
         HRESULT ( STDMETHODCALLTYPE *AddRect )( 
             IColumnRects * This,
-            RECT rect);
+            RECT rect,
+            UINT *puiIndex);
         
         HRESULT ( STDMETHODCALLTYPE *GetRect )( 
             IColumnRects * This,
@@ -650,6 +681,18 @@ EXTERN_C const IID IID_IColumnRects;
         
         HRESULT ( STDMETHODCALLTYPE *Clear )( 
             IColumnRects * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetRectProp )( 
+            IColumnRects * This,
+            UINT uiIndex,
+            BSTR bstrKey,
+            BSTR bstrValue);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetRectProp )( 
+            IColumnRects * This,
+            UINT uiIndex,
+            BSTR bstrKey,
+            BSTR *bstrValue);
         
         END_INTERFACE
     } IColumnRectsVtbl;
@@ -674,8 +717,8 @@ EXTERN_C const IID IID_IColumnRects;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IColumnRects_AddRect(This,rect)	\
-    ( (This)->lpVtbl -> AddRect(This,rect) ) 
+#define IColumnRects_AddRect(This,rect,puiIndex)	\
+    ( (This)->lpVtbl -> AddRect(This,rect,puiIndex) ) 
 
 #define IColumnRects_GetRect(This,uiIndex,rect)	\
     ( (This)->lpVtbl -> GetRect(This,uiIndex,rect) ) 
@@ -685,6 +728,12 @@ EXTERN_C const IID IID_IColumnRects;
 
 #define IColumnRects_Clear(This)	\
     ( (This)->lpVtbl -> Clear(This) ) 
+
+#define IColumnRects_SetRectProp(This,uiIndex,bstrKey,bstrValue)	\
+    ( (This)->lpVtbl -> SetRectProp(This,uiIndex,bstrKey,bstrValue) ) 
+
+#define IColumnRects_GetRectProp(This,uiIndex,bstrKey,bstrValue)	\
+    ( (This)->lpVtbl -> GetRectProp(This,uiIndex,bstrKey,bstrValue) ) 
 
 #endif /* COBJMACROS */
 
@@ -717,7 +766,7 @@ EXTERN_C const IID IID_ISkinTimeline;
         
         virtual HRESULT STDMETHODCALLTYPE DrawItem( 
             HWND hwndControl,
-            IVariantObject *pItemObject,
+            IColumnRects *pColumnRects,
             TDRAWITEMSTRUCT *lpdi,
             int iHoveredItem,
             int iHoveredColumn) = 0;
@@ -756,7 +805,7 @@ EXTERN_C const IID IID_ISkinTimeline;
         HRESULT ( STDMETHODCALLTYPE *DrawItem )( 
             ISkinTimeline * This,
             HWND hwndControl,
-            IVariantObject *pItemObject,
+            IColumnRects *pColumnRects,
             TDRAWITEMSTRUCT *lpdi,
             int iHoveredItem,
             int iHoveredColumn);
@@ -794,8 +843,8 @@ EXTERN_C const IID IID_ISkinTimeline;
 #define ISkinTimeline_SetColorMap(This,pThemeColorMap)	\
     ( (This)->lpVtbl -> SetColorMap(This,pThemeColorMap) ) 
 
-#define ISkinTimeline_DrawItem(This,hwndControl,pItemObject,lpdi,iHoveredItem,iHoveredColumn)	\
-    ( (This)->lpVtbl -> DrawItem(This,hwndControl,pItemObject,lpdi,iHoveredItem,iHoveredColumn) ) 
+#define ISkinTimeline_DrawItem(This,hwndControl,pColumnRects,lpdi,iHoveredItem,iHoveredColumn)	\
+    ( (This)->lpVtbl -> DrawItem(This,hwndControl,pColumnRects,lpdi,iHoveredItem,iHoveredColumn) ) 
 
 #define ISkinTimeline_MeasureItem(This,hwndControl,pItemObject,lpMeasureItemStruct,pColumnRects)	\
     ( (This)->lpVtbl -> MeasureItem(This,hwndControl,pItemObject,lpMeasureItemStruct,pColumnRects) ) 
@@ -1192,6 +1241,76 @@ EXTERN_C const IID IID_IThemeService;
 #endif 	/* __IThemeService_INTERFACE_DEFINED__ */
 
 
+#ifndef __IColumnInfo_INTERFACE_DEFINED__
+#define __IColumnInfo_INTERFACE_DEFINED__
+
+/* interface IColumnInfo */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IColumnInfo;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("924BA62A-74BF-463A-8008-497B241FC448")
+    IColumnInfo : public IUnknown
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IColumnInfoVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IColumnInfo * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IColumnInfo * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IColumnInfo * This);
+        
+        END_INTERFACE
+    } IColumnInfoVtbl;
+
+    interface IColumnInfo
+    {
+        CONST_VTBL struct IColumnInfoVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IColumnInfo_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IColumnInfo_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IColumnInfo_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IColumnInfo_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __twitterLib_LIBRARY_DEFINED__
 #define __twitterLib_LIBRARY_DEFINED__
@@ -1288,6 +1407,14 @@ EXTERN_C const CLSID CLSID_ColumnRects;
 
 class DECLSPEC_UUID("89CA168E-8568-4653-9DCF-8DEB3CA21A37")
 ColumnRects;
+#endif
+
+EXTERN_C const CLSID CLSID_ColumnInfo;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("617A1078-6B41-4A61-88D5-38FCF861CBB2")
+ColumnInfo;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 

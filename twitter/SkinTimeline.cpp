@@ -2,17 +2,24 @@
 
 #include "stdafx.h"
 #include "SkinTimeline.h"
+#include "Plugins.h"
 
 // CSkinTimeline
 
-STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn)
+#define COL_NAME_LEFT 16
+#define COLUMN_Y_SPACING 5
+#define ITEM_SPACING 30
+
+STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
+{
+	m_pThemeColorMap = pThemeColorMap;
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn)
 {
 	CListBox wndListBox(hwndControl);
 	auto selectedItemId = wndListBox.GetCurSel();
-
-	Gdiplus::Font nfont(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold);
-	Gdiplus::Font nfontu(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold | Gdiplus::FontStyle::FontStyleUnderline);
-	Gdiplus::Font tfont(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleRegular);
 
 	Gdiplus::Graphics gfx(lpdi->hDC);
 
@@ -21,57 +28,53 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IVariantObject* pItemObje
 	auto width = (lpdi->rcItem.right - lpdi->rcItem.left);
 	auto height = (lpdi->rcItem.bottom - lpdi->rcItem.top);
 
-	auto strItemId = boost::lexical_cast<std::wstring>(lpdi->itemID);
-
-	CComVariant vName;
-	pItemObject->GetVariantValue(VAR_NAME, &vName);
-	CString strName;
-	if (vName.vt == VT_BSTR)
-		strName = vName.bstrVal;
-
-	CComVariant vText;
-	pItemObject->GetVariantValue(VAR_TEXT, &vText);
-	CString strText;
-	if (vText.vt == VT_BSTR)
-		strText = vText.bstrVal;
-
-	Gdiplus::SolidBrush brushSteelBlue(Gdiplus::Color::SteelBlue);
-	Gdiplus::SolidBrush brushBlack(Gdiplus::Color::Black);
-
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
 
 	if (lpdi->itemState & ODS_SELECTED)
 	{
-		Gdiplus::Pen pen(Gdiplus::Color::SteelBlue, 0.4f);
-
-		gfx.DrawRectangle(&pen, x + 4, y + 4, width - 8, height - 8);
-
-		Gdiplus::SolidBrush brushLightSteelBlue(Gdiplus::Color::LightSteelBlue);
-		gfx.FillRectangle(&brushLightSteelBlue, x + 5, y + 5, width - 9, height - 9);
+		DWORD dwColor = 0;
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_SELECTED, &dwColor));
+		Gdiplus::SolidBrush brush(dwColor);
+		gfx.FillRectangle(&brush, x, y, width, height - ITEM_SPACING + COLUMN_Y_SPACING);
 	}
 	else
 	{
-		Gdiplus::SolidBrush brushWhite(Gdiplus::Color::White);
-		gfx.FillRectangle(&brushWhite, x + 4, y + 4, width - 7, height - 7);
-		gfx.FillRectangle(&brushSteelBlue, x + 4, y + height - 8, width - 8, 1);
+		DWORD dwColor = 0;
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor));
+		Gdiplus::SolidBrush brush(dwColor);
+		gfx.FillRectangle(&brush, x, y, width, height - ITEM_SPACING + COLUMN_Y_SPACING);
 	}
-	gfx.DrawString(strItemId.c_str(), strItemId.length(), &nfont, Gdiplus::PointF(x + 8, y + 10), &brushBlack);
-	Gdiplus::RectF rectNumber;
-	auto status = gfx.MeasureString(strItemId.c_str(), strItemId.length(), &nfont, Gdiplus::PointF(0, 0), &rectNumber);
 
-	Gdiplus::Font* pfont = &nfont;
-	if (iHoveredItem == lpdi->itemID && iHoveredColumn == 0) //VAR_NAME
+	UINT uiCount = 0;
+	pColumnRects->GetCount(&uiCount);
+	for (size_t i = 0; i < uiCount; i++)
 	{
-		pfont = &nfontu;
+		RECT rect = { 0 };
+		pColumnRects->GetRect(i ,&rect);
+		CComBSTR bstrColumnName;
+		pColumnRects->GetRectProp(i, VAR_COLUMN_NAME, &bstrColumnName);
+		CComBSTR bstrText;
+		pColumnRects->GetRectProp(i, VAR_TEXT, &bstrText);
+		CComBSTR bstrIsUrl;
+		pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
+
+		Gdiplus::Font* pfont = m_pFonts[CString(bstrColumnName)];
+		if (iHoveredItem == lpdi->itemID && iHoveredColumn == i && bstrIsUrl == L"1")
+		{
+			pfont = m_pFonts[CString(bstrColumnName) + VAR_SELECTED_POSTFIX];
+		}
+
+		DWORD dwColor = 0;
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrColumnName, &dwColor));
+		Gdiplus::SolidBrush brush(dwColor);
+
+		CString str(bstrText);
+
+		Gdiplus::RectF rectF(x + rect.left, y + rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		gfx.DrawString(str, str.GetLength(), pfont, rectF, &Gdiplus::StringFormat(Gdiplus::StringFormatFlags::StringFormatFlagsNoFitBlackBox), &brush);
 	}
 
-	gfx.DrawString(strName, strName.GetLength(), pfont, Gdiplus::PointF(x + 8 + rectNumber.Width + 8, y + 10), &brushSteelBlue);
-	Gdiplus::RectF rectName;
-	status = gfx.MeasureString(strName, strName.GetLength(), pfont, Gdiplus::PointF(0, 0), &rectName);
-
-	Gdiplus::RectF rect(x + 8 + rectNumber.Width + 8, y + 10 + rectNumber.Height + 12, (clientRect.right - clientRect.left) - 28, (clientRect.bottom - clientRect.top));
-	gfx.DrawString(strText, strText.GetLength(), &tfont, rect, &Gdiplus::StringFormat(Gdiplus::StringFormatFlags::StringFormatFlagsNoFitBlackBox), &brushBlack);
 	return S_OK;
 }
 
@@ -80,14 +83,11 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	pColumnRects->Clear();
 	CListBox wndListBox(hwndControl);
 
-	Gdiplus::Font nfont(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold);
-	Gdiplus::Font tfont(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleRegular);
-
 	CComVariant vName;
 	pItemObject->GetVariantValue(VAR_NAME, &vName);
 	CString strName;
 	if (vName.vt == VT_BSTR)
-		strName = vName.bstrVal;
+		strName = vName.bstrVal + CString(L" "); //measure item bug
 
 	CComVariant vText;
 	pItemObject->GetVariantValue(VAR_TEXT, &vText);
@@ -95,31 +95,53 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	if (vText.vt == VT_BSTR)
 		strText = vText.bstrVal;
 
-	auto strItemId = boost::lexical_cast<std::wstring>(lpMeasureItemStruct->itemID);
-
 	Gdiplus::Graphics gfx(hwndControl);
-
-	Gdiplus::RectF rectNumber;
-	auto status = gfx.MeasureString(strItemId.c_str(), strItemId.length(), &nfont, Gdiplus::PointF(0, 0), &rectNumber);
-	Gdiplus::RectF rectName;
-	status = gfx.MeasureString(strName, strName.GetLength(), &nfont, Gdiplus::PointF(0, 0), &rectName);
-
-	pColumnRects->AddRect(CRect(rectName.X + 8 + rectNumber.Width + 8, rectName.Y + 10, rectName.X + 8 + rectNumber.Width + 8 + rectName.Width, rectName.Y + 10 + rectName.Height));
 
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
 
+	Gdiplus::SizeF sizeName;
+	gfx.MeasureString(
+		strName, 
+		strName.GetLength(), 
+		m_pFonts[VAR_NAME], 
+		Gdiplus::SizeF((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
+		&Gdiplus::StringFormat(Gdiplus::StringFormatFlags::StringFormatFlagsNoWrap | Gdiplus::StringFormatFlags::StringFormatFlagsMeasureTrailingSpaces),
+		&sizeName
+		);
+
+	UINT uiIndex = 0;
+	{
+		auto x = COL_NAME_LEFT;
+		auto y = 0;
+		pColumnRects->AddRect(CRect(x, y, x + sizeName.Width, y + sizeName.Height), &uiIndex);
+		pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_NAME));
+		pColumnRects->SetRectProp(uiIndex, VAR_TEXT, CComBSTR(strName));
+		pColumnRects->SetRectProp(uiIndex, VAR_VALUE, CComBSTR(strName));
+		pColumnRects->SetRectProp(uiIndex, VAR_IS_URL, CComBSTR(L"1"));
+	}
+
 	Gdiplus::SizeF sizeText;
-	status = gfx.MeasureString(
+	gfx.MeasureString(
 		strText,
 		strText.GetLength(),
-		&tfont,
-		Gdiplus::SizeF((clientRect.right - clientRect.left) - 8 - (int)rectNumber.Width - 28, 255),
+		m_pFonts[VAR_TEXT],
+		Gdiplus::SizeF((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
 		&Gdiplus::StringFormat(Gdiplus::StringFormatFlags::StringFormatFlagsNoFitBlackBox),
 		&sizeText
 		);
 
-	lpMeasureItemStruct->itemHeight = min(255, 10 + rectNumber.Height + 12 + sizeText.Height + 8 + 8);
+	{
+		auto x = COL_NAME_LEFT;
+		auto y = sizeName.Height + COLUMN_Y_SPACING;
+
+		pColumnRects->AddRect(CRect(x, y, x + sizeText.Width, y + sizeText.Height), &uiIndex);
+		pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TEXT));
+		pColumnRects->SetRectProp(uiIndex, VAR_TEXT, CComBSTR(strText));
+		pColumnRects->SetRectProp(uiIndex, VAR_VALUE, CComBSTR(strText));
+	}
+
+	lpMeasureItemStruct->itemHeight = min(255, sizeName.Height + sizeText.Height + ITEM_SPACING);
 	lpMeasureItemStruct->itemWidth = sizeText.Width;
 	return S_OK;
 }

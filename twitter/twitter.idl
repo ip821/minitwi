@@ -76,10 +76,12 @@ interface IThemeColorMap : IUnknown
 ]
 interface IColumnRects : IUnknown
 {
-	HRESULT AddRect(RECT rect);
+	HRESULT AddRect(RECT rect, UINT* puiIndex);
 	HRESULT GetRect(UINT uiIndex, RECT* rect);
 	HRESULT GetCount(UINT* puiCount);
 	HRESULT Clear();
+	HRESULT SetRectProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue);
+	HRESULT GetRectProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue);
 };
 
 [
@@ -91,7 +93,7 @@ interface IColumnRects : IUnknown
 interface ISkinTimeline : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT DrawItem(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
+	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 };
 
@@ -134,6 +136,16 @@ interface IThemeService : IUnknown
 	HRESULT ApplyTheme(GUID gId);
 
 	HRESULT ApplyThemeFromSettings();
+};
+
+
+[
+	object,
+	uuid(924BA62A-74BF-463A-8008-497B241FC448),
+	pointer_default(unique)
+]
+interface IColumnInfo : IUnknown
+{
 };
 
 [
@@ -220,6 +232,13 @@ library twitterLib
 	coclass ColumnRects
 	{
 		[default] interface IColumnRects;
+	};
+	[
+		uuid(617A1078-6B41-4A61-88D5-38FCF861CBB2)		
+	]
+	coclass ColumnInfo
+	{
+		[default] interface IColumnInfo;
 	};
 };
 

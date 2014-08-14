@@ -119,7 +119,11 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
 		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
 
+		auto userObj = itemObject[L"user"]->AsObject();
+ 		auto userName = userObj[L"name"]->AsString();
+
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(itemObject[L"id_str"]->AsString().c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_NAME, &CComVariant(userName.c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TEXT, &CComVariant(itemObject[L"text"]->AsString().c_str())));
 	}
 

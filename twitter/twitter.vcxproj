@@ -203,6 +203,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ColumnInfo3.rgs" />
+    <None Include="ColumnInfo4.rgs" />
     <None Include="ColumnRects.rgs" />
     <None Include="FormsService.rgs" />
     <None Include="SkinDefault.rgs" />

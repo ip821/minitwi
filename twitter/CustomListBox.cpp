@@ -1,9 +1,24 @@
 #include "stdafx.h"
 #include "CustomListBox.h"
 
+CCustomListBox::CCustomListBox()
+{
+	m_HoveredItemIndex = -1;
+	m_HoveredColumnIndex = -1;
+	m_handCursor.LoadSysCursor(IDC_HAND);
+	m_arrowCursor.LoadSysCursor(IDC_ARROW);
+}
+
 LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	return 0;
+}
+
+void CCustomListBox::Clear()
+{
+	ResetContent();
+	m_items.clear();
+	m_columnRects.clear();
 }
 
 LRESULT CCustomListBox::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -32,7 +47,7 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 	if (lpdi->itemID == -1)
 		return;
 
-	m_pSkinTimeline->DrawItem(m_hWnd, m_items[lpdi->itemID].m_T, (TDRAWITEMSTRUCT*)lpdi, m_HoveredItemIndex, m_HoveredColumnIndex);
+	m_pSkinTimeline->DrawItem(m_hWnd, m_columnRects[lpdi->itemID].m_T, (TDRAWITEMSTRUCT*)lpdi, m_HoveredItemIndex, m_HoveredColumnIndex);
 }
 
 void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
@@ -57,6 +72,8 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	auto prevItemIndex = m_HoveredItemIndex;
 	auto prevColumnIndex = m_HoveredColumnIndex;
 
+	SetCursor(m_arrowCursor);
+
 	m_HoveredItemIndex = 0xFFFF;
 	m_HoveredColumnIndex = -1;
 
@@ -77,11 +94,22 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			pColumnRects->GetRect(i, &rect);
 			rect.top += itemRect.top;
 			rect.bottom += itemRect.top;
-			if (rect.PtInRect(CPoint(x, y)) && (prevColumnIndex != uiItem || prevItemIndex != i))
+
+			if (rect.PtInRect(CPoint(x, y)))
 			{
-				InvalidateRect(rect);
-				m_HoveredItemIndex = uiItem;
-				m_HoveredColumnIndex = i;
+				CComBSTR bstrIsUrl;
+				pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
+
+				if (bstrIsUrl == L"1")
+				{
+					SetCursor(m_handCursor);
+					if (prevColumnIndex != uiItem || prevItemIndex != i)
+					{
+						InvalidateRect(rect);
+						m_HoveredItemIndex = uiItem;
+						m_HoveredColumnIndex = i;
+					}
+				}
 				break;
 			}
 		}
@@ -110,9 +138,16 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			pColumnRects->GetRect(i, &rect);
 			rect.top += itemRect.top;
 			rect.bottom += itemRect.top;
+
 			if (rect.PtInRect(point) && (i != m_HoveredColumnIndex || uiItem != m_HoveredItemIndex))
 			{
-				InvalidateRect(rect);
+				CComBSTR bstrIsUrl;
+				pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
+
+				if (bstrIsUrl == L"1")
+				{
+					InvalidateRect(rect);
+				}
 				break;
 			}
 		}

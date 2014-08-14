@@ -26,10 +26,13 @@ public:
 
 private:
 	std::vector<CRect> m_rects;
+	std::vector< std::map<CString, CString> > m_rectProps;
 
 public:
 
-	STDMETHOD(AddRect)(RECT rect);
+	STDMETHOD(AddRect)(RECT rect, UINT* puiIndex);
+	STDMETHOD(SetRectProp)(UINT uiIndex, BSTR bstrKey, BSTR bstrValue);
+	STDMETHOD(GetRectProp)(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue);
 	STDMETHOD(Clear)();
 	STDMETHOD(GetRect)(UINT uiIndex, RECT* rect);
 	STDMETHOD(GetCount)(UINT* puiCount);

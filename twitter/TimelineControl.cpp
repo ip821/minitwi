@@ -52,14 +52,13 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 STDMETHODIMP CTimelineControl::SetItems(IObjectArray* pObjectArray)
 {
 	m_listBox.SetRedraw(FALSE);
-	m_listBox.ResetContent();
+	m_listBox.Clear();
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(pObjectArray->GetAt(i, IID_IVariantObject, (LPVOID*)&pVariantObject));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_NAME, &CComVariant(L"tweet")));
 
 		m_listBox.AddItem(pVariantObject);
 	}

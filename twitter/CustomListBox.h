@@ -17,14 +17,17 @@ public:
 		CHAIN_MSG_MAP_ALT(COwnerDraw<CCustomListBox>, 1)
 	END_MSG_MAP()
 
+	CCustomListBox();
 private:
 	std::vector<CAdapt<CComPtr<IVariantObject> > > m_items;
 	std::vector<CAdapt<CComPtr<IColumnRects> > > m_columnRects;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	int m_prevX = 0;
 	int m_prevY = 0;
-	int m_HoveredItemIndex = 0;
-	int m_HoveredColumnIndex = 0;
+	int m_HoveredItemIndex = -1;
+	int m_HoveredColumnIndex = -1;
+	CCursor m_handCursor;
+	CCursor m_arrowCursor;
 
 public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -35,5 +38,6 @@ public:
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	void AddItem(IVariantObject* pItemObject);
 	void SetSkinTimeline(ISkinTimeline* pSkin);
+	void Clear();
 };
 

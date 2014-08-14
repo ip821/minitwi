@@ -8,16 +8,18 @@
 
 HRESULT CThemeColorMap::FinalConstruct()
 {
-	m_colors[VAR_TEXT] = Gdiplus::Color::LightSteelBlue;
 	return S_OK;
 }
 
 STDMETHODIMP CThemeColorMap::GetColor(BSTR bstrColorName, DWORD* dwColor)
 {
+	CHECK_E_POINTER(dwColor);
+	*dwColor = m_colors[bstrColorName];
 	return S_OK;
 }
 
 STDMETHODIMP CThemeColorMap::SetColor(BSTR bstrColorName, DWORD dwColor)
 {
+	m_colors[bstrColorName] = dwColor;
 	return S_OK;
 }

@@ -232,6 +232,12 @@
     <None Include="ColumnRects.rgs">
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
+    <None Include="ColumnInfo3.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="ColumnInfo4.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="twitter.idl">

@@ -6,6 +6,7 @@
 
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
+#include "Plugins.h"
 
 using namespace ATL;
 
@@ -17,8 +18,14 @@ class ATL_NO_VTABLE CSkinTimeline :
 	public ISkinTimeline
 {
 public:
-	CSkinTimeline()
+	CSkinTimeline() :
+		m_FontNormal(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleRegular),
+		m_FontBold(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold),
+		m_FontBoldUnderlined(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold | Gdiplus::FontStyle::FontStyleUnderline)
 	{
+		m_pFonts[VAR_NAME] = &m_FontBold;
+		m_pFonts[CString(VAR_NAME) + CString(VAR_SELECTED_POSTFIX)] = &m_FontBoldUnderlined;
+		m_pFonts[VAR_TEXT] = &m_FontNormal;
 	}
 
 	DECLARE_REGISTRY_RESOURCEID(IDR_SKINTIMELINE)
@@ -28,12 +35,18 @@ public:
 	END_COM_MAP()
 
 private:
+	CComPtr<IThemeColorMap> m_pThemeColorMap;
 
+	Gdiplus::Font m_FontNormal;
+	Gdiplus::Font m_FontBold;
+	Gdiplus::Font m_FontBoldUnderlined;
+
+	std::map<CString, Gdiplus::Font*> m_pFonts;
 public:
 
-	STDMETHOD(DrawItem)(HWND hwndControl, IVariantObject* pItemObject, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
+	STDMETHOD(DrawItem)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
 	STDMETHOD(MeasureItem)(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
-	METHOD_EMPTY(STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap));
+	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinTimeline), CSkinTimeline)

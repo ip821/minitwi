@@ -32,6 +32,7 @@ public:
 
 private:
 	std::map<CString, DWORD> m_colors;
+
 public:
 
 	STDMETHOD(GetColor)(BSTR bstrColorName, DWORD* dwColor);

@@ -7,6 +7,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeDefault, L"Default theme object"));
 	RETURN_IF_FAILED(AddObject(CLSID_SkinTimeline, L"Timeline skin object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ColumnRects, L"Column rects object"));
+	RETURN_IF_FAILED(AddObject(CLSID_ThemeColorMap, L"Color map object"));
 
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEME, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEMECOLORMAP, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme colors"));
