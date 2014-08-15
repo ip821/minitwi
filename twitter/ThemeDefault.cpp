@@ -16,8 +16,9 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_SELECTED, Gdiplus::Color::Beige));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_USER_DISPLAY_NAME, Gdiplus::Color::SteelBlue));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_USER_NAME, Gdiplus::Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_TEXT, Gdiplus::Color::Black));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_NORMALIZED_TEXT, Gdiplus::Color::Black));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_DELIMITER, Gdiplus::Color::LightGray));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_URL, Gdiplus::Color::SteelBlue));
 
 	return S_OK;
 }

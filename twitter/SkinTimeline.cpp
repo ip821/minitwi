@@ -22,7 +22,9 @@ CSkinTimeline::CSkinTimeline() :
 	m_pFonts[VAR_TWITTER_USER_NAME] = &m_FontNormal;
 	m_pFonts[VAR_TWITTER_USER_NAME + CString(VAR_SELECTED_POSTFIX)] = &m_FontNormalUnderlined;
 	m_pFonts[CString(VAR_TWITTER_USER_DISPLAY_NAME) + CString(VAR_SELECTED_POSTFIX)] = &m_FontBoldUnderlined;
-	m_pFonts[VAR_TWITTER_TEXT] = &m_FontNormal;
+	m_pFonts[VAR_TWITTER_NORMALIZED_TEXT] = &m_FontNormal;
+	m_pFonts[VAR_TWITTER_URL] = &m_FontNormal;
+	m_pFonts[VAR_TWITTER_URL + CString(VAR_SELECTED_POSTFIX)] = &m_FontNormalUnderlined;
 }
 
 STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
@@ -113,6 +115,8 @@ Gdiplus::SizeF CSkinTimeline::AddColumn(
 	int flags = Gdiplus::StringFormatFlags::StringFormatFlagsNoWrap | Gdiplus::StringFormatFlags::StringFormatFlagsMeasureTrailingSpaces
 	)
 {
+	strDisplayText += L"   ";
+
 	Gdiplus::SizeF sizeName;
 	gfx.MeasureString(
 		strDisplayText,
@@ -153,7 +157,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_NAME), strName);
 
 	CString strText;
-	GetValue(pItemObject, CComBSTR(VAR_TWITTER_TEXT), strText);
+	GetValue(pItemObject, CComBSTR(VAR_TWITTER_NORMALIZED_TEXT), strText);
 
 	Gdiplus::Graphics gfx(hwndControl);
 
@@ -196,6 +200,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	}
 
 	Gdiplus::SizeF sizeText;
+	if (!strText.IsEmpty())
 	{
 		auto x = COL_NAME_LEFT;
 		auto y = sizeDislpayName.Height + COLUMN_Y_SPACING + COLUMN_Y_SPACING;
@@ -203,7 +208,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		sizeText = AddColumn(
 			gfx,
 			pColumnRects,
-			CString(VAR_TWITTER_TEXT),
+			CString(VAR_TWITTER_NORMALIZED_TEXT),
 			strText,
 			strText,
 			x,
@@ -212,6 +217,34 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			FALSE,
 			Gdiplus::StringFormatFlags::StringFormatFlagsNoFitBlackBox
 			);
+	}
+
+	CComVariant vUrls;
+	pItemObject->GetVariantValue(VAR_TWITTER_URLS, &vUrls);
+	if (vUrls.vt == VT_UNKNOWN)
+	{
+		auto x = COL_NAME_LEFT;
+		auto y = sizeDislpayName.Height + COLUMN_Y_SPACING + sizeText.Height + COLUMN_Y_SPACING;
+
+		CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
+		UINT_PTR uiCount = 0;
+		pBstrCollection->GetCount(&uiCount);
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComBSTR bstrUrl;
+			pBstrCollection->GetItem(i, &bstrUrl);
+			auto size = AddColumn(
+				gfx,
+				pColumnRects,
+				CString(VAR_TWITTER_URL),
+				CString(bstrUrl),
+				CString(bstrUrl),
+				x,
+				y,
+				Gdiplus::SizeF((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
+				);
+			y += size.Height + COLUMN_Y_SPACING;
+		}
 	}
 
 	lpMeasureItemStruct->itemHeight = min(255, sizeDislpayName.Height + sizeText.Height + ITEM_SPACING);

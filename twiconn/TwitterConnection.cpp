@@ -122,12 +122,63 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 		auto userObj = itemObject[L"user"]->AsObject();
  		auto userDisplayName = userObj[L"name"]->AsString();
 		auto userScreenName = userObj[L"screen_name"]->AsString();
+		auto text = itemObject[L"text"]->AsString();
+		auto entities = itemObject[L"entities"]->AsObject();
+		auto urls = entities[L"urls"]->AsArray();
+
+		CString strText = text.c_str();
+		std::vector<CString> urlsVector;
+
+		if (urls.size())
+		{
+			for (size_t i = 0; i < urls.size(); i++)
+			{
+				auto urlObject = urls[i]->AsObject();
+				urlsVector.push_back(urlObject[L"url"]->AsString().c_str());
+			}
+			AppendUrls(pVariantObject, urlsVector);
+		}
+		else
+		{
+			auto index = strText.Find(L"http");
+			while (index != -1)
+			{
+				auto indexNext = strText.Find(L" ", index);
+				if (indexNext == -1)
+					indexNext = strText.GetLength();
+				urlsVector.push_back(strText.Mid(index, indexNext - index));
+				index = strText.Find(L"http", indexNext);
+			}
+			AppendUrls(pVariantObject, urlsVector);
+		}
+
+		for (size_t i = 0; i < urlsVector.size(); i++)
+		{
+			strText.Replace(urlsVector[i], L"");
+		}
+
+		strText.Replace(L"\r\n", L" ");
+		strText.Replace(L"\n", L" ");
+		strText.Replace(L"\t", L" ");
 
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(itemObject[L"id_str"]->AsString().c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_TEXT, &CComVariant(itemObject[L"text"]->AsString().c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_NORMALIZED_TEXT, &CComVariant(strText)));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_TEXT, &CComVariant(text.c_str())));
 	}
 
+	return S_OK;
+}
+
+STDMETHODIMP CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, std::vector<CString>& urlsVector)
+{
+	CComPtr<IBstrCollection> pBstrCollection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_BstrCollection, &pBstrCollection));
+	for (size_t i = 0; i < urlsVector.size(); i++)
+	{
+		RETURN_IF_FAILED(pBstrCollection->AddItem(CComBSTR(urlsVector[i])));
+	}
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_URLS, &CComVariant(pBstrCollection)));
 	return S_OK;
 }
