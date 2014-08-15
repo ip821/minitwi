@@ -14,7 +14,7 @@ HRESULT CThemeColorMap::FinalConstruct()
 STDMETHODIMP CThemeColorMap::GetColor(BSTR bstrColorName, DWORD* dwColor)
 {
 	CHECK_E_POINTER(dwColor);
-	*dwColor = m_colors[bstrColorName];
+	*dwColor = Gdiplus::Color(m_colors[bstrColorName]).ToCOLORREF();
 	return S_OK;
 }
 

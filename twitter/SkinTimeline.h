@@ -29,14 +29,14 @@ public:
 private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 
-	Gdiplus::Font m_FontNormal;
-	Gdiplus::Font m_FontNormalUnderlined;
-	Gdiplus::Font m_FontBold;
-	Gdiplus::Font m_FontBoldUnderlined;
+	CFont m_FontNormal;
+	CFont m_FontNormalUnderlined;
+	CFont m_FontBold;
+	CFont m_FontBoldUnderlined;
 
-	std::map<CString, Gdiplus::Font*> m_pFonts;
+	std::map<CString, CFontHandle> m_pFonts;
 
-	Gdiplus::SizeF CSkinTimeline::AddColumn(Gdiplus::Graphics& gfx, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, Gdiplus::SizeF& size, BOOL bIsUrl, int flags);
+	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap);
 	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);
 public:
 

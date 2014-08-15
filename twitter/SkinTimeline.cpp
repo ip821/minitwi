@@ -12,19 +12,38 @@
 #define ITEM_SPACING 30
 #define ITEM_DELIMITER_HEIGHT 1
 
-CSkinTimeline::CSkinTimeline() :
-	m_FontNormal(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleRegular),
-	m_FontNormalUnderlined(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleUnderline),
-	m_FontBold(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold),
-	m_FontBoldUnderlined(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold | Gdiplus::FontStyle::FontStyleUnderline)
+#define FONT_NAME L"Microsoft Sans Serif"
+#define FONT_SIZE 100
+
+CSkinTimeline::CSkinTimeline()
 {
-	m_pFonts[VAR_TWITTER_USER_DISPLAY_NAME] = &m_FontBold;
-	m_pFonts[VAR_TWITTER_USER_NAME] = &m_FontNormal;
-	m_pFonts[VAR_TWITTER_USER_NAME + CString(VAR_SELECTED_POSTFIX)] = &m_FontNormalUnderlined;
-	m_pFonts[CString(VAR_TWITTER_USER_DISPLAY_NAME) + CString(VAR_SELECTED_POSTFIX)] = &m_FontBoldUnderlined;
-	m_pFonts[VAR_TWITTER_NORMALIZED_TEXT] = &m_FontNormal;
-	m_pFonts[VAR_TWITTER_URL] = &m_FontNormal;
-	m_pFonts[VAR_TWITTER_URL + CString(VAR_SELECTED_POSTFIX)] = &m_FontNormalUnderlined;
+	m_FontNormal.CreatePointFont(FONT_SIZE, FONT_NAME);
+
+	{
+		LOGFONT logFontNormalUnderlined = { 0 };
+		m_FontNormal.GetLogFont(logFontNormalUnderlined);
+		logFontNormalUnderlined.lfHeight = FONT_SIZE;
+		logFontNormalUnderlined.lfUnderline = TRUE;
+		m_FontNormalUnderlined.CreatePointFontIndirect(&logFontNormalUnderlined);
+	}
+
+	m_FontBold.CreatePointFont(FONT_SIZE, FONT_NAME, 0, true);
+
+	{
+		LOGFONT logFontBoldUnderlined = { 0 };
+		m_FontBold.GetLogFont(logFontBoldUnderlined);
+		logFontBoldUnderlined.lfHeight = FONT_SIZE;
+		logFontBoldUnderlined.lfUnderline = TRUE;
+		m_FontBoldUnderlined.CreatePointFontIndirect(&logFontBoldUnderlined);
+	}
+
+	m_pFonts[VAR_TWITTER_USER_DISPLAY_NAME] = m_FontBold;
+	m_pFonts[VAR_TWITTER_USER_NAME] = m_FontNormal;
+	m_pFonts[VAR_TWITTER_USER_NAME + CString(VAR_SELECTED_POSTFIX)] = m_FontNormalUnderlined;
+	m_pFonts[CString(VAR_TWITTER_USER_DISPLAY_NAME) + CString(VAR_SELECTED_POSTFIX)] = m_FontBoldUnderlined;
+	m_pFonts[VAR_TWITTER_NORMALIZED_TEXT] = m_FontNormal;
+	m_pFonts[VAR_TWITTER_URL] = m_FontNormal;
+	m_pFonts[VAR_TWITTER_URL + CString(VAR_SELECTED_POSTFIX)] = m_FontNormalUnderlined;
 }
 
 STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
@@ -38,36 +57,38 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 	CListBox wndListBox(hwndControl);
 	auto selectedItemId = wndListBox.GetCurSel();
 
-	Gdiplus::Graphics gfx(lpdi->hDC);
-
-	auto x = lpdi->rcItem.left;
-	auto y = lpdi->rcItem.top;
-	auto width = (lpdi->rcItem.right - lpdi->rcItem.left);
-	auto height = (lpdi->rcItem.bottom - lpdi->rcItem.top);
-
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
+
+	::SetBkMode(lpdi->hDC, TRANSPARENT);
 
 	if (lpdi->itemState & ODS_SELECTED)
 	{
 		DWORD dwColor = 0;
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_SELECTED, &dwColor));
-		Gdiplus::SolidBrush brush(dwColor);
-		gfx.FillRectangle(&brush, x, y, width, height);
+		CBrush brush;
+		brush.CreateSolidBrush(dwColor);
+		FillRect(lpdi->hDC, &(lpdi->rcItem), brush);
 	}
 	else
 	{
 		DWORD dwColor = 0;
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor));
-		Gdiplus::SolidBrush brush(dwColor);
-		gfx.FillRectangle(&brush, x, y, width, height - COLUMN_Y_SPACING);
+		CBrush brush;
+		brush.CreateSolidBrush(dwColor);
+		RECT rect = lpdi->rcItem;
+		rect.bottom -= COLUMN_Y_SPACING;
+		FillRect(lpdi->hDC, &rect, brush);
 	}
 
 	{
 		DWORD dwColor = 0;
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TWITTER_DELIMITER, &dwColor));
-		Gdiplus::SolidBrush brush(dwColor);
-		gfx.FillRectangle(&brush, x, y, width, ITEM_DELIMITER_HEIGHT);
+		CBrush brush;
+		brush.CreateSolidBrush(dwColor);
+		RECT rect = lpdi->rcItem;
+		rect.bottom = rect.top + ITEM_DELIMITER_HEIGHT;
+		FillRect(lpdi->hDC, &rect, brush);
 	}
 
 	UINT uiCount = 0;
@@ -82,59 +103,78 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		pColumnRects->GetRectProp(i, VAR_TEXT, &bstrText);
 		CComBSTR bstrIsUrl;
 		pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
+		CComBSTR bstrIsWordWrap;
+		pColumnRects->GetRectProp(i, VAR_IS_WORDWRAP, &bstrIsWordWrap);
 
-		Gdiplus::Font* pfont = m_pFonts[CString(bstrColumnName)];
+		CFontHandle font = m_pFonts[CString(bstrColumnName)];
 		if (iHoveredItem == lpdi->itemID && iHoveredColumn == i && bstrIsUrl == L"1")
 		{
-			pfont = m_pFonts[CString(bstrColumnName) + VAR_SELECTED_POSTFIX];
+			font = m_pFonts[CString(bstrColumnName) + VAR_SELECTED_POSTFIX];
 		}
 
 		DWORD dwColor = 0;
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrColumnName, &dwColor));
-		Gdiplus::SolidBrush brush(dwColor);
+		::SetTextColor(lpdi->hDC, dwColor);
+
+		auto x = lpdi->rcItem.left;
+		auto y = lpdi->rcItem.top;
 
 		CString str(bstrText);
-
-		Gdiplus::RectF rectF(x + rect.left, y + rect.top, rect.right - rect.left, rect.bottom - rect.top);
-		gfx.DrawString(str, str.GetLength(), pfont, rectF, &Gdiplus::StringFormat(Gdiplus::StringFormatFlags::StringFormatFlagsNoFitBlackBox), &brush);
+		::SelectObject(lpdi->hDC, font);
+		RECT rectText = { x + rect.left, y + rect.top, x + rect.right, y + rect.bottom };
+		DrawText(lpdi->hDC, str, str.GetLength(), &rectText, bstrIsWordWrap == L"1" ? DT_WORDBREAK : 0);
 	}
 
 	return S_OK;
 }
 
-Gdiplus::SizeF CSkinTimeline::AddColumn(
-	Gdiplus::Graphics& gfx,
+SIZE CSkinTimeline::AddColumn(
+	HDC hdc,
 	IColumnRects* pColumnRects,
 	CString& strColumnName,
 	CString& strDisplayText,
 	CString& strValue,
 	int x,
 	int y,
-	Gdiplus::SizeF& size,
+	SIZE size,
 	BOOL bIsUrl = TRUE,
-	int flags = Gdiplus::StringFormatFlags::StringFormatFlagsNoWrap | Gdiplus::StringFormatFlags::StringFormatFlagsMeasureTrailingSpaces
+	BOOL bWordWrap = FALSE
 	)
 {
-	strDisplayText += L"   ";
+	CDC cdc;
+	cdc.CreateCompatibleDC(hdc);
+	CBitmap bitmap;
+	bitmap.CreateCompatibleBitmap(cdc, size.cx, size.cy);
+	cdc.SelectBitmap(bitmap);
 
-	Gdiplus::SizeF sizeName;
-	gfx.MeasureString(
-		strDisplayText,
-		strDisplayText.GetLength(),
-		m_pFonts[strColumnName],
-		size,
-		&Gdiplus::StringFormat(flags),
-		&sizeName
-		);
+	RECT rect = { 0 };
+	rect.right = size.cx;
+	rect.bottom = size.cy;
+	
+	CFontHandle font = m_pFonts[CString(strColumnName)];
+	cdc.SelectFont(font);
+
+	SIZE sz = { 0 };
+	if (bWordWrap)
+	{
+		sz.cx = size.cx;
+		sz.cy = DrawText(cdc, strDisplayText, strDisplayText.GetLength(), &rect, DT_WORDBREAK);
+	}
+	else
+	{
+		GetTextExtentPoint32(cdc, strDisplayText, strDisplayText.GetLength(), &sz);
+	}
 
 	UINT uiIndex = 0;
-	pColumnRects->AddRect(CRect(x, y, x + sizeName.Width, y + sizeName.Height), &uiIndex);
+	pColumnRects->AddRect(CRect(x, y, x + sz.cx, y + sz.cy), &uiIndex);
 	pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(strColumnName));
 	pColumnRects->SetRectProp(uiIndex, VAR_TEXT, CComBSTR(strDisplayText));
 	pColumnRects->SetRectProp(uiIndex, VAR_VALUE, CComBSTR(strValue));
+	if (bWordWrap)
+		pColumnRects->SetRectProp(uiIndex, VAR_IS_WORDWRAP, CComBSTR(L"1"));
 	if (bIsUrl)
 		pColumnRects->SetRectProp(uiIndex, VAR_IS_URL, CComBSTR(L"1"));
-	return sizeName;
+	return sz;
 }
 
 void CSkinTimeline::GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue)
@@ -150,6 +190,8 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	pColumnRects->Clear();
 	CListBox wndListBox(hwndControl);
 
+	HDC hdc = GetDC(hwndControl);
+
 	CString strDisplayName;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME), strDisplayName);
 
@@ -159,63 +201,61 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CString strText;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_NORMALIZED_TEXT), strText);
 
-	Gdiplus::Graphics gfx(hwndControl);
-
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
 
-	Gdiplus::SizeF sizeDislpayName;
+	CSize sizeDislpayName;
 	UINT uiIndex = 0;
 	{
 		auto x = COL_NAME_LEFT;
 		auto y = COLUMN_Y_SPACING;
 
 		sizeDislpayName = AddColumn(
-			gfx,
+			hdc,
 			pColumnRects,
 			CString(VAR_TWITTER_USER_DISPLAY_NAME),
 			strDisplayName,
 			strDisplayName,
 			x,
 			y,
-			Gdiplus::SizeF((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
+			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
 			);
 	}
 
-	Gdiplus::SizeF sizeName;
+	CSize sizeName;
 	{
-		auto x = COL_NAME_LEFT + sizeDislpayName.Width + COLUMN_X_SPACING;
+		auto x = COL_NAME_LEFT + sizeDislpayName.cx + COLUMN_X_SPACING;
 		auto y = COLUMN_Y_SPACING;
 
 		sizeName = AddColumn(
-			gfx,
+			hdc,
 			pColumnRects,
 			CString(VAR_TWITTER_USER_NAME),
 			L"@" + strName,
 			strName,
 			x,
 			y,
-			Gdiplus::SizeF((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
+			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
 			);
 	}
 
-	Gdiplus::SizeF sizeText;
+	CSize sizeText;
 	if (!strText.IsEmpty())
 	{
 		auto x = COL_NAME_LEFT;
-		auto y = sizeDislpayName.Height + COLUMN_Y_SPACING + COLUMN_Y_SPACING;
+		auto y = sizeDislpayName.cy + COLUMN_Y_SPACING + COLUMN_Y_SPACING;
 
 		sizeText = AddColumn(
-			gfx,
+			hdc,
 			pColumnRects,
 			CString(VAR_TWITTER_NORMALIZED_TEXT),
 			strText,
 			strText,
 			x,
 			y,
-			Gdiplus::SizeF((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
+			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
 			FALSE,
-			Gdiplus::StringFormatFlags::StringFormatFlagsNoFitBlackBox
+			TRUE
 			);
 	}
 
@@ -224,7 +264,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	if (vUrls.vt == VT_UNKNOWN)
 	{
 		auto x = COL_NAME_LEFT;
-		auto y = sizeDislpayName.Height + COLUMN_Y_SPACING + sizeText.Height + COLUMN_Y_SPACING;
+		auto y = sizeDislpayName.cy + COLUMN_Y_SPACING + sizeText.cy + COLUMN_Y_SPACING;
 
 		CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
 		UINT_PTR uiCount = 0;
@@ -234,20 +274,20 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			CComBSTR bstrUrl;
 			pBstrCollection->GetItem(i, &bstrUrl);
 			auto size = AddColumn(
-				gfx,
+				hdc,
 				pColumnRects,
 				CString(VAR_TWITTER_URL),
 				CString(bstrUrl),
 				CString(bstrUrl),
 				x,
 				y,
-				Gdiplus::SizeF((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
+				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
 				);
-			y += size.Height + COLUMN_Y_SPACING;
+			y += size.cy + COLUMN_Y_SPACING;
 		}
 	}
 
-	lpMeasureItemStruct->itemHeight = min(255, sizeDislpayName.Height + sizeText.Height + ITEM_SPACING);
-	lpMeasureItemStruct->itemWidth = sizeText.Width;
+	lpMeasureItemStruct->itemHeight = min(255, sizeDislpayName.cy + sizeText.cy + ITEM_SPACING);
+	lpMeasureItemStruct->itemWidth = sizeText.cx;
 	return S_OK;
 }
