@@ -18,15 +18,7 @@ class ATL_NO_VTABLE CSkinTimeline :
 	public ISkinTimeline
 {
 public:
-	CSkinTimeline() :
-		m_FontNormal(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleRegular),
-		m_FontBold(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold),
-		m_FontBoldUnderlined(Gdiplus::FontFamily::GenericSansSerif(), 10, Gdiplus::FontStyle::FontStyleBold | Gdiplus::FontStyle::FontStyleUnderline)
-	{
-		m_pFonts[VAR_NAME] = &m_FontBold;
-		m_pFonts[CString(VAR_NAME) + CString(VAR_SELECTED_POSTFIX)] = &m_FontBoldUnderlined;
-		m_pFonts[VAR_TEXT] = &m_FontNormal;
-	}
+	CSkinTimeline();
 
 	DECLARE_REGISTRY_RESOURCEID(IDR_SKINTIMELINE)
 
@@ -38,10 +30,14 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 
 	Gdiplus::Font m_FontNormal;
+	Gdiplus::Font m_FontNormalUnderlined;
 	Gdiplus::Font m_FontBold;
 	Gdiplus::Font m_FontBoldUnderlined;
 
 	std::map<CString, Gdiplus::Font*> m_pFonts;
+
+	Gdiplus::SizeF CSkinTimeline::AddColumn(Gdiplus::Graphics& gfx, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, Gdiplus::SizeF& size, BOOL bIsUrl, int flags);
+	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);
 public:
 
 	STDMETHOD(DrawItem)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);

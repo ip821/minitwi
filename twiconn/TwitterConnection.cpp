@@ -120,11 +120,13 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
 
 		auto userObj = itemObject[L"user"]->AsObject();
- 		auto userName = userObj[L"name"]->AsString();
+ 		auto userDisplayName = userObj[L"name"]->AsString();
+		auto userScreenName = userObj[L"screen_name"]->AsString();
 
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(itemObject[L"id_str"]->AsString().c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_NAME, &CComVariant(userName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TEXT, &CComVariant(itemObject[L"text"]->AsString().c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_TEXT, &CComVariant(itemObject[L"text"]->AsString().c_str())));
 	}
 
 	return S_OK;
