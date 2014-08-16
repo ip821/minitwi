@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "TwitterConnection.h"
 #include "Plugins.h"
+#include <hash_set>
 
 // CTwitterConnection
 
@@ -120,41 +121,41 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
 
 		auto userObj = itemObject[L"user"]->AsObject();
- 		auto userDisplayName = userObj[L"name"]->AsString();
+		auto userDisplayName = userObj[L"name"]->AsString();
 		auto userScreenName = userObj[L"screen_name"]->AsString();
 		auto text = itemObject[L"text"]->AsString();
 		auto entities = itemObject[L"entities"]->AsObject();
 		auto urls = entities[L"urls"]->AsArray();
 
 		CString strText = text.c_str();
-		std::vector<CString> urlsVector;
+		std::hash_set<std::wstring> urlsHashSet;
 
 		if (urls.size())
 		{
 			for (size_t i = 0; i < urls.size(); i++)
 			{
 				auto urlObject = urls[i]->AsObject();
-				urlsVector.push_back(urlObject[L"url"]->AsString().c_str());
+				urlsHashSet.insert(urlObject[L"url"]->AsString().c_str());
 			}
-			AppendUrls(pVariantObject, urlsVector);
 		}
-		else
+
+		auto index = strText.Find(L"http");
+		while (index != -1)
 		{
-			auto index = strText.Find(L"http");
-			while (index != -1)
-			{
-				auto indexNext = strText.Find(L" ", index);
-				if (indexNext == -1)
-					indexNext = strText.GetLength();
-				urlsVector.push_back(strText.Mid(index, indexNext - index));
-				index = strText.Find(L"http", indexNext);
-			}
-			AppendUrls(pVariantObject, urlsVector);
+			auto indexNext = strText.Find(L" ", index);
+			if (indexNext == -1)
+				indexNext = strText.GetLength();
+
+			urlsHashSet.insert(std::wstring(strText.Mid(index, indexNext - index)));
+			index = strText.Find(L"http", indexNext);
 		}
+
+		auto urlsVector = std::vector<std::wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
+		AppendUrls(pVariantObject, urlsVector);
 
 		for (size_t i = 0; i < urlsVector.size(); i++)
 		{
-			strText.Replace(urlsVector[i], L"");
+			strText.Replace(urlsVector[i].c_str(), L"");
 		}
 
 		strText.Replace(L"\r\n", L" ");
@@ -171,13 +172,13 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, std::vector<CString>& urlsVector)
+STDMETHODIMP CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urlsVector)
 {
 	CComPtr<IBstrCollection> pBstrCollection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_BstrCollection, &pBstrCollection));
 	for (size_t i = 0; i < urlsVector.size(); i++)
 	{
-		RETURN_IF_FAILED(pBstrCollection->AddItem(CComBSTR(urlsVector[i])));
+		RETURN_IF_FAILED(pBstrCollection->AddItem(CComBSTR(urlsVector[i].c_str())));
 	}
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_URLS, &CComVariant(pBstrCollection)));
 	return S_OK;

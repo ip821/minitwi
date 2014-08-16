@@ -28,7 +28,7 @@ private:
 
 	std::shared_ptr<twitCurl> m_pTwitObj;
 	STDMETHOD(HandleError)(JSONValue* value);
-	STDMETHOD(AppendUrls)(IVariantObject* pVariantObject, std::vector<CString>& urlsVector);
+	STDMETHOD(AppendUrls)(IVariantObject* pVariantObject, std::vector<std::wstring>& urlsVector);
 
 public:
 

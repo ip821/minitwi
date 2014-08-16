@@ -9,7 +9,7 @@
 #define COL_NAME_LEFT 16
 #define COLUMN_X_SPACING 5
 #define COLUMN_Y_SPACING 5
-#define ITEM_SPACING 30
+#define ITEM_SPACING 10
 #define ITEM_DELIMITER_HEIGHT 1
 
 #define FONT_NAME L"Microsoft Sans Serif"
@@ -60,7 +60,8 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
 
-	::SetBkMode(lpdi->hDC, TRANSPARENT);
+	CDCHandle cdc = lpdi->hDC;
+	cdc.SetBkMode(TRANSPARENT);
 
 	if (lpdi->itemState & ODS_SELECTED)
 	{
@@ -68,7 +69,7 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_SELECTED, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
-		FillRect(lpdi->hDC, &(lpdi->rcItem), brush);
+		cdc.FillRect(&(lpdi->rcItem), brush);
 	}
 	else
 	{
@@ -78,7 +79,7 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		brush.CreateSolidBrush(dwColor);
 		RECT rect = lpdi->rcItem;
 		rect.bottom -= COLUMN_Y_SPACING;
-		FillRect(lpdi->hDC, &rect, brush);
+		cdc.FillRect(&rect, brush);
 	}
 
 	{
@@ -88,7 +89,7 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		brush.CreateSolidBrush(dwColor);
 		RECT rect = lpdi->rcItem;
 		rect.bottom = rect.top + ITEM_DELIMITER_HEIGHT;
-		FillRect(lpdi->hDC, &rect, brush);
+		cdc.FillRect(&rect, brush);
 	}
 
 	UINT uiCount = 0;
@@ -114,15 +115,15 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 
 		DWORD dwColor = 0;
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrColumnName, &dwColor));
-		::SetTextColor(lpdi->hDC, dwColor);
+		cdc.SetTextColor(dwColor);
 
 		auto x = lpdi->rcItem.left;
 		auto y = lpdi->rcItem.top;
 
 		CString str(bstrText);
-		::SelectObject(lpdi->hDC, font);
+		cdc.SelectFont(font);
 		RECT rectText = { x + rect.left, y + rect.top, x + rect.right, y + rect.bottom };
-		DrawText(lpdi->hDC, str, str.GetLength(), &rectText, bstrIsWordWrap == L"1" ? DT_WORDBREAK : 0);
+		cdc.DrawText(str, str.GetLength(), &rectText, bstrIsWordWrap == L"1" ? DT_WORDBREAK : 0);
 	}
 
 	return S_OK;
@@ -259,12 +260,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			);
 	}
 
+	auto lastY = sizeDislpayName.cy + COLUMN_Y_SPACING + sizeText.cy;
+
 	CComVariant vUrls;
 	pItemObject->GetVariantValue(VAR_TWITTER_URLS, &vUrls);
 	if (vUrls.vt == VT_UNKNOWN)
 	{
 		auto x = COL_NAME_LEFT;
-		auto y = sizeDislpayName.cy + COLUMN_Y_SPACING + sizeText.cy + COLUMN_Y_SPACING;
+
+		lastY += COLUMN_Y_SPACING;
 
 		CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
 		UINT_PTR uiCount = 0;
@@ -280,14 +284,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				CString(bstrUrl),
 				CString(bstrUrl),
 				x,
-				y,
+				lastY,
 				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
 				);
-			y += size.cy + COLUMN_Y_SPACING;
+
+			lastY += size.cy;
 		}
 	}
 
-	lpMeasureItemStruct->itemHeight = min(255, sizeDislpayName.cy + sizeText.cy + ITEM_SPACING);
+	lpMeasureItemStruct->itemHeight = min(255, lastY + ITEM_SPACING);
 	lpMeasureItemStruct->itemWidth = sizeText.cx;
 	return S_OK;
 }
