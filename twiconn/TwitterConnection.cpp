@@ -127,6 +127,12 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 		auto entities = itemObject[L"entities"]->AsObject();
 		auto urls = entities[L"urls"]->AsArray();
 
+		if (itemObject.find(L"retweeted_status") != itemObject.end())
+		{
+			auto retweetSTatusObject = itemObject[L"retweeted_status"]->AsObject();
+			text = retweetSTatusObject[L"text"]->AsString();
+		}
+
 		CString strText = text.c_str();
 		std::hash_set<std::wstring> urlsHashSet;
 
