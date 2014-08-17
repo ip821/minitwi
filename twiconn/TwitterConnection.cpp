@@ -120,17 +120,24 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
 		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
 
+		auto createdAt = itemObject[L"created_at"]->AsString();
 		auto userObj = itemObject[L"user"]->AsObject();
 		auto userDisplayName = userObj[L"name"]->AsString();
 		auto userScreenName = userObj[L"screen_name"]->AsString();
 		auto text = itemObject[L"text"]->AsString();
 		auto entities = itemObject[L"entities"]->AsObject();
 		auto urls = entities[L"urls"]->AsArray();
+		std::wstring retweetedUserDisplayName;
+		std::wstring retweetedUserScreenName;
 
 		if (itemObject.find(L"retweeted_status") != itemObject.end())
 		{
-			auto retweetSTatusObject = itemObject[L"retweeted_status"]->AsObject();
-			text = retweetSTatusObject[L"text"]->AsString();
+			auto retweetStatusObject = itemObject[L"retweeted_status"]->AsObject();
+			text = retweetStatusObject[L"text"]->AsString();
+
+			auto retweetedUserObj = retweetStatusObject[L"user"]->AsObject();
+			retweetedUserDisplayName = retweetedUserObj[L"name"]->AsString();
+			retweetedUserScreenName = retweetedUserObj[L"screen_name"]->AsString();
 		}
 
 		CString strText = text.c_str();
@@ -173,6 +180,13 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_NORMALIZED_TEXT, &CComVariant(strText)));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_TEXT, &CComVariant(text.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_CREATED_AT, &CComVariant(createdAt.c_str())));
+
+		if (!retweetedUserDisplayName.empty())
+		{
+			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, &CComVariant(retweetedUserDisplayName.c_str())));
+			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RETWEETED_USER_NAME, &CComVariant(retweetedUserScreenName.c_str())));
+		}
 	}
 
 	return S_OK;

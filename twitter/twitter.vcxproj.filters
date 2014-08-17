@@ -121,6 +121,9 @@
     <ClCompile Include="ColumnRects.cpp">
       <Filter>Controls\TimelineControl\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="ThemeFontMap.cpp">
+      <Filter>Services\SkinService\Default</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -191,6 +194,9 @@
     </ClInclude>
     <ClInclude Include="ColumnRects.h">
       <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeFontMap.h">
+      <Filter>Services\SkinService\Default</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

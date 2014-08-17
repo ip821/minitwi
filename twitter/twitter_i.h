@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Aug 14 19:11:44 2014
+/* at Sun Aug 17 20:41:19 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -71,6 +71,13 @@ typedef interface IViewControllerService IViewControllerService;
 typedef interface IThemeColorMap IThemeColorMap;
 
 #endif 	/* __IThemeColorMap_FWD_DEFINED__ */
+
+
+#ifndef __IThemeFontMap_FWD_DEFINED__
+#define __IThemeFontMap_FWD_DEFINED__
+typedef interface IThemeFontMap IThemeFontMap;
+
+#endif 	/* __IThemeFontMap_FWD_DEFINED__ */
 
 
 #ifndef __IColumnRects_FWD_DEFINED__
@@ -233,6 +240,18 @@ typedef struct ThemeColorMap ThemeColorMap;
 #endif /* __cplusplus */
 
 #endif 	/* __ThemeColorMap_FWD_DEFINED__ */
+
+
+#ifndef __ThemeFontMap_FWD_DEFINED__
+#define __ThemeFontMap_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class ThemeFontMap ThemeFontMap;
+#else
+typedef struct ThemeFontMap ThemeFontMap;
+#endif /* __cplusplus */
+
+#endif 	/* __ThemeFontMap_FWD_DEFINED__ */
 
 
 #ifndef __ColumnRects_FWD_DEFINED__
@@ -606,6 +625,106 @@ EXTERN_C const IID IID_IThemeColorMap;
 #endif 	/* __IThemeColorMap_INTERFACE_DEFINED__ */
 
 
+#ifndef __IThemeFontMap_INTERFACE_DEFINED__
+#define __IThemeFontMap_INTERFACE_DEFINED__
+
+/* interface IThemeFontMap */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IThemeFontMap;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("DD372332-232D-4CA9-9807-B2F21D3C689A")
+    IThemeFontMap : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE GetFont( 
+            BSTR bstrFontName,
+            HFONT *phFont) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE SetFont( 
+            BSTR bstrFontName,
+            BSTR bstrFontFamily,
+            DWORD dwSize,
+            BOOL bBold,
+            BOOL bUnderline) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IThemeFontMapVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IThemeFontMap * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IThemeFontMap * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IThemeFontMap * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetFont )( 
+            IThemeFontMap * This,
+            BSTR bstrFontName,
+            HFONT *phFont);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetFont )( 
+            IThemeFontMap * This,
+            BSTR bstrFontName,
+            BSTR bstrFontFamily,
+            DWORD dwSize,
+            BOOL bBold,
+            BOOL bUnderline);
+        
+        END_INTERFACE
+    } IThemeFontMapVtbl;
+
+    interface IThemeFontMap
+    {
+        CONST_VTBL struct IThemeFontMapVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IThemeFontMap_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IThemeFontMap_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IThemeFontMap_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IThemeFontMap_GetFont(This,bstrFontName,phFont)	\
+    ( (This)->lpVtbl -> GetFont(This,bstrFontName,phFont) ) 
+
+#define IThemeFontMap_SetFont(This,bstrFontName,bstrFontFamily,dwSize,bBold,bUnderline)	\
+    ( (This)->lpVtbl -> SetFont(This,bstrFontName,bstrFontFamily,dwSize,bBold,bUnderline) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IThemeFontMap_INTERFACE_DEFINED__ */
+
+
 #ifndef __IColumnRects_INTERFACE_DEFINED__
 #define __IColumnRects_INTERFACE_DEFINED__
 
@@ -764,6 +883,9 @@ EXTERN_C const IID IID_ISkinTimeline;
         virtual HRESULT STDMETHODCALLTYPE SetColorMap( 
             IThemeColorMap *pThemeColorMap) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE SetFontMap( 
+            IThemeFontMap *pThemeFontMap) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE DrawItem( 
             HWND hwndControl,
             IColumnRects *pColumnRects,
@@ -801,6 +923,10 @@ EXTERN_C const IID IID_ISkinTimeline;
         HRESULT ( STDMETHODCALLTYPE *SetColorMap )( 
             ISkinTimeline * This,
             IThemeColorMap *pThemeColorMap);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetFontMap )( 
+            ISkinTimeline * This,
+            IThemeFontMap *pThemeFontMap);
         
         HRESULT ( STDMETHODCALLTYPE *DrawItem )( 
             ISkinTimeline * This,
@@ -842,6 +968,9 @@ EXTERN_C const IID IID_ISkinTimeline;
 
 #define ISkinTimeline_SetColorMap(This,pThemeColorMap)	\
     ( (This)->lpVtbl -> SetColorMap(This,pThemeColorMap) ) 
+
+#define ISkinTimeline_SetFontMap(This,pThemeFontMap)	\
+    ( (This)->lpVtbl -> SetFontMap(This,pThemeFontMap) ) 
 
 #define ISkinTimeline_DrawItem(This,hwndControl,pColumnRects,lpdi,iHoveredItem,iHoveredColumn)	\
     ( (This)->lpVtbl -> DrawItem(This,hwndControl,pColumnRects,lpdi,iHoveredItem,iHoveredColumn) ) 
@@ -1401,6 +1530,14 @@ class DECLSPEC_UUID("41F33BEE-3D82-4173-9F5E-79C91523843B")
 ThemeColorMap;
 #endif
 
+EXTERN_C const CLSID CLSID_ThemeFontMap;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("986AF532-E457-4A2D-894D-0805AB6BD0B1")
+ThemeFontMap;
+#endif
+
 EXTERN_C const CLSID CLSID_ColumnRects;
 
 #ifdef __cplusplus
@@ -1424,6 +1561,11 @@ unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long *, unsign
 unsigned char * __RPC_USER  BSTR_UserMarshal(  unsigned long *, unsigned char *, BSTR * ); 
 unsigned char * __RPC_USER  BSTR_UserUnmarshal(unsigned long *, unsigned char *, BSTR * ); 
 void                      __RPC_USER  BSTR_UserFree(     unsigned long *, BSTR * ); 
+
+unsigned long             __RPC_USER  HFONT_UserSize(     unsigned long *, unsigned long            , HFONT * ); 
+unsigned char * __RPC_USER  HFONT_UserMarshal(  unsigned long *, unsigned char *, HFONT * ); 
+unsigned char * __RPC_USER  HFONT_UserUnmarshal(unsigned long *, unsigned char *, HFONT * ); 
+void                      __RPC_USER  HFONT_UserFree(     unsigned long *, HFONT * ); 
 
 /* end of Additional Prototypes */
 

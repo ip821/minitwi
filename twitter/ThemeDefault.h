@@ -32,6 +32,7 @@ public:
 private:
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
+	CComPtr<IThemeFontMap> m_pThemeFontMap;
 public:
 
 	STDMETHOD(GetTimelineSkin)(ISkinTimeline** ppSkinTimeline);

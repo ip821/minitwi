@@ -28,13 +28,7 @@ public:
 
 private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
-
-	CFont m_FontNormal;
-	CFont m_FontNormalUnderlined;
-	CFont m_FontBold;
-	CFont m_FontBoldUnderlined;
-
-	std::map<CString, CFontHandle> m_pFonts;
+	CComPtr<IThemeFontMap> m_pThemeFontMap;
 
 	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap);
 	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);
@@ -43,6 +37,7 @@ public:
 	STDMETHOD(DrawItem)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
 	STDMETHOD(MeasureItem)(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
+	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinTimeline), CSkinTimeline)

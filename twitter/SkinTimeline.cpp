@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "SkinTimeline.h"
 #include "Plugins.h"
+//#include  <boost/date_time.hpp>
 
 // CSkinTimeline
 
@@ -12,43 +13,22 @@
 #define ITEM_SPACING 10
 #define ITEM_DELIMITER_HEIGHT 1
 
-#define FONT_NAME L"Microsoft Sans Serif"
-#define FONT_SIZE 100
-
 CSkinTimeline::CSkinTimeline()
 {
-	m_FontNormal.CreatePointFont(FONT_SIZE, FONT_NAME);
-
-	{
-		LOGFONT logFontNormalUnderlined = { 0 };
-		m_FontNormal.GetLogFont(logFontNormalUnderlined);
-		logFontNormalUnderlined.lfHeight = FONT_SIZE;
-		logFontNormalUnderlined.lfUnderline = TRUE;
-		m_FontNormalUnderlined.CreatePointFontIndirect(&logFontNormalUnderlined);
-	}
-
-	m_FontBold.CreatePointFont(FONT_SIZE, FONT_NAME, 0, true);
-
-	{
-		LOGFONT logFontBoldUnderlined = { 0 };
-		m_FontBold.GetLogFont(logFontBoldUnderlined);
-		logFontBoldUnderlined.lfHeight = FONT_SIZE;
-		logFontBoldUnderlined.lfUnderline = TRUE;
-		m_FontBoldUnderlined.CreatePointFontIndirect(&logFontBoldUnderlined);
-	}
-
-	m_pFonts[VAR_TWITTER_USER_DISPLAY_NAME] = m_FontBold;
-	m_pFonts[VAR_TWITTER_USER_NAME] = m_FontNormal;
-	m_pFonts[VAR_TWITTER_USER_NAME + CString(VAR_SELECTED_POSTFIX)] = m_FontNormalUnderlined;
-	m_pFonts[CString(VAR_TWITTER_USER_DISPLAY_NAME) + CString(VAR_SELECTED_POSTFIX)] = m_FontBoldUnderlined;
-	m_pFonts[VAR_TWITTER_NORMALIZED_TEXT] = m_FontNormal;
-	m_pFonts[VAR_TWITTER_URL] = m_FontNormal;
-	m_pFonts[VAR_TWITTER_URL + CString(VAR_SELECTED_POSTFIX)] = m_FontNormalUnderlined;
 }
 
 STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
 {
+	CHECK_E_POINTER(pThemeColorMap);
 	m_pThemeColorMap = pThemeColorMap;
+	return S_OK;
+}
+
+
+STDMETHODIMP CSkinTimeline::SetFontMap(IThemeFontMap* pThemeFontMap)
+{
+	CHECK_E_POINTER(pThemeFontMap);
+	m_pThemeFontMap = pThemeFontMap;
 	return S_OK;
 }
 
@@ -107,10 +87,12 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		CComBSTR bstrIsWordWrap;
 		pColumnRects->GetRectProp(i, VAR_IS_WORDWRAP, &bstrIsWordWrap);
 
-		CFontHandle font = m_pFonts[CString(bstrColumnName)];
+		HFONT font = 0;
+		m_pThemeFontMap->GetFont(bstrColumnName, &font);
+
 		if (iHoveredItem == lpdi->itemID && iHoveredColumn == i && bstrIsUrl == L"1")
 		{
-			font = m_pFonts[CString(bstrColumnName) + VAR_SELECTED_POSTFIX];
+			m_pThemeFontMap->GetFont(bstrColumnName + VAR_SELECTED_POSTFIX, &font);
 		}
 
 		DWORD dwColor = 0;
@@ -152,7 +134,8 @@ SIZE CSkinTimeline::AddColumn(
 	rect.right = size.cx;
 	rect.bottom = size.cy;
 	
-	CFontHandle font = m_pFonts[CString(strColumnName)];
+	HFONT font = 0;
+	m_pThemeFontMap->GetFont(CComBSTR(strColumnName), &font);
 	cdc.SelectFont(font);
 
 	SIZE sz = { 0 };
@@ -193,6 +176,9 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 	HDC hdc = GetDC(hwndControl);
 
+	CString strRetweetedDisplayName;
+	GetValue(pItemObject, CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME), strRetweetedDisplayName);
+
 	CString strDisplayName;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME), strDisplayName);
 
@@ -205,11 +191,37 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
 
-	CSize sizeDislpayName;
+	CSize sizeRetweetedDislpayName;
 	UINT uiIndex = 0;
+	if (!strRetweetedDisplayName.IsEmpty())
 	{
 		auto x = COL_NAME_LEFT;
 		auto y = COLUMN_Y_SPACING;
+
+		sizeRetweetedDislpayName = AddColumn(
+			hdc,
+			pColumnRects,
+			CString(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME),
+			L"Retweeted by " + strRetweetedDisplayName,
+			strRetweetedDisplayName,
+			x,
+			y,
+			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
+			FALSE,
+			FALSE
+			);
+	}
+
+	CSize sizeDislpayName;
+	uiIndex = 0;
+	{
+		auto x = COL_NAME_LEFT;
+		auto y = COLUMN_Y_SPACING;
+
+		if (sizeRetweetedDislpayName.cy)
+		{
+			y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+		}
 
 		sizeDislpayName = AddColumn(
 			hdc,
@@ -227,6 +239,11 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	{
 		auto x = COL_NAME_LEFT + sizeDislpayName.cx + COLUMN_X_SPACING;
 		auto y = COLUMN_Y_SPACING;
+
+		if (sizeRetweetedDislpayName.cy)
+		{
+			y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+		}
 
 		sizeName = AddColumn(
 			hdc,
@@ -246,6 +263,11 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		auto x = COL_NAME_LEFT;
 		auto y = sizeDislpayName.cy + COLUMN_Y_SPACING + COLUMN_Y_SPACING;
 
+		if (sizeRetweetedDislpayName.cy)
+		{
+			y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+		}
+
 		sizeText = AddColumn(
 			hdc,
 			pColumnRects,
@@ -261,6 +283,11 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	}
 
 	auto lastY = sizeDislpayName.cy + COLUMN_Y_SPACING + sizeText.cy;
+
+	if (sizeRetweetedDislpayName.cy)
+	{
+		lastY += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+	}
 
 	CComVariant vUrls;
 	pItemObject->GetVariantValue(VAR_TWITTER_URLS, &vUrls);

@@ -70,6 +70,17 @@ interface IThemeColorMap : IUnknown
 
 [
 	object,
+	uuid(DD372332-232D-4CA9-9807-B2F21D3C689A),
+	pointer_default(unique)
+]
+interface IThemeFontMap : IUnknown
+{
+	HRESULT GetFont(BSTR bstrFontName, HFONT* phFont);
+	HRESULT SetFont(BSTR bstrFontName, BSTR bstrFontFamily, DWORD dwSize, BOOL bBold, BOOL bUnderline);
+};
+
+[
+	object,
 	uuid(2EC751CC-D4F3-4B3B-B0C7-862916A085FC),
 	pointer_default(unique),
 	local
@@ -93,6 +104,7 @@ interface IColumnRects : IUnknown
 interface ISkinTimeline : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
 	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 };
@@ -225,6 +237,13 @@ library twitterLib
 	coclass ThemeColorMap
 	{
 		[default] interface IThemeColorMap;
+	};
+	[
+		uuid(986AF532-E457-4A2D-894D-0805AB6BD0B1)
+	]
+	coclass ThemeFontMap
+	{
+		[default] interface IThemeFontMap;
 	};
 	[
 		uuid(89CA168E-8568-4653-9DCF-8DEB3CA21A37)		

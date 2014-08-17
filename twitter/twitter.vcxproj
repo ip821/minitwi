@@ -137,6 +137,7 @@
     <ClCompile Include="SettingsControl.cpp" />
     <ClCompile Include="ThemeColorMap.cpp" />
     <ClCompile Include="ThemeDefault.cpp" />
+    <ClCompile Include="ThemeFontMap.cpp" />
     <ClCompile Include="ThemeService.cpp" />
     <ClCompile Include="SkinTimeline.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -184,6 +185,7 @@
     <ClInclude Include="SettingsControl.h" />
     <ClInclude Include="ThemeColorMap.h" />
     <ClInclude Include="ThemeDefault.h" />
+    <ClInclude Include="ThemeFontMap.h" />
     <ClInclude Include="ThemeService.h" />
     <ClInclude Include="SkinTimeline.h" />
     <ClInclude Include="stdafx.h" />
