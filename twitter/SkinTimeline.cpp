@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "SkinTimeline.h"
 #include "Plugins.h"
-//#include  <boost/date_time.hpp>
 
 // CSkinTimeline
 
@@ -182,6 +181,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CString strDisplayName;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME), strDisplayName);
 
+	CString strCreatedAt;
+	GetValue(pItemObject, CComBSTR(VAR_TWITTER_CREATED_AT), strCreatedAt);
+	strCreatedAt = strCreatedAt.Mid(4, 15);
+
 	CString strName;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_NAME), strName);
 
@@ -251,6 +254,28 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			CString(VAR_TWITTER_USER_NAME),
 			L"@" + strName,
 			strName,
+			x,
+			y,
+			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
+			);
+	}
+
+	CSize sizeDateTime;
+	{
+		auto x = COL_NAME_LEFT + sizeDislpayName.cx + COLUMN_X_SPACING + sizeName.cx + COLUMN_X_SPACING;
+		auto y = COLUMN_Y_SPACING;
+
+		if (sizeRetweetedDislpayName.cy)
+		{
+			y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+		}
+
+		sizeDateTime = AddColumn(
+			hdc,
+			pColumnRects,
+			CString(VAR_TWITTER_CREATED_AT),
+			strCreatedAt,
+			strCreatedAt,
 			x,
 			y,
 			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
