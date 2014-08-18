@@ -133,6 +133,38 @@ LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NMCOLUMNCLICK* pNm = (NMCOLUMNCLICK*)pnmh;
+
+	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
+	if (pInitializeWithVariantObject)
+	{
+		RETURN_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pNm->pVariantObject));
+	}
+
+	CComQIPtr<IInitializeWithColumnName> pInitializeWithColumnName = m_pCommandSupport;
+	if (pInitializeWithColumnName)
+	{
+		CComBSTR bstrColumnName;
+		pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+		RETURN_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
+	}
+
+	CComQIPtr<IIdleHandler> pIdleHandler = m_pCommandSupport;
+	ATLASSERT(pIdleHandler);
+	if (pIdleHandler)
+	{
+		BOOL bResult = FALSE;
+		RETURN_IF_FAILED(pIdleHandler->OnIdle(&bResult));
+	}
+
 	m_popupMenu.TrackPopupMenu(0, pNm->x, pNm->y, m_hWnd);
 	return 0;
+}
+
+LRESULT CTimelineControl::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	BOOL bResult = FALSE;
+	LRESULT lResult = 0;
+	RETURN_IF_FAILED(m_pCommandSupport->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lResult, &bResult));
+	bHandled = bResult;
+	return lResult;
 }

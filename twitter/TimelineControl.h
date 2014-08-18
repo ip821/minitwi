@@ -44,6 +44,7 @@ public:
 	END_DLGRESIZE_MAP()
 
 	BEGIN_MSG_MAP(CTimelineControl)
+		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		NOTIFY_HANDLER(IDC_LIST1, NM_CLICK, OnColumnClick)
 		NOTIFY_HANDLER(IDC_LIST1, NM_RCLICK, OnColumnRClick)
@@ -62,6 +63,7 @@ private:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnColumnClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnColumnRClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
