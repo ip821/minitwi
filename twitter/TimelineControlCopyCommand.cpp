@@ -45,10 +45,14 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 			{
 				CComVariant vUserDisplayName;
 				RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vUserDisplayName));
+				CComVariant vUserName;
+				RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
 				CComVariant vText;
 				RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_TEXT, &vText));
 				if (vUserDisplayName.vt == VT_BSTR)
 					str = vUserDisplayName.bstrVal;
+				if (vUserName.vt == VT_BSTR)
+					str += L" @" + CString(vUserName.bstrVal);
 				if (vText.vt == VT_BSTR)
 					str += L"\n" + CString(vText.bstrVal);
 			}
