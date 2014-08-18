@@ -116,6 +116,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ColumnRects.cpp" />
+    <ClCompile Include="TimelineControlCopyCommand.cpp" />
     <ClCompile Include="CustomListBox.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColumnRects.h" />
+    <ClInclude Include="TimelineControlCopyCommand.h" />
     <ClInclude Include="OpenUrlService.h" />
     <ClInclude Include="CustomListBox.h" />
     <ClInclude Include="dllmain.h" />

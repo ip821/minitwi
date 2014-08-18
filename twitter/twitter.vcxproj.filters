@@ -59,6 +59,9 @@
     <Filter Include="Services\OpenUrlService">
       <UniqueIdentifier>{da8470ea-63f7-46fa-a852-d803039486ac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\TimelineControl\Commands">
+      <UniqueIdentifier>{4ccc7e57-a859-4d6a-9b56-0b8b9ec06220}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -129,6 +132,9 @@
     </ClCompile>
     <ClCompile Include="OpenUrlService.cpp">
       <Filter>Services\OpenUrlService</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineControlCopyCommand.cpp">
+      <Filter>Controls\TimelineControl\Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -206,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="OpenUrlService.h">
       <Filter>Services\OpenUrlService</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineControlCopyCommand.h">
+      <Filter>Controls\TimelineControl\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

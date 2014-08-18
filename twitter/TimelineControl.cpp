@@ -59,7 +59,7 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	DlgResize_Init(false);
 	m_listBox.SubclassWindow(GetDlgItem(IDC_LIST1));
 	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
-	m_pPluginSupport->InitializePlugins(PNAMESPACE_TIMELINE_CONTROL, PVIEWTYPE_COMMAND);
+	m_pPluginSupport->InitializePlugins(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND);
 	CComQIPtr<IInitializeWithControl> pInit = m_pPluginSupport;
 	if (pInit)
 	{

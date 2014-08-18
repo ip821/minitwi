@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Mon Aug 18 08:41:55 2014
+/* at Mon Aug 18 12:22:12 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -276,6 +276,18 @@ typedef struct OpenUrlService OpenUrlService;
 #endif /* __cplusplus */
 
 #endif 	/* __OpenUrlService_FWD_DEFINED__ */
+
+
+#ifndef __TimelineControlCopyCommand_FWD_DEFINED__
+#define __TimelineControlCopyCommand_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class TimelineControlCopyCommand TimelineControlCopyCommand;
+#else
+typedef struct TimelineControlCopyCommand TimelineControlCopyCommand;
+#endif /* __cplusplus */
+
+#endif 	/* __TimelineControlCopyCommand_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -1568,6 +1580,14 @@ EXTERN_C const CLSID CLSID_OpenUrlService;
 
 class DECLSPEC_UUID("07E747E2-451F-498F-B460-E46A44C5126C")
 OpenUrlService;
+#endif
+
+EXTERN_C const CLSID CLSID_TimelineControlCopyCommand;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("F09290A9-AF90-416D-9309-C649ECC97935")
+TimelineControlCopyCommand;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 

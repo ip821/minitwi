@@ -259,6 +259,13 @@ library twitterLib
 	{
 		[default] interface IOpenUrlService;
 	};
+	[
+		uuid(F09290A9-AF90-416D-9309-C649ECC97935)
+	]
+	coclass TimelineControlCopyCommand
+	{
+		[default] interface ICommand;
+	};
 };
 
 import "shobjidl.idl";

@@ -170,9 +170,13 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	if (bOutside || uiItem == 0xFFFF)
 		return 0;
 
+	SetCurSel(uiItem);
 	CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
 
 	auto nID = GetDlgCtrlID();
+
+	CPoint pt = {x, y};
+	ClientToScreen(&pt);
 
 	NMCOLUMNCLICK nm = { 0 };
 	nm.nmhdr.hwndFrom = m_hWnd;
@@ -182,8 +186,8 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	nm.pColumnRects = pColumnRects;
 	nm.pVariantObject = m_items[uiItem].m_T;
 	nm.dwCurrentColumn = -1;
-	nm.x = x;
-	nm.y = y;
+	nm.x = pt.x;
+	nm.y = pt.y;
 
 	UINT uiCount = 0;
 	pColumnRects->GetCount(&uiCount);
