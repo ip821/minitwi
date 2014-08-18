@@ -170,7 +170,9 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	if (bOutside || uiItem == 0xFFFF)
 		return 0;
 
-	SetCurSel(uiItem);
+	if (uiCode == NM_RCLICK)
+		SetCurSel(uiItem);
+
 	CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
 
 	auto nID = GetDlgCtrlID();
