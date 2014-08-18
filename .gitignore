@@ -298,3 +298,9 @@
 /twitter/NotificationServices_contract_i.c
 /twitter/NotificationServices_contract_i.h
 /twitter/NotificationServices_contract_p.c
+/Host/Release/Host.log
+/curl/build/Win32/VC12/LIB Release - DLL Windows SSPI/lib/libcurl.log
+/twiconn/Release/twiconn.log
+/twiconn/Release/twiconn.vcxprojResolveAssemblyReference.cache
+/twitcurl/libtwitcurl/twitcurl.sdf
+/twitter/Release/twitter.log

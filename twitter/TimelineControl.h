@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 #include "CustomListBox.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
+#include "Plugins.h"
 
 using namespace ATL;
 
@@ -46,8 +47,8 @@ public:
 	BEGIN_MSG_MAP(CTimelineControl)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		NOTIFY_HANDLER(IDC_LIST1, NM_CLICK, OnColumnClick)
-		NOTIFY_HANDLER(IDC_LIST1, NM_RCLICK, OnColumnRClick)
+		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_LCLICK, OnColumnClick)
+		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_RCLICK, OnColumnRClick)
 		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(CDialogResize<CTimelineControl>)
 		CHAIN_MSG_MAP(CAxDialogImpl<CTimelineControl>)

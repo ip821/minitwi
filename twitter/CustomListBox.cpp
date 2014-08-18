@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CustomListBox.h"
+#include "Plugins.h"
 
 CCustomListBox::CCustomListBox()
 {
@@ -170,7 +171,7 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	if (bOutside || uiItem == 0xFFFF)
 		return 0;
 
-	if (uiCode == NM_RCLICK)
+	if (uiCode == NM_LISTBOX_RCLICK)
 		SetCurSel(uiItem);
 
 	CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
@@ -211,12 +212,14 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	return 0;
 }
 
-LRESULT CCustomListBox::OnLMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CCustomListBox::OnLMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	return HandleCLick(lParam, NM_CLICK);
+	bHandled = FALSE;
+	return HandleCLick(lParam, NM_LISTBOX_LCLICK);
 }
 
-LRESULT CCustomListBox::OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CCustomListBox::OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	return HandleCLick(lParam, NM_RCLICK);
+	bHandled = FALSE;
+	return HandleCLick(lParam, NM_LISTBOX_RCLICK);
 }

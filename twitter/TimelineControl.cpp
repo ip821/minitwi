@@ -140,12 +140,15 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		RETURN_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pNm->pVariantObject));
 	}
 
-	CComQIPtr<IInitializeWithColumnName> pInitializeWithColumnName = m_pCommandSupport;
-	if (pInitializeWithColumnName)
+	if (pNm->dwCurrentColumn != -1)
 	{
-		CComBSTR bstrColumnName;
-		pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
-		RETURN_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
+		CComQIPtr<IInitializeWithColumnName> pInitializeWithColumnName = m_pCommandSupport;
+		if (pInitializeWithColumnName)
+		{
+			CComBSTR bstrColumnName;
+			pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+			RETURN_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
+		}
 	}
 
 	CComQIPtr<IIdleHandler> pIdleHandler = m_pCommandSupport;
