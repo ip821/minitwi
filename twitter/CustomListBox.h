@@ -10,6 +10,8 @@ struct NMCOLUMNCLICK
 	DWORD dwCurrentColumn;
 	IColumnRects* pColumnRects;
 	IVariantObject* pVariantObject;
+	int x;
+	int y;
 };
 
 class CCustomListBox :
@@ -23,7 +25,8 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
-		MESSAGE_HANDLER(WM_LBUTTONUP, OnMouseButtonUp);
+		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp);
+		MESSAGE_HANDLER(WM_RBUTTONUP, OnRMouseButtonUp);
 		CHAIN_MSG_MAP_ALT(COwnerDraw<CCustomListBox>, 1)
 	END_MSG_MAP()
 
@@ -39,11 +42,14 @@ private:
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
 
+	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
+
 public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT OnMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnLMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);

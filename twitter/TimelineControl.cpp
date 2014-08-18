@@ -58,6 +58,20 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 {
 	DlgResize_Init(false);
 	m_listBox.SubclassWindow(GetDlgItem(IDC_LIST1));
+	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
+	m_pPluginSupport->InitializePlugins(PNAMESPACE_TIMELINE_CONTROL, PVIEWTYPE_COMMAND);
+	CComQIPtr<IInitializeWithControl> pInit = m_pPluginSupport;
+	if (pInit)
+	{
+		pInit->SetControl(m_pControl);
+	}
+
+	m_pPluginSupport->OnInitialized();
+
+	m_popupMenu.CreatePopupMenu();
+	HrCoCreateInstance(CLSID_CommandSupport, &m_pCommandSupport);
+	m_pCommandSupport->SetMenu(m_popupMenu);
+	m_pCommandSupport->InstallCommands(m_pPluginSupport);
 	bHandled = FALSE;
 	return 0;
 }
@@ -93,15 +107,32 @@ STDMETHODIMP CTimelineControl::SetSkinTimeline(ISkinTimeline* pSkinTimeline)
 LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMCOLUMNCLICK* pNm = (NMCOLUMNCLICK*)pnmh;
+	if (pNm->dwCurrentColumn == -1)
+		return 0;
+
 	CComPtr<IOpenUrlService> pOpenUrlService;
 	m_pServiceProvider->QueryService(SERVICE_OPEN_URLS, &pOpenUrlService);
 
-	CComBSTR bstrColumnName;
-	pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+	CComBSTR bstrIsUrl;
+	pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_IS_URL, &bstrIsUrl);
 
-	if (pOpenUrlService)
+	if (bstrIsUrl == L"1")
 	{
-		pOpenUrlService->OpenColumnAsUrl(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject);
+		CComBSTR bstrColumnName;
+		pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+
+		if (pOpenUrlService)
+		{
+			pOpenUrlService->OpenColumnAsUrl(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject);
+		}
 	}
+
+	return 0;
+}
+
+LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	NMCOLUMNCLICK* pNm = (NMCOLUMNCLICK*)pnmh;
+	m_popupMenu.TrackPopupMenu(0, pNm->x, pNm->y, m_hWnd);
 	return 0;
 }

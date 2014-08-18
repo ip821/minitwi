@@ -46,6 +46,7 @@ public:
 	BEGIN_MSG_MAP(CTimelineControl)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		NOTIFY_HANDLER(IDC_LIST1, NM_CLICK, OnColumnClick)
+		NOTIFY_HANDLER(IDC_LIST1, NM_RCLICK, OnColumnRClick)
 		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(CDialogResize<CTimelineControl>)
 		CHAIN_MSG_MAP(CAxDialogImpl<CTimelineControl>)
@@ -54,6 +55,13 @@ public:
 private:
 	CCustomListBox m_listBox;
 	CComPtr<IServiceProvider> m_pServiceProvider;
+	CComPtr<IPluginSupport> m_pPluginSupport;
+	CComPtr<ICommandSupport> m_pCommandSupport;
+	CMenu m_popupMenu;
+
+	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnColumnClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT OnColumnRClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -63,9 +71,6 @@ public:
 	STDMETHOD(UpdateControl)(IControl *pControl);
 
 	STDMETHOD(ProcessWindowMessage)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* plResult, BOOL* bResult);
-
-	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnColumnClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
 	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
 	STDMETHOD(GetText)(BSTR* pbstr);
