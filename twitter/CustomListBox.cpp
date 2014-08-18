@@ -157,3 +157,49 @@ Exit:
 	m_prevY = y;
 	return 0;
 }
+
+LRESULT CCustomListBox::OnMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	auto x = GET_X_LPARAM(lParam);
+	auto y = GET_Y_LPARAM(lParam);
+
+	BOOL bOutside = FALSE;
+	auto uiItem = ItemFromPoint(CPoint(x, y), bOutside);
+	RECT itemRect = { 0 };
+	GetItemRect(uiItem, &itemRect);
+	if (bOutside || uiItem == 0xFFFF)
+		return 0;
+
+	CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
+	UINT uiCount = 0;
+	pColumnRects->GetCount(&uiCount);
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CRect rect;
+		pColumnRects->GetRect(i, &rect);
+		rect.top += itemRect.top;
+		rect.bottom += itemRect.top;
+
+		if (rect.PtInRect(CPoint(x, y)))
+		{
+			CComBSTR bstrIsUrl;
+			pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
+
+			if (bstrIsUrl == L"1")
+			{
+				int nID = GetDlgCtrlID();
+				NMCOLUMNCLICK nm = { 0 };
+				nm.nmhdr.hwndFrom = m_hWnd;
+				nm.nmhdr.idFrom = nID;
+				nm.nmhdr.code = NM_CLICK;
+				nm.dwCurrentItem = uiItem;
+				nm.dwCurrentColumn = i;
+				nm.pColumnRects = pColumnRects;
+				nm.pVariantObject = m_items[uiItem].m_T;
+				::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
+			}
+			break;
+		}
+	}
+	return 0;
+}

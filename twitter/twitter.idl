@@ -150,14 +150,14 @@ interface IThemeService : IUnknown
 	HRESULT ApplyThemeFromSettings();
 };
 
-
 [
 	object,
 	uuid(924BA62A-74BF-463A-8008-497B241FC448),
 	pointer_default(unique)
 ]
-interface IColumnInfo : IUnknown
+interface IOpenUrlService : IUnknown
 {
+	HRESULT OpenColumnAsUrl(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 };
 
 [
@@ -253,11 +253,11 @@ library twitterLib
 		[default] interface IColumnRects;
 	};
 	[
-		uuid(617A1078-6B41-4A61-88D5-38FCF861CBB2)		
+		uuid(07E747E2-451F-498F-B460-E46A44C5126C)
 	]
-	coclass ColumnInfo
+	coclass OpenUrlService
 	{
-		[default] interface IColumnInfo;
+		[default] interface IOpenUrlService;
 	};
 };
 

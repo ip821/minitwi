@@ -56,6 +56,9 @@
     <Filter Include="Services\SkinService\Default">
       <UniqueIdentifier>{1c700d2e-5a19-4ae8-a485-e0246a353dbb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\OpenUrlService">
+      <UniqueIdentifier>{da8470ea-63f7-46fa-a852-d803039486ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -123,6 +126,9 @@
     </ClCompile>
     <ClCompile Include="ThemeFontMap.cpp">
       <Filter>Services\SkinService\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenUrlService.cpp">
+      <Filter>Services\OpenUrlService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +203,9 @@
     </ClInclude>
     <ClInclude Include="ThemeFontMap.h">
       <Filter>Services\SkinService\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenUrlService.h">
+      <Filter>Services\OpenUrlService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

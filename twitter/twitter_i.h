@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Sun Aug 17 20:41:19 2014
+/* at Mon Aug 18 08:41:55 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -115,11 +115,11 @@ typedef interface IThemeService IThemeService;
 #endif 	/* __IThemeService_FWD_DEFINED__ */
 
 
-#ifndef __IColumnInfo_FWD_DEFINED__
-#define __IColumnInfo_FWD_DEFINED__
-typedef interface IColumnInfo IColumnInfo;
+#ifndef __IOpenUrlService_FWD_DEFINED__
+#define __IOpenUrlService_FWD_DEFINED__
+typedef interface IOpenUrlService IOpenUrlService;
 
-#endif 	/* __IColumnInfo_FWD_DEFINED__ */
+#endif 	/* __IOpenUrlService_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -266,16 +266,16 @@ typedef struct ColumnRects ColumnRects;
 #endif 	/* __ColumnRects_FWD_DEFINED__ */
 
 
-#ifndef __ColumnInfo_FWD_DEFINED__
-#define __ColumnInfo_FWD_DEFINED__
+#ifndef __OpenUrlService_FWD_DEFINED__
+#define __OpenUrlService_FWD_DEFINED__
 
 #ifdef __cplusplus
-typedef class ColumnInfo ColumnInfo;
+typedef class OpenUrlService OpenUrlService;
 #else
-typedef struct ColumnInfo ColumnInfo;
+typedef struct OpenUrlService OpenUrlService;
 #endif /* __cplusplus */
 
-#endif 	/* __ColumnInfo_FWD_DEFINED__ */
+#endif 	/* __OpenUrlService_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -1370,48 +1370,61 @@ EXTERN_C const IID IID_IThemeService;
 #endif 	/* __IThemeService_INTERFACE_DEFINED__ */
 
 
-#ifndef __IColumnInfo_INTERFACE_DEFINED__
-#define __IColumnInfo_INTERFACE_DEFINED__
+#ifndef __IOpenUrlService_INTERFACE_DEFINED__
+#define __IOpenUrlService_INTERFACE_DEFINED__
 
-/* interface IColumnInfo */
+/* interface IOpenUrlService */
 /* [unique][uuid][object] */ 
 
 
-EXTERN_C const IID IID_IColumnInfo;
+EXTERN_C const IID IID_IOpenUrlService;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
     MIDL_INTERFACE("924BA62A-74BF-463A-8008-497B241FC448")
-    IColumnInfo : public IUnknown
+    IOpenUrlService : public IUnknown
     {
     public:
+        virtual HRESULT STDMETHODCALLTYPE OpenColumnAsUrl( 
+            BSTR bstrColumnName,
+            DWORD dwColumnIndex,
+            IColumnRects *pColumnRects,
+            IVariantObject *pVariantObject) = 0;
+        
     };
     
     
 #else 	/* C style interface */
 
-    typedef struct IColumnInfoVtbl
+    typedef struct IOpenUrlServiceVtbl
     {
         BEGIN_INTERFACE
         
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IColumnInfo * This,
+            IOpenUrlService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IColumnInfo * This);
+            IOpenUrlService * This);
         
         ULONG ( STDMETHODCALLTYPE *Release )( 
-            IColumnInfo * This);
+            IOpenUrlService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *OpenColumnAsUrl )( 
+            IOpenUrlService * This,
+            BSTR bstrColumnName,
+            DWORD dwColumnIndex,
+            IColumnRects *pColumnRects,
+            IVariantObject *pVariantObject);
         
         END_INTERFACE
-    } IColumnInfoVtbl;
+    } IOpenUrlServiceVtbl;
 
-    interface IColumnInfo
+    interface IOpenUrlService
     {
-        CONST_VTBL struct IColumnInfoVtbl *lpVtbl;
+        CONST_VTBL struct IOpenUrlServiceVtbl *lpVtbl;
     };
 
     
@@ -1419,15 +1432,18 @@ EXTERN_C const IID IID_IColumnInfo;
 #ifdef COBJMACROS
 
 
-#define IColumnInfo_QueryInterface(This,riid,ppvObject)	\
+#define IOpenUrlService_QueryInterface(This,riid,ppvObject)	\
     ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
 
-#define IColumnInfo_AddRef(This)	\
+#define IOpenUrlService_AddRef(This)	\
     ( (This)->lpVtbl -> AddRef(This) ) 
 
-#define IColumnInfo_Release(This)	\
+#define IOpenUrlService_Release(This)	\
     ( (This)->lpVtbl -> Release(This) ) 
 
+
+#define IOpenUrlService_OpenColumnAsUrl(This,bstrColumnName,dwColumnIndex,pColumnRects,pVariantObject)	\
+    ( (This)->lpVtbl -> OpenColumnAsUrl(This,bstrColumnName,dwColumnIndex,pColumnRects,pVariantObject) ) 
 
 #endif /* COBJMACROS */
 
@@ -1437,7 +1453,7 @@ EXTERN_C const IID IID_IColumnInfo;
 
 
 
-#endif 	/* __IColumnInfo_INTERFACE_DEFINED__ */
+#endif 	/* __IOpenUrlService_INTERFACE_DEFINED__ */
 
 
 
@@ -1546,12 +1562,12 @@ class DECLSPEC_UUID("89CA168E-8568-4653-9DCF-8DEB3CA21A37")
 ColumnRects;
 #endif
 
-EXTERN_C const CLSID CLSID_ColumnInfo;
+EXTERN_C const CLSID CLSID_OpenUrlService;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("617A1078-6B41-4A61-88D5-38FCF861CBB2")
-ColumnInfo;
+class DECLSPEC_UUID("07E747E2-451F-498F-B460-E46A44C5126C")
+OpenUrlService;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 

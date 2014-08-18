@@ -18,7 +18,8 @@ class ATL_NO_VTABLE CTimelineControl :
 	public IMsgHandler,
 	public CAxDialogImpl<CTimelineControl>,
 	public CDialogResize<CTimelineControl>,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public IPluginSupportNotifications
 {
 public:
 	enum { IDD = IDD_TIMELINECONTROL };
@@ -35,6 +36,7 @@ public:
 		COM_INTERFACE_ENTRY(ITimelineControl)
 		COM_INTERFACE_ENTRY(IContainerControl)
 		COM_INTERFACE_ENTRY(IMsgHandler)
+		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 	END_COM_MAP()
 	
 	BEGIN_DLGRESIZE_MAP(CTimelineControl)
@@ -43,6 +45,7 @@ public:
 
 	BEGIN_MSG_MAP(CTimelineControl)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		NOTIFY_HANDLER(IDC_LIST1, NM_CLICK, OnColumnClick)
 		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(CDialogResize<CTimelineControl>)
 		CHAIN_MSG_MAP(CAxDialogImpl<CTimelineControl>)
@@ -50,7 +53,7 @@ public:
 
 private:
 	CCustomListBox m_listBox;
-
+	CComPtr<IServiceProvider> m_pServiceProvider;
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -62,6 +65,7 @@ public:
 	STDMETHOD(ProcessWindowMessage)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT* plResult, BOOL* bResult);
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnColumnClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
 	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
 	STDMETHOD(GetText)(BSTR* pbstr);
@@ -71,6 +75,9 @@ public:
 
 	STDMETHOD(SetItems)(IObjectArray* pObjectArray);
 	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);
+
+	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
+	STDMETHOD(OnShutdown)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControl), CTimelineControl)

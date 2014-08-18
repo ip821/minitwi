@@ -2,9 +2,22 @@
 
 #include "stdafx.h"
 #include "TimelineControl.h"
-
+#include "Plugins.h"
 
 // CTimelineControl
+
+STDMETHODIMP CTimelineControl::OnInitialized(IServiceProvider* pServiceProvider)
+{
+	CHECK_E_POINTER(pServiceProvider);
+	m_pServiceProvider = pServiceProvider;
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::OnShutdown()
+{
+	m_pServiceProvider.Release();
+	return S_OK;
+}
 
 STDMETHODIMP CTimelineControl::GetText(BSTR* pbstr)
 {
@@ -75,4 +88,20 @@ STDMETHODIMP CTimelineControl::SetSkinTimeline(ISkinTimeline* pSkinTimeline)
 {
 	m_listBox.SetSkinTimeline(pSkinTimeline);
 	return S_OK;
+}
+
+LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+{
+	NMCOLUMNCLICK* pNm = (NMCOLUMNCLICK*)pnmh;
+	CComPtr<IOpenUrlService> pOpenUrlService;
+	m_pServiceProvider->QueryService(SERVICE_OPEN_URLS, &pOpenUrlService);
+
+	CComBSTR bstrColumnName;
+	pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+
+	if (pOpenUrlService)
+	{
+		pOpenUrlService->OpenColumnAsUrl(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject);
+	}
+	return 0;
 }
