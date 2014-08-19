@@ -62,6 +62,11 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 	*pbstrSecret = CComBSTR(A2W(myOAuthAccessTokenSecret.c_str())).Detach();
 
 	auto bRes = twitterObj.accountVerifyCredGet();
+	if (!bRes)
+	{
+		return ERROR_NETWORK_UNREACHABLE;
+	}
+
 	std::string strResponse;
 	twitterObj.getLastWebResponse(strResponse);
 
@@ -93,6 +98,11 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	m_pTwitObj->getOAuth().setOAuthTokenSecret(std::string(W2A(bstrSecret)));
 
 	auto bRes = m_pTwitObj->accountVerifyCredGet();
+	if (!bRes)
+	{
+		return ERROR_NETWORK_UNREACHABLE;
+	}
+
 	std::string strResponse;
 	m_pTwitObj->getLastWebResponse(strResponse);
 
@@ -113,7 +123,12 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjectArray*
 		strId = W2A(bstrSinceId);
 	}
 
-	m_pTwitObj->timelineHomeGet(strId);
+	auto bRes = m_pTwitObj->timelineHomeGet(strId);
+	if (!bRes)
+	{
+		return ERROR_NETWORK_UNREACHABLE;
+	}
+
 	std::string strResponse;
 	m_pTwitObj->getLastWebResponse(strResponse);
 

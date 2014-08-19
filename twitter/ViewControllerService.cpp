@@ -32,7 +32,7 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_TimerService, &m_pTimerService));
-	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
+	RETURN_IF_FAILED(m_pTimerService->StartTimer(30 * 1000)); //30 secs
 
 	return S_OK;
 }
@@ -67,9 +67,14 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
 	{
+		CComVariant vDesc;
+		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_HRESULT_DESCRIPTION, &vDesc));
+		CComBSTR bstrMsg = L"Unknown error";
+		if (vDesc.vt == VT_BSTR)
+			bstrMsg = vDesc.bstrVal;
 		HWND hwndChildControl = 0;
 		RETURN_IF_FAILED(pControl->GetHWND(&hwndChildControl));
-		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Invalid username or password", TRUE));
+		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMsg, TRUE));
 		return S_OK;
 	}
 

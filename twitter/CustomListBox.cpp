@@ -58,11 +58,40 @@ void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 void CCustomListBox::AddItem(IVariantObject* pItemObject)
 {
-	m_items.push_back(CAdapt<CComPtr<IVariantObject> >(pItemObject));
+	CComVariant vId;
+	pItemObject->GetVariantValue(VAR_ID, &vId);
+
+	if (vId.vt == VT_BSTR)
+	{
+		auto it = std::find_if(
+			m_items.cbegin(),
+			m_items.cend(),
+			[&](CAdapt<CComPtr<IVariantObject> > p)
+		{
+			CComVariant v;
+			p->GetVariantValue(VAR_ID, &v);
+			if (v.vt == VT_BSTR && CComBSTR(v.bstrVal) == CComBSTR(vId.bstrVal))
+				return true;
+			return false;
+		}
+		);
+
+		if (it != m_items.cend())
+			return;
+	}
+
+	m_items.insert(m_items.begin(), CAdapt<CComPtr<IVariantObject> >(pItemObject));
 	CComPtr<IColumnRects> pColumnRects;
 	HrCoCreateInstance(CLSID_ColumnRects, &pColumnRects);
-	m_columnRects.push_back(pColumnRects);
-	auto itemId = SendMessage(LB_ADDSTRING, 0, (LPARAM)1);
+	m_columnRects.insert(m_columnRects.begin(), pColumnRects);
+	auto itemId = SendMessage(LB_INSERTSTRING, 0, (LPARAM)1);
+
+	if (m_items.size() == 100)
+	{
+		SendMessage(LB_DELETESTRING, 99, 0);
+		m_items.erase(--m_items.end());
+		m_columnRects.erase(--m_columnRects.end());
+	}
 }
 
 LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
