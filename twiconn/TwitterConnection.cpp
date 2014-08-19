@@ -16,9 +16,19 @@ STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 	{
 		auto valueObject = value->AsObject();
 		if (valueObject.find(L"errors") != valueObject.end())
+		{
+			m_errMsg = L"Error";
 			return E_FAIL;
+		}
 	}
 
+	return S_OK;
+}
+
+STDMETHODIMP CTwitterConnection::GetDescription(BSTR* pBstrDescription)
+{
+	CHECK_E_POINTER(pBstrDescription);
+	*pBstrDescription = CComBSTR(m_errMsg).Detach();
 	return S_OK;
 }
 
@@ -66,7 +76,11 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	USES_CONVERSION;
 
 	if (!bstrKey || !bstrSecret)
+	{
+		m_errMsg = L"Empty login or password";
+		SetErrorInfo(0, this);
 		return COMADMIN_E_USERPASSWDNOTVALID;
+	}
 
 	m_pTwitObj = std::make_shared<twitCurl>();
 

@@ -19,6 +19,9 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	CHECK_E_POINTER(pServiceProvider);
 
 	m_pServiceProvider = pServiceProvider;
+
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
+
 	CComPtr<IThemeService> pThemeService;
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
 	RETURN_IF_FAILED(pThemeService->ApplyThemeFromSettings());
@@ -44,19 +47,14 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	return S_OK;
 }
 
-BOOL bV = FALSE;
+STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
+{
+	RETURN_IF_FAILED(m_pInfoControlService->HideControl());
+	return S_OK;
+}
 
 STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 {
-	if (bV)
-	{
-		RETURN_IF_FAILED(m_pInfoControlService->HideControl());
-	}
-
-	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
-	RETURN_IF_FAILED(vHr.intVal);
-
 	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
 	CComPtr<IContainerControl> pContainerControl;
 	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
@@ -65,19 +63,20 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
 	CComQIPtr<ITimelineControl> pTimelineControl = pControl;
 
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	if (FAILED(vHr.intVal))
+	{
+		HWND hwndChildControl = 0;
+		RETURN_IF_FAILED(pControl->GetHWND(&hwndChildControl));
+		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Invalid username or password", TRUE));
+		return S_OK;
+	}
+
 	CComVariant v;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &v));
 	CComQIPtr<IObjectArray> pObjectArray = v.punkVal;
 
 	RETURN_IF_FAILED(pTimelineControl->SetItems(pObjectArray));
-	if (!bV)
-	{
-		HWND hwndChildControl = 0;
-		RETURN_IF_FAILED(pControl->GetHWND(&hwndChildControl));
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
-		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Invalid username or password", TRUE));
-		bV = TRUE;
-	}
-
 	return S_OK;
 }

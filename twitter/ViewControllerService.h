@@ -49,7 +49,7 @@ public:
 
 	STDMETHOD(Load)(ISettings* pSettings);
 
-	METHOD_EMPTY(STDMETHOD(OnStart)(IVariantObject *pResult));
+	STDMETHOD(OnStart)(IVariantObject *pResult);
 	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 };
