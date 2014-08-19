@@ -116,7 +116,7 @@ interface ISkinTimeline : IUnknown
 ]
 interface ITimelineControl : IControl2
 {
-	HRESULT SetItems(IObjectArray* pObjectArray);
+	HRESULT SetItems(IObjArray* pObjectArray);
 	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
 };
 
@@ -144,7 +144,7 @@ interface IThemeService : IUnknown
 	HRESULT AddTheme(GUID gThemeId, ITheme* pTheme);
 	HRESULT RemoveTheme(GUID gThemeId);
 
-	HRESULT GetThemes(IObjectArray** ppObjectArray);
+	HRESULT GetThemes(IObjArray** ppObjectArray);
 	HRESULT ApplyTheme(GUID gId);
 
 	HRESULT ApplyThemeFromSettings();

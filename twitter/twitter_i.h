@@ -3,11 +3,11 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 7.00.0555 */
-/* at Tue Aug 19 21:25:18 2014
+ /* File created by MIDL compiler version 8.00.0603 */
+/* at Tue Aug 19 22:33:09 2014
  */
 /* Compiler settings for twitter.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -48,66 +48,77 @@
 #ifndef __IFormsService_FWD_DEFINED__
 #define __IFormsService_FWD_DEFINED__
 typedef interface IFormsService IFormsService;
+
 #endif 	/* __IFormsService_FWD_DEFINED__ */
 
 
 #ifndef __ITimelineService_FWD_DEFINED__
 #define __ITimelineService_FWD_DEFINED__
 typedef interface ITimelineService ITimelineService;
+
 #endif 	/* __ITimelineService_FWD_DEFINED__ */
 
 
 #ifndef __IViewControllerService_FWD_DEFINED__
 #define __IViewControllerService_FWD_DEFINED__
 typedef interface IViewControllerService IViewControllerService;
+
 #endif 	/* __IViewControllerService_FWD_DEFINED__ */
 
 
 #ifndef __IThemeColorMap_FWD_DEFINED__
 #define __IThemeColorMap_FWD_DEFINED__
 typedef interface IThemeColorMap IThemeColorMap;
+
 #endif 	/* __IThemeColorMap_FWD_DEFINED__ */
 
 
 #ifndef __IThemeFontMap_FWD_DEFINED__
 #define __IThemeFontMap_FWD_DEFINED__
 typedef interface IThemeFontMap IThemeFontMap;
+
 #endif 	/* __IThemeFontMap_FWD_DEFINED__ */
 
 
 #ifndef __IColumnRects_FWD_DEFINED__
 #define __IColumnRects_FWD_DEFINED__
 typedef interface IColumnRects IColumnRects;
+
 #endif 	/* __IColumnRects_FWD_DEFINED__ */
 
 
 #ifndef __ISkinTimeline_FWD_DEFINED__
 #define __ISkinTimeline_FWD_DEFINED__
 typedef interface ISkinTimeline ISkinTimeline;
+
 #endif 	/* __ISkinTimeline_FWD_DEFINED__ */
 
 
 #ifndef __ITimelineControl_FWD_DEFINED__
 #define __ITimelineControl_FWD_DEFINED__
 typedef interface ITimelineControl ITimelineControl;
+
 #endif 	/* __ITimelineControl_FWD_DEFINED__ */
 
 
 #ifndef __ITheme_FWD_DEFINED__
 #define __ITheme_FWD_DEFINED__
 typedef interface ITheme ITheme;
+
 #endif 	/* __ITheme_FWD_DEFINED__ */
 
 
 #ifndef __IThemeService_FWD_DEFINED__
 #define __IThemeService_FWD_DEFINED__
 typedef interface IThemeService IThemeService;
+
 #endif 	/* __IThemeService_FWD_DEFINED__ */
 
 
 #ifndef __IOpenUrlService_FWD_DEFINED__
 #define __IOpenUrlService_FWD_DEFINED__
 typedef interface IOpenUrlService IOpenUrlService;
+
 #endif 	/* __IOpenUrlService_FWD_DEFINED__ */
 
 
@@ -339,6 +350,7 @@ EXTERN_C const IID IID_IFormsService;
     public:
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IFormsServiceVtbl
@@ -349,7 +361,7 @@ EXTERN_C const IID IID_IFormsService;
             IFormsService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IFormsService * This);
@@ -408,6 +420,7 @@ EXTERN_C const IID IID_ITimelineService;
     public:
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct ITimelineServiceVtbl
@@ -418,7 +431,7 @@ EXTERN_C const IID IID_ITimelineService;
             ITimelineService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ITimelineService * This);
@@ -477,6 +490,7 @@ EXTERN_C const IID IID_IViewControllerService;
     public:
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IViewControllerServiceVtbl
@@ -487,7 +501,7 @@ EXTERN_C const IID IID_IViewControllerService;
             IViewControllerService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IViewControllerService * This);
@@ -554,6 +568,7 @@ EXTERN_C const IID IID_IThemeColorMap;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IThemeColorMapVtbl
@@ -564,7 +579,7 @@ EXTERN_C const IID IID_IThemeColorMap;
             IThemeColorMap * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IThemeColorMap * This);
@@ -650,6 +665,7 @@ EXTERN_C const IID IID_IThemeFontMap;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IThemeFontMapVtbl
@@ -660,7 +676,7 @@ EXTERN_C const IID IID_IThemeFontMap;
             IThemeFontMap * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IThemeFontMap * This);
@@ -761,6 +777,7 @@ EXTERN_C const IID IID_IColumnRects;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IColumnRectsVtbl
@@ -771,7 +788,7 @@ EXTERN_C const IID IID_IColumnRects;
             IColumnRects * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IColumnRects * This);
@@ -896,6 +913,7 @@ EXTERN_C const IID IID_ISkinTimeline;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct ISkinTimelineVtbl
@@ -906,7 +924,7 @@ EXTERN_C const IID IID_ISkinTimeline;
             ISkinTimeline * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ISkinTimeline * This);
@@ -999,12 +1017,13 @@ EXTERN_C const IID IID_ITimelineControl;
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE SetItems( 
-            IObjectArray *pObjectArray) = 0;
+            IObjArray *pObjectArray) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE SetSkinTimeline( 
             ISkinTimeline *pSkinTimeline) = 0;
         
     };
+    
     
 #else 	/* C style interface */
 
@@ -1016,7 +1035,7 @@ EXTERN_C const IID IID_ITimelineControl;
             ITimelineControl * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ITimelineControl * This);
@@ -1059,7 +1078,7 @@ EXTERN_C const IID IID_ITimelineControl;
         
         HRESULT ( STDMETHODCALLTYPE *SetItems )( 
             ITimelineControl * This,
-            IObjectArray *pObjectArray);
+            IObjArray *pObjectArray);
         
         HRESULT ( STDMETHODCALLTYPE *SetSkinTimeline )( 
             ITimelineControl * This,
@@ -1154,6 +1173,7 @@ EXTERN_C const IID IID_ITheme;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IThemeVtbl
@@ -1164,7 +1184,7 @@ EXTERN_C const IID IID_ITheme;
             ITheme * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ITheme * This);
@@ -1250,7 +1270,7 @@ EXTERN_C const IID IID_IThemeService;
             GUID gThemeId) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE GetThemes( 
-            IObjectArray **ppObjectArray) = 0;
+            IObjArray **ppObjectArray) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE ApplyTheme( 
             GUID gId) = 0;
@@ -1258,6 +1278,7 @@ EXTERN_C const IID IID_IThemeService;
         virtual HRESULT STDMETHODCALLTYPE ApplyThemeFromSettings( void) = 0;
         
     };
+    
     
 #else 	/* C style interface */
 
@@ -1269,7 +1290,7 @@ EXTERN_C const IID IID_IThemeService;
             IThemeService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IThemeService * This);
@@ -1297,7 +1318,7 @@ EXTERN_C const IID IID_IThemeService;
         
         HRESULT ( STDMETHODCALLTYPE *GetThemes )( 
             IThemeService * This,
-            IObjectArray **ppObjectArray);
+            IObjArray **ppObjectArray);
         
         HRESULT ( STDMETHODCALLTYPE *ApplyTheme )( 
             IThemeService * This,
@@ -1384,6 +1405,7 @@ EXTERN_C const IID IID_IOpenUrlService;
         
     };
     
+    
 #else 	/* C style interface */
 
     typedef struct IOpenUrlServiceVtbl
@@ -1394,7 +1416,7 @@ EXTERN_C const IID IID_IOpenUrlService;
             IOpenUrlService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
+            _COM_Outptr_  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IOpenUrlService * This);

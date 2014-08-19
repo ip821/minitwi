@@ -80,7 +80,7 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 
 	CComVariant v;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &v));
-	CComQIPtr<IObjectArray> pObjectArray = v.punkVal;
+	CComQIPtr<IObjArray> pObjectArray = v.punkVal;
 
 	RETURN_IF_FAILED(pTimelineControl->SetItems(pObjectArray));
 	return S_OK;

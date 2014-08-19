@@ -40,7 +40,7 @@ STDMETHODIMP CFormsService::OnInitialized(IServiceProvider* pServiceProvider)
 	CComPtr<IFormManager> pFormManager;
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
 
-	CComPtr<IObjectArray> pObjectArray;
+	CComPtr<IObjArray> pObjectArray;
 	RETURN_IF_FAILED(GetPluginManager()->GetPluginInfoCollection(PNAMESP_HOSTFORM, PVIEWTYPE_INPLACE_CONTROL, &pObjectArray));
 
 	UINT uiCount = 0;

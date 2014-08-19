@@ -81,7 +81,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnDeactivate)());
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
-	STDMETHOD(SetItems)(IObjectArray* pObjectArray);
+	STDMETHOD(SetItems)(IObjArray* pObjectArray);
 	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);
 
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);

@@ -26,7 +26,7 @@ STDMETHODIMP CThemeService::OnShutdown()
 	return S_OK;
 }
 
-STDMETHODIMP CThemeService::GetThemes(IObjectArray** ppObjectArray)
+STDMETHODIMP CThemeService::GetThemes(IObjArray** ppObjectArray)
 {
 	RETURN_IF_FAILED(m_pObjectArray->QueryInterface(ppObjectArray));
 	return S_OK;

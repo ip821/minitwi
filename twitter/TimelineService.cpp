@@ -66,7 +66,7 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
-	CComPtr<IObjectArray> pObjectArray;
+	CComPtr<IObjArray> pObjectArray;
 	RETURN_IF_FAILED(pConnection->GetHomeTimeline(NULL, &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 	return S_OK;

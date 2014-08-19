@@ -76,7 +76,7 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	return 0;
 }
 
-STDMETHODIMP CTimelineControl::SetItems(IObjectArray* pObjectArray)
+STDMETHODIMP CTimelineControl::SetItems(IObjArray* pObjectArray)
 {
 	m_listBox.SetRedraw(FALSE);
 	//m_listBox.Clear();

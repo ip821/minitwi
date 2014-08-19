@@ -91,6 +91,9 @@
     <ClCompile Include="..\json\src\JSONValue.cpp">
       <Filter>ZZZMisc\json</Filter>
     </ClCompile>
+    <ClCompile Include="twitconn_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -149,6 +152,9 @@
     </ClInclude>
     <ClInclude Include="..\json\src\JSONValue.h">
       <Filter>ZZZMisc\json</Filter>
+    </ClInclude>
+    <ClInclude Include="twitconn_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -34,7 +34,7 @@ public:
 
 private:
 	std::map<GUID, CAdapt<CComPtr<IThemeColorMap> >, GUIDComparer> m_colorMaps;
-	CComPtr<IObjectArray> m_pObjectArray;
+	CComPtr<IObjArray> m_pObjectArray;
 	CComPtr<ITheme> m_pCurrentTheme;
 	CComPtr<ISettings> m_pSettings;
 
@@ -51,7 +51,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(AddTheme)(GUID gThemeId, ITheme* pTheme));
 	METHOD_EMPTY(STDMETHOD(RemoveTheme)(GUID gThemeId));
 
-	STDMETHOD(GetThemes)(IObjectArray** ppObjectArray);
+	STDMETHOD(GetThemes)(IObjArray** ppObjectArray);
 	STDMETHOD(ApplyTheme)(GUID gId);
 	STDMETHOD(ApplyThemeFromSettings)();
 };
