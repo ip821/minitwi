@@ -8,7 +8,17 @@
 #define STRICT
 #endif
 
-#include "targetver.h"
+#ifdef __WINXP__
+#define WINVER		0x0501
+#define _WIN32_WINNT	0x0501
+#define _WIN32_IE	0x0501
+#define _RICHEDIT_VER	0x0200
+#else
+#define WINVER		0x0600
+#define _WIN32_WINNT	0x0601
+#define _WIN32_IE	0x0501
+#define _RICHEDIT_VER	0x0200
+#endif
 
 #define _ATL_APARTMENT_THREADED
 #define _ATL_NO_AUTOMATIC_NAMESPACE

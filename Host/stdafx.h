@@ -6,10 +6,17 @@
 #pragma once
 
 // Change these values to use different versions
+#ifdef __WINXP__
+#define WINVER		0x0501
+#define _WIN32_WINNT	0x0501
+#define _WIN32_IE	0x0501
+#define _RICHEDIT_VER	0x0200
+#else
 #define WINVER		0x0600
 #define _WIN32_WINNT	0x0601
 #define _WIN32_IE	0x0501
 #define _RICHEDIT_VER	0x0200
+#endif
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
