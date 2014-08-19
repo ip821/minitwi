@@ -17,7 +17,9 @@ STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 		auto valueObject = value->AsObject();
 		if (valueObject.find(L"errors") != valueObject.end())
 		{
-			m_errMsg = L"Error";
+			auto errorArray = valueObject[L"errors"]->AsArray();
+			auto errObject = errorArray[0]->AsObject();
+			m_errMsg = errObject[L"message"]->AsString().c_str();
 			return E_FAIL;
 		}
 	}
