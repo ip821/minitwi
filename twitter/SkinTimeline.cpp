@@ -165,7 +165,7 @@ void CSkinTimeline::GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnNa
 	CComVariant v;
 	pItemObject->GetVariantValue(bstrColumnName, &v);
 	if (v.vt == VT_BSTR)
-		strValue = v.bstrVal + CString(L" "); //measure item bug
+		strValue = v.bstrVal;
 }
 
 STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects)

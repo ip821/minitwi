@@ -37,6 +37,8 @@ public:
 private:
 	CComPtr<ITimerService> m_pTimerService;
 	CComPtr<IThreadService> m_pThreadService;
+	CComPtr<IInfoControlService> m_pInfoControlService;
+	CComPtr<IServiceProvider> m_pServiceProvider;
 	DWORD m_dwAdvice = 0;
 	CComPtr<ISettings> m_pSettings;
 

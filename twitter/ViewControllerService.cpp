@@ -18,6 +18,7 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 {
 	CHECK_E_POINTER(pServiceProvider);
 
+	m_pServiceProvider = pServiceProvider;
 	CComPtr<IThemeService> pThemeService;
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
 	RETURN_IF_FAILED(pThemeService->ApplyThemeFromSettings());
@@ -29,6 +30,7 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_TimerService, &m_pTimerService));
 	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
+
 	return S_OK;
 }
 
@@ -38,11 +40,19 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	m_pTimerService.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	m_pThreadService.Release();
+	m_pServiceProvider.Release();
 	return S_OK;
 }
 
+BOOL bV = FALSE;
+
 STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 {
+	if (bV)
+	{
+		RETURN_IF_FAILED(m_pInfoControlService->HideControl());
+	}
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	RETURN_IF_FAILED(vHr.intVal);
@@ -60,6 +70,14 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 	CComQIPtr<IObjectArray> pObjectArray = v.punkVal;
 
 	RETURN_IF_FAILED(pTimelineControl->SetItems(pObjectArray));
+	if (!bV)
+	{
+		HWND hwndChildControl = 0;
+		RETURN_IF_FAILED(pControl->GetHWND(&hwndChildControl));
+		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
+		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Invalid username or password", TRUE));
+		bV = TRUE;
+	}
 
 	return S_OK;
 }
