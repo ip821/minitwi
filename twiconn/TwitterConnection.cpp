@@ -20,6 +20,7 @@ STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 			auto errorArray = valueObject[L"errors"]->AsArray();
 			auto errObject = errorArray[0]->AsObject();
 			m_errMsg = errObject[L"message"]->AsString().c_str();
+			SetErrorInfo(0, this);
 			return E_FAIL;
 		}
 	}

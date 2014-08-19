@@ -304,3 +304,8 @@
 /twiconn/Release/twiconn.vcxprojResolveAssemblyReference.cache
 /twitcurl/libtwitcurl/twitcurl.sdf
 /twitter/Release/twitter.log
+/Release_XP
+/Host/Release_XP/Host.log
+/curl/build/Win32/VC12/Release_XP/lib/libcurl.log
+/twiconn/Release_XP/twiconn.log
+/twitter/Release_XP/twitter.log

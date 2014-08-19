@@ -5,6 +5,10 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_XP|Win32">
+      <Configuration>Release_XP</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -27,6 +31,12 @@
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -36,12 +46,19 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -115,6 +132,43 @@
       <RegisterOutput>false</RegisterOutput>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <HeaderFileName>twitter_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName>twitter_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>twitter_p.c</ProxyFileName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)twitter.tlb</TypeLibraryName>
+      <DllDataFileName>
+      </DllDataFileName>
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\twitter.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <RegisterOutput>false</RegisterOutput>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ColumnRects.cpp" />
     <ClCompile Include="TimelineControlCopyCommand.cpp" />
@@ -124,17 +178,22 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="FormsService.cpp" />
     <ClCompile Include="NotificationServices_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="objmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="OpenUrlService.cpp" />
     <ClCompile Include="PluginTable.cpp" />
@@ -147,12 +206,14 @@
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TimelineControl.cpp" />
     <ClCompile Include="TimelineService.cpp" />
     <ClCompile Include="twitconn_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="twitter.cpp" />
     <ClCompile Include="twitter_i.c">
@@ -160,19 +221,25 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ViewControllerService.cpp" />
     <ClCompile Include="viewmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="xdlldata.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
       </PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
@@ -236,24 +303,33 @@
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_p.c</ProxyFileName>
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">objmdl_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">objmdl_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">objmdl_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">objmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">objmdl_contract_p.c</ProxyFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">objmdl_contract_p.c</ProxyFileName>
     </Midl>
     <Midl Include="..\twiconn\twitconn_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_p.c</ProxyFileName>
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_p.c</ProxyFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_p.c</ProxyFileName>
     </Midl>
     <Midl Include="..\ViewMdl\viewmdl_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_p.c</ProxyFileName>
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">viewmdl_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">viewmdl_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">viewmdl_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">viewmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">viewmdl_contract_p.c</ProxyFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">viewmdl_contract_p.c</ProxyFileName>
     </Midl>
     <Midl Include="twitter.idl" />
   </ItemGroup>
