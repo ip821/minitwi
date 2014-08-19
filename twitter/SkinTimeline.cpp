@@ -8,7 +8,8 @@
 
 #define COL_NAME_LEFT 16
 #define COLUMN_X_SPACING 5
-#define COLUMN_Y_SPACING 5
+#define COLUMN_Y_SPACING 0
+#define PADDING_Y 7
 #define ITEM_SPACING 10
 #define ITEM_DELIMITER_HEIGHT 1
 
@@ -199,7 +200,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	if (!strRetweetedDisplayName.IsEmpty())
 	{
 		auto x = COL_NAME_LEFT;
-		auto y = COLUMN_Y_SPACING;
+		auto y = PADDING_Y;
 
 		sizeRetweetedDislpayName = AddColumn(
 			hdc,
@@ -219,7 +220,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	uiIndex = 0;
 	{
 		auto x = COL_NAME_LEFT;
-		auto y = COLUMN_Y_SPACING;
+		auto y = COLUMN_Y_SPACING + PADDING_Y;
 
 		if (sizeRetweetedDislpayName.cy)
 		{
@@ -241,7 +242,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CSize sizeName;
 	{
 		auto x = COL_NAME_LEFT + sizeDislpayName.cx + COLUMN_X_SPACING;
-		auto y = COLUMN_Y_SPACING;
+		auto y = COLUMN_Y_SPACING + PADDING_Y;
 
 		if (sizeRetweetedDislpayName.cy)
 		{
@@ -263,7 +264,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CSize sizeDateTime;
 	{
 		auto x = COL_NAME_LEFT + sizeDislpayName.cx + COLUMN_X_SPACING + sizeName.cx + COLUMN_X_SPACING;
-		auto y = COLUMN_Y_SPACING;
+		auto y = COLUMN_Y_SPACING + PADDING_Y;
 
 		if (sizeRetweetedDislpayName.cy)
 		{
@@ -286,7 +287,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	if (!strText.IsEmpty())
 	{
 		auto x = COL_NAME_LEFT;
-		auto y = sizeDislpayName.cy + COLUMN_Y_SPACING + COLUMN_Y_SPACING;
+		auto y = sizeDislpayName.cy + COLUMN_Y_SPACING + COLUMN_Y_SPACING + PADDING_Y;
 
 		if (sizeRetweetedDislpayName.cy)
 		{
@@ -307,7 +308,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			);
 	}
 
-	auto lastY = sizeDislpayName.cy + COLUMN_Y_SPACING + sizeText.cy;
+	auto lastY = sizeDislpayName.cy + COLUMN_Y_SPACING + sizeText.cy + PADDING_Y;
 
 	if (sizeRetweetedDislpayName.cy)
 	{
