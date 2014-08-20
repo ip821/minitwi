@@ -38,6 +38,8 @@
 #include <memory>
 #include <twitcurl.h>
 
+#include <regex>
+
 #include <initguid.h>
 #include "..\ObjMdl\Macros.h"
 #include "..\ObjMdl\Plugins.h"

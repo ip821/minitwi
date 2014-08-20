@@ -3,7 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
-#include "NotificationServices_contract_i.h"
+#include "asyncsvc_contract_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;
@@ -41,7 +41,7 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	DWORD m_dwAdvice = 0;
 	CComPtr<ISettings> m_pSettings;
-
+	CComQIPtr<ITimelineControl> m_pTimelineControl;
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);

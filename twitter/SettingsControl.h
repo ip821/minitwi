@@ -3,6 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
+#include "asyncsvc_contract_i.h"
 
 using namespace ATL;
 
@@ -15,7 +16,9 @@ class ATL_NO_VTABLE CSettingsControl :
 	public CDialogResize<CSettingsControl>,
 	public IControl2,
 	public IPersistSettings,
-	public IMsgHandler
+	public IMsgHandler,
+	public IPluginSupportNotifications,
+	public IThreadServiceEventSink
 {
 public:
 	CSettingsControl()
@@ -30,6 +33,8 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPersistSettings)
 		COM_INTERFACE_ENTRY(IMsgHandler)
+		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 	END_COM_MAP()
 
 	BEGIN_DLGRESIZE_MAP(CSettingsControl)
@@ -52,6 +57,8 @@ private:
 	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	CComPtr<ISettings> m_pSettings;
+	CComPtr<IThreadService> m_pThreadService;
+	DWORD m_dwAdvice = 0;
 
 public:
 	enum { IDD = IDD_SETTINGSCONTROL };
@@ -71,6 +78,13 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnActivate)());
 	METHOD_EMPTY(STDMETHOD(OnDeactivate)());
 	METHOD_EMPTY(STDMETHOD(OnClose)());
+
+	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
+	STDMETHOD(OnShutdown)();
+
+	STDMETHOD(OnStart)(IVariantObject *pResult);
+	STDMETHOD(OnRun)(IVariantObject *pResult);
+	STDMETHOD(OnFinish)(IVariantObject *pResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SettingsControl), CSettingsControl)

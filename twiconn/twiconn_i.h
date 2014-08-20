@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue Aug 19 22:32:56 2014
+/* at Wed Aug 20 13:46:09 2014
  */
 /* Compiler settings for twiconn.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 

@@ -3,7 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
-#include "NotificationServices_contract_i.h"
+#include "asyncsvc_contract_i.h"
 #include <mutex>
 
 using namespace ATL;

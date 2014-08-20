@@ -20,6 +20,15 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 
 	m_pServiceProvider = pServiceProvider;
 
+	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
+	CComPtr<IContainerControl> pContainerControl;
+	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
+	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
+	RETURN_IF_FAILED(pTabbedControl->EnableCommands(FALSE));
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
+	m_pTimelineControl = pControl;
+
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
 
 	CComPtr<IThemeService> pThemeService;
@@ -28,10 +37,11 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ThreadService, &m_pThreadService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
+	RETURN_IF_FAILED(m_pThreadService->SetTimerService(SERVICE_TIMELINE_TIMER));
 
-	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_TimerService, &m_pTimerService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
 	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
 
 	return S_OK;
@@ -49,20 +59,14 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 
 STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(m_pInfoControlService->HideControl());
+	HWND hwndChildControl = 0;
+	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
+	RETURN_IF_FAILED(m_pInfoControlService->HideControl(hwndChildControl));
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 {
-	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
-	CComPtr<IContainerControl> pContainerControl;
-	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
-	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
-	CComQIPtr<ITimelineControl> pTimelineControl = pControl;
-
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
@@ -73,7 +77,7 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 		if (vDesc.vt == VT_BSTR)
 			bstrMsg = vDesc.bstrVal;
 		HWND hwndChildControl = 0;
-		RETURN_IF_FAILED(pControl->GetHWND(&hwndChildControl));
+		RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
 		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMsg, TRUE));
 		return S_OK;
 	}
@@ -82,6 +86,6 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &v));
 	CComQIPtr<IObjArray> pObjectArray = v.punkVal;
 
-	RETURN_IF_FAILED(pTimelineControl->SetItems(pObjectArray));
+	RETURN_IF_FAILED(m_pTimelineControl->SetItems(pObjectArray));
 	return S_OK;
 }

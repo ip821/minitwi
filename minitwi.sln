@@ -26,7 +26,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "twitter", "twitter\twitter.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl", "curl\projects\Windows\VC12\lib\libcurl.vcxproj", "{DA6F56B4-06A4-441D-AD70-AC5A7D51FADB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "notificationservices", "NotificationServices\NotificationServices.vcxproj", "{17F9075F-67AC-4EAB-8181-C195A5D52696}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asyncsvc", "NotificationServices\asyncsvc.vcxproj", "{17F9075F-67AC-4EAB-8181-C195A5D52696}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -309,3 +309,7 @@
 /curl/build/Win32/VC12/Release_XP/lib/libcurl.log
 /twiconn/Release_XP/twiconn.log
 /twitter/Release_XP/twitter.log
+/twiconn/twitconn_contract_i.p
+/twitter/asyncsvc_contract_i.c
+/twitter/asyncsvc_contract_i.h
+/twitter/asyncsvc_contract_p.c

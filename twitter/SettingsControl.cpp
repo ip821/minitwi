@@ -7,6 +7,23 @@
 
 // CSettingsControl
 
+STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_AUTH_THREAD, &m_pThreadService));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
+
+	return S_OK;
+}
+
+STDMETHODIMP CSettingsControl::OnShutdown()
+{
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
+	m_pThreadService.Release();
+	return S_OK;
+}
+
 STDMETHODIMP CSettingsControl::GetText(BSTR* pbstr)
 {
 	*pbstr = CComBSTR(L"Settings").Detach();
@@ -120,5 +137,20 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 
 	CEdit wndServerTextBox = GetDlgItem(id);
 	wndServerTextBox.SetWindowText(bstr);
+	return S_OK;
+}
+
+STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
+{
+	return S_OK;
+}
+
+STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
+{
+	return S_OK;
+}
+
+STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
+{
 	return S_OK;
 }

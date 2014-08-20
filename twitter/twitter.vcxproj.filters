@@ -106,9 +106,6 @@
     <ClCompile Include="TimelineService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
-    <ClCompile Include="NotificationServices_contract_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="ViewControllerService.cpp">
       <Filter>Services\ViewControllerService</Filter>
     </ClCompile>
@@ -135,6 +132,9 @@
     </ClCompile>
     <ClCompile Include="TimelineControlCopyCommand.cpp">
       <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="asyncsvc_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -186,9 +186,6 @@
     <ClInclude Include="TimelineService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
-    <ClInclude Include="NotificationServices_contract_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="ViewControllerService.h">
       <Filter>Services\ViewControllerService</Filter>
     </ClInclude>
@@ -215,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="TimelineControlCopyCommand.h">
       <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="asyncsvc_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -276,7 +276,7 @@
     <Midl Include="..\twiconn\twitconn_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="..\NotificationServices\NotificationServices_contract_i.idl">
+    <Midl Include="..\NotificationServices\asyncsvc_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>
