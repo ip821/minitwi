@@ -4,6 +4,8 @@
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 #include "asyncsvc_contract_i.h"
+#include "twitconn_contract_i.h"
+#include "..\ViewMdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;
 
@@ -18,7 +20,8 @@ class ATL_NO_VTABLE CSettingsControl :
 	public IPersistSettings,
 	public IMsgHandler,
 	public IPluginSupportNotifications,
-	public IThreadServiceEventSink
+	public IThreadServiceEventSink,
+	public IInitializeWithControlImpl
 {
 public:
 	CSettingsControl()
@@ -35,6 +38,7 @@ public:
 		COM_INTERFACE_ENTRY(IMsgHandler)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithControl)
 	END_COM_MAP()
 
 	BEGIN_DLGRESIZE_MAP(CSettingsControl)
@@ -58,7 +62,12 @@ private:
 
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IThreadService> m_pThreadService;
+	CComPtr<IInfoControlService> m_pInfoControlService;
+	CComPtr<IServiceProvider> m_pServiceProvider;
+
 	DWORD m_dwAdvice = 0;
+	CEdit m_editUser;
+	CEdit m_editPass;
 
 public:
 	enum { IDD = IDD_SETTINGSCONTROL };

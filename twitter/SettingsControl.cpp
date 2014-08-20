@@ -3,16 +3,21 @@
 #include "stdafx.h"
 #include "SettingsControl.h"
 #include "Plugins.h"
-#include "twitconn_contract_i.h"
+#include "..\NotificationServices\Plugins.h"
 
 // CSettingsControl
 
 STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 {
+	CHECK_E_POINTER(pServiceProvider);
+	m_pServiceProvider = pServiceProvider;
+
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_AUTH_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
 
 	return S_OK;
 }
@@ -21,6 +26,7 @@ STDMETHODIMP CSettingsControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	m_pThreadService.Release();
+	m_pServiceProvider.Release();
 	return S_OK;
 }
 
@@ -54,6 +60,8 @@ LRESULT CSettingsControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 {
 	CAxDialogImpl<CSettingsControl>::OnInitDialog(uMsg, wParam, lParam, bHandled);
 	DlgResize_Init(false);
+	m_editUser = GetDlgItem(IDC_EDITUSER);
+	m_editPass = GetDlgItem(IDC_EDITPASSWORD);
 	return 0;
 }
 
@@ -64,7 +72,7 @@ STDMETHODIMP CSettingsControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 
 LRESULT CSettingsControl::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	Save(m_pSettings);
+	m_pThreadService->Run();
 	return 0;
 }
 
@@ -75,7 +83,6 @@ STDMETHODIMP CSettingsControl::Load(ISettings *pSettings)
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
 	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITUSER, KEY_USER, pSettingsTwitter));
-	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettingsTwitter));
 	return S_OK;
 }
 
@@ -83,29 +90,7 @@ STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 
-	CComPtr<ISettings> pSettingsTwitter;
-	RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
-
-	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, KEY_USER, pSettingsTwitter));
-	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITPASSWORD, KEY_PASSWORD, pSettingsTwitter));
-
-	CEdit wnd1 = GetDlgItem(IDC_EDITUSER);
-	CComBSTR bstrUser;
-	wnd1.GetWindowText(&bstrUser);
-
-	CEdit wnd2 = GetDlgItem(IDC_EDITPASSWORD);
-	CComBSTR bstrPass;
-	wnd2.GetWindowText(&bstrPass);
-
-	CComPtr<ITwitterConnection> pTwitterConnection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pTwitterConnection));
-	CComBSTR bstrKey, bstrSecret;
-	RETURN_IF_FAILED(pTwitterConnection->GetAuthKeys(bstrUser, bstrPass, &bstrKey, &bstrSecret));
-
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(KEY_TWITTERKEY, &CComVariant(bstrKey)));
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(KEY_TWITTERSECRET, &CComVariant(bstrSecret)));
-
-	pTwitterConnection->OpenConnection(bstrKey, bstrSecret);
+	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, KEY_USER, pSettings));
 
 	return S_OK;
 }
@@ -142,15 +127,75 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 
 STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
+	RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, L"Authenticating...", FALSE, FALSE));
 	return S_OK;
 }
 
 STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
 {
+	CoInitialize(NULL);
+
+	CComPtr<IThreadService> pTimelineThreadService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThreadService));
+	RETURN_IF_FAILED(pTimelineThreadService->Join());
+
+	CComPtr<IViewControllerService> pTimelineService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pTimelineService));
+	RETURN_IF_FAILED(pTimelineService->StopTimers());
+
+	CComBSTR bstrUser;
+	m_editUser.GetWindowText(&bstrUser);
+
+	CComBSTR bstrPass;
+	m_editPass.GetWindowText(&bstrPass);
+
+	CComPtr<ITwitterConnection> pConnection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
+
+	CComBSTR bstrKey, bstrSecret;
+	RETURN_IF_FAILED(pConnection->GetAuthKeys(bstrUser, bstrPass, &bstrKey, &bstrSecret));
+
+	RETURN_IF_FAILED(pResult->SetVariantValue(KEY_TWITTERKEY, &CComVariant(bstrKey)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(KEY_TWITTERSECRET, &CComVariant(bstrSecret)));
+
 	return S_OK;
 }
 
 STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 {
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	if (SUCCEEDED(vHr.intVal))
+	{
+		RETURN_IF_FAILED(m_pInfoControlService->HideControl(m_hWnd));
+	}
+	else
+	{
+		CComVariant vDesc;
+		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_HRESULT_DESCRIPTION, &vDesc));
+		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, vDesc.bstrVal, TRUE, FALSE));
+		return S_OK;
+	}
+
+	CComVariant vKey, vSecret;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_TWITTERKEY, &vKey));
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_TWITTERSECRET, &vSecret));
+
+	CComPtr<ISettings> pSettingsTwitter;
+	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+
+	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(KEY_TWITTERKEY, &vKey));
+	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(KEY_TWITTERSECRET, &vSecret));
+
+	m_editPass.SetWindowText(L"");
+	Save(pSettingsTwitter);
+
+	CComPtr<IViewControllerService> pTimelineService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pTimelineService));
+	RETURN_IF_FAILED(pTimelineService->StartTimers());
+
+	CComPtr<IFormManager> pFormManager;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
+	RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_TimelineControl));
 	return S_OK;
 }

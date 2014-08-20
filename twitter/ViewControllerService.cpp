@@ -40,10 +40,21 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 	RETURN_IF_FAILED(m_pThreadService->SetTimerService(SERVICE_TIMELINE_TIMER));
+	RETURN_IF_FAILED(StartTimers());
+	return S_OK;
+}
 
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
+STDMETHODIMP CViewControllerService::StartTimers()
+{
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
 	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
+	return S_OK;
+}
 
+STDMETHODIMP CViewControllerService::StopTimers()
+{
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
+	RETURN_IF_FAILED(m_pTimerService->StopTimer());
 	return S_OK;
 }
 
@@ -61,7 +72,7 @@ STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
 {
 	HWND hwndChildControl = 0;
 	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-	RETURN_IF_FAILED(m_pInfoControlService->HideControl(hwndChildControl));
+	RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Updating...", FALSE, TRUE));
 	return S_OK;
 }
 
@@ -69,16 +80,29 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 {
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
-	if (FAILED(vHr.intVal))
+
+	HWND hwndChildControl = 0;
+	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
+
+	if (SUCCEEDED(vHr.intVal))
+	{
+		RETURN_IF_FAILED(m_pInfoControlService->HideControl(hwndChildControl));
+	}
+	else
 	{
 		CComVariant vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_HRESULT_DESCRIPTION, &vDesc));
 		CComBSTR bstrMsg = L"Unknown error";
 		if (vDesc.vt == VT_BSTR)
 			bstrMsg = vDesc.bstrVal;
-		HWND hwndChildControl = 0;
-		RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMsg, TRUE));
+		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMsg, TRUE, TRUE));
+		if (vHr.intVal == COMADMIN_E_USERPASSWDNOTVALID)
+		{
+			RETURN_IF_FAILED(pResult->SetVariantValue(KEY_RESTART_TIMER, &CComVariant(FALSE)));
+			CComPtr<IFormManager> pFormManager;
+			RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
+			RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_SettingsControl));
+		}
 		return S_OK;
 	}
 

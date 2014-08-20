@@ -52,6 +52,8 @@ public:
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
+	STDMETHOD(StartTimers)();
+	STDMETHOD(StopTimers)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ViewControllerService), CViewControllerService)

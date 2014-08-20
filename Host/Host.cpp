@@ -65,6 +65,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		HWND hwnd = NULL;
 		RETURN_IF_FAILED(pControl->CreateEx(NULL, &hwnd));
 
+		LONG lStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+		lStyle |= WS_EX_COMPOSITED;
+		SetWindowLong(hwnd, GWL_EXSTYLE, lStyle);
+
 		CString strCaption = L"minitwi";
 		if (sizeof(INT_PTR) == 8)
 			strCaption += L" x64";

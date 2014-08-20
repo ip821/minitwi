@@ -55,6 +55,8 @@ interface ITimelineService : IUnknown
 ]
 interface IViewControllerService : IUnknown
 {
+	HRESULT StartTimers();
+	HRESULT StopTimers();
 };
 
 [

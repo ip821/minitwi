@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Wed Aug 20 17:54:48 2014
+/* at Wed Aug 20 23:26:06 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -488,6 +488,10 @@ EXTERN_C const IID IID_IViewControllerService;
     IViewControllerService : public IUnknown
     {
     public:
+        virtual HRESULT STDMETHODCALLTYPE StartTimers( void) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE StopTimers( void) = 0;
+        
     };
     
     
@@ -507,6 +511,12 @@ EXTERN_C const IID IID_IViewControllerService;
             IViewControllerService * This);
         
         ULONG ( STDMETHODCALLTYPE *Release )( 
+            IViewControllerService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *StartTimers )( 
+            IViewControllerService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *StopTimers )( 
             IViewControllerService * This);
         
         END_INTERFACE
@@ -531,6 +541,12 @@ EXTERN_C const IID IID_IViewControllerService;
 #define IViewControllerService_Release(This)	\
     ( (This)->lpVtbl -> Release(This) ) 
 
+
+#define IViewControllerService_StartTimers(This)	\
+    ( (This)->lpVtbl -> StartTimers(This) ) 
+
+#define IViewControllerService_StopTimers(This)	\
+    ( (This)->lpVtbl -> StopTimers(This) ) 
 
 #endif /* COBJMACROS */
 
