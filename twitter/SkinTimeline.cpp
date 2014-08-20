@@ -179,6 +179,9 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CString strRetweetedDisplayName;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME), strRetweetedDisplayName);
 
+	CString strRetweetedName;
+	GetValue(pItemObject, CComBSTR(VAR_TWITTER_RETWEETED_USER_NAME), strRetweetedName);
+
 	CString strDisplayName;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME), strDisplayName);
 
@@ -206,7 +209,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			hdc,
 			pColumnRects,
 			CString(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME),
-			L"Retweeted by " + strRetweetedDisplayName,
+			L"Retweeted by " + strRetweetedDisplayName + L" @" + strRetweetedName,
 			strRetweetedDisplayName,
 			x,
 			y,

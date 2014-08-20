@@ -152,6 +152,19 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
 		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
 
+		std::wstring retweetedUserDisplayName;
+		std::wstring retweetedUserScreenName;
+		auto id = itemObject[L"id_str"]->AsString();
+
+		if (itemObject.find(L"retweeted_status") != itemObject.end())
+		{
+			auto retweetStatusObject = itemObject[L"retweeted_status"]->AsObject();
+			auto retweetedUserObj = itemObject[L"user"]->AsObject();
+			retweetedUserDisplayName = retweetedUserObj[L"name"]->AsString();
+			retweetedUserScreenName = retweetedUserObj[L"screen_name"]->AsString();
+			itemObject = retweetStatusObject;
+		}
+
 		auto createdAt = itemObject[L"created_at"]->AsString();
 		auto userObj = itemObject[L"user"]->AsObject();
 		auto userDisplayName = userObj[L"name"]->AsString();
@@ -159,18 +172,6 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 		auto text = itemObject[L"text"]->AsString();
 		auto entities = itemObject[L"entities"]->AsObject();
 		auto urls = entities[L"urls"]->AsArray();
-		std::wstring retweetedUserDisplayName;
-		std::wstring retweetedUserScreenName;
-
-		if (itemObject.find(L"retweeted_status") != itemObject.end())
-		{
-			auto retweetStatusObject = itemObject[L"retweeted_status"]->AsObject();
-			text = retweetStatusObject[L"text"]->AsString();
-
-			auto retweetedUserObj = retweetStatusObject[L"user"]->AsObject();
-			retweetedUserDisplayName = retweetedUserObj[L"name"]->AsString();
-			retweetedUserScreenName = retweetedUserObj[L"screen_name"]->AsString();
-		}
 
 		CString strText = text.c_str();
 		std::hash_set<std::wstring> urlsHashSet;
@@ -227,7 +228,7 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 		strText.Replace(L"\t", L" ");
 		strText = strText.Trim();
 
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(itemObject[L"id_str"]->AsString().c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(id.c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_NORMALIZED_TEXT, &CComVariant(strText)));
