@@ -82,6 +82,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	STDMETHOD(SetItems)(IObjArray* pObjectArray);
+	STDMETHOD(Clear)();
 	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);
 
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);

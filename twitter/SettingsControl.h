@@ -64,6 +64,7 @@ private:
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<IInfoControlService> m_pInfoControlService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
+	CComPtr<IFormManager> m_pFormManager;
 
 	DWORD m_dwAdvice = 0;
 	CEdit m_editUser;

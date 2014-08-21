@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Wed Aug 20 23:26:06 2014
+/* at Thu Aug 21 06:58:28 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -1035,6 +1035,8 @@ EXTERN_C const IID IID_ITimelineControl;
         virtual HRESULT STDMETHODCALLTYPE SetItems( 
             IObjArray *pObjectArray) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE Clear( void) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE SetSkinTimeline( 
             ISkinTimeline *pSkinTimeline) = 0;
         
@@ -1096,6 +1098,9 @@ EXTERN_C const IID IID_ITimelineControl;
             ITimelineControl * This,
             IObjArray *pObjectArray);
         
+        HRESULT ( STDMETHODCALLTYPE *Clear )( 
+            ITimelineControl * This);
+        
         HRESULT ( STDMETHODCALLTYPE *SetSkinTimeline )( 
             ITimelineControl * This,
             ISkinTimeline *pSkinTimeline);
@@ -1151,6 +1156,9 @@ EXTERN_C const IID IID_ITimelineControl;
 
 #define ITimelineControl_SetItems(This,pObjectArray)	\
     ( (This)->lpVtbl -> SetItems(This,pObjectArray) ) 
+
+#define ITimelineControl_Clear(This)	\
+    ( (This)->lpVtbl -> Clear(This) ) 
 
 #define ITimelineControl_SetSkinTimeline(This,pSkinTimeline)	\
     ( (This)->lpVtbl -> SetSkinTimeline(This,pSkinTimeline) ) 

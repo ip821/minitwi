@@ -37,6 +37,13 @@ STDMETHODIMP CTwitterConnection::GetDescription(BSTR* pBstrDescription)
 
 STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrKey, BSTR* pbstrSecret)
 {
+	if (!bstrUser || !bstrPass)
+	{
+		m_errMsg = L"Empty login or password";
+		SetErrorInfo(0, this);
+		return COMADMIN_E_USERPASSWDNOTVALID;
+	}
+
 	twitCurl twitterObj;
 
 	USES_CONVERSION;
@@ -195,6 +202,7 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 
 		std::wstring stdStr(strText);
 
+#ifndef DEBUG
 		static std::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)*)");
 		static std::regex_constants::match_flag_type fl = std::regex_constants::match_default;
 
@@ -206,14 +214,6 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 			urlsHashSet.insert(strUrl1);
 			regexIterator++;
 		}
-		//std::match_results<std::wstring::const_iterator> match;
-		//std::regex_search(stdStr, match, regex, fl);
-
-		//for (auto it = match.begin(); it != match.end(); it++)
-		//{
-		//	std::wstring strUrl1(it->first, it->second);
-		//	urlsHashSet.insert(strUrl1);
-		//}
 
 		urlsVector = std::vector<std::wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
 		AppendUrls(pVariantObject, urlsVector);
@@ -222,6 +222,7 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 		{
 			strText.Replace(urlsVector[i].c_str(), L"");
 		}
+#endif
 
 		strText.Replace(L"\r\n", L" ");
 		strText.Replace(L"\n", L" ");

@@ -76,10 +76,15 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	return 0;
 }
 
+STDMETHODIMP CTimelineControl::Clear()
+{
+	m_listBox.Clear();
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::SetItems(IObjArray* pObjectArray)
 {
 	m_listBox.SetRedraw(FALSE);
-	//m_listBox.Clear();
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)

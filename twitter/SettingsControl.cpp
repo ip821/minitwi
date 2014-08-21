@@ -16,8 +16,8 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_AUTH_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
-
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &m_pFormManager));
 
 	return S_OK;
 }
@@ -127,6 +127,11 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 
 STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_TimelineControl, &pControl));
+	CComQIPtr<ITimelineControl> pTimelineControl = pControl;
+	RETURN_IF_FAILED(pTimelineControl->Clear());
+
 	RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, L"Authenticating...", FALSE, FALSE));
 	return S_OK;
 }
@@ -194,8 +199,10 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pTimelineService));
 	RETURN_IF_FAILED(pTimelineService->StartTimers());
 
-	CComPtr<IFormManager> pFormManager;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
-	RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_TimelineControl));
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_TimelineControl, &pControl));
+	CComQIPtr<ITimelineControl> pTimelineControl = pControl;
+	RETURN_IF_FAILED(pTimelineControl->Clear());
+	RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_TimelineControl));
 	return S_OK;
 }

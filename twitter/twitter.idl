@@ -119,6 +119,7 @@ interface ISkinTimeline : IUnknown
 interface ITimelineControl : IControl2
 {
 	HRESULT SetItems(IObjArray* pObjectArray);
+	HRESULT Clear();
 	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
 };
 
