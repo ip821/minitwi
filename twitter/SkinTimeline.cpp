@@ -174,7 +174,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	pColumnRects->Clear();
 	CListBox wndListBox(hwndControl);
 
-	HDC hdc = GetDC(hwndControl);
+	CDC hdc(GetDC(hwndControl));
 
 	CString strRetweetedDisplayName;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME), strRetweetedDisplayName);
