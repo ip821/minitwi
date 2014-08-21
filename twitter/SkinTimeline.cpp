@@ -3,6 +3,17 @@
 #include "stdafx.h"
 #include "SkinTimeline.h"
 #include "Plugins.h"
+#include <boost\date_time.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
+#include <boost/thread/xtime.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/local_time_adjustor.hpp>
+#include <boost/date_time/c_local_time_adjustor.hpp>
+#include <boost/date_time/date_facet.hpp>
+#include <boost/date_time/time_facet.hpp>
+#include <clocale>
+#include <iosfwd>
+#include <ctime>
 
 // CSkinTimeline
 
@@ -15,6 +26,8 @@
 
 CSkinTimeline::CSkinTimeline()
 {
+	m_tz = { 0 };
+	GetTimeZoneInformation(&m_tz);
 }
 
 STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
@@ -187,7 +200,24 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 	CString strCreatedAt;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_CREATED_AT), strCreatedAt);
-	strCreatedAt = strCreatedAt.Mid(4, 15);
+
+	{
+		boost::local_time::wlocal_time_input_facet* inputFacet = new boost::local_time::wlocal_time_input_facet();
+		inputFacet->format(L"%a %b %d %H:%M:%S +0000 %Y");
+		std::wistringstream inputStream;
+		inputStream.imbue(std::locale(inputStream.getloc(), inputFacet));
+		inputStream.str(std::wstring(strCreatedAt));
+		boost::posix_time::ptime pt;
+		inputStream >> pt;
+
+		boost::posix_time::ptime ptNow(pt.date(), pt.time_of_day() - boost::posix_time::minutes(m_tz.Bias) - boost::posix_time::minutes(m_tz.DaylightBias));
+		boost::local_time::wlocal_time_facet* outputFacet = new boost::local_time::wlocal_time_facet();
+		std::wostringstream outputStream;
+		outputStream.imbue(std::locale(std::locale(""), outputFacet));
+		outputFacet->format(L"%b %d %H:%M:%S %Y");
+		outputStream << ptNow;
+		strCreatedAt = outputStream.str().c_str();
+	}
 
 	CString strName;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_NAME), strName);
