@@ -16,6 +16,7 @@ STDMETHODIMP CThemeService::Load(ISettings* pSettings)
 
 STDMETHODIMP CThemeService::OnInitialized(IServiceProvider *pServiceProvider)
 {
+	m_pServiceProvider = pServiceProvider;
 	RETURN_IF_FAILED(GetPluginManager()->GetPluginInfoCollection(PNAMESP_HOSTFORM, PTYPE_THEME, &m_pObjectArray));
 	return S_OK;
 }
@@ -23,6 +24,7 @@ STDMETHODIMP CThemeService::OnInitialized(IServiceProvider *pServiceProvider)
 STDMETHODIMP CThemeService::OnShutdown()
 {
 	m_pObjectArray.Release();
+	m_pServiceProvider.Release();
 	return S_OK;
 }
 
@@ -71,8 +73,11 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 		RETURN_IF_FAILED(pThemeUnk->QueryInterface(&m_pCurrentTheme));
 	}
 
+	CComPtr<IImageManagerService> pImageManagerService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
 	CComPtr<ISkinTimeline> pSkinTimeline;
 	RETURN_IF_FAILED(m_pCurrentTheme->GetTimelineSkin(&pSkinTimeline));
+	RETURN_IF_FAILED(m_pCurrentTheme->SetImageManagerService(pImageManagerService));
 	RETURN_IF_FAILED(pTimelineControl->SetSkinTimeline(pSkinTimeline));
 
 	return S_OK;

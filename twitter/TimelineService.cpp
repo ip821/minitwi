@@ -20,6 +20,7 @@ STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
+	m_pServiceProvider = pServiceProvider;
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
@@ -69,11 +70,46 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 	CComPtr<IObjArray> pObjectArray;
 	RETURN_IF_FAILED(pConnection->GetHomeTimeline(NULL, &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
+
 	return S_OK;
 }
 
 STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
+
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	if (FAILED(vHr.intVal))
+		return S_OK;
+
+	CComPtr<IImageManagerService> pImageManagerService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
+
+	CComPtr<IDownloadService> pDownloadService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_DownloadService, &pDownloadService));
+
+	CComVariant vResult;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
+	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
+
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pVariantObject;
+		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+		CComVariant v;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &v));
+		if (v.vt == VT_BSTR)
+		{
+			TBITMAP b = { 0 };
+			if (pImageManagerService->GetImage(v.bstrVal, &b) == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
+			{
+				RETURN_IF_FAILED(pDownloadService->AddDownload(v.bstrVal));
+			}
+		}
+	}
+
 	return S_OK;
 }

@@ -54,3 +54,9 @@ STDMETHODIMP CThemeDefault::SetColorMap(IThemeColorMap* pThemeColorMap)
 	RETURN_IF_FAILED(m_pSkinTimeline->SetColorMap(m_pThemeColorMap));
 	return S_OK;
 }
+
+STDMETHODIMP CThemeDefault::SetImageManagerService(IImageManagerService* pImageManagerService)
+{
+	RETURN_IF_FAILED(m_pSkinTimeline->SetImageManagerService(pImageManagerService));
+	return S_OK;
+}

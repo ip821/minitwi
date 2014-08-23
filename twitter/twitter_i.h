@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Aug 21 06:58:28 2014
+/* at Sat Aug 23 20:32:43 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -50,6 +50,13 @@
 typedef interface IFormsService IFormsService;
 
 #endif 	/* __IFormsService_FWD_DEFINED__ */
+
+
+#ifndef __IImageManagerService_FWD_DEFINED__
+#define __IImageManagerService_FWD_DEFINED__
+typedef interface IImageManagerService IImageManagerService;
+
+#endif 	/* __IImageManagerService_FWD_DEFINED__ */
 
 
 #ifndef __ITimelineService_FWD_DEFINED__
@@ -120,6 +127,27 @@ typedef interface IThemeService IThemeService;
 typedef interface IOpenUrlService IOpenUrlService;
 
 #endif 	/* __IOpenUrlService_FWD_DEFINED__ */
+
+
+#ifndef __IDownloadServiceEventSink_FWD_DEFINED__
+#define __IDownloadServiceEventSink_FWD_DEFINED__
+typedef interface IDownloadServiceEventSink IDownloadServiceEventSink;
+
+#endif 	/* __IDownloadServiceEventSink_FWD_DEFINED__ */
+
+
+#ifndef __IDownloadService_FWD_DEFINED__
+#define __IDownloadService_FWD_DEFINED__
+typedef interface IDownloadService IDownloadService;
+
+#endif 	/* __IDownloadService_FWD_DEFINED__ */
+
+
+#ifndef __ITimelineUpdateImageService_FWD_DEFINED__
+#define __ITimelineUpdateImageService_FWD_DEFINED__
+typedef interface ITimelineUpdateImageService ITimelineUpdateImageService;
+
+#endif 	/* __ITimelineUpdateImageService_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -290,6 +318,42 @@ typedef struct TimelineControlCopyCommand TimelineControlCopyCommand;
 #endif 	/* __TimelineControlCopyCommand_FWD_DEFINED__ */
 
 
+#ifndef __ImageManagerService_FWD_DEFINED__
+#define __ImageManagerService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class ImageManagerService ImageManagerService;
+#else
+typedef struct ImageManagerService ImageManagerService;
+#endif /* __cplusplus */
+
+#endif 	/* __ImageManagerService_FWD_DEFINED__ */
+
+
+#ifndef __DownloadService_FWD_DEFINED__
+#define __DownloadService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class DownloadService DownloadService;
+#else
+typedef struct DownloadService DownloadService;
+#endif /* __cplusplus */
+
+#endif 	/* __DownloadService_FWD_DEFINED__ */
+
+
+#ifndef __TimelineUpdateImageService_FWD_DEFINED__
+#define __TimelineUpdateImageService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class TimelineUpdateImageService TimelineUpdateImageService;
+#else
+typedef struct TimelineUpdateImageService TimelineUpdateImageService;
+#endif /* __cplusplus */
+
+#endif 	/* __TimelineUpdateImageService_FWD_DEFINED__ */
+
+
 /* header files for imported files */
 #include "oaidl.h"
 #include "ocidl.h"
@@ -327,6 +391,13 @@ typedef struct TtagMEASUREITEMSTRUCT
     UINT itemHeight;
     ULONG_PTR itemData;
     } 	TMEASUREITEMSTRUCT;
+
+typedef struct TtagBITMAP
+    {
+    HBITMAP hBitmap;
+    UINT Width;
+    UINT Height;
+    } 	TBITMAP;
 
 
 
@@ -401,6 +472,100 @@ EXTERN_C const IID IID_IFormsService;
 
 
 #endif 	/* __IFormsService_INTERFACE_DEFINED__ */
+
+
+#ifndef __IImageManagerService_INTERFACE_DEFINED__
+#define __IImageManagerService_INTERFACE_DEFINED__
+
+/* interface IImageManagerService */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IImageManagerService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("828C2337-535F-491B-943D-EDF93F760CB7")
+    IImageManagerService : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE GetImage( 
+            BSTR bstrKey,
+            TBITMAP *phBitmap) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE SetImage( 
+            BSTR bstrKey,
+            BSTR bstrFileName) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IImageManagerServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IImageManagerService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IImageManagerService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IImageManagerService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetImage )( 
+            IImageManagerService * This,
+            BSTR bstrKey,
+            TBITMAP *phBitmap);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetImage )( 
+            IImageManagerService * This,
+            BSTR bstrKey,
+            BSTR bstrFileName);
+        
+        END_INTERFACE
+    } IImageManagerServiceVtbl;
+
+    interface IImageManagerService
+    {
+        CONST_VTBL struct IImageManagerServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IImageManagerService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IImageManagerService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IImageManagerService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IImageManagerService_GetImage(This,bstrKey,phBitmap)	\
+    ( (This)->lpVtbl -> GetImage(This,bstrKey,phBitmap) ) 
+
+#define IImageManagerService_SetImage(This,bstrKey,bstrFileName)	\
+    ( (This)->lpVtbl -> SetImage(This,bstrKey,bstrFileName) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IImageManagerService_INTERFACE_DEFINED__ */
 
 
 #ifndef __ITimelineService_INTERFACE_DEFINED__
@@ -914,6 +1079,9 @@ EXTERN_C const IID IID_ISkinTimeline;
         virtual HRESULT STDMETHODCALLTYPE SetFontMap( 
             IThemeFontMap *pThemeFontMap) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE SetImageManagerService( 
+            IImageManagerService *pImageManagerService) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE DrawItem( 
             HWND hwndControl,
             IColumnRects *pColumnRects,
@@ -955,6 +1123,10 @@ EXTERN_C const IID IID_ISkinTimeline;
         HRESULT ( STDMETHODCALLTYPE *SetFontMap )( 
             ISkinTimeline * This,
             IThemeFontMap *pThemeFontMap);
+        
+        HRESULT ( STDMETHODCALLTYPE *SetImageManagerService )( 
+            ISkinTimeline * This,
+            IImageManagerService *pImageManagerService);
         
         HRESULT ( STDMETHODCALLTYPE *DrawItem )( 
             ISkinTimeline * This,
@@ -999,6 +1171,9 @@ EXTERN_C const IID IID_ISkinTimeline;
 
 #define ISkinTimeline_SetFontMap(This,pThemeFontMap)	\
     ( (This)->lpVtbl -> SetFontMap(This,pThemeFontMap) ) 
+
+#define ISkinTimeline_SetImageManagerService(This,pImageManagerService)	\
+    ( (This)->lpVtbl -> SetImageManagerService(This,pImageManagerService) ) 
 
 #define ISkinTimeline_DrawItem(This,hwndControl,pColumnRects,lpdi,iHoveredItem,iHoveredColumn)	\
     ( (This)->lpVtbl -> DrawItem(This,hwndControl,pColumnRects,lpdi,iHoveredItem,iHoveredColumn) ) 
@@ -1195,6 +1370,9 @@ EXTERN_C const IID IID_ITheme;
         virtual HRESULT STDMETHODCALLTYPE GetTimelineSkin( 
             ISkinTimeline **ppSkinTimeline) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE SetImageManagerService( 
+            IImageManagerService *pImageManagerService) = 0;
+        
     };
     
     
@@ -1224,6 +1402,10 @@ EXTERN_C const IID IID_ITheme;
             ITheme * This,
             ISkinTimeline **ppSkinTimeline);
         
+        HRESULT ( STDMETHODCALLTYPE *SetImageManagerService )( 
+            ITheme * This,
+            IImageManagerService *pImageManagerService);
+        
         END_INTERFACE
     } IThemeVtbl;
 
@@ -1252,6 +1434,9 @@ EXTERN_C const IID IID_ITheme;
 
 #define ITheme_GetTimelineSkin(This,ppSkinTimeline)	\
     ( (This)->lpVtbl -> GetTimelineSkin(This,ppSkinTimeline) ) 
+
+#define ITheme_SetImageManagerService(This,pImageManagerService)	\
+    ( (This)->lpVtbl -> SetImageManagerService(This,pImageManagerService) ) 
 
 #endif /* COBJMACROS */
 
@@ -1492,6 +1677,238 @@ EXTERN_C const IID IID_IOpenUrlService;
 #endif 	/* __IOpenUrlService_INTERFACE_DEFINED__ */
 
 
+#ifndef __IDownloadServiceEventSink_INTERFACE_DEFINED__
+#define __IDownloadServiceEventSink_INTERFACE_DEFINED__
+
+/* interface IDownloadServiceEventSink */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IDownloadServiceEventSink;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("5304DEAC-784A-457C-9037-1E878B9D2EAA")
+    IDownloadServiceEventSink : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE OnDownloadComplete( 
+            BSTR bstrUrl,
+            BSTR bstrFilePath) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IDownloadServiceEventSinkVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IDownloadServiceEventSink * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IDownloadServiceEventSink * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IDownloadServiceEventSink * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *OnDownloadComplete )( 
+            IDownloadServiceEventSink * This,
+            BSTR bstrUrl,
+            BSTR bstrFilePath);
+        
+        END_INTERFACE
+    } IDownloadServiceEventSinkVtbl;
+
+    interface IDownloadServiceEventSink
+    {
+        CONST_VTBL struct IDownloadServiceEventSinkVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IDownloadServiceEventSink_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IDownloadServiceEventSink_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IDownloadServiceEventSink_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IDownloadServiceEventSink_OnDownloadComplete(This,bstrUrl,bstrFilePath)	\
+    ( (This)->lpVtbl -> OnDownloadComplete(This,bstrUrl,bstrFilePath) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IDownloadServiceEventSink_INTERFACE_DEFINED__ */
+
+
+#ifndef __IDownloadService_INTERFACE_DEFINED__
+#define __IDownloadService_INTERFACE_DEFINED__
+
+/* interface IDownloadService */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IDownloadService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("18A1A514-1F78-4811-B469-509CFE4AAF94")
+    IDownloadService : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE AddDownload( 
+            BSTR bstrUrl) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IDownloadServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IDownloadService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IDownloadService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IDownloadService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *AddDownload )( 
+            IDownloadService * This,
+            BSTR bstrUrl);
+        
+        END_INTERFACE
+    } IDownloadServiceVtbl;
+
+    interface IDownloadService
+    {
+        CONST_VTBL struct IDownloadServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IDownloadService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IDownloadService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IDownloadService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IDownloadService_AddDownload(This,bstrUrl)	\
+    ( (This)->lpVtbl -> AddDownload(This,bstrUrl) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IDownloadService_INTERFACE_DEFINED__ */
+
+
+#ifndef __ITimelineUpdateImageService_INTERFACE_DEFINED__
+#define __ITimelineUpdateImageService_INTERFACE_DEFINED__
+
+/* interface ITimelineUpdateImageService */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_ITimelineUpdateImageService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("22180299-0223-49F2-8E63-1D3869160676")
+    ITimelineUpdateImageService : public IUnknown
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct ITimelineUpdateImageServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            ITimelineUpdateImageService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            ITimelineUpdateImageService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            ITimelineUpdateImageService * This);
+        
+        END_INTERFACE
+    } ITimelineUpdateImageServiceVtbl;
+
+    interface ITimelineUpdateImageService
+    {
+        CONST_VTBL struct ITimelineUpdateImageServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define ITimelineUpdateImageService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define ITimelineUpdateImageService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define ITimelineUpdateImageService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __ITimelineUpdateImageService_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __twitterLib_LIBRARY_DEFINED__
 #define __twitterLib_LIBRARY_DEFINED__
@@ -1613,6 +2030,30 @@ EXTERN_C const CLSID CLSID_TimelineControlCopyCommand;
 class DECLSPEC_UUID("F09290A9-AF90-416D-9309-C649ECC97935")
 TimelineControlCopyCommand;
 #endif
+
+EXTERN_C const CLSID CLSID_ImageManagerService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("204D2E4F-72BE-41EF-8B7D-992B89BE36DA")
+ImageManagerService;
+#endif
+
+EXTERN_C const CLSID CLSID_DownloadService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("8A7C5710-9FCB-4FD9-83A2-36EE81E10FB9")
+DownloadService;
+#endif
+
+EXTERN_C const CLSID CLSID_TimelineUpdateImageService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("5DD83D05-C14B-404F-A979-4ACABB551655")
+TimelineUpdateImageService;
+#endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 
 /* Additional Prototypes for ALL interfaces */
@@ -1621,6 +2062,11 @@ unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long *, unsign
 unsigned char * __RPC_USER  BSTR_UserMarshal(  unsigned long *, unsigned char *, BSTR * ); 
 unsigned char * __RPC_USER  BSTR_UserUnmarshal(unsigned long *, unsigned char *, BSTR * ); 
 void                      __RPC_USER  BSTR_UserFree(     unsigned long *, BSTR * ); 
+
+unsigned long             __RPC_USER  HBITMAP_UserSize(     unsigned long *, unsigned long            , HBITMAP * ); 
+unsigned char * __RPC_USER  HBITMAP_UserMarshal(  unsigned long *, unsigned char *, HBITMAP * ); 
+unsigned char * __RPC_USER  HBITMAP_UserUnmarshal(unsigned long *, unsigned char *, HBITMAP * ); 
+void                      __RPC_USER  HBITMAP_UserFree(     unsigned long *, HBITMAP * ); 
 
 unsigned long             __RPC_USER  HFONT_UserSize(     unsigned long *, unsigned long            , HFONT * ); 
 unsigned char * __RPC_USER  HFONT_UserMarshal(  unsigned long *, unsigned char *, HFONT * ); 

@@ -10,6 +10,7 @@ STDMETHODIMP CTimelineControl::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
+
 	return S_OK;
 }
 
@@ -57,6 +58,9 @@ STDMETHODIMP CTimelineControl::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM
 LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	DlgResize_Init(false);
+	auto dwExStyle = GetWindowLong(GWL_EXSTYLE);
+	dwExStyle |= WS_EX_COMPOSITED;
+	SetWindowLong(GWL_EXSTYLE, dwExStyle);
 	m_listBox.SubclassWindow(GetDlgItem(IDC_LIST1));
 	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
 	m_pPluginSupport->InitializePlugins(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND);

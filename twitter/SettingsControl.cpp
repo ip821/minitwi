@@ -177,7 +177,7 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 	else
 	{
 		CComVariant vDesc;
-		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_HRESULT_DESCRIPTION, &vDesc));
+		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
 		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, vDesc.bstrVal, TRUE, FALSE));
 		return S_OK;
 	}

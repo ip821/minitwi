@@ -17,7 +17,7 @@
 
 // CSkinTimeline
 
-#define COL_NAME_LEFT 16
+#define COL_NAME_LEFT 64
 #define COLUMN_X_SPACING 5
 #define COLUMN_Y_SPACING 0
 #define PADDING_Y 7
@@ -28,6 +28,12 @@ CSkinTimeline::CSkinTimeline()
 {
 	m_tz = { 0 };
 	GetTimeZoneInformation(&m_tz);
+}
+
+STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageManagerService)
+{
+	m_pImageManagerService = pImageManagerService;
+	return S_OK;
 }
 
 STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
@@ -99,6 +105,8 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
 		CComBSTR bstrIsWordWrap;
 		pColumnRects->GetRectProp(i, VAR_IS_WORDWRAP, &bstrIsWordWrap);
+		CComBSTR bstrIsImage;
+		pColumnRects->GetRectProp(i, VAR_IS_IMAGE, &bstrIsImage);
 
 		HFONT font = 0;
 		m_pThemeFontMap->GetFont(bstrColumnName, &font);
@@ -108,17 +116,38 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 			m_pThemeFontMap->GetFont(bstrColumnName + VAR_SELECTED_POSTFIX, &font);
 		}
 
-		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrColumnName, &dwColor));
-		cdc.SetTextColor(dwColor);
+		if (bstrIsImage == L"1")
+		{
+			CComBSTR bstrValue;
+			pColumnRects->GetRectProp(i, VAR_VALUE, &bstrValue);
 
-		auto x = lpdi->rcItem.left;
-		auto y = lpdi->rcItem.top;
+			TBITMAP hBitmap = { 0 };
+			m_pImageManagerService->GetImage(bstrValue, &hBitmap);
+			if (hBitmap.hBitmap)
+			{
+				CDC cdcBitmap;
+				cdcBitmap.CreateCompatibleDC(cdc);
+				cdcBitmap.SelectBitmap(hBitmap.hBitmap);
+				auto x = lpdi->rcItem.left;
+				auto y = lpdi->rcItem.top;
+				static Gdiplus::Color color(Gdiplus::Color::White);
+				TransparentBlt(cdc, x + rect.left, y + rect.top, hBitmap.Width, hBitmap.Height, cdcBitmap, 0, 0, hBitmap.Width, hBitmap.Height, color.ToCOLORREF());
+			}
+		}
+		else
+		{
+			DWORD dwColor = 0;
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrColumnName, &dwColor));
+			cdc.SetTextColor(dwColor);
 
-		CString str(bstrText);
-		cdc.SelectFont(font);
-		RECT rectText = { x + rect.left, y + rect.top, x + rect.right, y + rect.bottom };
-		cdc.DrawText(str, str.GetLength(), &rectText, bstrIsWordWrap == L"1" ? DT_WORDBREAK : 0);
+			auto x = lpdi->rcItem.left;
+			auto y = lpdi->rcItem.top;
+
+			CString str(bstrText);
+			cdc.SelectFont(font);
+			RECT rectText = { x + rect.left, y + rect.top, x + rect.right, y + rect.bottom };
+			cdc.DrawText(str, str.GetLength(), &rectText, bstrIsWordWrap == L"1" ? DT_WORDBREAK : 0);
+		}
 	}
 
 	return S_OK;
@@ -225,8 +254,25 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CString strText;
 	GetValue(pItemObject, CComBSTR(VAR_TWITTER_NORMALIZED_TEXT), strText);
 
+	CString strImageUrl;
+	GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_IMAGE), strImageUrl);
+
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
+
+	TBITMAP hBitmap = { 0 };
+	m_pImageManagerService->GetImage(CComBSTR(strImageUrl), &hBitmap);
+	if (hBitmap.hBitmap)
+	{
+		auto x = 10;
+		auto y = PADDING_Y * 2;
+		UINT uiIndex = 0;
+		pColumnRects->AddRect(CRect(x, y, x + hBitmap.Width, y + hBitmap.Height), &uiIndex);
+		pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE));
+		pColumnRects->SetRectProp(uiIndex, VAR_TEXT, L"");
+		pColumnRects->SetRectProp(uiIndex, VAR_VALUE, CComBSTR(strImageUrl));
+		pColumnRects->SetRectProp(uiIndex, VAR_IS_IMAGE, L"1");
+	}
 
 	CSize sizeRetweetedDislpayName;
 	UINT uiIndex = 0;
@@ -378,7 +424,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		}
 	}
 
-	lpMeasureItemStruct->itemHeight = min(255, lastY + ITEM_SPACING);
+	lpMeasureItemStruct->itemHeight = min(255, max(48 + PADDING_Y * 2 + PADDING_Y * 2, lastY + ITEM_SPACING));
 	lpMeasureItemStruct->itemWidth = sizeText.cx;
 	return S_OK;
 }

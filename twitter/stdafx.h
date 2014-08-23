@@ -27,6 +27,9 @@
 #define _WTL_NO_CSTRING
 #define __TWITTER__
 
+#define _CRT_SECURE_NO_WARNINGS
+#define BOOST_LIB_DIAGNOSTIC 1
+
 #include "resource.h"
 #include <atlstr.h>
 #include <atlbase.h>
@@ -66,3 +69,7 @@
 #include "..\NotificationServices\Plugins.h"
 
 #pragma comment (lib,"Gdiplus.lib")
+#pragma comment (lib,"Winhttp.lib")
+#ifdef DEBUG
+#pragma comment (lib,"..\\boost\\stage\\lib\\libboost_system-vc120-mt-sgd-1_55.lib")
+#endif

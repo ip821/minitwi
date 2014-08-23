@@ -36,6 +36,7 @@ public:
 private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IThreadService> m_pThreadService;
+	CComPtr<IServiceProvider> m_pServiceProvider;
 	DWORD m_dwAdvice = 0;
 	std::mutex m_mutex;
 

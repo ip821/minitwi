@@ -37,6 +37,7 @@ private:
 	CComPtr<IObjArray> m_pObjectArray;
 	CComPtr<ITheme> m_pCurrentTheme;
 	CComPtr<ISettings> m_pSettings;
+	CComPtr<IServiceProvider> m_pServiceProvider;
 
 public:
 

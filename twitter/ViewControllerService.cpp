@@ -35,6 +35,11 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
 	RETURN_IF_FAILED(pThemeService->ApplyThemeFromSettings());
 
+	CComPtr<IThreadPoolService> pThreadPoolService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThreadPoolService, &pThreadPoolService));
+	RETURN_IF_FAILED(pThreadPoolService->SetThreadCount(1));
+	RETURN_IF_FAILED(pThreadPoolService->Start());
+
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
@@ -90,7 +95,7 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 	else
 	{
 		CComVariant vDesc;
-		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_HRESULT_DESCRIPTION, &vDesc));
+		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
 		CComBSTR bstrMsg = L"Unknown error";
 		if (vDesc.vt == VT_BSTR)
 			bstrMsg = vDesc.bstrVal;

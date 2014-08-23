@@ -29,6 +29,7 @@ public:
 private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
+	CComPtr<IImageManagerService> m_pImageManagerService;
 	TIME_ZONE_INFORMATION m_tz;
 
 	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap);
@@ -39,6 +40,7 @@ public:
 	STDMETHOD(MeasureItem)(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
+	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinTimeline), CSkinTimeline)

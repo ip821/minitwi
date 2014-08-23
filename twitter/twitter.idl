@@ -30,6 +30,13 @@ typedef struct TtagMEASUREITEMSTRUCT {
 	ULONG_PTR  itemData;
 } TMEASUREITEMSTRUCT;
 
+typedef struct TtagBITMAP
+{
+	HBITMAP hBitmap;
+	UINT Width;
+	UINT Height;
+} TBITMAP;
+
 [
 	object,
 	uuid(DC001682-90CC-497F-BCE6-D00D712FD241),
@@ -37,6 +44,17 @@ typedef struct TtagMEASUREITEMSTRUCT {
 ]
 interface IFormsService : IUnknown
 {
+};
+
+[
+	object,
+	uuid(828C2337-535F-491B-943D-EDF93F760CB7),
+	pointer_default(unique)
+]
+interface IImageManagerService : IUnknown
+{
+	HRESULT GetImage(BSTR bstrKey, TBITMAP* phBitmap);
+	HRESULT SetImage(BSTR bstrKey, BSTR bstrFileName);
 };
 
 [
@@ -107,6 +125,7 @@ interface ISkinTimeline : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 };
@@ -132,6 +151,7 @@ interface ITheme : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
+	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 };
 
 [
@@ -163,6 +183,34 @@ interface IOpenUrlService : IUnknown
 	HRESULT OpenColumnAsUrl(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 };
 
+[
+	object,
+	uuid(5304DEAC-784A-457C-9037-1E878B9D2EAA),
+	pointer_default(unique)
+]
+interface IDownloadServiceEventSink : IUnknown
+{
+	HRESULT OnDownloadComplete(BSTR bstrUrl, BSTR bstrFilePath);
+};
+
+[
+	object,
+	uuid(18A1A514-1F78-4811-B469-509CFE4AAF94),
+	pointer_default(unique)
+]
+interface IDownloadService : IUnknown
+{
+	HRESULT AddDownload(BSTR bstrUrl);
+};
+
+[
+	object,
+	uuid(22180299-0223-49F2-8E63-1D3869160676),
+	pointer_default(unique)
+]
+interface ITimelineUpdateImageService : IUnknown
+{
+};
 [
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
@@ -268,6 +316,27 @@ library twitterLib
 	coclass TimelineControlCopyCommand
 	{
 		[default] interface ICommand;
+	};
+	[
+		uuid(204D2E4F-72BE-41EF-8B7D-992B89BE36DA)		
+	]
+	coclass ImageManagerService
+	{
+		[default] interface IImageManagerService;
+	};
+	[
+		uuid(8A7C5710-9FCB-4FD9-83A2-36EE81E10FB9)		
+	]
+	coclass DownloadService
+	{
+		[default] interface IDownloadService;
+	};
+	[
+		uuid(5DD83D05-C14B-404F-A979-4ACABB551655)		
+	]
+	coclass TimelineUpdateImageService
+	{
+		[default] interface ITimelineUpdateImageService;
 	};
 };
 

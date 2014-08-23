@@ -70,9 +70,9 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CURL_STATICLIB;WIN32;_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Midl>
@@ -97,6 +97,7 @@
       <ModuleDefinitionFile>.\twitter.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <RegisterOutput>false</RegisterOutput>
+      <AdditionalDependencies>ws2_32.lib;wldap32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -106,7 +107,7 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Midl>
@@ -133,6 +134,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <RegisterOutput>false</RegisterOutput>
+      <AdditionalDependencies>ws2_32.lib;wldap32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
@@ -142,7 +144,7 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>__WINXP__;WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Midl>
@@ -170,6 +172,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <RegisterOutput>false</RegisterOutput>
+      <AdditionalDependencies>ws2_32.lib;wldap32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -179,6 +182,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ColumnRects.cpp" />
+    <ClCompile Include="DownloadService.cpp" />
+    <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="TimelineControlCopyCommand.cpp" />
     <ClCompile Include="CustomListBox.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -213,6 +218,7 @@
     </ClCompile>
     <ClCompile Include="TimelineControl.cpp" />
     <ClCompile Include="TimelineService.cpp" />
+    <ClCompile Include="TimelineUpdateImageService.cpp" />
     <ClCompile Include="twitconn_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -249,6 +255,8 @@
   <ItemGroup>
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="ColumnRects.h" />
+    <ClInclude Include="DownloadService.h" />
+    <ClInclude Include="ImageManagerService.h" />
     <ClInclude Include="TimelineControlCopyCommand.h" />
     <ClInclude Include="OpenUrlService.h" />
     <ClInclude Include="CustomListBox.h" />
@@ -268,6 +276,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TimelineControl.h" />
     <ClInclude Include="TimelineService.h" />
+    <ClInclude Include="TimelineUpdateImageService.h" />
     <ClInclude Include="twitconn_contract_i.h" />
     <ClInclude Include="twitter_i.h" />
     <ClInclude Include="ViewControllerService.h" />
@@ -284,13 +293,16 @@
     <None Include="ColumnInfo3.rgs" />
     <None Include="ColumnInfo4.rgs" />
     <None Include="ColumnRects.rgs" />
+    <None Include="DownloadService.rgs" />
     <None Include="FormsService.rgs" />
+    <None Include="ImageManagerService2.rgs" />
     <None Include="SkinDefault.rgs" />
     <None Include="SkinService.rgs" />
     <None Include="SkinTimeline.rgs" />
     <None Include="ThemeColorMap.rgs" />
     <None Include="TimelineControl.rgs" />
     <None Include="TimelineService.rgs" />
+    <None Include="TimelineUpdateImageService.rgs" />
     <None Include="twitter.def" />
     <None Include="twitter.rgs" />
     <None Include="ViewControllerService.rgs" />
@@ -341,6 +353,11 @@
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">viewmdl_contract_p.c</ProxyFileName>
     </Midl>
     <Midl Include="twitter.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\curl\projects\Windows\VC12\lib\libcurl.vcxproj">
+      <Project>{da6f56b4-06a4-441d-ad70-ac5a7d51fadb}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -33,10 +33,13 @@ private:
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
+	CComPtr<IImageManagerService> m_pImageManagerService;
+
 public:
 
 	STDMETHOD(GetTimelineSkin)(ISkinTimeline** ppSkinTimeline);
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
+	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ThemeDefault), CThemeDefault)

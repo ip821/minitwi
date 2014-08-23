@@ -62,6 +62,15 @@
     <Filter Include="Controls\TimelineControl\Commands">
       <UniqueIdentifier>{4ccc7e57-a859-4d6a-9b56-0b8b9ec06220}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\ImageManagerService">
+      <UniqueIdentifier>{3a59f18e-e53f-4d9a-a4b0-cabdd41035ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\DownloadService">
+      <UniqueIdentifier>{0fa18dfb-b6cd-4ae6-91ad-44bf14a653cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\TimelineUpdateImageService">
+      <UniqueIdentifier>{aa560fa0-968a-42ff-98f2-f1765832fe90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -135,6 +144,15 @@
     </ClCompile>
     <ClCompile Include="asyncsvc_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageManagerService.cpp">
+      <Filter>Services\ImageManagerService</Filter>
+    </ClCompile>
+    <ClCompile Include="DownloadService.cpp">
+      <Filter>Services\DownloadService</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineUpdateImageService.cpp">
+      <Filter>Services\TimelineUpdateImageService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +234,15 @@
     <ClInclude Include="asyncsvc_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImageManagerService.h">
+      <Filter>Services\ImageManagerService</Filter>
+    </ClInclude>
+    <ClInclude Include="DownloadService.h">
+      <Filter>Services\DownloadService</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineUpdateImageService.h">
+      <Filter>Services\TimelineUpdateImageService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -260,6 +287,15 @@
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
     <None Include="ColumnInfo4.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="ImageManagerService2.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="DownloadService.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="TimelineUpdateImageService.rgs">
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>

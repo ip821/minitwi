@@ -59,6 +59,7 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
+
 	CMenu m_popupMenu;
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
