@@ -48,6 +48,13 @@ STDMETHODIMP COpenUrlService::OpenColumnAsUrl(BSTR bstrColumnName, DWORD dwColum
 		strUrl = bstr;
 	}
 
+	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_IMAGE))
+	{
+		CComBSTR bstr;
+		RETURN_IF_FAILED(pColumnRects->GetRectProp(dwColumnIndex, VAR_TWITTER_MEDIAURL, &bstr));
+		strUrl = bstr;
+	}
+
 	if (!strUrl.IsEmpty())
 		ShellExecute(NULL, L"open", strUrl, NULL, NULL, SW_SHOW);
 

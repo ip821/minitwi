@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Sun Aug 24 10:17:30 2014
+/* at Sun Aug 24 13:24:17 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -394,7 +394,6 @@ typedef struct TtagMEASUREITEMSTRUCT
 
 typedef struct TtagBITMAP
     {
-    HBITMAP hBitmap;
     UINT Width;
     UINT Height;
     } 	TBITMAP;
@@ -489,13 +488,21 @@ EXTERN_C const IID IID_IImageManagerService;
     IImageManagerService : public IUnknown
     {
     public:
-        virtual HRESULT STDMETHODCALLTYPE GetImage( 
+        virtual HRESULT STDMETHODCALLTYPE GetImageInfo( 
             BSTR bstrKey,
-            TBITMAP *phBitmap) = 0;
+            TBITMAP *ptBitmap) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE CreateImageBitmap( 
+            BSTR bstrKey,
+            HBITMAP *phBitmap) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE SetImage( 
             BSTR bstrKey,
             BSTR bstrFileName) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE ContainsImageKey( 
+            BSTR bstrKey,
+            BOOL *pbContains) = 0;
         
     };
     
@@ -518,15 +525,25 @@ EXTERN_C const IID IID_IImageManagerService;
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IImageManagerService * This);
         
-        HRESULT ( STDMETHODCALLTYPE *GetImage )( 
+        HRESULT ( STDMETHODCALLTYPE *GetImageInfo )( 
             IImageManagerService * This,
             BSTR bstrKey,
-            TBITMAP *phBitmap);
+            TBITMAP *ptBitmap);
+        
+        HRESULT ( STDMETHODCALLTYPE *CreateImageBitmap )( 
+            IImageManagerService * This,
+            BSTR bstrKey,
+            HBITMAP *phBitmap);
         
         HRESULT ( STDMETHODCALLTYPE *SetImage )( 
             IImageManagerService * This,
             BSTR bstrKey,
             BSTR bstrFileName);
+        
+        HRESULT ( STDMETHODCALLTYPE *ContainsImageKey )( 
+            IImageManagerService * This,
+            BSTR bstrKey,
+            BOOL *pbContains);
         
         END_INTERFACE
     } IImageManagerServiceVtbl;
@@ -551,11 +568,17 @@ EXTERN_C const IID IID_IImageManagerService;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IImageManagerService_GetImage(This,bstrKey,phBitmap)	\
-    ( (This)->lpVtbl -> GetImage(This,bstrKey,phBitmap) ) 
+#define IImageManagerService_GetImageInfo(This,bstrKey,ptBitmap)	\
+    ( (This)->lpVtbl -> GetImageInfo(This,bstrKey,ptBitmap) ) 
+
+#define IImageManagerService_CreateImageBitmap(This,bstrKey,phBitmap)	\
+    ( (This)->lpVtbl -> CreateImageBitmap(This,bstrKey,phBitmap) ) 
 
 #define IImageManagerService_SetImage(This,bstrKey,bstrFileName)	\
     ( (This)->lpVtbl -> SetImage(This,bstrKey,bstrFileName) ) 
+
+#define IImageManagerService_ContainsImageKey(This,bstrKey,pbContains)	\
+    ( (This)->lpVtbl -> ContainsImageKey(This,bstrKey,pbContains) ) 
 
 #endif /* COBJMACROS */
 
@@ -1210,8 +1233,7 @@ EXTERN_C const IID IID_ITimelineControl;
         virtual HRESULT STDMETHODCALLTYPE SetItems( 
             IObjArray *pObjectArray) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE InvalidateItems( 
-            IBstrCollection *pBstrCollection) = 0;
+        virtual HRESULT STDMETHODCALLTYPE Invalidate( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE Clear( void) = 0;
         
@@ -1276,9 +1298,8 @@ EXTERN_C const IID IID_ITimelineControl;
             ITimelineControl * This,
             IObjArray *pObjectArray);
         
-        HRESULT ( STDMETHODCALLTYPE *InvalidateItems )( 
-            ITimelineControl * This,
-            IBstrCollection *pBstrCollection);
+        HRESULT ( STDMETHODCALLTYPE *Invalidate )( 
+            ITimelineControl * This);
         
         HRESULT ( STDMETHODCALLTYPE *Clear )( 
             ITimelineControl * This);
@@ -1339,8 +1360,8 @@ EXTERN_C const IID IID_ITimelineControl;
 #define ITimelineControl_SetItems(This,pObjectArray)	\
     ( (This)->lpVtbl -> SetItems(This,pObjectArray) ) 
 
-#define ITimelineControl_InvalidateItems(This,pBstrCollection)	\
-    ( (This)->lpVtbl -> InvalidateItems(This,pBstrCollection) ) 
+#define ITimelineControl_Invalidate(This)	\
+    ( (This)->lpVtbl -> Invalidate(This) ) 
 
 #define ITimelineControl_Clear(This)	\
     ( (This)->lpVtbl -> Clear(This) ) 

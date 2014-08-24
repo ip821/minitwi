@@ -49,6 +49,8 @@
 #include <comdef.h>
 
 #include <gdiplus.h>
+#include <wincodec.h> 
+#include <wincodecsdk.h> 
 
 #include <vector>
 #include <map>
@@ -74,4 +76,8 @@
 #pragma comment (lib,"Winhttp.lib")
 #ifdef DEBUG
 #pragma comment (lib,"..\\boost\\stage\\lib\\libboost_system-vc120-mt-sgd-1_55.lib")
+#else
+#pragma comment (lib,"..\\boost\\stage\\lib\\libboost_system-vc120-mt-s-1_55.lib")
 #endif
+
+#pragma comment(lib, "WindowsCodecs.lib")

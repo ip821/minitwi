@@ -314,3 +314,5 @@
 /twitter/asyncsvc_contract_i.h
 /twitter/asyncsvc_contract_p.c
 /twiconn/Debug
+/twitter/Release/*.cache
+/twitter/Release_XP/*.cache

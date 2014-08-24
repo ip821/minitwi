@@ -32,7 +32,6 @@ typedef struct TtagMEASUREITEMSTRUCT {
 
 typedef struct TtagBITMAP
 {
-	HBITMAP hBitmap;
 	UINT Width;
 	UINT Height;
 } TBITMAP;
@@ -53,8 +52,10 @@ interface IFormsService : IUnknown
 ]
 interface IImageManagerService : IUnknown
 {
-	HRESULT GetImage(BSTR bstrKey, TBITMAP* phBitmap);
+	HRESULT GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap);
+	HRESULT CreateImageBitmap(BSTR bstrKey, HBITMAP* phBitmap);
 	HRESULT SetImage(BSTR bstrKey, BSTR bstrFileName);
+	HRESULT ContainsImageKey(BSTR bstrKey, BOOL* pbContains);
 };
 
 [
@@ -138,7 +139,7 @@ interface ISkinTimeline : IUnknown
 interface ITimelineControl : IControl2
 {
 	HRESULT SetItems(IObjArray* pObjectArray);
-	HRESULT InvalidateItems(IBstrCollection* pBstrCollection);
+	HRESULT Invalidate();
 	HRESULT Clear();
 	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
 };

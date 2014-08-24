@@ -39,6 +39,7 @@ private:
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<IInfoControlService> m_pInfoControlService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
+	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	DWORD m_dwAdvice = 0;
 	CComPtr<ISettings> m_pSettings;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;

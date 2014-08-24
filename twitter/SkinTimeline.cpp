@@ -121,17 +121,21 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 			CComBSTR bstrValue;
 			pColumnRects->GetRectProp(i, VAR_VALUE, &bstrValue);
 
-			TBITMAP hBitmap = { 0 };
-			m_pImageManagerService->GetImage(bstrValue, &hBitmap);
-			if (hBitmap.hBitmap)
+			CBitmap bitmap;
+			m_pImageManagerService->CreateImageBitmap(bstrValue, &bitmap.m_hBitmap);
+			TBITMAP tBitmap = { 0 };
+			m_pImageManagerService->GetImageInfo(bstrValue, &tBitmap);
+			if (bitmap.m_hBitmap)
 			{
 				CDC cdcBitmap;
 				cdcBitmap.CreateCompatibleDC(cdc);
-				cdcBitmap.SelectBitmap(hBitmap.hBitmap);
+				cdcBitmap.SelectBitmap(bitmap);
 				auto x = lpdi->rcItem.left;
 				auto y = lpdi->rcItem.top;
+				auto width = rect.right - rect.left;
+				auto height = rect.bottom - rect.top;
 				static Gdiplus::Color color(Gdiplus::Color::White);
-				TransparentBlt(cdc, x + rect.left, y + rect.top, hBitmap.Width, hBitmap.Height, cdcBitmap, 0, 0, hBitmap.Width, hBitmap.Height, color.ToCOLORREF());
+				TransparentBlt(cdc, x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
 			}
 		}
 		else
@@ -391,6 +395,61 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		lastY += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
 	}
 
+	std::hash_set<std::wstring> imageUrls;
+	{ //Images
+		CComVariant vMediaUrls;
+		pItemObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls);
+		if (vMediaUrls.vt == VT_UNKNOWN)
+		{
+			CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+			UINT_PTR uiCount = 0;
+			pObjArray->GetCount(&uiCount);
+
+			if (uiCount)
+			{
+				const int IMAGE_HEIGHT = 100;
+				const int IMAGE_WIDTH = 275;
+				auto xOffset = ((clientRect.right - clientRect.left) - (IMAGE_WIDTH * uiCount)) / 2;
+
+				int i = 0;
+				{ //Use only first image due to size
+					CComPtr<IVariantObject> pMediaObject;
+					pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+					CComVariant vMediaUrl;
+					pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl);
+
+					CComVariant vMediaUrlThumb;
+					pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrlThumb);
+
+					CComVariant vMediaUrlShort;
+					pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_SHORT, &vMediaUrlShort);
+
+					imageUrls.insert(vMediaUrlShort.bstrVal);
+
+					TBITMAP tBitmap = { 0 };
+					m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
+
+					auto x = i * IMAGE_WIDTH + xOffset;
+					auto y = lastY;
+					auto width = IMAGE_WIDTH;
+					auto height = IMAGE_HEIGHT;
+
+					UINT uiIndex = 0;
+					pColumnRects->AddRect(CRect(x, y, x + width, y + height), &uiIndex);
+					pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_IMAGE));
+					pColumnRects->SetRectProp(uiIndex, VAR_TEXT, L"");
+					pColumnRects->SetRectProp(uiIndex, VAR_VALUE, vMediaUrlThumb.bstrVal);
+					pColumnRects->SetRectProp(uiIndex, VAR_TWITTER_MEDIAURL, vMediaUrl.bstrVal);
+					pColumnRects->SetRectProp(uiIndex, VAR_IS_IMAGE, L"1");
+					pColumnRects->SetRectProp(uiIndex, VAR_IS_URL, L"1");
+				}
+
+				lastY += IMAGE_HEIGHT;
+			}
+		}
+	}
+
 	CComVariant vUrls;
 	pItemObject->GetVariantValue(VAR_TWITTER_URLS, &vUrls);
 	if (vUrls.vt == VT_UNKNOWN)
@@ -406,6 +465,9 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		{
 			CComBSTR bstrUrl;
 			pBstrCollection->GetItem(i, &bstrUrl);
+			if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
+				continue;
+
 			auto size = AddColumn(
 				hdc,
 				pColumnRects,

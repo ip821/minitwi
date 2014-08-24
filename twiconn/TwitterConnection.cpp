@@ -193,9 +193,29 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 			}
 		}
 
-		auto urlsVector = std::vector<std::wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
-		AppendUrls(pVariantObject, urlsVector);
+		auto entitiesObj = itemObject[L"entities"]->AsObject();
+		if (entitiesObj.find(L"media") != entitiesObj.end())
+		{
+			CComPtr<IObjCollection> pMediaObjectCollection;
+			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pMediaObjectCollection));
+			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURLS, &CComVariant(pMediaObjectCollection)));
 
+			auto mediaArray = entitiesObj[L"media"]->AsArray();
+			for (size_t i = 0; i < mediaArray.size(); i++)
+			{
+				auto mediaObj = mediaArray[i]->AsObject();
+				auto url = mediaObj[L"media_url"]->AsString();
+				auto shortUrl = mediaObj[L"url"]->AsString();
+				CComPtr<IVariantObject> pMediaObject;
+				RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pMediaObject));
+				RETURN_IF_FAILED(pMediaObjectCollection->AddObject(pMediaObject));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL_SHORT, &CComVariant(shortUrl.c_str())));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(url.c_str())));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &CComVariant((url + L":small").c_str())));
+			}
+		}
+
+		auto urlsVector = std::vector<std::wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
 		for (size_t i = 0; i < urlsVector.size(); i++)
 		{
 			strText.Replace(urlsVector[i].c_str(), L"");
@@ -215,6 +235,7 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 			urlsHashSet.insert(strUrl1);
 			regexIterator++;
 		}
+#endif
 
 		urlsVector = std::vector<std::wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
 		AppendUrls(pVariantObject, urlsVector);
@@ -223,7 +244,6 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 		{
 			strText.Replace(urlsVector[i].c_str(), L"");
 		}
-#endif
 
 		strText.Replace(L"\r\n", L" ");
 		strText.Replace(L"\n", L" ");
@@ -251,7 +271,19 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 STDMETHODIMP CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urlsVector)
 {
 	CComPtr<IBstrCollection> pBstrCollection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_BstrCollection, &pBstrCollection));
+	CComVariant vCollection;
+	pVariantObject->GetVariantValue(VAR_TWITTER_URLS, &vCollection);
+	if (vCollection.vt == VT_UNKNOWN)
+	{
+		CComPtr<IUnknown> pUnknown = vCollection.punkVal;
+		pUnknown->QueryInterface(&pBstrCollection);
+	}
+
+	if (!pBstrCollection)
+	{
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_BstrCollection, &pBstrCollection));
+	}
+
 	for (size_t i = 0; i < urlsVector.size(); i++)
 	{
 		RETURN_IF_FAILED(pBstrCollection->AddItem(CComBSTR(urlsVector[i].c_str())));

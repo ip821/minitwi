@@ -30,8 +30,10 @@ private:
 	mutex m_mutex;
 public:
 
-	STDMETHOD(GetImage)(BSTR bstrKey, TBITMAP* phBitmap);
+	STDMETHOD(GetImageInfo)(BSTR bstrKey, TBITMAP* phBitmap);
+	STDMETHOD(CreateImageBitmap)(BSTR bstrKey, HBITMAP* ptBitmap);
 	STDMETHOD(SetImage)(BSTR bstrKey, BSTR bstrFileName);
+	STDMETHOD(ContainsImageKey)(BSTR bstrKey, BOOL* pbContains);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ImageManagerService), CImageManagerService)

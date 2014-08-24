@@ -46,16 +46,13 @@ STDMETHODIMP CTimelineUpdateImageService::OnTimer()
 	{
 		lock_guard<mutex> lock(m_mutex);
 		ids = hash_set<wstring>(m_idsToUpdate);
+		m_idsToUpdate.clear();
 	}
 
-	CComPtr<IBstrCollection> pBstrCollection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_BstrCollection, &pBstrCollection));
-	for (auto item : ids)
+	if (ids.size())
 	{
-		pBstrCollection->AddItem(CComBSTR(item.c_str()));
+		RETURN_IF_FAILED(m_pTimelineControl->Invalidate());
 	}
-
-	m_pTimelineControl->InvalidateItems(pBstrCollection);
 
 	return S_OK;
 }

@@ -93,27 +93,67 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
+	std::hash_set<std::wstring> urls;
+
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-		CComVariant v;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &v));
-		if (v.vt == VT_BSTR)
-		{
-			TBITMAP b = { 0 };
-			if (pImageManagerService->GetImage(v.bstrVal, &b) == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
-			{
-				CComVariant vId;
-				RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
 
-				CComPtr<IVariantObject> pDownloadTask;
-				RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-				RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(v.bstrVal)));
-				RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
-				RETURN_IF_FAILED(pDownloadService->AddDownload(pDownloadTask));
+		CComVariant vId;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+
+		CComVariant vUserImage;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+		if (vUserImage.vt == VT_BSTR)
+		{
+			BOOL bContains = TRUE;
+			pImageManagerService->ContainsImageKey(vUserImage.bstrVal, &bContains);
+			if (!bContains)
+			{
+				if (urls.find(vUserImage.bstrVal) == urls.end())
+				{
+					CComPtr<IVariantObject> pDownloadTask;
+					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(vUserImage.bstrVal)));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
+					RETURN_IF_FAILED(pDownloadService->AddDownload(pDownloadTask));
+					urls.insert(vUserImage.bstrVal);
+				}
+			}
+		}
+
+		CComVariant vMediaUrls;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls));
+		if (vMediaUrls.vt == VT_UNKNOWN)
+		{
+			CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+			UINT_PTR uiCount = 0;
+			pObjArray->GetCount(&uiCount);
+			for (size_t i = 0; i < uiCount; i++)
+			{
+				CComPtr<IVariantObject> pMediaObject;
+				pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+				CComVariant vMediaUrl;
+				pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrl);
+
+				BOOL bContains = TRUE;
+				pImageManagerService->ContainsImageKey(vMediaUrl.bstrVal, &bContains);
+				if (!bContains)
+				{
+					if (urls.find(vMediaUrl.bstrVal) == urls.end())
+					{
+						CComPtr<IVariantObject> pDownloadTask;
+						RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
+						RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(vMediaUrl.bstrVal)));
+						RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
+						RETURN_IF_FAILED(pDownloadService->AddDownload(pDownloadTask));
+						urls.insert(vMediaUrl.bstrVal);
+					}
+				}
 			}
 		}
 	}

@@ -35,10 +35,9 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
 	RETURN_IF_FAILED(pThemeService->ApplyThemeFromSettings());
 
-	CComPtr<IThreadPoolService> pThreadPoolService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThreadPoolService, &pThreadPoolService));
-	RETURN_IF_FAILED(pThreadPoolService->SetThreadCount(1));
-	RETURN_IF_FAILED(pThreadPoolService->Start());
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThreadPoolService, &m_pThreadPoolService));
+	RETURN_IF_FAILED(m_pThreadPoolService->SetThreadCount(6));
+	RETURN_IF_FAILED(m_pThreadPoolService->Start());
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -64,6 +63,8 @@ STDMETHODIMP CViewControllerService::StopTimers()
 
 STDMETHODIMP CViewControllerService::OnShutdown()
 {
+	RETURN_IF_FAILED(m_pThreadPoolService->Stop());
+	m_pThreadPoolService.Release();
 	RETURN_IF_FAILED(m_pTimerService->StopTimer());
 	m_pTimerService.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
