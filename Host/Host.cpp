@@ -6,12 +6,17 @@
 #include "..\twitter\Plugins.h"
 
 CAppModule _Module;
+ULONG_PTR g_gdiPlusToken;
+Gdiplus::GdiplusStartupInput g_GdiplusStartupInput = { 0 };
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	int nRet = 0;
 	{
 		CoInitialize(NULL);
+
+		g_GdiplusStartupInput.GdiplusVersion = 1;
+		Gdiplus::GdiplusStartup(&g_gdiPlusToken, &g_GdiplusStartupInput, NULL);
 
 		TCHAR lpszCurrentDir[MAX_PATH];
 		if (GetModuleFileName(NULL, lpszCurrentDir, MAX_PATH))
@@ -90,6 +95,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 		_Module.RemoveMessageLoop();
 	}
+
+	Gdiplus::GdiplusShutdown(g_gdiPlusToken);
 
 #ifdef _DEBUG
 	_CrtDumpMemoryLeaks();

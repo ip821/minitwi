@@ -40,6 +40,9 @@ extern CAppModule _Module;
 #include <atlctrlw.h>
 #include <atlctrlx.h>
 #include <atlstr.h>
+
+#include <gdiplus.h>
+
 #include <list>
 
 #include <initguid.h>
@@ -60,3 +63,5 @@ extern CAppModule _Module;
 #else
   #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
+
+#pragma comment (lib,"Gdiplus.lib")
