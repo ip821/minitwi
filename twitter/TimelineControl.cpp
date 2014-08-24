@@ -103,6 +103,22 @@ STDMETHODIMP CTimelineControl::SetItems(IObjArray* pObjectArray)
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControl::InvalidateItems(IBstrCollection* pBstrCollection)
+{
+	//m_listBox.SetRedraw(FALSE);
+	//UINT_PTR uiCount = 0;
+	//pBstrCollection->GetCount(&uiCount);
+	//for (size_t i = 0; i < uiCount; i++)
+	//{
+	//	CComBSTR bstr;
+	//	RETURN_IF_FAILED(pBstrCollection->GetItem(i, &bstr));
+	//	m_listBox.Inva
+	//}
+	//m_listBox.SetRedraw();
+	m_listBox.Invalidate(TRUE);
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::UpdateControl(IControl *pControl)
 {
 	return S_OK;

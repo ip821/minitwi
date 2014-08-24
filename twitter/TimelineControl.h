@@ -83,6 +83,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	STDMETHOD(SetItems)(IObjArray* pObjectArray);
+	STDMETHOD(InvalidateItems)(IBstrCollection* pBstrCollection);
 	STDMETHOD(Clear)();
 	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);
 

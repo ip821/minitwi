@@ -40,7 +40,7 @@ private:
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	DWORD m_dwAdvice = 0;
 
-	HRESULT Fire_OnDownloadComplete(BSTR bstrUrl, BSTR bstrFilePath);
+	HRESULT Fire_OnDownloadComplete(IVariantObject *pResult);
 
 public:
 
@@ -51,7 +51,7 @@ public:
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 
-	STDMETHOD(AddDownload)(BSTR bstrUrl);
+	STDMETHOD(AddDownload)(IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(DownloadService), CDownloadService)

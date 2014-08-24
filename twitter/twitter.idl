@@ -138,6 +138,7 @@ interface ISkinTimeline : IUnknown
 interface ITimelineControl : IControl2
 {
 	HRESULT SetItems(IObjArray* pObjectArray);
+	HRESULT InvalidateItems(IBstrCollection* pBstrCollection);
 	HRESULT Clear();
 	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
 };
@@ -190,7 +191,7 @@ interface IOpenUrlService : IUnknown
 ]
 interface IDownloadServiceEventSink : IUnknown
 {
-	HRESULT OnDownloadComplete(BSTR bstrUrl, BSTR bstrFilePath);
+	HRESULT OnDownloadComplete(IVariantObject *pResult);
 };
 
 [
@@ -200,7 +201,7 @@ interface IDownloadServiceEventSink : IUnknown
 ]
 interface IDownloadService : IUnknown
 {
-	HRESULT AddDownload(BSTR bstrUrl);
+	HRESULT AddDownload(IVariantObject *pVariantObject);
 };
 
 [

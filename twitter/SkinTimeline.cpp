@@ -260,14 +260,11 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
 
-	TBITMAP hBitmap = { 0 };
-	m_pImageManagerService->GetImage(CComBSTR(strImageUrl), &hBitmap);
-	if (hBitmap.hBitmap)
 	{
 		auto x = 10;
 		auto y = PADDING_Y * 2;
 		UINT uiIndex = 0;
-		pColumnRects->AddRect(CRect(x, y, x + hBitmap.Width, y + hBitmap.Height), &uiIndex);
+		pColumnRects->AddRect(CRect(x, y, x + 48, y + 48), &uiIndex);
 		pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE));
 		pColumnRects->SetRectProp(uiIndex, VAR_TEXT, L"");
 		pColumnRects->SetRectProp(uiIndex, VAR_VALUE, CComBSTR(strImageUrl));

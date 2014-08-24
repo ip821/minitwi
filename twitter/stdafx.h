@@ -53,6 +53,8 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <hash_set>
+#include <mutex>
 #include <boost/lexical_cast.hpp>
 
 #include <initguid.h>

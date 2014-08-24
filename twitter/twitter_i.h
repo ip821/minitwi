@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Sat Aug 23 20:32:43 2014
+/* at Sun Aug 24 10:17:30 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -1210,6 +1210,9 @@ EXTERN_C const IID IID_ITimelineControl;
         virtual HRESULT STDMETHODCALLTYPE SetItems( 
             IObjArray *pObjectArray) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE InvalidateItems( 
+            IBstrCollection *pBstrCollection) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE Clear( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE SetSkinTimeline( 
@@ -1273,6 +1276,10 @@ EXTERN_C const IID IID_ITimelineControl;
             ITimelineControl * This,
             IObjArray *pObjectArray);
         
+        HRESULT ( STDMETHODCALLTYPE *InvalidateItems )( 
+            ITimelineControl * This,
+            IBstrCollection *pBstrCollection);
+        
         HRESULT ( STDMETHODCALLTYPE *Clear )( 
             ITimelineControl * This);
         
@@ -1331,6 +1338,9 @@ EXTERN_C const IID IID_ITimelineControl;
 
 #define ITimelineControl_SetItems(This,pObjectArray)	\
     ( (This)->lpVtbl -> SetItems(This,pObjectArray) ) 
+
+#define ITimelineControl_InvalidateItems(This,pBstrCollection)	\
+    ( (This)->lpVtbl -> InvalidateItems(This,pBstrCollection) ) 
 
 #define ITimelineControl_Clear(This)	\
     ( (This)->lpVtbl -> Clear(This) ) 
@@ -1693,8 +1703,7 @@ EXTERN_C const IID IID_IDownloadServiceEventSink;
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE OnDownloadComplete( 
-            BSTR bstrUrl,
-            BSTR bstrFilePath) = 0;
+            IVariantObject *pResult) = 0;
         
     };
     
@@ -1719,8 +1728,7 @@ EXTERN_C const IID IID_IDownloadServiceEventSink;
         
         HRESULT ( STDMETHODCALLTYPE *OnDownloadComplete )( 
             IDownloadServiceEventSink * This,
-            BSTR bstrUrl,
-            BSTR bstrFilePath);
+            IVariantObject *pResult);
         
         END_INTERFACE
     } IDownloadServiceEventSinkVtbl;
@@ -1745,8 +1753,8 @@ EXTERN_C const IID IID_IDownloadServiceEventSink;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IDownloadServiceEventSink_OnDownloadComplete(This,bstrUrl,bstrFilePath)	\
-    ( (This)->lpVtbl -> OnDownloadComplete(This,bstrUrl,bstrFilePath) ) 
+#define IDownloadServiceEventSink_OnDownloadComplete(This,pResult)	\
+    ( (This)->lpVtbl -> OnDownloadComplete(This,pResult) ) 
 
 #endif /* COBJMACROS */
 
@@ -1775,7 +1783,7 @@ EXTERN_C const IID IID_IDownloadService;
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE AddDownload( 
-            BSTR bstrUrl) = 0;
+            IVariantObject *pVariantObject) = 0;
         
     };
     
@@ -1800,7 +1808,7 @@ EXTERN_C const IID IID_IDownloadService;
         
         HRESULT ( STDMETHODCALLTYPE *AddDownload )( 
             IDownloadService * This,
-            BSTR bstrUrl);
+            IVariantObject *pVariantObject);
         
         END_INTERFACE
     } IDownloadServiceVtbl;
@@ -1825,8 +1833,8 @@ EXTERN_C const IID IID_IDownloadService;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IDownloadService_AddDownload(This,bstrUrl)	\
-    ( (This)->lpVtbl -> AddDownload(This,bstrUrl) ) 
+#define IDownloadService_AddDownload(This,pVariantObject)	\
+    ( (This)->lpVtbl -> AddDownload(This,pVariantObject) ) 
 
 #endif /* COBJMACROS */
 

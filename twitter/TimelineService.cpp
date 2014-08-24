@@ -106,7 +106,14 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			TBITMAP b = { 0 };
 			if (pImageManagerService->GetImage(v.bstrVal, &b) == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
 			{
-				RETURN_IF_FAILED(pDownloadService->AddDownload(v.bstrVal));
+				CComVariant vId;
+				RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+
+				CComPtr<IVariantObject> pDownloadTask;
+				RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
+				RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(v.bstrVal)));
+				RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
+				RETURN_IF_FAILED(pDownloadService->AddDownload(pDownloadTask));
 			}
 		}
 	}

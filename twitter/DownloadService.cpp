@@ -117,20 +117,18 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 	if (vFilePath.vt != VT_BSTR)
 		return E_INVALIDARG;
 
-	RETURN_IF_FAILED(Fire_OnDownloadComplete(vUrl.bstrVal, vFilePath.bstrVal));
+	RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
+	DeleteFile(vFilePath.bstrVal);
 	return S_OK;
 }
 
-STDMETHODIMP CDownloadService::AddDownload(BSTR bstrUrl)
+STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 {
-	CComPtr<IVariantObject> pVariantObject;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_URL, &CComVariant(bstrUrl)));
 	RETURN_IF_FAILED(m_pThreadPoolService->AddTask(pVariantObject));
 	return S_OK;
 }
 
-HRESULT CDownloadService::Fire_OnDownloadComplete(BSTR bstrUrl, BSTR bstrFilePath)
+HRESULT CDownloadService::Fire_OnDownloadComplete(IVariantObject *pResult)
 {
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -148,7 +146,7 @@ HRESULT CDownloadService::Fire_OnDownloadComplete(BSTR bstrUrl, BSTR bstrFilePat
 
 		if (pConnection)
 		{
-			hr = pConnection->OnDownloadComplete(bstrUrl, bstrFilePath);
+			hr = pConnection->OnDownloadComplete(pResult);
 		}
 	}
 	return hr;

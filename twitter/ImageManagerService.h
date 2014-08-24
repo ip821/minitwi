@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 
 using namespace ATL;
+using namespace std;
 
 // CImageManagerService
 
@@ -26,6 +27,7 @@ public:
 
 private:
 	std::map<CComBSTR, std::shared_ptr<Gdiplus::Bitmap>> m_bitmaps;
+	mutex m_mutex;
 public:
 
 	STDMETHOD(GetImage)(BSTR bstrKey, TBITMAP* phBitmap);
