@@ -72,6 +72,9 @@
     <Image Include="res\Host.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Twitter.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Host.rc">

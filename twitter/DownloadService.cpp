@@ -7,7 +7,6 @@
 
 #include <curl/curl.h>
 #include <curl/easy.h>
-#include <boost/filesystem.hpp>
 #include <Winhttp.h>
 
 // CDownloadService

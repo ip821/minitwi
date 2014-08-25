@@ -26,6 +26,14 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 
+	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
+	CComPtr<IContainerControl> pContainerControl;
+	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
+	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
+	m_pTimelineControl = pControl;
+
 	return S_OK;
 }
 
@@ -83,15 +91,19 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	if (FAILED(vHr.intVal))
 		return S_OK;
 
+	CComVariant vResult;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
+	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
+
+	RETURN_IF_FAILED(m_pTimelineControl->SetItems(pObjectArray));
+
+	// Get items and process all links once again
+
 	CComPtr<IImageManagerService> pImageManagerService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
 
 	CComPtr<IDownloadService> pDownloadService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_DownloadService, &pDownloadService));
-
-	CComVariant vResult;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
-	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	std::hash_set<std::wstring> urls;
 

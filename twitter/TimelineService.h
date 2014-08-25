@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 #include "asyncsvc_contract_i.h"
 #include "twitconn_contract_i.h"
+#include "..\ViewMdl\IInitializeWithControlImpl.h"
 #include <mutex>
 
 using namespace ATL;
@@ -17,7 +18,8 @@ class ATL_NO_VTABLE CTimelineService :
 	public ITimelineService,
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,
-	public IPluginSupportNotifications
+	public IPluginSupportNotifications,
+	public IInitializeWithControlImpl
 {
 public:
 	CTimelineService()
@@ -29,6 +31,7 @@ public:
 	BEGIN_COM_MAP(CTimelineService)
 		COM_INTERFACE_ENTRY(ITimelineService)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 	END_COM_MAP()
@@ -37,6 +40,7 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
+	CComQIPtr<ITimelineControl> m_pTimelineControl;
 	DWORD m_dwAdvice = 0;
 	std::mutex m_mutex;
 

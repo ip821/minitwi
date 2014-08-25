@@ -403,6 +403,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Host.ico" />
+    <Image Include="res\Twitter.ico" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\ObjMdl\objmdl_contract_i.idl">
