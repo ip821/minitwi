@@ -110,12 +110,12 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 	CComVariant vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
 	if (vUrl.vt != VT_BSTR)
-		return E_INVALIDARG;
+		return S_OK;
 
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 	if (vFilePath.vt != VT_BSTR)
-		return E_INVALIDARG;
+		return S_OK;
 
 	RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
 	DeleteFile(vFilePath.bstrVal);

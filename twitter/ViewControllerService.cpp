@@ -92,6 +92,12 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 	if (SUCCEEDED(vHr.intVal))
 	{
 		RETURN_IF_FAILED(m_pInfoControlService->HideControl(hwndChildControl));
+
+		CComVariant v;
+		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &v));
+		CComQIPtr<IObjArray> pObjectArray = v.punkVal;
+
+		RETURN_IF_FAILED(m_pTimelineControl->SetItems(pObjectArray));
 	}
 	else
 	{
@@ -111,10 +117,5 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CComVariant v;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &v));
-	CComQIPtr<IObjArray> pObjectArray = v.punkVal;
-
-	RETURN_IF_FAILED(m_pTimelineControl->SetItems(pObjectArray));
 	return S_OK;
 }
