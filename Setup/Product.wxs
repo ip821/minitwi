@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="MiniTwi" Language="1033" Version="1.0.0.0" Manufacturer="IP" UpgradeCode="b3966128-f26b-4da9-8b0c-789798ac020d">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes"/>
+
+    <Feature Id="ProductFeature" Title="MiniTwi" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+
+    <UIRef Id="WixUI_Mondo_Custom" />
+
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="DesktopFolder" Name="Desktop">
+      </Directory>
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="MiniTwi" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+
+      <Component Id="minitwi.exe" Guid="FFAF2980-6F55-48F7-B506-9C3978A4E947">
+        <File Id="minitwi.exe" KeyPath="yes" Source="$(var.Host.TargetPath)"/>
+        <RegistryValue Root="HKLM" Key="Software\IP\MiniTwi" Name="InstalledVersion" Value="[ProductVersion]" Type="string" Action="write" />
+        <Shortcut Id="DesktopShortcut"
+                          Directory="DesktopFolder"
+                          Name="MiniTwi"
+                          Description="Twitter client"
+                          WorkingDirectory="INSTALLFOLDER"
+                          Icon="minitwi.exe"
+                          Advertise="yes" >
+          <Icon Id="minitwi.exe" SourceFile="$(var.Host.TargetPath)" />
+        </Shortcut>
+      </Component>
+
+      <Component Id="asyncsvc.dll" Guid="8E854380-C025-402B-8F1C-D581280E2A7A">
+        <File Id="asyncsvc.dll" KeyPath="yes" Source="$(var.asyncsvc.TargetPath)"/>
+      </Component>
+
+      <Component Id="twiconn.dll" Guid="6C6A6203-A4BB-4701-ABCD-0C5839BC3EB0">
+        <File Id="twiconn.dll" KeyPath="yes" Source="$(var.twiconn.TargetPath)"/>
+      </Component>
+
+      <Component Id="twitter.dll" Guid="7A62B4B2-326F-489E-8A45-FB120022FC16">
+        <File Id="twitter.dll" KeyPath="yes" Source="$(var.twitter.TargetPath)"/>
+      </Component>
+
+      <Component Id="objmdl.dll" Guid="7DA7B31E-ABFE-493A-B9FD-72ADAD8182FD">
+        <File Id="objmdl.dll" KeyPath="yes" Source="$(var.objmdl.TargetPath)"/>
+      </Component>
+
+      <Component Id="viewmdl.dll" Guid="55334DBF-F656-486F-A6C7-1D70E1E4231C">
+        <File Id="viewmdl.dll" KeyPath="yes" Source="$(var.viewmdl.TargetPath)" />
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+
+  <Fragment>
+    <UI Id="WixUI_Mondo_Custom">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="Mondo" />
+
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">NOT Installed AND NOT PATCH</Publish>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">Installed AND PATCH</Publish>
+
+      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="1">WixUI_InstallMode = "Change"</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">WixUI_InstallMode = "InstallCustom"</Publish>
+      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg" Order="1">WixUI_InstallMode = "InstallCustom"</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">WixUI_InstallMode = "InstallTypical" OR WixUI_InstallMode = "InstallComplete"</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomizeDlg" Order="3">WixUI_InstallMode = "Change"</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="4">WixUI_InstallMode = "Repair" OR WixUI_InstallMode = "Remove"</Publish>
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">WixUI_InstallMode = "Update"</Publish>
+
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
+
+      <Publish Dialog="MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog" Value="CustomizeDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+  </Fragment>
+</Wix>

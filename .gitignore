@@ -316,3 +316,8 @@
 /twiconn/Debug
 /twitter/Release/*.cache
 /twitter/Release_XP/*.cache
+/Host/Host.aps
+/Setup/bin/Release
+/Setup/obj/Release
+/Setup/bin/x86/Release_XP
+/Setup/obj/x86/Release_XP
