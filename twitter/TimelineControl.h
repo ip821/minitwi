@@ -82,10 +82,14 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnDeactivate)());
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
+	STDMETHOD(GetItems)(IObjArray** ppObjectArray);
 	STDMETHOD(SetItems)(IObjArray* pObjectArray);
 	STDMETHOD(Invalidate)();
 	STDMETHOD(Clear)();
 	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);
+	STDMETHOD(BeginUpdate)();
+	STDMETHOD(EndUpdate)();
+	STDMETHOD(OnItemsUpdated)();
 
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();

@@ -30,7 +30,6 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
-	TIME_ZONE_INFORMATION m_tz;
 
 	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap);
 	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);

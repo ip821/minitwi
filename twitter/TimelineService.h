@@ -19,7 +19,9 @@ class ATL_NO_VTABLE CTimelineService :
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,
 	public IPluginSupportNotifications,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public IDownloadServiceEventSink,
+	public ITimerServiceEventSink
 {
 public:
 	CTimelineService()
@@ -34,6 +36,8 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
+		COM_INTERFACE_ENTRY(ITimerServiceEventSink)
 	END_COM_MAP()
 
 private:
@@ -41,9 +45,18 @@ private:
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
-	DWORD m_dwAdvice = 0;
+	CComPtr<IDownloadService> m_pDownloadService;
+	CComPtr<IImageManagerService> m_pImageManagerService;
+	CComPtr<ITimerService> m_pTimerService;
+	DWORD m_dwAdviceThreadService = 0;
+	DWORD m_dwAdviceTimerService = 0;
+	DWORD m_dwAdviceDownloadService = 0;
+	std::hash_set<std::wstring> m_idsToUpdate;
 	std::mutex m_mutex;
+	TIME_ZONE_INFORMATION m_tz;
 
+	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
+	STDMETHOD(UpdateRelativeTime)(IObjArray* pObjectArray);
 public:
 	STDMETHOD(Load)(ISettings *pSettings);
 
@@ -53,6 +66,10 @@ public:
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
+
+	STDMETHOD(OnTimer)();
+
+	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)

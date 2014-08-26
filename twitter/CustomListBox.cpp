@@ -56,6 +56,41 @@ void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	m_pSkinTimeline->MeasureItem(m_hWnd, m_items[lpMeasureItemStruct->itemID].m_T, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnRects[lpMeasureItemStruct->itemID].m_T);
 }
 
+HRESULT CCustomListBox::GetItems(IObjArray** ppObjectArray)
+{
+	CComPtr<IObjCollection> pObjCollection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjCollection));
+	for (size_t i = 0; i < m_items.size(); i++)
+	{
+		RETURN_IF_FAILED(pObjCollection->AddObject(m_items[i].m_T));
+	}
+	RETURN_IF_FAILED(pObjCollection->QueryInterface(ppObjectArray));
+	return S_OK;
+}
+
+void CCustomListBox::OnItemsUpdated()
+{
+	for (size_t i = 0; i < m_items.size(); i++)
+	{
+		CComVariant v;
+		m_items[i].m_T->GetVariantValue(VAR_TWITTER_RELATIVE_TIME, &v);
+		if (v.vt == VT_BSTR)
+		{
+			UINT uiColumnCount = 0;
+			m_columnRects[i]->GetCount(&uiColumnCount);
+			for (size_t j = 0; j < uiColumnCount; j++)
+			{
+				CComBSTR bstrColumnName;
+				m_columnRects[i]->GetRectProp(j, VAR_COLUMN_NAME, &bstrColumnName);
+				if (bstrColumnName == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
+				{
+					m_columnRects[i]->SetRectProp(j, VAR_VALUE, v.bstrVal);
+				}
+			}
+		}
+	}
+}
+
 void CCustomListBox::AddItem(IVariantObject* pItemObject)
 {
 	CComVariant vId;

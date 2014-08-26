@@ -218,7 +218,6 @@
     </ClCompile>
     <ClCompile Include="TimelineControl.cpp" />
     <ClCompile Include="TimelineService.cpp" />
-    <ClCompile Include="TimelineUpdateImageService.cpp" />
     <ClCompile Include="twitconn_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -276,9 +275,9 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TimelineControl.h" />
     <ClInclude Include="TimelineService.h" />
-    <ClInclude Include="TimelineUpdateImageService.h" />
     <ClInclude Include="twitconn_contract_i.h" />
     <ClInclude Include="twitter_i.h" />
+    <ClInclude Include="UpdateScope.h" />
     <ClInclude Include="ViewControllerService.h" />
     <ClInclude Include="viewmdl_contract_i.h" />
     <ClInclude Include="xdlldata.h" />

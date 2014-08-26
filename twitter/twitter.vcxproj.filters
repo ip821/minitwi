@@ -68,9 +68,6 @@
     <Filter Include="Services\DownloadService">
       <UniqueIdentifier>{0fa18dfb-b6cd-4ae6-91ad-44bf14a653cf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Services\TimelineUpdateImageService">
-      <UniqueIdentifier>{aa560fa0-968a-42ff-98f2-f1765832fe90}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -150,9 +147,6 @@
     </ClCompile>
     <ClCompile Include="DownloadService.cpp">
       <Filter>Services\DownloadService</Filter>
-    </ClCompile>
-    <ClCompile Include="TimelineUpdateImageService.cpp">
-      <Filter>Services\TimelineUpdateImageService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -240,8 +234,8 @@
     <ClInclude Include="DownloadService.h">
       <Filter>Services\DownloadService</Filter>
     </ClInclude>
-    <ClInclude Include="TimelineUpdateImageService.h">
-      <Filter>Services\TimelineUpdateImageService</Filter>
+    <ClInclude Include="UpdateScope.h">
+      <Filter>Services\TimelineService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

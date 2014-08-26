@@ -56,5 +56,7 @@ public:
 	void AddItem(IVariantObject* pItemObject);
 	void SetSkinTimeline(ISkinTimeline* pSkin);
 	void Clear();
+	HRESULT GetItems(IObjArray** ppObjectArray);
+	void OnItemsUpdated();
 };
 

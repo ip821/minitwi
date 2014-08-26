@@ -4,7 +4,9 @@
 #include "TimelineService.h"
 #include "Plugins.h"
 #include "twitconn_contract_i.h"
-
+#include "UpdateScope.h"
+#include <boost\date_time.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
 // CTimelineService
 
 STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
@@ -21,10 +23,18 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
+
+	m_tz = { 0 };
+	GetTimeZoneInformation(&m_tz);
+
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadService));
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_DownloadService, &m_pDownloadService));
+	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &m_dwAdviceDownloadService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
 
 	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
 	CComPtr<IContainerControl> pContainerControl;
@@ -34,14 +44,59 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
 	m_pTimelineControl = pControl;
 
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_UPDATEIMAGES_TIMER, &m_pTimerService));
+	RETURN_IF_FAILED(AtlAdvise(m_pTimerService, pUnk, __uuidof(ITimerServiceEventSink), &m_dwAdviceTimerService));
+	m_pTimerService->StartTimer(300);
+
 	return S_OK;
 }
 
 STDMETHODIMP CTimelineService::OnShutdown()
 {
-	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadService));
+	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
+	RETURN_IF_FAILED(AtlUnadvise(m_pTimerService, __uuidof(ITimerServiceEventSink), m_dwAdviceTimerService));
+	m_pTimerService.Release();
+	m_pDownloadService.Release();
+	m_pImageManagerService.Release();
 	m_pSettings.Release();
 	m_pThreadService.Release();
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::OnTimer()
+{
+	std::hash_set<std::wstring> ids;
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		ids = std::hash_set<std::wstring>(m_idsToUpdate);
+		m_idsToUpdate.clear();
+	}
+
+	if (ids.size())
+	{
+		RETURN_IF_FAILED(m_pTimelineControl->Invalidate());
+	}
+
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::OnDownloadComplete(IVariantObject *pResult)
+{
+	CComVariant vId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
+	CComVariant vUrl;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
+	CComVariant vFilePath;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
+
+	RETURN_IF_FAILED(m_pImageManagerService->SetImage(vUrl.bstrVal, vFilePath.bstrVal));
+
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_idsToUpdate.insert(vId.bstrVal);
+	}
+
 	return S_OK;
 }
 
@@ -95,10 +150,73 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
-	RETURN_IF_FAILED(m_pTimelineControl->SetItems(pObjectArray));
+	{
+		UpdateScope scope(m_pTimelineControl);
 
-	// Get items and process all links once again
+		RETURN_IF_FAILED(m_pTimelineControl->SetItems(pObjectArray));
+		CComPtr<IObjArray> pAllItemsObjectArray;
+		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
+		RETURN_IF_FAILED(ProcessUrls(pAllItemsObjectArray));
+		RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
+		RETURN_IF_FAILED(m_pTimelineControl->OnItemsUpdated());
+	}
 
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
+{
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pVariantObject;
+		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+
+		CComVariant v;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_CREATED_AT, &v));
+
+		if (v.vt != VT_BSTR)
+			continue;
+
+		boost::local_time::wlocal_time_input_facet* inputFacet = new boost::local_time::wlocal_time_input_facet();
+		inputFacet->format(L"%a %b %d %H:%M:%S +0000 %Y");
+		std::wistringstream inputStream;
+		inputStream.imbue(std::locale(inputStream.getloc(), inputFacet));
+		inputStream.str(std::wstring(v.bstrVal));
+		boost::posix_time::ptime pt;
+		inputStream >> pt;
+
+		boost::posix_time::ptime ptCreatedAt(pt.date(), pt.time_of_day() - boost::posix_time::minutes(m_tz.Bias) - boost::posix_time::minutes(m_tz.DaylightBias));
+
+		boost::posix_time::time_duration diff(boost::posix_time::second_clock::local_time() - ptCreatedAt);
+
+		CString strRelTime;
+		auto totalSeconds = diff.total_seconds();
+		if (totalSeconds < 60)
+		{
+			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds).c_str()) + L"s";
+		}
+		else if (totalSeconds < 60 * 60)
+		{
+			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60).c_str()) + L"m";
+		}
+		else if (totalSeconds < 60 * 60 * 60 * 24)
+		{
+			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60 / 60).c_str()) + L"h";
+		}
+		else if (totalSeconds < 60 * 60 * 60 * 24 * 5)
+		{
+			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60 / 60 / 24).c_str()) + L"d";
+		}
+
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RELATIVE_TIME, &CComVariant(strRelTime)));
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::ProcessUrls(IObjArray* pObjectArray)
+{
 	CComPtr<IImageManagerService> pImageManagerService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
 

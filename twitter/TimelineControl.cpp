@@ -80,15 +80,39 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	return 0;
 }
 
+STDMETHODIMP CTimelineControl::BeginUpdate()
+{
+	m_listBox.SetRedraw(FALSE);
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::EndUpdate()
+{
+	m_listBox.SetRedraw();
+	RETURN_IF_FAILED(Invalidate());
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::OnItemsUpdated()
+{
+	m_listBox.OnItemsUpdated();
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::Clear()
 {
 	m_listBox.Clear();
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControl::GetItems(IObjArray** ppObjectArray)
+{
+	RETURN_IF_FAILED(m_listBox.GetItems(ppObjectArray));
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::SetItems(IObjArray* pObjectArray)
 {
-	m_listBox.SetRedraw(FALSE);
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
@@ -98,8 +122,6 @@ STDMETHODIMP CTimelineControl::SetItems(IObjArray* pObjectArray)
 
 		m_listBox.AddItem(pVariantObject);
 	}
-	m_listBox.SetRedraw();
-	m_listBox.Invalidate(TRUE);
 	return S_OK;
 }
 

@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Sun Aug 24 13:24:17 2014
+/* at Tue Aug 26 08:36:49 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -1230,6 +1230,9 @@ EXTERN_C const IID IID_ITimelineControl;
     ITimelineControl : public IControl2
     {
     public:
+        virtual HRESULT STDMETHODCALLTYPE GetItems( 
+            IObjArray **ppObjectArray) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE SetItems( 
             IObjArray *pObjectArray) = 0;
         
@@ -1239,6 +1242,12 @@ EXTERN_C const IID IID_ITimelineControl;
         
         virtual HRESULT STDMETHODCALLTYPE SetSkinTimeline( 
             ISkinTimeline *pSkinTimeline) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE BeginUpdate( void) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE EndUpdate( void) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE OnItemsUpdated( void) = 0;
         
     };
     
@@ -1294,6 +1303,10 @@ EXTERN_C const IID IID_ITimelineControl;
         HRESULT ( STDMETHODCALLTYPE *OnClose )( 
             ITimelineControl * This);
         
+        HRESULT ( STDMETHODCALLTYPE *GetItems )( 
+            ITimelineControl * This,
+            IObjArray **ppObjectArray);
+        
         HRESULT ( STDMETHODCALLTYPE *SetItems )( 
             ITimelineControl * This,
             IObjArray *pObjectArray);
@@ -1307,6 +1320,15 @@ EXTERN_C const IID IID_ITimelineControl;
         HRESULT ( STDMETHODCALLTYPE *SetSkinTimeline )( 
             ITimelineControl * This,
             ISkinTimeline *pSkinTimeline);
+        
+        HRESULT ( STDMETHODCALLTYPE *BeginUpdate )( 
+            ITimelineControl * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *EndUpdate )( 
+            ITimelineControl * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *OnItemsUpdated )( 
+            ITimelineControl * This);
         
         END_INTERFACE
     } ITimelineControlVtbl;
@@ -1357,6 +1379,9 @@ EXTERN_C const IID IID_ITimelineControl;
     ( (This)->lpVtbl -> OnClose(This) ) 
 
 
+#define ITimelineControl_GetItems(This,ppObjectArray)	\
+    ( (This)->lpVtbl -> GetItems(This,ppObjectArray) ) 
+
 #define ITimelineControl_SetItems(This,pObjectArray)	\
     ( (This)->lpVtbl -> SetItems(This,pObjectArray) ) 
 
@@ -1368,6 +1393,15 @@ EXTERN_C const IID IID_ITimelineControl;
 
 #define ITimelineControl_SetSkinTimeline(This,pSkinTimeline)	\
     ( (This)->lpVtbl -> SetSkinTimeline(This,pSkinTimeline) ) 
+
+#define ITimelineControl_BeginUpdate(This)	\
+    ( (This)->lpVtbl -> BeginUpdate(This) ) 
+
+#define ITimelineControl_EndUpdate(This)	\
+    ( (This)->lpVtbl -> EndUpdate(This) ) 
+
+#define ITimelineControl_OnItemsUpdated(This)	\
+    ( (This)->lpVtbl -> OnItemsUpdated(This) ) 
 
 #endif /* COBJMACROS */
 
