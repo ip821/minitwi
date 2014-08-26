@@ -6,7 +6,7 @@
 
 // CSkinDefault
 
-#define FONT_NAME L"Microsoft Sans Serif"
+#define FONT_NAME L"Tahoma"
 #define FONT_SIZE 10
 
 HRESULT CThemeDefault::FinalConstruct()
