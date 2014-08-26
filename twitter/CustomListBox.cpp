@@ -139,7 +139,8 @@ void CCustomListBox::AddItem(IVariantObject* pItemObject)
 		auto nID = GetDlgCtrlID();
 		NMITEMREMOVED nm = { 0 };
 		nm.nmhdr.hwndFrom = m_hWnd;
-		nm.nmhdr.idFrom = NM_ITEM_REMOVED;
+		nm.nmhdr.idFrom = nID;
+		nm.nmhdr.code = NM_ITEM_REMOVED;
 		nm.pVariantObject = m_items[itemToRemove].m_T;
 		nm.pColumnRects = m_columnRects[itemToRemove].m_T;
 		::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);

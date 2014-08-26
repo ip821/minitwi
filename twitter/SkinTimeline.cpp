@@ -130,8 +130,8 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 				cdcBitmap.SelectBitmap(bitmap);
 				auto x = lpdi->rcItem.left;
 				auto y = lpdi->rcItem.top;
-				auto width = rect.right - rect.left;
-				auto height = rect.bottom - rect.top;
+				auto width = min(rect.right - rect.left, (int)tBitmap.Width);
+				auto height = min(rect.bottom - rect.top, (int)tBitmap.Height);
 				static Gdiplus::Color color(Gdiplus::Color::White);
 				TransparentBlt(cdc, x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
 			}
