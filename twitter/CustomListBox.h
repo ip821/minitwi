@@ -14,6 +14,13 @@ struct NMCOLUMNCLICK
 	int y;
 };
 
+struct NMITEMREMOVED
+{
+	NMHDR nmhdr;
+	IColumnRects* pColumnRects;
+	IVariantObject* pVariantObject;
+};
+
 class CCustomListBox :
 	public CWindowImpl<CCustomListBox, CListBox>,
 	public COwnerDraw < CCustomListBox >

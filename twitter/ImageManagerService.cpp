@@ -41,6 +41,8 @@ STDMETHODIMP CImageManagerService::GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap)
 
 STDMETHODIMP CImageManagerService::SetImage(BSTR bstrKey, BSTR bstrFileName)
 {
+	CHECK_E_POINTER(bstrKey);
+	CHECK_E_POINTER(bstrFileName);
 	{
 		lock_guard<mutex> mutex(m_mutex);
 		m_bitmaps[CComBSTR(bstrKey)] = std::make_shared<Gdiplus::Bitmap>(bstrFileName);
@@ -50,9 +52,21 @@ STDMETHODIMP CImageManagerService::SetImage(BSTR bstrKey, BSTR bstrFileName)
 
 STDMETHODIMP CImageManagerService::ContainsImageKey(BSTR bstrKey, BOOL* pbContains)
 {
+	CHECK_E_POINTER(bstrKey);
+	CHECK_E_POINTER(pbContains);
 	{
 		lock_guard<mutex> mutex(m_mutex);
 		*pbContains = m_bitmaps.find(bstrKey) != m_bitmaps.end();
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CImageManagerService::RemoveImage(BSTR bstrKey)
+{
+	CHECK_E_POINTER(bstrKey);
+	{
+		lock_guard<mutex> mutex(m_mutex);
+		m_bitmaps.erase(bstrKey);
 	}
 	return S_OK;
 }

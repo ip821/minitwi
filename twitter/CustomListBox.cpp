@@ -17,6 +17,18 @@ LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 void CCustomListBox::Clear()
 {
+	auto nID = GetDlgCtrlID();
+
+	for (size_t i = 0; i < m_items.size(); i++)
+	{
+		NMITEMREMOVED nm = { 0 };
+		nm.nmhdr.hwndFrom = m_hWnd;
+		nm.nmhdr.idFrom = nID;
+		nm.nmhdr.code = NM_ITEM_REMOVED;
+		nm.pVariantObject = m_items[i].m_T;
+		nm.pColumnRects = m_columnRects[i].m_T;
+		::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
+	}
 	ResetContent();
 	m_items.clear();
 	m_columnRects.clear();
@@ -123,7 +135,16 @@ void CCustomListBox::AddItem(IVariantObject* pItemObject)
 
 	if (m_items.size() == 100)
 	{
-		SendMessage(LB_DELETESTRING, 99, 0);
+		const int itemToRemove = 99;
+		auto nID = GetDlgCtrlID();
+		NMITEMREMOVED nm = { 0 };
+		nm.nmhdr.hwndFrom = m_hWnd;
+		nm.nmhdr.idFrom = NM_ITEM_REMOVED;
+		nm.pVariantObject = m_items[itemToRemove].m_T;
+		nm.pColumnRects = m_columnRects[itemToRemove].m_T;
+		::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
+
+		SendMessage(LB_DELETESTRING, itemToRemove, 0);
 		m_items.erase(--m_items.end());
 		m_columnRects.erase(--m_columnRects.end());
 	}

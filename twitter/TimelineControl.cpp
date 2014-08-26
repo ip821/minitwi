@@ -209,3 +209,34 @@ LRESULT CTimelineControl::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	bHandled = bResult;
 	return lResult;
 }
+
+LRESULT CTimelineControl::OnItemRemove(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	NMITEMREMOVED* pNm = (NMITEMREMOVED*)pnmh;
+	RETURN_IF_FAILED(Fire_OnItemRemoved(pNm->pVariantObject));
+	return 0;
+}
+
+HRESULT CTimelineControl::Fire_OnItemRemoved(IVariantObject *pItemObject)
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CTimelineControl* pThis = static_cast<CTimelineControl*>(this);
+	int cConnections = m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		ITimelineControlEventSink * pConnection = static_cast<ITimelineControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnItemRemoved(pItemObject);
+		}
+	}
+	return hr;
+}

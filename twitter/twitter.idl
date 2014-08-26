@@ -56,6 +56,7 @@ interface IImageManagerService : IUnknown
 	HRESULT CreateImageBitmap(BSTR bstrKey, HBITMAP* phBitmap);
 	HRESULT SetImage(BSTR bstrKey, BSTR bstrFileName);
 	HRESULT ContainsImageKey(BSTR bstrKey, BOOL* pbContains);
+	HRESULT RemoveImage(BSTR bstrKey);
 };
 
 [
@@ -129,6 +130,16 @@ interface ISkinTimeline : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
+};
+
+[
+	object,
+	uuid(53ADEAC2-0827-4AAF-9B82-E695ACC14918),
+	pointer_default(unique)
+]
+interface ITimelineControlEventSink : IUnknown
+{
+	HRESULT OnItemRemoved(IVariantObject* pItemObject);
 };
 
 [
@@ -209,14 +220,6 @@ interface IDownloadService : IUnknown
 	HRESULT AddDownload(IVariantObject *pVariantObject);
 };
 
-[
-	object,
-	uuid(22180299-0223-49F2-8E63-1D3869160676),
-	pointer_default(unique)
-]
-interface ITimelineUpdateImageService : IUnknown
-{
-};
 [
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
@@ -336,13 +339,6 @@ library twitterLib
 	coclass DownloadService
 	{
 		[default] interface IDownloadService;
-	};
-	[
-		uuid(5DD83D05-C14B-404F-A979-4ACABB551655)		
-	]
-	coclass TimelineUpdateImageService
-	{
-		[default] interface ITimelineUpdateImageService;
 	};
 };
 

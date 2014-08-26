@@ -43,6 +43,7 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
 	m_pTimelineControl = pControl;
+	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_UPDATEIMAGES_TIMER, &m_pTimerService));
 	RETURN_IF_FAILED(AtlAdvise(m_pTimerService, pUnk, __uuidof(ITimerServiceEventSink), &m_dwAdviceTimerService));
@@ -53,6 +54,8 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CTimelineService::OnShutdown()
 {
+	RETURN_IF_FAILED(m_pTimerService->StopTimer());
+	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimerService, __uuidof(ITimerServiceEventSink), m_dwAdviceTimerService));
@@ -217,12 +220,6 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 
 STDMETHODIMP CTimelineService::ProcessUrls(IObjArray* pObjectArray)
 {
-	CComPtr<IImageManagerService> pImageManagerService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
-
-	CComPtr<IDownloadService> pDownloadService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_DownloadService, &pDownloadService));
-
 	std::hash_set<std::wstring> urls;
 
 	UINT uiCount = 0;
@@ -235,58 +232,71 @@ STDMETHODIMP CTimelineService::ProcessUrls(IObjArray* pObjectArray)
 		CComVariant vId;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
 
-		CComVariant vUserImage;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
-		if (vUserImage.vt == VT_BSTR)
+		std::vector<std::wstring> itemUrls;
+		RETURN_IF_FAILED(GetUrls(pVariantObject, itemUrls));
+
+		for (auto& url : itemUrls)
 		{
 			BOOL bContains = TRUE;
-			pImageManagerService->ContainsImageKey(vUserImage.bstrVal, &bContains);
+			m_pImageManagerService->ContainsImageKey(CComBSTR(url.c_str()), &bContains);
 			if (!bContains)
 			{
-				if (urls.find(vUserImage.bstrVal) == urls.end())
+				if (urls.find(url) == urls.end())
 				{
 					CComPtr<IVariantObject> pDownloadTask;
 					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(vUserImage.bstrVal)));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(url.c_str())));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
-					RETURN_IF_FAILED(pDownloadService->AddDownload(pDownloadTask));
-					urls.insert(vUserImage.bstrVal);
-				}
-			}
-		}
-
-		CComVariant vMediaUrls;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls));
-		if (vMediaUrls.vt == VT_UNKNOWN)
-		{
-			CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
-			UINT_PTR uiCount = 0;
-			pObjArray->GetCount(&uiCount);
-			for (size_t i = 0; i < uiCount; i++)
-			{
-				CComPtr<IVariantObject> pMediaObject;
-				pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
-
-				CComVariant vMediaUrl;
-				pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrl);
-
-				BOOL bContains = TRUE;
-				pImageManagerService->ContainsImageKey(vMediaUrl.bstrVal, &bContains);
-				if (!bContains)
-				{
-					if (urls.find(vMediaUrl.bstrVal) == urls.end())
-					{
-						CComPtr<IVariantObject> pDownloadTask;
-						RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-						RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(vMediaUrl.bstrVal)));
-						RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
-						RETURN_IF_FAILED(pDownloadService->AddDownload(pDownloadTask));
-						urls.insert(vMediaUrl.bstrVal);
-					}
+					RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
+					urls.insert(url);
 				}
 			}
 		}
 	}
 
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::GetUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urls)
+{
+	CComVariant vUserImage;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+	if (vUserImage.vt == VT_BSTR)
+	{
+		urls.push_back(vUserImage.bstrVal);
+	}
+
+	CComVariant vMediaUrls;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls));
+	if (vMediaUrls.vt == VT_UNKNOWN)
+	{
+		CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+		UINT_PTR uiCount = 0;
+		pObjArray->GetCount(&uiCount);
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IVariantObject> pMediaObject;
+			pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+			CComVariant vMediaUrl;
+			pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrl);
+
+			if (vMediaUrl.vt == VT_BSTR)
+			{
+				urls.push_back(vMediaUrl.bstrVal);
+			}
+		}
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::OnItemRemoved(IVariantObject *pItemObject)
+{
+	std::vector<std::wstring> urls;
+	RETURN_IF_FAILED(GetUrls(pItemObject, urls));
+	for (auto& url : urls)
+	{
+		m_pImageManagerService->RemoveImage(CComBSTR(url.c_str()));
+	}
 	return S_OK;
 }

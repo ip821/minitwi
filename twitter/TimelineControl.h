@@ -20,7 +20,9 @@ class ATL_NO_VTABLE CTimelineControl :
 	public CAxDialogImpl<CTimelineControl>,
 	public CDialogResize<CTimelineControl>,
 	public IInitializeWithControlImpl,
-	public IPluginSupportNotifications
+	public IPluginSupportNotifications,
+	public IConnectionPointContainerImpl<CTimelineControl>,
+	public IConnectionPointImpl<CTimelineControl, &__uuidof(ITimelineControlEventSink)>
 {
 public:
 	enum { IDD = IDD_TIMELINECONTROL };
@@ -38,7 +40,12 @@ public:
 		COM_INTERFACE_ENTRY(IContainerControl)
 		COM_INTERFACE_ENTRY(IMsgHandler)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(IConnectionPointContainer)
 	END_COM_MAP()
+
+	BEGIN_CONNECTION_POINT_MAP(CTimelineControl)
+		CONNECTION_POINT_ENTRY(__uuidof(ITimelineControlEventSink))
+	END_CONNECTION_POINT_MAP()
 	
 	BEGIN_DLGRESIZE_MAP(CTimelineControl)
 		DLGRESIZE_CONTROL(IDC_LIST1, DLSZ_SIZE_X | DLSZ_SIZE_Y)
@@ -49,6 +56,7 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_LCLICK, OnColumnClick)
 		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_RCLICK, OnColumnRClick)
+		NOTIFY_HANDLER(IDC_LIST1, NM_ITEM_REMOVED, OnItemRemove)
 		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(CDialogResize<CTimelineControl>)
 		CHAIN_MSG_MAP(CAxDialogImpl<CTimelineControl>)
@@ -65,7 +73,10 @@ private:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnColumnClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnColumnRClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT OnItemRemove(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+	HRESULT Fire_OnItemRemoved(IVariantObject *pItemObject);
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);

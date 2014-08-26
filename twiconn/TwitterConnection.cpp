@@ -72,7 +72,7 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 	auto bRes = twitterObj.accountVerifyCredGet();
 	if (!bRes)
 	{
-		return ERROR_NETWORK_UNREACHABLE;
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
 
 	std::string strResponse;
@@ -108,7 +108,7 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	auto bRes = m_pTwitObj->accountVerifyCredGet();
 	if (!bRes)
 	{
-		return ERROR_NETWORK_UNREACHABLE;
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
 
 	std::string strResponse;
@@ -134,7 +134,7 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 	auto bRes = m_pTwitObj->timelineHomeGet(strId);
 	if (!bRes)
 	{
-		return ERROR_NETWORK_UNREACHABLE;
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
 
 	std::string strResponse;

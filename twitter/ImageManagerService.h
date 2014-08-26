@@ -34,6 +34,7 @@ public:
 	STDMETHOD(CreateImageBitmap)(BSTR bstrKey, HBITMAP* ptBitmap);
 	STDMETHOD(SetImage)(BSTR bstrKey, BSTR bstrFileName);
 	STDMETHOD(ContainsImageKey)(BSTR bstrKey, BOOL* pbContains);
+	STDMETHOD(RemoveImage)(BSTR bstrKey);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ImageManagerService), CImageManagerService)

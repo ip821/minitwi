@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue Aug 26 08:36:49 2014
+/* at Tue Aug 26 11:55:31 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -101,6 +101,13 @@ typedef interface ISkinTimeline ISkinTimeline;
 #endif 	/* __ISkinTimeline_FWD_DEFINED__ */
 
 
+#ifndef __ITimelineControlEventSink_FWD_DEFINED__
+#define __ITimelineControlEventSink_FWD_DEFINED__
+typedef interface ITimelineControlEventSink ITimelineControlEventSink;
+
+#endif 	/* __ITimelineControlEventSink_FWD_DEFINED__ */
+
+
 #ifndef __ITimelineControl_FWD_DEFINED__
 #define __ITimelineControl_FWD_DEFINED__
 typedef interface ITimelineControl ITimelineControl;
@@ -141,13 +148,6 @@ typedef interface IDownloadServiceEventSink IDownloadServiceEventSink;
 typedef interface IDownloadService IDownloadService;
 
 #endif 	/* __IDownloadService_FWD_DEFINED__ */
-
-
-#ifndef __ITimelineUpdateImageService_FWD_DEFINED__
-#define __ITimelineUpdateImageService_FWD_DEFINED__
-typedef interface ITimelineUpdateImageService ITimelineUpdateImageService;
-
-#endif 	/* __ITimelineUpdateImageService_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -342,18 +342,6 @@ typedef struct DownloadService DownloadService;
 #endif 	/* __DownloadService_FWD_DEFINED__ */
 
 
-#ifndef __TimelineUpdateImageService_FWD_DEFINED__
-#define __TimelineUpdateImageService_FWD_DEFINED__
-
-#ifdef __cplusplus
-typedef class TimelineUpdateImageService TimelineUpdateImageService;
-#else
-typedef struct TimelineUpdateImageService TimelineUpdateImageService;
-#endif /* __cplusplus */
-
-#endif 	/* __TimelineUpdateImageService_FWD_DEFINED__ */
-
-
 /* header files for imported files */
 #include "oaidl.h"
 #include "ocidl.h"
@@ -504,6 +492,9 @@ EXTERN_C const IID IID_IImageManagerService;
             BSTR bstrKey,
             BOOL *pbContains) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE RemoveImage( 
+            BSTR bstrKey) = 0;
+        
     };
     
     
@@ -545,6 +536,10 @@ EXTERN_C const IID IID_IImageManagerService;
             BSTR bstrKey,
             BOOL *pbContains);
         
+        HRESULT ( STDMETHODCALLTYPE *RemoveImage )( 
+            IImageManagerService * This,
+            BSTR bstrKey);
+        
         END_INTERFACE
     } IImageManagerServiceVtbl;
 
@@ -579,6 +574,9 @@ EXTERN_C const IID IID_IImageManagerService;
 
 #define IImageManagerService_ContainsImageKey(This,bstrKey,pbContains)	\
     ( (This)->lpVtbl -> ContainsImageKey(This,bstrKey,pbContains) ) 
+
+#define IImageManagerService_RemoveImage(This,bstrKey)	\
+    ( (This)->lpVtbl -> RemoveImage(This,bstrKey) ) 
 
 #endif /* COBJMACROS */
 
@@ -1213,6 +1211,86 @@ EXTERN_C const IID IID_ISkinTimeline;
 
 
 #endif 	/* __ISkinTimeline_INTERFACE_DEFINED__ */
+
+
+#ifndef __ITimelineControlEventSink_INTERFACE_DEFINED__
+#define __ITimelineControlEventSink_INTERFACE_DEFINED__
+
+/* interface ITimelineControlEventSink */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_ITimelineControlEventSink;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("53ADEAC2-0827-4AAF-9B82-E695ACC14918")
+    ITimelineControlEventSink : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE OnItemRemoved( 
+            IVariantObject *pItemObject) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct ITimelineControlEventSinkVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            ITimelineControlEventSink * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            ITimelineControlEventSink * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            ITimelineControlEventSink * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *OnItemRemoved )( 
+            ITimelineControlEventSink * This,
+            IVariantObject *pItemObject);
+        
+        END_INTERFACE
+    } ITimelineControlEventSinkVtbl;
+
+    interface ITimelineControlEventSink
+    {
+        CONST_VTBL struct ITimelineControlEventSinkVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define ITimelineControlEventSink_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define ITimelineControlEventSink_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define ITimelineControlEventSink_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define ITimelineControlEventSink_OnItemRemoved(This,pItemObject)	\
+    ( (This)->lpVtbl -> OnItemRemoved(This,pItemObject) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __ITimelineControlEventSink_INTERFACE_DEFINED__ */
 
 
 #ifndef __ITimelineControl_INTERFACE_DEFINED__
@@ -1902,76 +1980,6 @@ EXTERN_C const IID IID_IDownloadService;
 #endif 	/* __IDownloadService_INTERFACE_DEFINED__ */
 
 
-#ifndef __ITimelineUpdateImageService_INTERFACE_DEFINED__
-#define __ITimelineUpdateImageService_INTERFACE_DEFINED__
-
-/* interface ITimelineUpdateImageService */
-/* [unique][uuid][object] */ 
-
-
-EXTERN_C const IID IID_ITimelineUpdateImageService;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("22180299-0223-49F2-8E63-1D3869160676")
-    ITimelineUpdateImageService : public IUnknown
-    {
-    public:
-    };
-    
-    
-#else 	/* C style interface */
-
-    typedef struct ITimelineUpdateImageServiceVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            ITimelineUpdateImageService * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            ITimelineUpdateImageService * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            ITimelineUpdateImageService * This);
-        
-        END_INTERFACE
-    } ITimelineUpdateImageServiceVtbl;
-
-    interface ITimelineUpdateImageService
-    {
-        CONST_VTBL struct ITimelineUpdateImageServiceVtbl *lpVtbl;
-    };
-
-    
-
-#ifdef COBJMACROS
-
-
-#define ITimelineUpdateImageService_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
-
-#define ITimelineUpdateImageService_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
-
-#define ITimelineUpdateImageService_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
-
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-
-#endif 	/* __ITimelineUpdateImageService_INTERFACE_DEFINED__ */
-
-
 
 #ifndef __twitterLib_LIBRARY_DEFINED__
 #define __twitterLib_LIBRARY_DEFINED__
@@ -2108,14 +2116,6 @@ EXTERN_C const CLSID CLSID_DownloadService;
 
 class DECLSPEC_UUID("8A7C5710-9FCB-4FD9-83A2-36EE81E10FB9")
 DownloadService;
-#endif
-
-EXTERN_C const CLSID CLSID_TimelineUpdateImageService;
-
-#ifdef __cplusplus
-
-class DECLSPEC_UUID("5DD83D05-C14B-404F-A979-4ACABB551655")
-TimelineUpdateImageService;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 

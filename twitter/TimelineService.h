@@ -21,7 +21,8 @@ class ATL_NO_VTABLE CTimelineService :
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
 	public IDownloadServiceEventSink,
-	public ITimerServiceEventSink
+	public ITimerServiceEventSink,
+	public ITimelineControlEventSink
 {
 public:
 	CTimelineService()
@@ -38,6 +39,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
 		COM_INTERFACE_ENTRY(ITimerServiceEventSink)
+		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
 	END_COM_MAP()
 
 private:
@@ -51,12 +53,14 @@ private:
 	DWORD m_dwAdviceThreadService = 0;
 	DWORD m_dwAdviceTimerService = 0;
 	DWORD m_dwAdviceDownloadService = 0;
+	DWORD m_dwAdviceTimelineControl = 0;
 	std::hash_set<std::wstring> m_idsToUpdate;
 	std::mutex m_mutex;
 	TIME_ZONE_INFORMATION m_tz;
 
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
 	STDMETHOD(UpdateRelativeTime)(IObjArray* pObjectArray);
+	STDMETHOD(GetUrls)(IVariantObject* pItemObject, std::vector<std::wstring>& urls);
 public:
 	STDMETHOD(Load)(ISettings *pSettings);
 
@@ -70,6 +74,8 @@ public:
 	STDMETHOD(OnTimer)();
 
 	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
+
+	STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)
