@@ -324,7 +324,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CSize sizeDateTime;
 	{
 		//auto x = COL_NAME_LEFT + sizeDislpayName.cx + COLUMN_X_SPACING + sizeName.cx + COLUMN_X_SPACING;
-		auto x = clientRect.right - clientRect.left - COLUMN_X_SPACING * 7;
+		auto x = clientRect.right - clientRect.left - COLUMN_X_SPACING * 6;
 		auto y = COLUMN_Y_SPACING + PADDING_Y;
 
 		if (sizeRetweetedDislpayName.cy)
@@ -363,7 +363,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			strText,
 			x,
 			y,
-			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
+			CSize((clientRect.right - clientRect.left - COLUMN_X_SPACING * 2) - COL_NAME_LEFT, 255),
 			FALSE,
 			TRUE
 			);

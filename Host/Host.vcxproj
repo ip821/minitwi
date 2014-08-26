@@ -399,7 +399,9 @@
     <ClInclude Include="viewmdl_contract_i.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Host.rc" />
+    <ResourceCompile Include="Host.rc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">__WINXP__;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Host.ico" />
