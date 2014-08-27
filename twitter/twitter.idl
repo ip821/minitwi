@@ -221,6 +221,15 @@ interface IDownloadService : IUnknown
 };
 
 [
+	object,
+	uuid(B9A65F18-0B3C-4612-B0A6-B10107F39909),
+	pointer_default(unique)
+]
+interface IUpdateService : IUnknown
+{
+};
+
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -339,6 +348,13 @@ library twitterLib
 	coclass DownloadService
 	{
 		[default] interface IDownloadService;
+	};
+	[
+		uuid(8C2F7C68-A0A4-4A79-9908-5FE3D1596C7A)		
+	]
+	coclass UpdateService
+	{
+		[default] interface IUpdateService;
 	};
 };
 

@@ -68,6 +68,9 @@
     <Filter Include="Services\DownloadService">
       <UniqueIdentifier>{0fa18dfb-b6cd-4ae6-91ad-44bf14a653cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\UpdateService">
+      <UniqueIdentifier>{6825b08d-39e3-49b7-b760-29b194f3a564}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -147,6 +150,9 @@
     </ClCompile>
     <ClCompile Include="DownloadService.cpp">
       <Filter>Services\DownloadService</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateService.cpp">
+      <Filter>Services\UpdateService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -237,6 +243,9 @@
     <ClInclude Include="UpdateScope.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
+    <ClInclude Include="UpdateService.h">
+      <Filter>Services\UpdateService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -290,6 +299,9 @@
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
     <None Include="TimelineUpdateImageService.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
+    <None Include="UpdateService.rgs">
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>

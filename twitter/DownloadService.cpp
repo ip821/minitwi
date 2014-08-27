@@ -52,7 +52,17 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	CString strGuid;
 	StrGuidToString(guid, strGuid);
 	StrPathAppend(strTempFolder, strGuid);
-	strTempFolder += L".img";
+
+	CComVariant vExt;
+	pResult->GetVariantValue(VAR_FILE_EXT, &vExt);
+	if (vExt.vt == VT_BSTR)
+	{
+		strTempFolder += vExt.bstrVal;
+	}
+	else
+	{
+		strTempFolder += L".img";
+	}
 
 	USES_CONVERSION;
 
@@ -117,7 +127,13 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 
 	RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
-	DeleteFile(vFilePath.bstrVal);
+
+	CComVariant vKeepFile;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_KEEP_FILE, &vKeepFile));
+	if (vKeepFile.vt != VT_BOOL || !vKeepFile.boolVal)
+	{
+		DeleteFile(vFilePath.bstrVal);
+	}
 	return S_OK;
 }
 

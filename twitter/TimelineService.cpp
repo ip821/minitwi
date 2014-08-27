@@ -86,6 +86,12 @@ STDMETHODIMP CTimelineService::OnTimer()
 
 STDMETHODIMP CTimelineService::OnDownloadComplete(IVariantObject *pResult)
 {
+	CComVariant vType;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_OBJECT_TYPE, &vType));
+
+	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(L"TYPE_IMAGE"))
+		return S_OK;
+
 	CComVariant vId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
 	CComVariant vUrl;
@@ -247,6 +253,7 @@ STDMETHODIMP CTimelineService::ProcessUrls(IObjArray* pObjectArray)
 					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(url.c_str())));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(L"TYPE_IMAGE")));
 					RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 					urls.insert(url);
 				}

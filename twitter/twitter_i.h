@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue Aug 26 11:55:31 2014
+/* at Wed Aug 27 16:45:34 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -148,6 +148,13 @@ typedef interface IDownloadServiceEventSink IDownloadServiceEventSink;
 typedef interface IDownloadService IDownloadService;
 
 #endif 	/* __IDownloadService_FWD_DEFINED__ */
+
+
+#ifndef __IUpdateService_FWD_DEFINED__
+#define __IUpdateService_FWD_DEFINED__
+typedef interface IUpdateService IUpdateService;
+
+#endif 	/* __IUpdateService_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -340,6 +347,18 @@ typedef struct DownloadService DownloadService;
 #endif /* __cplusplus */
 
 #endif 	/* __DownloadService_FWD_DEFINED__ */
+
+
+#ifndef __UpdateService_FWD_DEFINED__
+#define __UpdateService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class UpdateService UpdateService;
+#else
+typedef struct UpdateService UpdateService;
+#endif /* __cplusplus */
+
+#endif 	/* __UpdateService_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -1980,6 +1999,76 @@ EXTERN_C const IID IID_IDownloadService;
 #endif 	/* __IDownloadService_INTERFACE_DEFINED__ */
 
 
+#ifndef __IUpdateService_INTERFACE_DEFINED__
+#define __IUpdateService_INTERFACE_DEFINED__
+
+/* interface IUpdateService */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IUpdateService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("B9A65F18-0B3C-4612-B0A6-B10107F39909")
+    IUpdateService : public IUnknown
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdateServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdateService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdateService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdateService * This);
+        
+        END_INTERFACE
+    } IUpdateServiceVtbl;
+
+    interface IUpdateService
+    {
+        CONST_VTBL struct IUpdateServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdateService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdateService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdateService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdateService_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __twitterLib_LIBRARY_DEFINED__
 #define __twitterLib_LIBRARY_DEFINED__
@@ -2116,6 +2205,14 @@ EXTERN_C const CLSID CLSID_DownloadService;
 
 class DECLSPEC_UUID("8A7C5710-9FCB-4FD9-83A2-36EE81E10FB9")
 DownloadService;
+#endif
+
+EXTERN_C const CLSID CLSID_UpdateService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("8C2F7C68-A0A4-4A79-9908-5FE3D1596C7A")
+UpdateService;
 #endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 
