@@ -182,7 +182,10 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 
 		ShellExecute(NULL, NULL, vFilePath.bstrVal, NULL, NULL, 0);
+
+#ifdef __WINXP__
 		PostMessage(m_hControlWnd, WM_CLOSE, 0, 0);
+#endif
 	
 		return S_OK;
 	}
