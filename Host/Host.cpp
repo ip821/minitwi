@@ -73,6 +73,11 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		CString strCaption = L"minitwi";
 		if (sizeof(INT_PTR) == 8)
 			strCaption += L" x64";
+
+#ifdef DEBUG
+		strCaption += L" DEBUG";
+#endif
+
 		SetWindowText(hwnd, strCaption);
 		RETURN_IF_FAILED(pWindow->SetIcon(icon, TRUE));
 		RETURN_IF_FAILED(pWindow->SetIcon(icon, FALSE));

@@ -4,6 +4,7 @@
 #include "SettingsControl.h"
 #include "Plugins.h"
 #include "..\NotificationServices\Plugins.h"
+#include "UpdateService.h"
 
 // CSettingsControl
 
@@ -19,14 +20,37 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &m_pFormManager));
 
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_TimelineControl, &pControl));
+	m_pTimelineControl = pControl;
+
+	CComPtr<ISettings> pSettingsTwitter;
+	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+	CComVariant vKey;
+	CComVariant vSecret;
+	
+	if (SUCCEEDED(pSettingsTwitter->GetVariantValue(KEY_TWITTERKEY, &vKey)) &&
+		SUCCEEDED(pSettingsTwitter->GetVariantValue(KEY_TWITTERSECRET, &vSecret)) &&
+		vKey.vt == VT_BSTR &&
+		vSecret.vt == VT_BSTR)
+	{
+		SwitchToLogoutMode();
+	}
+	else
+	{
+		SwitchToLoginMode();
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CSettingsControl::OnShutdown()
 {
+	RETURN_IF_FAILED(m_pThreadService->Join());
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
+	m_pTimelineControl.Release();
 	return S_OK;
 }
 
@@ -62,6 +86,12 @@ LRESULT CSettingsControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	DlgResize_Init(false);
 	m_editUser = GetDlgItem(IDC_EDITUSER);
 	m_editPass = GetDlgItem(IDC_EDITPASSWORD);
+	m_labelLoggedUser = GetDlgItem(IDC_LABEL_LOGGED_USER);
+	m_labelVersion = GetDlgItem(IDC_LABEL_VERSION);
+	m_labelHomePage.SubclassWindow(GetDlgItem(IDC_LABEL_HOMEPAGE));
+
+	m_labelVersion.SetWindowText(CUpdateService::GetInstalledVersion());
+
 	return 0;
 }
 
@@ -70,7 +100,48 @@ STDMETHODIMP CSettingsControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 	return E_NOTIMPL;
 }
 
-LRESULT CSettingsControl::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+void CSettingsControl::SwitchToLoginMode()
+{
+	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGEDIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_HIDE);
+
+	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_LABEL_LOGIN), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_LABEL_PASS), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_EDITUSER), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_EDITPASSWORD), SW_SHOW);
+}
+
+void CSettingsControl::SwitchToLogoutMode()
+{
+	if (m_editUser.IsWindow() && m_editUser.IsWindow())
+	{
+		CString strText;
+		m_editUser.GetWindowText(strText);
+		m_labelLoggedUser.SetWindowText(strText);
+	}
+
+	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGEDIN), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_SHOW);
+
+	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_LABEL_LOGIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_LABEL_PASS), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_EDITUSER), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_EDITPASSWORD), SW_HIDE);
+}
+
+LRESULT CSettingsControl::OnClickedLogout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	m_pSettings->RemoveSubSettings(SETTINGS_PATH);
+	m_pTimelineControl->Clear();
+	SwitchToLoginMode();
+	return 0;
+}
+
+LRESULT CSettingsControl::OnClickedLogin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	m_pThreadService->Run();
 	return 0;
@@ -127,11 +198,6 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 
 STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_TimelineControl, &pControl));
-	CComQIPtr<ITimelineControl> pTimelineControl = pControl;
-	RETURN_IF_FAILED(pTimelineControl->Clear());
-
 	RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, L"Authenticating...", FALSE, FALSE));
 	return S_OK;
 }
@@ -194,15 +260,109 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 
 	m_editPass.SetWindowText(L"");
 	Save(pSettingsTwitter);
+	SwitchToLogoutMode();
 
 	CComPtr<IViewControllerService> pTimelineService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pTimelineService));
 	RETURN_IF_FAILED(pTimelineService->StartTimers());
-
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_TimelineControl, &pControl));
-	CComQIPtr<ITimelineControl> pTimelineControl = pControl;
-	RETURN_IF_FAILED(pTimelineControl->Clear());
 	RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_TimelineControl));
 	return S_OK;
+}
+
+bool CSettingsControl::DlgResize_PositionControl(int in_nWidth, int in_nHeight, RECT& in_sGroupRect, _AtlDlgResizeData&  in_sData, bool in_bGroup, _AtlDlgResizeData* in_pDataPrev)
+{
+	bool l_bSuccess = true;
+
+	if (!in_bGroup)
+	{
+		return __super::DlgResize_PositionControl(in_nWidth, in_nHeight, in_sGroupRect, in_sData, in_bGroup, in_pDataPrev);
+	}
+
+	// Call DlgResize, but without any CENTER stuff as if not a group
+	{
+		DWORD l_nOldFlags = in_sData.m_dwResizeFlags;
+
+		in_sData.m_dwResizeFlags &= ~(DLSZ_CENTER_X | DLSZ_CENTER_Y);
+
+		l_bSuccess = __super::DlgResize_PositionControl
+			(
+			in_nWidth,
+			in_nHeight,
+			in_sGroupRect,
+			in_sData,
+			false,      // Means group is ignored
+			in_pDataPrev
+			);
+
+		in_sData.m_dwResizeFlags = l_nOldFlags;
+	}
+
+	// Now apply center to any group
+	if (in_bGroup && (in_sData.m_dwResizeFlags & (DLSZ_CENTER_X | DLSZ_CENTER_Y)))
+	{
+		// Find start of group - so we know which item we are in the group
+		int l_nGroupStart = -1;
+		for (int l_nPos = m_arrData.Find(in_sData); l_nPos > 0; l_nPos--)
+		{
+			if (0 != (m_arrData[l_nPos].m_dwResizeFlags & _DLSZ_BEGIN_GROUP))
+			{
+				l_nGroupStart = l_nPos;
+				break;
+			}
+		}
+
+		ATLASSERT(-1 != l_nGroupStart);
+
+		int l_nItem = m_arrData.Find(in_sData) - l_nGroupStart;
+		int l_nItems = m_arrData[l_nGroupStart].GetGroupCount();
+
+		// Get current details of control
+		CRect   l_cArea;
+		CWindow l_cCtrl;
+
+		l_cCtrl.Attach(GetDlgItem(in_sData.m_nCtlID));
+
+		l_cCtrl.GetWindowRect(l_cArea);
+		ScreenToClient(l_cArea);
+
+		int groupStart = l_nGroupStart;
+
+		if (in_sData.m_dwResizeFlags & DLSZ_CENTER_X)
+		{
+			int offsetX = 0;
+			for (int i = groupStart; i < groupStart + l_nItems; i++)
+			{
+				if (i == m_arrData.Find(in_sData))
+					break;
+				auto& gItem = m_arrData[i];
+				offsetX += (gItem.m_rect.right - gItem.m_rect.left);
+			}
+
+			int l_nGroupWidth = in_sGroupRect.right - in_sGroupRect.left;
+			int l_nGroupStart = (in_nWidth / 2) - (l_nGroupWidth / 2);
+
+			int l_nSegment = l_nGroupWidth / l_nItems;
+			l_cArea.MoveToX(l_nGroupStart + offsetX/*(l_nSegment * l_nItem)*/);
+		}
+
+		if (in_sData.m_dwResizeFlags & DLSZ_CENTER_Y)
+		{
+			int l_nGroupHeight = in_sGroupRect.bottom - in_sGroupRect.top;
+			int l_nGroupStart = (in_nHeight / 2) - (l_nGroupHeight / 2);
+
+			int l_nSegment = l_nGroupHeight / l_nItems;
+			l_cArea.MoveToY(l_nGroupStart + (l_nSegment * l_nItem));
+		}
+
+		// Honour repaint
+		if ((in_sData.m_dwResizeFlags & DLSZ_REPAINT) != 0)
+			l_cCtrl.Invalidate();
+
+		// Move control
+		l_cCtrl.SetWindowPos(NULL, &l_cArea, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE);
+
+		l_cCtrl.Detach();
+	}
+
+	return l_bSuccess;
 }

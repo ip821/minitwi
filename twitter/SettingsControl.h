@@ -42,14 +42,36 @@ public:
 	END_COM_MAP()
 
 	BEGIN_DLGRESIZE_MAP(CSettingsControl)
-		DLGRESIZE_CONTROL(IDC_EDITUSER, DLSZ_SIZE_X)
-		DLGRESIZE_CONTROL(IDC_EDITPASSWORD, DLSZ_SIZE_X)
-		DLGRESIZE_CONTROL(IDC_BUTTON1, DLSZ_CENTER_X)
+		
+		DLGRESIZE_CONTROL(IDC_GROUP1, DLSZ_CENTER_X)
+		BEGIN_DLGRESIZE_GROUP()
+		DLGRESIZE_CONTROL(IDC_LABEL_LOGGEDIN, DLSZ_CENTER_X)
+		DLGRESIZE_CONTROL(IDC_LABEL_LOGGED_USER, DLSZ_CENTER_X)
+		END_DLGRESIZE_GROUP()
+		BEGIN_DLGRESIZE_GROUP()
+		DLGRESIZE_CONTROL(IDC_LABEL_LOGIN, DLSZ_CENTER_X)
+		DLGRESIZE_CONTROL(IDC_EDITUSER, DLSZ_CENTER_X)
+		END_DLGRESIZE_GROUP()
+		BEGIN_DLGRESIZE_GROUP()
+		DLGRESIZE_CONTROL(IDC_LABEL_PASS, DLSZ_CENTER_X)
+		DLGRESIZE_CONTROL(IDC_EDITPASSWORD, DLSZ_CENTER_X)
+		END_DLGRESIZE_GROUP()
+		DLGRESIZE_CONTROL(IDC_BUTTON_LOGIN, DLSZ_CENTER_X)
+		DLGRESIZE_CONTROL(IDC_BUTTON_LOGOUT, DLSZ_CENTER_X)
+
+		DLGRESIZE_CONTROL(IDC_GROUP2, DLSZ_CENTER_X)
+		BEGIN_DLGRESIZE_GROUP()
+		DLGRESIZE_CONTROL(IDC_LABEL_MINITWI, DLSZ_CENTER_X)
+		DLGRESIZE_CONTROL(IDC_LABEL_VERSION, DLSZ_CENTER_X)
+		END_DLGRESIZE_GROUP()
+		DLGRESIZE_CONTROL(IDC_LABEL_HOMEPAGE, DLSZ_CENTER_X)
+
 	END_DLGRESIZE_MAP()
 
 	BEGIN_MSG_MAP(CSettingsControl)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		COMMAND_HANDLER(IDC_BUTTON1, BN_CLICKED, OnClickedOK)
+		COMMAND_HANDLER(IDC_BUTTON_LOGIN, BN_CLICKED, OnClickedLogin)
+		COMMAND_HANDLER(IDC_BUTTON_LOGOUT, BN_CLICKED, OnClickedLogout)
 		CHAIN_MSG_MAP(CDialogResize<CSettingsControl>)
 	END_MSG_MAP()
 
@@ -58,20 +80,31 @@ private:
 	HRESULT SaveEditBoxText(int id, BSTR bstrKey, ISettings* pSettings);
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnClickedLogin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnClickedLogout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<IInfoControlService> m_pInfoControlService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IFormManager> m_pFormManager;
+	CComQIPtr<ITimelineControl> m_pTimelineControl;
 
 	DWORD m_dwAdvice = 0;
 	CEdit m_editUser;
 	CEdit m_editPass;
 
+	CStatic m_labelLoggedUser;
+	CStatic m_labelVersion;
+	CHyperLink m_labelHomePage;
+
+	void SwitchToLoginMode();
+	void SwitchToLogoutMode();
+
 public:
 	enum { IDD = IDD_SETTINGSCONTROL };
+
+	bool DlgResize_PositionControl(int in_nWidth, int in_nHeight, RECT& in_sGroupRect, _AtlDlgResizeData&  in_sData, bool in_bGroup, _AtlDlgResizeData* in_pDataPrev = NULL);
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
 	STDMETHOD(CreateEx)(HWND hWndParent, HWND *hWnd);

@@ -44,10 +44,10 @@ private:
 
 	void GetFolderPath(CString& strFolderPath);
 	void GetSubDirs(CString strFolderPath, std::vector<std::wstring>& dirs);
-	CString GetInstalledVersion();
 
 public:
-
+	static CString GetInstalledVersion();
+	
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 

@@ -321,3 +321,5 @@
 /Setup/obj/Release
 /Setup/bin/x86/Release_XP
 /Setup/obj/x86/Release_XP
+/curl/build/Win32/VC12/LIB Debug/lib/libcurl.log
+/twitter/Debug/twitter.vcxprojResolveAssemblyReference.cache

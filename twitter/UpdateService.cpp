@@ -57,6 +57,7 @@ STDMETHODIMP CUpdateService::OnShutdown()
 	RETURN_IF_FAILED(m_pThreadService->Join());
 	m_pThreadService.Release();
 	m_pTimerService.Release();
+	m_pDownloadService.Release();
 	return S_OK;
 }
 
