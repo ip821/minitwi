@@ -105,6 +105,13 @@ STDMETHODIMP CTimelineControl::Clear()
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControl::IsEmpty(BOOL* pbIsEmpty)
+{
+	CHECK_E_POINTER(pbIsEmpty);
+	m_listBox.IsEmpty(pbIsEmpty);
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::GetItems(IObjArray** ppObjectArray)
 {
 	RETURN_IF_FAILED(m_listBox.GetItems(ppObjectArray));

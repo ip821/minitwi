@@ -68,6 +68,11 @@ void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	m_pSkinTimeline->MeasureItem(m_hWnd, m_items[lpMeasureItemStruct->itemID].m_T, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnRects[lpMeasureItemStruct->itemID].m_T);
 }
 
+void CCustomListBox::IsEmpty(BOOL* pbEmpty)
+{
+	*pbEmpty = m_items.empty();
+}
+
 HRESULT CCustomListBox::GetItems(IObjArray** ppObjectArray)
 {
 	CComPtr<IObjCollection> pObjCollection;

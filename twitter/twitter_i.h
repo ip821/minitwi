@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Wed Aug 27 16:45:34 2014
+/* at Thu Aug 28 22:51:13 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -1333,6 +1333,9 @@ EXTERN_C const IID IID_ITimelineControl;
         virtual HRESULT STDMETHODCALLTYPE SetItems( 
             IObjArray *pObjectArray) = 0;
         
+        virtual HRESULT STDMETHODCALLTYPE IsEmpty( 
+            BOOL *pbIsEmpty) = 0;
+        
         virtual HRESULT STDMETHODCALLTYPE Invalidate( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE Clear( void) = 0;
@@ -1408,6 +1411,10 @@ EXTERN_C const IID IID_ITimelineControl;
             ITimelineControl * This,
             IObjArray *pObjectArray);
         
+        HRESULT ( STDMETHODCALLTYPE *IsEmpty )( 
+            ITimelineControl * This,
+            BOOL *pbIsEmpty);
+        
         HRESULT ( STDMETHODCALLTYPE *Invalidate )( 
             ITimelineControl * This);
         
@@ -1481,6 +1488,9 @@ EXTERN_C const IID IID_ITimelineControl;
 
 #define ITimelineControl_SetItems(This,pObjectArray)	\
     ( (This)->lpVtbl -> SetItems(This,pObjectArray) ) 
+
+#define ITimelineControl_IsEmpty(This,pbIsEmpty)	\
+    ( (This)->lpVtbl -> IsEmpty(This,pbIsEmpty) ) 
 
 #define ITimelineControl_Invalidate(This)	\
     ( (This)->lpVtbl -> Invalidate(This) ) 
@@ -2014,6 +2024,11 @@ EXTERN_C const IID IID_IUpdateService;
     IUpdateService : public IUnknown
     {
     public:
+        virtual HRESULT STDMETHODCALLTYPE IsUpdateAvailable( 
+            BOOL *pbUpdateAvailable) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE RunUpdate( void) = 0;
+        
     };
     
     
@@ -2033,6 +2048,13 @@ EXTERN_C const IID IID_IUpdateService;
             IUpdateService * This);
         
         ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdateService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *IsUpdateAvailable )( 
+            IUpdateService * This,
+            BOOL *pbUpdateAvailable);
+        
+        HRESULT ( STDMETHODCALLTYPE *RunUpdate )( 
             IUpdateService * This);
         
         END_INTERFACE
@@ -2057,6 +2079,12 @@ EXTERN_C const IID IID_IUpdateService;
 #define IUpdateService_Release(This)	\
     ( (This)->lpVtbl -> Release(This) ) 
 
+
+#define IUpdateService_IsUpdateAvailable(This,pbUpdateAvailable)	\
+    ( (This)->lpVtbl -> IsUpdateAvailable(This,pbUpdateAvailable) ) 
+
+#define IUpdateService_RunUpdate(This)	\
+    ( (This)->lpVtbl -> RunUpdate(This) ) 
 
 #endif /* COBJMACROS */
 

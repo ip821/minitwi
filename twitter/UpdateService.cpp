@@ -111,6 +111,12 @@ void CUpdateService::GetSubDirs(CString strFolderPath, std::vector<std::wstring>
 
 STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
 {
+	{
+		lock_guard<mutex> lock(m_mutex);
+		if (m_bUpdateAvailable)
+			return S_OK;
+	}
+
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/version.txt")));
@@ -177,17 +183,51 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 	else if (CComBSTR(vType.bstrVal) == CComBSTR(L"TYPE_SOFTWARE_UPDATE_MSI"))
 	{
 		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_KEEP_FILE, &CComVariant(true)));
-	
+
 		CComVariant vFilePath;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 
-		ShellExecute(NULL, NULL, vFilePath.bstrVal, NULL, NULL, 0);
+		{
+			lock_guard<mutex> lock(m_mutex);
+			m_bUpdateAvailable = TRUE;
+			if (vFilePath.vt == VT_BSTR)
+			{
+				m_strUpdatePath = vFilePath.bstrVal;
+			}
+		}
 
-#ifdef __WINXP__
-		PostMessage(m_hControlWnd, WM_CLOSE, 0, 0);
-#endif
-	
 		return S_OK;
 	}
+	return S_OK;
+}
+
+STDMETHODIMP CUpdateService::IsUpdateAvailable(BOOL* pbUpdateAvailable)
+{
+	CHECK_E_POINTER(pbUpdateAvailable);
+
+	{
+		lock_guard<mutex> lock(m_mutex);
+		*pbUpdateAvailable = m_bUpdateAvailable;
+	}
+
+	return S_OK;
+}
+
+STDMETHODIMP CUpdateService::RunUpdate()
+{
+	CString strUpdatePath;
+	{
+		lock_guard<mutex> lock(m_mutex);
+		if (!m_bUpdateAvailable)
+			return E_PENDING;
+		strUpdatePath = m_strUpdatePath;
+	}
+
+	ShellExecute(NULL, NULL, strUpdatePath, NULL, NULL, 0);
+
+#ifdef __WINXP__
+	PostMessage(m_hControlWnd, WM_CLOSE, 0, 0);
+#endif
+
 	return S_OK;
 }

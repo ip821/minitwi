@@ -64,6 +64,7 @@ public:
 	void SetSkinTimeline(ISkinTimeline* pSkin);
 	void Clear();
 	HRESULT GetItems(IObjArray** ppObjectArray);
+	void IsEmpty(BOOL* pbEmpty);
 	void OnItemsUpdated();
 };
 

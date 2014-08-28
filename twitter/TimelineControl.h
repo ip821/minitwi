@@ -95,6 +95,7 @@ public:
 
 	STDMETHOD(GetItems)(IObjArray** ppObjectArray);
 	STDMETHOD(SetItems)(IObjArray* pObjectArray);
+	STDMETHOD(IsEmpty)(BOOL* pbIsEmpty);
 	STDMETHOD(Invalidate)();
 	STDMETHOD(Clear)();
 	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);

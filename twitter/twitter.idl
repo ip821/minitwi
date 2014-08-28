@@ -151,6 +151,7 @@ interface ITimelineControl : IControl2
 {
 	HRESULT GetItems(IObjArray** ppObjectArray);
 	HRESULT SetItems(IObjArray* pObjectArray);
+	HRESULT IsEmpty(BOOL* pbIsEmpty);
 	HRESULT Invalidate();
 	HRESULT Clear();
 	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
@@ -227,6 +228,8 @@ interface IDownloadService : IUnknown
 ]
 interface IUpdateService : IUnknown
 {
+	HRESULT IsUpdateAvailable(BOOL* pbUpdateAvailable);
+	HRESULT RunUpdate();
 };
 
 [

@@ -17,7 +17,8 @@ class ATL_NO_VTABLE CViewControllerService :
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
 	public IInitializeWithControlImpl,
-	public IInitializeWithSettings
+	public IInitializeWithSettings,
+	public IInfoControlEventSink
 {
 public:
 	CViewControllerService()
@@ -32,6 +33,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
+		COM_INTERFACE_ENTRY(IInfoControlEventSink)
 	END_COM_MAP()
 
 private:
@@ -40,9 +42,15 @@ private:
 	CComPtr<IInfoControlService> m_pInfoControlService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
+	CComPtr<IUpdateService> m_pUpdateService;
+
 	DWORD m_dwAdvice = 0;
+	DWORD m_dwInfoControlAdvice = 0;
 	CComPtr<ISettings> m_pSettings;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
+
+	STDMETHOD(ShowControl)(BSTR bstrMessage, BOOL bError);
+	STDMETHOD(HideControl)();
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
@@ -55,6 +63,8 @@ public:
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 	STDMETHOD(StartTimers)();
 	STDMETHOD(StopTimers)();
+
+	STDMETHOD(OnLinkClick)(HWND hWnd);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ViewControllerService), CViewControllerService)
