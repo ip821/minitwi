@@ -1496,8 +1496,8 @@ Global
 		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.LIB Release|x64.ActiveCfg = Release|x86
 		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.LIB Release|x86.ActiveCfg = Release|x86
 		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.LIB Release|x86.Build.0 = Release|x86
-		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.Release_XP|Mixed Platforms.ActiveCfg = Release_XP|x86
-		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.Release_XP|Mixed Platforms.Build.0 = Release_XP|x86
+		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.Release_XP|Mixed Platforms.ActiveCfg = Release|x86
+		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.Release_XP|Mixed Platforms.Build.0 = Release|x86
 		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.Release_XP|Win32.ActiveCfg = Release|x86
 		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.Release_XP|Win32.Build.0 = Release|x86
 		{B1BE1550-FAC7-4BC1-B214-D839C901EE78}.Release_XP|x64.ActiveCfg = Release|x86

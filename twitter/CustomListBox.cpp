@@ -190,12 +190,9 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 				if (bstrIsUrl == L"1")
 				{
 					SetCursor(m_handCursor);
-					if (prevColumnIndex != uiItem || prevItemIndex != i)
-					{
-						InvalidateRect(rect);
-						m_HoveredItemIndex = uiItem;
-						m_HoveredColumnIndex = i;
-					}
+					InvalidateRect(rect);
+					m_HoveredItemIndex = uiItem;
+					m_HoveredColumnIndex = i;
 				}
 				break;
 			}
@@ -264,7 +261,7 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 
 	auto nID = GetDlgCtrlID();
 
-	CPoint pt = {x, y};
+	CPoint pt = { x, y };
 	ClientToScreen(&pt);
 
 	NMCOLUMNCLICK nm = { 0 };
