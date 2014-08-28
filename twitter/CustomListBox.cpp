@@ -190,9 +190,12 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 				if (bstrIsUrl == L"1")
 				{
 					SetCursor(m_handCursor);
-					InvalidateRect(rect);
 					m_HoveredItemIndex = uiItem;
 					m_HoveredColumnIndex = i;
+					if (prevColumnIndex != uiItem || prevItemIndex != i)
+					{
+						InvalidateRect(rect);
+					}
 				}
 				break;
 			}
