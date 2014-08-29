@@ -61,52 +61,9 @@ STDMETHODIMP CUpdateService::OnShutdown()
 	return S_OK;
 }
 
-void CUpdateService::GetFolderPath(CString& strFolderPath)
-{
-	auto lpszBuffer = strFolderPath.GetBuffer(MAX_PATH);
-	SHGetFolderPath(NULL, CSIDL_COMMON_APPDATA, NULL, 0, lpszBuffer);
-	strFolderPath.ReleaseBuffer();
-	StrPathAppend(strFolderPath, L"minitwi\\Updates");
-}
-
 STDMETHODIMP CUpdateService::OnStart(IVariantObject *pResult)
 {
 	return S_OK;
-}
-
-void CUpdateService::GetSubDirs(CString strFolderPath, std::vector<std::wstring>& dirs)
-{
-	CString str = strFolderPath;
-	StrPathRemoveBackslash(str);
-	StrPathAppend(str, L"*");
-	WIN32_FIND_DATA fi = { 0 };
-	HANDLE h = FindFirstFileEx(
-		str,
-		FindExInfoStandard,
-		&fi,
-		FindExSearchLimitToDirectories,
-		NULL,
-		0);
-
-	if (h != INVALID_HANDLE_VALUE)
-	{
-		do
-		{
-			if (fi.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			{
-				dirs.push_back(fi.cFileName);
-			}
-		} while (FindNextFile(h, &fi));
-		FindClose(h);
-	}
-
-	std::sort(
-		dirs.begin(),
-		dirs.end(),
-		[&](std::wstring& a, std::wstring& b)
-	{
-		return LessThanVersion(a, b);
-	});
 }
 
 STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
@@ -225,9 +182,8 @@ STDMETHODIMP CUpdateService::RunUpdate()
 
 	ShellExecute(NULL, NULL, strUpdatePath, NULL, NULL, 0);
 
-#ifdef __WINXP__
-	PostMessage(m_hControlWnd, WM_CLOSE, 0, 0);
-#endif
+	exit(0);
+	//PostMessage(m_hControlWnd, WM_CLOSE, 0, 0);
 
 	return S_OK;
 }

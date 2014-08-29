@@ -46,9 +46,6 @@ private:
 	CString m_strUpdatePath;
 	mutex m_mutex;
 
-	void GetFolderPath(CString& strFolderPath);
-	void GetSubDirs(CString strFolderPath, std::vector<std::wstring>& dirs);
-
 public:
 	static CString GetInstalledVersion();
 	
