@@ -165,7 +165,8 @@ SIZE CSkinTimeline::AddColumn(
 	int y,
 	SIZE size,
 	BOOL bIsUrl = TRUE,
-	BOOL bWordWrap = FALSE
+	BOOL bWordWrap = FALSE,
+	LONG ulCustomFixedWidth = 0
 	)
 {
 	CDC cdc;
@@ -191,6 +192,8 @@ SIZE CSkinTimeline::AddColumn(
 	else
 	{
 		GetTextExtentPoint32(cdc, strDisplayText, strDisplayText.GetLength(), &sz);
+		if (ulCustomFixedWidth)
+			sz.cx = ulCustomFixedWidth;
 	}
 
 	UINT uiIndex = 0;
@@ -332,15 +335,21 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
 		}
 
+		if (strCreatedAt.IsEmpty())
+			strCreatedAt = L"0s";
+
 		sizeDateTime = AddColumn(
 			hdc,
 			pColumnRects,
-			CString(VAR_TWITTER_CREATED_AT),
+			CString(VAR_TWITTER_RELATIVE_TIME),
 			strCreatedAt,
 			strCreatedAt,
 			x,
 			y,
-			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
+			CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
+			TRUE,
+			FALSE,
+			30
 			);
 	}
 

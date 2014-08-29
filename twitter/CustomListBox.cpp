@@ -101,6 +101,7 @@ void CCustomListBox::OnItemsUpdated()
 				m_columnRects[i]->GetRectProp(j, VAR_COLUMN_NAME, &bstrColumnName);
 				if (bstrColumnName == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
 				{
+					m_columnRects[i]->SetRectProp(j, VAR_TEXT, v.bstrVal);
 					m_columnRects[i]->SetRectProp(j, VAR_VALUE, v.bstrVal);
 				}
 			}

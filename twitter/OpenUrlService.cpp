@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "OpenUrlService.h"
-
+#include "Plugins.h"
 
 STDMETHODIMP COpenUrlService::OpenColumnAsUrl(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
 {
@@ -29,7 +29,7 @@ STDMETHODIMP COpenUrlService::OpenColumnAsUrl(BSTR bstrColumnName, DWORD dwColum
 		}
 	}
 
-	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_CREATED_AT))
+	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
 	{
 		CComVariant vUserName;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
