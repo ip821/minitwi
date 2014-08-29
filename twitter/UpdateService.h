@@ -42,7 +42,7 @@ private:
 	CComPtr<IDownloadService> m_pDownloadService;
 	DWORD m_dwAdviceThreadService = 0;
 	DWORD m_dwAdviceDownloadService = 0;
-	BOOL m_bUpdateAvailable = TRUE;
+	BOOL m_bUpdateAvailable = FALSE;
 	CString m_strUpdatePath;
 	mutex m_mutex;
 

@@ -82,9 +82,8 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 {
 	HWND hwndChildControl = 0;
 	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-	BOOL bUpdateAvailable = FALSE;
-	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&bUpdateAvailable));
-	if (bUpdateAvailable)
+	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
+	if (m_bUpdateAvailable)
 	{
 		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Update available. Click here to install.", FALSE, TRUE));
 		RETURN_IF_FAILED(m_pInfoControlService->EnableHyperLink(hwndChildControl));
@@ -103,9 +102,7 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 
 STDMETHODIMP CViewControllerService::HideControl()
 {
-	BOOL bUpdateAvailable = FALSE;
-	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&bUpdateAvailable));
-	if (bUpdateAvailable)
+	if (m_bUpdateAvailable)
 		return S_OK;
 	HWND hwndChildControl = 0;
 	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));

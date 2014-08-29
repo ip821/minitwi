@@ -12,11 +12,18 @@
 
     <UIRef Id="WixUI_Mondo_Custom" />
 
+    <InstallExecuteSequence>
+      <Custom Action="LaunchApp" After="InstallFinalize">NTVersion=501</Custom>
+    </InstallExecuteSequence>
+
+    <CustomAction Id="LaunchApp" Directory="INSTALLFOLDER" ExeCommand="[INSTALLFOLDER]minitwi.exe" />
+  
   </Product>
 
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="DesktopFolder" Name="Desktop">
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="MiniTwi"/>
       </Directory>
       <Directory Id="ProgramFilesFolder">
         <Directory Id="INSTALLFOLDER" Name="MiniTwi" />
@@ -31,7 +38,7 @@
         <File Id="minitwi.exe" KeyPath="yes" Source="$(var.Host.TargetPath)"/>
         <RegistryValue Root="HKLM" Key="Software\IP\MiniTwi" Name="InstalledVersion" Value="[ProductVersion]" Type="string" Action="write" />
         <Shortcut Id="DesktopShortcut"
-                          Directory="DesktopFolder"
+                          Directory="ApplicationProgramsFolder"
                           Name="MiniTwi"
                           Description="Twitter client"
                           WorkingDirectory="INSTALLFOLDER"
@@ -39,6 +46,7 @@
                           Advertise="yes" >
           <Icon Id="minitwi.exe" SourceFile="$(var.Host.TargetPath)" />
         </Shortcut>
+        <RemoveFolder Id='RemoveProgramMenuDir' Directory='ApplicationProgramsFolder' On='uninstall' />
       </Component>
 
       <Component Id="asyncsvc.dll" Guid="8E854380-C025-402B-8F1C-D581280E2A7A">

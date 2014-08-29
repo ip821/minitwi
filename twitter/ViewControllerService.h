@@ -44,6 +44,7 @@ private:
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	CComPtr<IUpdateService> m_pUpdateService;
 
+	BOOL m_bUpdateAvailable = FALSE;
 	DWORD m_dwAdvice = 0;
 	DWORD m_dwInfoControlAdvice = 0;
 	CComPtr<ISettings> m_pSettings;
