@@ -163,7 +163,7 @@
     <ResourceCompile>
       <Culture>0x0409</Culture>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__WINXP__;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -184,6 +184,8 @@
     <ClCompile Include="ColumnRects.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
+    <ClCompile Include="PictureWindow.cpp" />
+    <ClCompile Include="PictureWindowCopyCommand.cpp" />
     <ClCompile Include="TimelineControlCopyCommand.cpp" />
     <ClCompile Include="CustomListBox.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -240,6 +242,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="WindowService.cpp" />
     <ClCompile Include="xdlldata.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -257,6 +260,9 @@
     <ClInclude Include="ColumnRects.h" />
     <ClInclude Include="DownloadService.h" />
     <ClInclude Include="ImageManagerService.h" />
+    <ClInclude Include="PictureWindow.h" />
+    <ClInclude Include="PictureWindowCopyCommand.h" />
+    <ClInclude Include="resource1.h" />
     <ClInclude Include="TimelineControlCopyCommand.h" />
     <ClInclude Include="OpenUrlService.h" />
     <ClInclude Include="CustomListBox.h" />
@@ -282,6 +288,7 @@
     <ClInclude Include="UpdateService.h" />
     <ClInclude Include="ViewControllerService.h" />
     <ClInclude Include="viewmdl_contract_i.h" />
+    <ClInclude Include="WindowService.h" />
     <ClInclude Include="xdlldata.h" />
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +304,8 @@
     <None Include="DownloadService.rgs" />
     <None Include="FormsService.rgs" />
     <None Include="ImageManagerService2.rgs" />
+    <None Include="PictureWindow.rgs" />
+    <None Include="PictureWindowCopyCommand1.rgs" />
     <None Include="SkinDefault.rgs" />
     <None Include="SkinService.rgs" />
     <None Include="SkinTimeline.rgs" />
@@ -308,6 +317,7 @@
     <None Include="twitter.rgs" />
     <None Include="UpdateService.rgs" />
     <None Include="ViewControllerService.rgs" />
+    <None Include="WindowService.rgs" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\NotificationServices\asyncsvc_contract_i.idl">
@@ -360,6 +370,9 @@
     <ProjectReference Include="..\curl\projects\Windows\VC12\lib\libcurl.vcxproj">
       <Project>{da6f56b4-06a4-441d-ad70-ac5a7d51fadb}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\Twitter.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

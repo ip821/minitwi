@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Aug 28 22:51:13 2014
+/* at Sat Aug 30 21:44:53 2014
  */
 /* Compiler settings for twitter.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -155,6 +155,34 @@ typedef interface IDownloadService IDownloadService;
 typedef interface IUpdateService IUpdateService;
 
 #endif 	/* __IUpdateService_FWD_DEFINED__ */
+
+
+#ifndef __IWindowEventSink_FWD_DEFINED__
+#define __IWindowEventSink_FWD_DEFINED__
+typedef interface IWindowEventSink IWindowEventSink;
+
+#endif 	/* __IWindowEventSink_FWD_DEFINED__ */
+
+
+#ifndef __IWindow_FWD_DEFINED__
+#define __IWindow_FWD_DEFINED__
+typedef interface IWindow IWindow;
+
+#endif 	/* __IWindow_FWD_DEFINED__ */
+
+
+#ifndef __IPictureWindow_FWD_DEFINED__
+#define __IPictureWindow_FWD_DEFINED__
+typedef interface IPictureWindow IPictureWindow;
+
+#endif 	/* __IPictureWindow_FWD_DEFINED__ */
+
+
+#ifndef __IWindowService_FWD_DEFINED__
+#define __IWindowService_FWD_DEFINED__
+typedef interface IWindowService IWindowService;
+
+#endif 	/* __IWindowService_FWD_DEFINED__ */
 
 
 #ifndef __PluginTable_FWD_DEFINED__
@@ -359,6 +387,42 @@ typedef struct UpdateService UpdateService;
 #endif /* __cplusplus */
 
 #endif 	/* __UpdateService_FWD_DEFINED__ */
+
+
+#ifndef __PictureWindow_FWD_DEFINED__
+#define __PictureWindow_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class PictureWindow PictureWindow;
+#else
+typedef struct PictureWindow PictureWindow;
+#endif /* __cplusplus */
+
+#endif 	/* __PictureWindow_FWD_DEFINED__ */
+
+
+#ifndef __WindowService_FWD_DEFINED__
+#define __WindowService_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class WindowService WindowService;
+#else
+typedef struct WindowService WindowService;
+#endif /* __cplusplus */
+
+#endif 	/* __WindowService_FWD_DEFINED__ */
+
+
+#ifndef __PictureWindowCopyCommand_FWD_DEFINED__
+#define __PictureWindowCopyCommand_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class PictureWindowCopyCommand PictureWindowCopyCommand;
+#else
+typedef struct PictureWindowCopyCommand PictureWindowCopyCommand;
+#endif /* __cplusplus */
+
+#endif 	/* __PictureWindowCopyCommand_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -2097,6 +2161,345 @@ EXTERN_C const IID IID_IUpdateService;
 #endif 	/* __IUpdateService_INTERFACE_DEFINED__ */
 
 
+#ifndef __IWindowEventSink_INTERFACE_DEFINED__
+#define __IWindowEventSink_INTERFACE_DEFINED__
+
+/* interface IWindowEventSink */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IWindowEventSink;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("EF814E3D-BAFD-48BF-8DAC-29CD2F238F64")
+    IWindowEventSink : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE OnClosed( 
+            HWND hWndSelf) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IWindowEventSinkVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IWindowEventSink * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IWindowEventSink * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IWindowEventSink * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *OnClosed )( 
+            IWindowEventSink * This,
+            HWND hWndSelf);
+        
+        END_INTERFACE
+    } IWindowEventSinkVtbl;
+
+    interface IWindowEventSink
+    {
+        CONST_VTBL struct IWindowEventSinkVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IWindowEventSink_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IWindowEventSink_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IWindowEventSink_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IWindowEventSink_OnClosed(This,hWndSelf)	\
+    ( (This)->lpVtbl -> OnClosed(This,hWndSelf) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IWindowEventSink_INTERFACE_DEFINED__ */
+
+
+#ifndef __IWindow_INTERFACE_DEFINED__
+#define __IWindow_INTERFACE_DEFINED__
+
+/* interface IWindow */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IWindow;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("2620EF14-88EB-44D8-9ACA-56E0866E3A09")
+    IWindow : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Show( 
+            HWND hWndParent) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetHWND( 
+            HWND *phWnd) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IWindowVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IWindow * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IWindow * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IWindow * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *Show )( 
+            IWindow * This,
+            HWND hWndParent);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetHWND )( 
+            IWindow * This,
+            HWND *phWnd);
+        
+        END_INTERFACE
+    } IWindowVtbl;
+
+    interface IWindow
+    {
+        CONST_VTBL struct IWindowVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IWindow_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IWindow_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IWindow_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IWindow_Show(This,hWndParent)	\
+    ( (This)->lpVtbl -> Show(This,hWndParent) ) 
+
+#define IWindow_GetHWND(This,phWnd)	\
+    ( (This)->lpVtbl -> GetHWND(This,phWnd) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IWindow_INTERFACE_DEFINED__ */
+
+
+#ifndef __IPictureWindow_INTERFACE_DEFINED__
+#define __IPictureWindow_INTERFACE_DEFINED__
+
+/* interface IPictureWindow */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IPictureWindow;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("6687C546-6AB5-4D4F-9054-9AE45E55AAEB")
+    IPictureWindow : public IWindow
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IPictureWindowVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IPictureWindow * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IPictureWindow * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IPictureWindow * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *Show )( 
+            IPictureWindow * This,
+            HWND hWndParent);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetHWND )( 
+            IPictureWindow * This,
+            HWND *phWnd);
+        
+        END_INTERFACE
+    } IPictureWindowVtbl;
+
+    interface IPictureWindow
+    {
+        CONST_VTBL struct IPictureWindowVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IPictureWindow_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IPictureWindow_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IPictureWindow_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IPictureWindow_Show(This,hWndParent)	\
+    ( (This)->lpVtbl -> Show(This,hWndParent) ) 
+
+#define IPictureWindow_GetHWND(This,phWnd)	\
+    ( (This)->lpVtbl -> GetHWND(This,phWnd) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IPictureWindow_INTERFACE_DEFINED__ */
+
+
+#ifndef __IWindowService_INTERFACE_DEFINED__
+#define __IWindowService_INTERFACE_DEFINED__
+
+/* interface IWindowService */
+/* [unique][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IWindowService;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("B3C5E00B-C8CF-4CF5-9147-ED5E0CF20F01")
+    IWindowService : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE OpenWindow( 
+            HWND hWndParent,
+            REFCLSID clsid,
+            IVariantObject *pVariantObject) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IWindowServiceVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IWindowService * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IWindowService * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IWindowService * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *OpenWindow )( 
+            IWindowService * This,
+            HWND hWndParent,
+            REFCLSID clsid,
+            IVariantObject *pVariantObject);
+        
+        END_INTERFACE
+    } IWindowServiceVtbl;
+
+    interface IWindowService
+    {
+        CONST_VTBL struct IWindowServiceVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IWindowService_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IWindowService_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IWindowService_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IWindowService_OpenWindow(This,hWndParent,clsid,pVariantObject)	\
+    ( (This)->lpVtbl -> OpenWindow(This,hWndParent,clsid,pVariantObject) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IWindowService_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __twitterLib_LIBRARY_DEFINED__
 #define __twitterLib_LIBRARY_DEFINED__
@@ -2242,6 +2645,30 @@ EXTERN_C const CLSID CLSID_UpdateService;
 class DECLSPEC_UUID("8C2F7C68-A0A4-4A79-9908-5FE3D1596C7A")
 UpdateService;
 #endif
+
+EXTERN_C const CLSID CLSID_PictureWindow;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("10AEB079-CE14-4F8F-8CEE-C4C6428BD4E8")
+PictureWindow;
+#endif
+
+EXTERN_C const CLSID CLSID_WindowService;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("DD23A3C8-D851-4F92-9201-276ED70C162F")
+WindowService;
+#endif
+
+EXTERN_C const CLSID CLSID_PictureWindowCopyCommand;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("5A272730-A01D-48FD-9005-A308F656F12D")
+PictureWindowCopyCommand;
+#endif
 #endif /* __twitterLib_LIBRARY_DEFINED__ */
 
 /* Additional Prototypes for ALL interfaces */
@@ -2260,6 +2687,11 @@ unsigned long             __RPC_USER  HFONT_UserSize(     unsigned long *, unsig
 unsigned char * __RPC_USER  HFONT_UserMarshal(  unsigned long *, unsigned char *, HFONT * ); 
 unsigned char * __RPC_USER  HFONT_UserUnmarshal(unsigned long *, unsigned char *, HFONT * ); 
 void                      __RPC_USER  HFONT_UserFree(     unsigned long *, HFONT * ); 
+
+unsigned long             __RPC_USER  HWND_UserSize(     unsigned long *, unsigned long            , HWND * ); 
+unsigned char * __RPC_USER  HWND_UserMarshal(  unsigned long *, unsigned char *, HWND * ); 
+unsigned char * __RPC_USER  HWND_UserUnmarshal(unsigned long *, unsigned char *, HWND * ); 
+void                      __RPC_USER  HWND_UserFree(     unsigned long *, HWND * ); 
 
 /* end of Additional Prototypes */
 
