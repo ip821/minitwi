@@ -233,6 +233,46 @@ interface IUpdateService : IUnknown
 };
 
 [
+	object,
+	uuid(EF814E3D-BAFD-48BF-8DAC-29CD2F238F64),
+	pointer_default(unique)
+]
+interface IWindowEventSink : IUnknown
+{
+	HRESULT OnClosed(HWND hWndSelf);
+};
+
+[
+	object,
+	uuid(2620EF14-88EB-44D8-9ACA-56E0866E3A09),
+	pointer_default(unique)
+]
+interface IWindow : IUnknown
+{
+	HRESULT Show(HWND hWndParent);
+	HRESULT GetHWND(HWND* phWnd);
+};
+
+[
+	object,
+	uuid(6687C546-6AB5-4D4F-9054-9AE45E55AAEB),
+	pointer_default(unique)
+]
+interface IPictureWindow : IWindow
+{
+};
+
+[
+	object,
+	uuid(B3C5E00B-C8CF-4CF5-9147-ED5E0CF20F01),
+	pointer_default(unique)
+]
+interface IWindowService : IUnknown
+{
+	HRESULT OpenWindow(HWND hWndParent, REFCLSID clsid, IVariantObject* pVariantObject);
+};
+
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -358,6 +398,27 @@ library twitterLib
 	coclass UpdateService
 	{
 		[default] interface IUpdateService;
+	};
+	[
+		uuid(10AEB079-CE14-4F8F-8CEE-C4C6428BD4E8)		
+	]
+	coclass PictureWindow
+	{
+		[default] interface IPictureWindow;
+	};
+	[
+		uuid(DD23A3C8-D851-4F92-9201-276ED70C162F)		
+	]
+	coclass WindowService
+	{
+		[default] interface IWindowService;
+	};
+	[
+		uuid(5A272730-A01D-48FD-9005-A308F656F12D)		
+	]
+	coclass PictureWindowCopyCommand
+	{
+		[default] interface ICommand;
 	};
 };
 

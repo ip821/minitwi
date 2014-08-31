@@ -9,6 +9,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_ColumnRects, L"Column rects object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeColorMap, L"Color map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeFontMap, L"Font map object"));
+	RETURN_IF_FAILED(AddObject(CLSID_PictureWindow, L"Picture window object"));
 
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEME, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEMECOLORMAP, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme colors"));
@@ -34,7 +35,9 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_HOSTFORM, PVIEWTYPE_WINDOW_SERVICE, CLSID_ThreadPoolService, CLSID_ThreadPoolService, L"Thread pool service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PVIEWTYPE_WINDOW_SERVICE, CLSID_DownloadService, CLSID_DownloadService, L"Download service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PVIEWTYPE_WINDOW_SERVICE, CLSID_UpdateService, CLSID_UpdateService, L"Software update service"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PVIEWTYPE_WINDOW_SERVICE, CLSID_WindowService, CLSID_WindowService, L"Window service"));
 
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND, CLSID_TimelineControlCopyCommand, CLSID_TimelineControlCopyCommand, L"Copy commands for timeline control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_COMMAND, CLSID_PictureWindowCopyCommand, CLSID_PictureWindowCopyCommand, L"Copy commands for picture window"));
 	return S_OK;
 }
