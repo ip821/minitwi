@@ -51,17 +51,13 @@ public:
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
 	END_MSG_MAP()
 
-	DECLARE_PROTECT_FINAL_CONSTRUCT()
-	HRESULT FinalConstruct();
-	void FinalRelease();
-
 private:
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
-	std::shared_ptr<Gdiplus::Bitmap> m_pBitmap;
+	shared_ptr<Gdiplus::Bitmap> m_pBitmap;
 	mutex m_mutex;
 	CIcon m_icon;
 

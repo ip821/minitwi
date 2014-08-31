@@ -22,21 +22,13 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
-	if (IsWindow())
-		DestroyWindow();
-
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	m_pDownloadService.Release();
-	return S_OK;
-}
+	m_pCommandSupport.Release();
+	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
+	m_pPluginSupport.Release();
 
-HRESULT CPictureWindow::FinalConstruct()
-{
 	return S_OK;
-}
-
-void CPictureWindow::FinalRelease()
-{
 }
 
 LRESULT CPictureWindow::OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -135,7 +127,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	{
 		lock_guard<mutex> lock(m_mutex);
 		ATLASSERT(!m_pBitmap);
-		m_pBitmap = std::make_shared<Gdiplus::Bitmap>(vFilePath.bstrVal);
+		m_pBitmap = make_shared<Gdiplus::Bitmap>(vFilePath.bstrVal);
 	}
 
 	CRect rect;
@@ -168,8 +160,8 @@ void CPictureWindow::OnFinalMessage(HWND hWnd)
 
 LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	PAINTSTRUCT ps;
-	CDC cdc(BeginPaint(&ps));
+	PAINTSTRUCT ps = { 0 };
+	CDCHandle cdc(BeginPaint(&ps));
 
 	CRect rect;
 	GetClientRect(&rect);
@@ -182,9 +174,6 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			CString str = L"Downloading...";
 			CSize size;
 			GetTextExtentPoint32(cdc, str, str.GetLength(), &size);
-
-			static Gdiplus::Color colorText(Gdiplus::Color::Black);
-			cdc.SetTextColor(colorText.ToCOLORREF());
 
 			auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
 			auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
