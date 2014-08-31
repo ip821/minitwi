@@ -86,8 +86,8 @@ STDMETHODIMP CPictureWindow::GetHWND(HWND* phWnd)
 STDMETHODIMP CPictureWindow::Show(HWND hWndParent)
 {
 	CRect rect(0, 0, 100, 100);
+	CalcRect(rect.right, rect.bottom, rect);
 	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU);
-	SetPosition(100, 100, rect);
 	return S_OK;
 }
 
@@ -144,11 +144,12 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	auto width = m_pBitmap->GetWidth();
 	auto height = m_pBitmap->GetHeight();
 
-	SetPosition(width, height, rect);
+	CalcRect(width, height, rect);
+	SetWindowPos(NULL, &rect, SWP_NOZORDER);
 	return S_OK;
 }
 
-void CPictureWindow::SetPosition(int width, int height, CRect& rect)
+void CPictureWindow::CalcRect(int width, int height, CRect& rect)
 {
 	int nScreenWidth = GetSystemMetrics(SM_CXSCREEN);
 	int nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
@@ -158,8 +159,6 @@ void CPictureWindow::SetPosition(int width, int height, CRect& rect)
 
 	rect.right = rect.left + width + IMAGE_PADDING * 2;
 	rect.bottom = rect.top + height + IMAGE_PADDING * 2;
-
-	SetWindowPos(NULL, &rect, SWP_NOZORDER);
 }
 
 void CPictureWindow::OnFinalMessage(HWND hWnd)

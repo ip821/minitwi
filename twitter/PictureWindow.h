@@ -73,7 +73,7 @@ private:
 	LRESULT OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	void OnFinalMessage(HWND hWnd);
-	void SetPosition(int width, int height, CRect& rect);
+	void CalcRect(int width, int height, CRect& rect);
 
 public:
 
