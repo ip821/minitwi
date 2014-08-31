@@ -62,7 +62,7 @@ LRESULT CPictureWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 {
 	m_icon.LoadIcon(IDR_TWITTER);
 	SetClassLong(m_hWnd, GCL_HICONSM, (LONG)m_icon.m_hIcon);
-	//SetClassLong(m_hWnd, GCL_HICON, (LONG)m_icon.m_hIcon);
+	SetClassLong(m_hWnd, GCL_HICON, (LONG)m_icon.m_hIcon);
 
 	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
 	m_pPluginSupport->InitializePlugins(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_COMMAND);

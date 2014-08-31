@@ -24,6 +24,10 @@ STDMETHODIMP CTimelineControlCopyCommand::InstallMenu(IMenu* pMenu)
 STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 {
 	UNREFERENCED_PARAMETER(guidCommand);
+
+	CComPtr<IVariantObject> pTempObject = m_pVariantObject;
+	m_pVariantObject.Release();
+
 	if (OpenClipboard(NULL))
 	{
 		if (EmptyClipboard())
@@ -33,9 +37,9 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 			if (IsEqualGUID(guidCommand, COMMAND_COPY_URL))
 			{
 				CComVariant vUserName;
-				RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
 				CComVariant v;
-				RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_ID, &v));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_ID, &v));
 				if (vUserName.vt == VT_BSTR && v.vt == VT_BSTR)
 				{
 					str = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(v.bstrVal);
@@ -44,11 +48,11 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 			else if (IsEqualGUID(guidCommand, COMMAND_COPY_TEXT))
 			{
 				CComVariant vUserDisplayName;
-				RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vUserDisplayName));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vUserDisplayName));
 				CComVariant vUserName;
-				RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
 				CComVariant vText;
-				RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_TEXT, &vText));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_TEXT, &vText));
 				if (vUserDisplayName.vt == VT_BSTR)
 					str = vUserDisplayName.bstrVal;
 				if (vUserName.vt == VT_BSTR)

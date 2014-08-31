@@ -25,6 +25,9 @@ STDMETHODIMP CPictureWindowCopyCommand::InstallMenu(IMenu* pMenu)
 STDMETHODIMP CPictureWindowCopyCommand::Invoke(REFGUID guidCommand)
 {
 	UNREFERENCED_PARAMETER(guidCommand);
+	CComPtr<IVariantObject> pTempObject = m_pVariantObject;
+	m_pVariantObject.Release();
+
 	if (OpenClipboard(NULL))
 	{
 		if (EmptyClipboard())
@@ -32,7 +35,7 @@ STDMETHODIMP CPictureWindowCopyCommand::Invoke(REFGUID guidCommand)
 			std::wstring str;
 
 			CComVariant vMediaUrl;
-			RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl));
+			RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl));
 
 			str = vMediaUrl.bstrVal;
 
