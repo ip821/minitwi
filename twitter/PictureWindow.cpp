@@ -77,6 +77,7 @@ STDMETHODIMP CPictureWindow::GetHWND(HWND* phWnd)
 
 STDMETHODIMP CPictureWindow::Show(HWND hWndParent)
 {
+	m_hWndParent = hWndParent;
 	CRect rect(0, 0, 100, 100);
 	CalcRect(rect.right, rect.bottom, rect);
 	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU);
@@ -143,11 +144,26 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 
 void CPictureWindow::CalcRect(int width, int height, CRect& rect)
 {
-	int nScreenWidth = GetSystemMetrics(SM_CXSCREEN);
-	int nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+	auto hMonitor = MonitorFromWindow(m_hWndParent, MONITOR_DEFAULTTONULL);
 
-	rect.left = nScreenWidth / 2 - width / 2;
-	rect.top = nScreenHeight / 2 - height / 2;
+	if (hMonitor)
+	{
+		MONITORINFO mi = { 0 };
+		mi.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(hMonitor, &mi);
+		
+		rect = mi.rcWork;
+		rect.left += (mi.rcWork.right - mi.rcWork.left) / 2 - width / 2;
+		rect.top += (mi.rcWork.bottom - mi.rcWork.top) / 2 - height / 2;
+	}
+	else
+	{
+		int nScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+		int nScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+		rect.left = nScreenWidth / 2 - width / 2;
+		rect.top = nScreenHeight / 2 - height / 2;
+	}
 
 	rect.right = rect.left + width + IMAGE_PADDING * 2;
 	rect.bottom = rect.top + height + IMAGE_PADDING * 2;

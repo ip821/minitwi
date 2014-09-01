@@ -60,6 +60,7 @@ private:
 	shared_ptr<Gdiplus::Bitmap> m_pBitmap;
 	mutex m_mutex;
 	CIcon m_icon;
+	HWND m_hWndParent = 0;
 
 	HRESULT Fire_OnClosed(HWND hWnd);
 

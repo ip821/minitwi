@@ -331,3 +331,7 @@
 /twitter/Debug/RCa07180
 /curl/build/Win32/VC12/LIB Debug - DLL Windows SSPI/lib/*.log
 /curl/build/Win32/VC12/LIB Release/lib/*.log
+/twiconn/twiconn_i.c
+/twiconn/twiconn_i.h
+/twitter/twitter_i.c
+/twitter/twitter_i.h
