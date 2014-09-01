@@ -1,0 +1,3 @@
+[submodule "model-libs"]
+	path = model-libs
+	url = https://Igor.Palkin:NQ3QV2VM7fQ8@code.google.com/p/model-libs

@@ -54,22 +54,6 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\NotificationServices\asyncsvc.vcxproj">
-      <Name>asyncsvc</Name>
-      <Project>{17f9075f-67ac-4eab-8181-c195a5d52696}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\ObjMdl\ObjMdl.vcxproj">
-      <Name>objmdl</Name>
-      <Project>{8f3fe293-d9b1-4c72-bb96-155af4a8910b}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
     <ProjectReference Include="..\twiconn\twiconn.vcxproj">
       <Name>twiconn</Name>
       <Project>{cb084e48-d765-4982-9f26-817a3e8e968b}</Project>
@@ -81,14 +65,6 @@
     <ProjectReference Include="..\twitter\twitter.vcxproj">
       <Name>twitter</Name>
       <Project>{5cc01fdf-2c23-4363-9ad5-a1f99a9c7761}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\ViewMdl\ViewMdl.vcxproj">
-      <Name>viewmdl</Name>
-      <Project>{3ad8cc48-9221-480a-9b11-faa7a54fc340}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
