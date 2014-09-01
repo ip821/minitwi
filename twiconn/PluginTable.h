@@ -1,6 +1,6 @@
 #pragma once
 
-#include "..\ObjMdl\\PluginTableBase.h"
+#include "..\model-libs\ObjMdl\\PluginTableBase.h"
 #include "twiconn_i.h"
 
 using namespace ATL;

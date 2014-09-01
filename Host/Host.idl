@@ -1,7 +1,7 @@
 import "oaidl.idl";
 import "ocidl.idl";
-import "..\ObjMdl\objmdl_contract_i.idl";
-import "..\ViewMdl\viewmdl_contract_i.idl";
+import "objmdl_contract_i.idl";
+import "viewmdl_contract_i.idl";
 
 [
 	uuid(A14FF018-EDF6-4AA1-8753-3534FB7C7A70),

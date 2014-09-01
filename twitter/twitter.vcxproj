@@ -53,17 +53,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>..\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>..\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>..\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -320,7 +323,7 @@
     <None Include="WindowService.rgs" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\NotificationServices\asyncsvc_contract_i.idl">
+    <Midl Include="..\model-libs\asyncsvc\asyncsvc_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">asyncsvc_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">asyncsvc_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">asyncsvc_contract_p.c</ProxyFileName>
@@ -331,7 +334,7 @@
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">asyncsvc_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">asyncsvc_contract_p.c</ProxyFileName>
     </Midl>
-    <Midl Include="..\ObjMdl\objmdl_contract_i.idl">
+    <Midl Include="..\model-libs\ObjMdl\objmdl_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_p.c</ProxyFileName>
@@ -353,7 +356,7 @@
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_p.c</ProxyFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_p.c</ProxyFileName>
     </Midl>
-    <Midl Include="..\ViewMdl\viewmdl_contract_i.idl">
+    <Midl Include="..\model-libs\ViewMdl\viewmdl_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_p.c</ProxyFileName>

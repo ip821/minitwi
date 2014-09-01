@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "SettingsControl.h"
 #include "Plugins.h"
-#include "..\NotificationServices\Plugins.h"
+#include "..\model-libs\asyncsvc\Plugins.h"
 #include "UpdateService.h"
 
 // CSettingsControl

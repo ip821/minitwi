@@ -177,10 +177,10 @@
     <Midl Include="twiconn.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="..\ObjMdl\objmdl_contract_i.idl">
+    <Midl Include="twitconn_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="twitconn_contract_i.idl">
+    <Midl Include="..\model-libs\ObjMdl\objmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

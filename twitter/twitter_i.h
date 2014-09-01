@@ -3,11 +3,11 @@
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 8.00.0603 */
-/* at Sun Aug 31 10:28:08 2014
+ /* File created by MIDL compiler version 7.00.0555 */
+/* at Mon Sep 01 13:42:50 2014
  */
 /* Compiler settings for twitter.idl:
-    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 7.00.0555 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -48,140 +48,120 @@
 #ifndef __IFormsService_FWD_DEFINED__
 #define __IFormsService_FWD_DEFINED__
 typedef interface IFormsService IFormsService;
-
 #endif 	/* __IFormsService_FWD_DEFINED__ */
 
 
 #ifndef __IImageManagerService_FWD_DEFINED__
 #define __IImageManagerService_FWD_DEFINED__
 typedef interface IImageManagerService IImageManagerService;
-
 #endif 	/* __IImageManagerService_FWD_DEFINED__ */
 
 
 #ifndef __ITimelineService_FWD_DEFINED__
 #define __ITimelineService_FWD_DEFINED__
 typedef interface ITimelineService ITimelineService;
-
 #endif 	/* __ITimelineService_FWD_DEFINED__ */
 
 
 #ifndef __IViewControllerService_FWD_DEFINED__
 #define __IViewControllerService_FWD_DEFINED__
 typedef interface IViewControllerService IViewControllerService;
-
 #endif 	/* __IViewControllerService_FWD_DEFINED__ */
 
 
 #ifndef __IThemeColorMap_FWD_DEFINED__
 #define __IThemeColorMap_FWD_DEFINED__
 typedef interface IThemeColorMap IThemeColorMap;
-
 #endif 	/* __IThemeColorMap_FWD_DEFINED__ */
 
 
 #ifndef __IThemeFontMap_FWD_DEFINED__
 #define __IThemeFontMap_FWD_DEFINED__
 typedef interface IThemeFontMap IThemeFontMap;
-
 #endif 	/* __IThemeFontMap_FWD_DEFINED__ */
 
 
 #ifndef __IColumnRects_FWD_DEFINED__
 #define __IColumnRects_FWD_DEFINED__
 typedef interface IColumnRects IColumnRects;
-
 #endif 	/* __IColumnRects_FWD_DEFINED__ */
 
 
 #ifndef __ISkinTimeline_FWD_DEFINED__
 #define __ISkinTimeline_FWD_DEFINED__
 typedef interface ISkinTimeline ISkinTimeline;
-
 #endif 	/* __ISkinTimeline_FWD_DEFINED__ */
 
 
 #ifndef __ITimelineControlEventSink_FWD_DEFINED__
 #define __ITimelineControlEventSink_FWD_DEFINED__
 typedef interface ITimelineControlEventSink ITimelineControlEventSink;
-
 #endif 	/* __ITimelineControlEventSink_FWD_DEFINED__ */
 
 
 #ifndef __ITimelineControl_FWD_DEFINED__
 #define __ITimelineControl_FWD_DEFINED__
 typedef interface ITimelineControl ITimelineControl;
-
 #endif 	/* __ITimelineControl_FWD_DEFINED__ */
 
 
 #ifndef __ITheme_FWD_DEFINED__
 #define __ITheme_FWD_DEFINED__
 typedef interface ITheme ITheme;
-
 #endif 	/* __ITheme_FWD_DEFINED__ */
 
 
 #ifndef __IThemeService_FWD_DEFINED__
 #define __IThemeService_FWD_DEFINED__
 typedef interface IThemeService IThemeService;
-
 #endif 	/* __IThemeService_FWD_DEFINED__ */
 
 
 #ifndef __IOpenUrlService_FWD_DEFINED__
 #define __IOpenUrlService_FWD_DEFINED__
 typedef interface IOpenUrlService IOpenUrlService;
-
 #endif 	/* __IOpenUrlService_FWD_DEFINED__ */
 
 
 #ifndef __IDownloadServiceEventSink_FWD_DEFINED__
 #define __IDownloadServiceEventSink_FWD_DEFINED__
 typedef interface IDownloadServiceEventSink IDownloadServiceEventSink;
-
 #endif 	/* __IDownloadServiceEventSink_FWD_DEFINED__ */
 
 
 #ifndef __IDownloadService_FWD_DEFINED__
 #define __IDownloadService_FWD_DEFINED__
 typedef interface IDownloadService IDownloadService;
-
 #endif 	/* __IDownloadService_FWD_DEFINED__ */
 
 
 #ifndef __IUpdateService_FWD_DEFINED__
 #define __IUpdateService_FWD_DEFINED__
 typedef interface IUpdateService IUpdateService;
-
 #endif 	/* __IUpdateService_FWD_DEFINED__ */
 
 
 #ifndef __IWindowEventSink_FWD_DEFINED__
 #define __IWindowEventSink_FWD_DEFINED__
 typedef interface IWindowEventSink IWindowEventSink;
-
 #endif 	/* __IWindowEventSink_FWD_DEFINED__ */
 
 
 #ifndef __IWindow_FWD_DEFINED__
 #define __IWindow_FWD_DEFINED__
 typedef interface IWindow IWindow;
-
 #endif 	/* __IWindow_FWD_DEFINED__ */
 
 
 #ifndef __IPictureWindow_FWD_DEFINED__
 #define __IPictureWindow_FWD_DEFINED__
 typedef interface IPictureWindow IPictureWindow;
-
 #endif 	/* __IPictureWindow_FWD_DEFINED__ */
 
 
 #ifndef __IWindowService_FWD_DEFINED__
 #define __IWindowService_FWD_DEFINED__
 typedef interface IWindowService IWindowService;
-
 #endif 	/* __IWindowService_FWD_DEFINED__ */
 
 
@@ -491,7 +471,6 @@ EXTERN_C const IID IID_IFormsService;
     public:
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IFormsServiceVtbl
@@ -502,7 +481,7 @@ EXTERN_C const IID IID_IFormsService;
             IFormsService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IFormsService * This);
@@ -580,7 +559,6 @@ EXTERN_C const IID IID_IImageManagerService;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IImageManagerServiceVtbl
@@ -591,7 +569,7 @@ EXTERN_C const IID IID_IImageManagerService;
             IImageManagerService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IImageManagerService * This);
@@ -689,7 +667,6 @@ EXTERN_C const IID IID_ITimelineService;
     public:
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct ITimelineServiceVtbl
@@ -700,7 +677,7 @@ EXTERN_C const IID IID_ITimelineService;
             ITimelineService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ITimelineService * This);
@@ -763,7 +740,6 @@ EXTERN_C const IID IID_IViewControllerService;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IViewControllerServiceVtbl
@@ -774,7 +750,7 @@ EXTERN_C const IID IID_IViewControllerService;
             IViewControllerService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IViewControllerService * This);
@@ -853,7 +829,6 @@ EXTERN_C const IID IID_IThemeColorMap;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IThemeColorMapVtbl
@@ -864,7 +839,7 @@ EXTERN_C const IID IID_IThemeColorMap;
             IThemeColorMap * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IThemeColorMap * This);
@@ -950,7 +925,6 @@ EXTERN_C const IID IID_IThemeFontMap;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IThemeFontMapVtbl
@@ -961,7 +935,7 @@ EXTERN_C const IID IID_IThemeFontMap;
             IThemeFontMap * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IThemeFontMap * This);
@@ -1062,7 +1036,6 @@ EXTERN_C const IID IID_IColumnRects;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IColumnRectsVtbl
@@ -1073,7 +1046,7 @@ EXTERN_C const IID IID_IColumnRects;
             IColumnRects * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IColumnRects * This);
@@ -1201,7 +1174,6 @@ EXTERN_C const IID IID_ISkinTimeline;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct ISkinTimelineVtbl
@@ -1212,7 +1184,7 @@ EXTERN_C const IID IID_ISkinTimeline;
             ISkinTimeline * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ISkinTimeline * This);
@@ -1316,7 +1288,6 @@ EXTERN_C const IID IID_ITimelineControlEventSink;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct ITimelineControlEventSinkVtbl
@@ -1327,7 +1298,7 @@ EXTERN_C const IID IID_ITimelineControlEventSink;
             ITimelineControlEventSink * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ITimelineControlEventSink * This);
@@ -1415,7 +1386,6 @@ EXTERN_C const IID IID_ITimelineControl;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct ITimelineControlVtbl
@@ -1426,7 +1396,7 @@ EXTERN_C const IID IID_ITimelineControl;
             ITimelineControl * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ITimelineControl * This);
@@ -1611,7 +1581,6 @@ EXTERN_C const IID IID_ITheme;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IThemeVtbl
@@ -1622,7 +1591,7 @@ EXTERN_C const IID IID_ITheme;
             ITheme * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ITheme * This);
@@ -1724,7 +1693,6 @@ EXTERN_C const IID IID_IThemeService;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IThemeServiceVtbl
@@ -1735,7 +1703,7 @@ EXTERN_C const IID IID_IThemeService;
             IThemeService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IThemeService * This);
@@ -1850,7 +1818,6 @@ EXTERN_C const IID IID_IOpenUrlService;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IOpenUrlServiceVtbl
@@ -1861,7 +1828,7 @@ EXTERN_C const IID IID_IOpenUrlService;
             IOpenUrlService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IOpenUrlService * This);
@@ -1933,7 +1900,6 @@ EXTERN_C const IID IID_IDownloadServiceEventSink;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IDownloadServiceEventSinkVtbl
@@ -1944,7 +1910,7 @@ EXTERN_C const IID IID_IDownloadServiceEventSink;
             IDownloadServiceEventSink * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IDownloadServiceEventSink * This);
@@ -2013,7 +1979,6 @@ EXTERN_C const IID IID_IDownloadService;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IDownloadServiceVtbl
@@ -2024,7 +1989,7 @@ EXTERN_C const IID IID_IDownloadService;
             IDownloadService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IDownloadService * This);
@@ -2095,7 +2060,6 @@ EXTERN_C const IID IID_IUpdateService;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IUpdateServiceVtbl
@@ -2106,7 +2070,7 @@ EXTERN_C const IID IID_IUpdateService;
             IUpdateService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IUpdateService * This);
@@ -2181,7 +2145,6 @@ EXTERN_C const IID IID_IWindowEventSink;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IWindowEventSinkVtbl
@@ -2192,7 +2155,7 @@ EXTERN_C const IID IID_IWindowEventSink;
             IWindowEventSink * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IWindowEventSink * This);
@@ -2264,7 +2227,6 @@ EXTERN_C const IID IID_IWindow;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IWindowVtbl
@@ -2275,7 +2237,7 @@ EXTERN_C const IID IID_IWindow;
             IWindow * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IWindow * This);
@@ -2348,7 +2310,6 @@ EXTERN_C const IID IID_IPictureWindow;
     public:
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IPictureWindowVtbl
@@ -2359,7 +2320,7 @@ EXTERN_C const IID IID_IPictureWindow;
             IPictureWindow * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IPictureWindow * This);
@@ -2438,7 +2399,6 @@ EXTERN_C const IID IID_IWindowService;
         
     };
     
-    
 #else 	/* C style interface */
 
     typedef struct IWindowServiceVtbl
@@ -2449,7 +2409,7 @@ EXTERN_C const IID IID_IWindowService;
             IWindowService * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+            __RPC__deref_out  void **ppvObject);
         
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IWindowService * This);

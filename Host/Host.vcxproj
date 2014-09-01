@@ -95,6 +95,7 @@
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>C:\_dev\WinDbgTool\AnalyzeRuleSet.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(SolutionName)</TargetName>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\model-libs\objmdl;..\model-libs\viewmdl;..\model-libs\WTL90_4140_Final\Include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -107,6 +108,7 @@
     <LinkIncremental>false</LinkIncremental>
     <CodeAnalysisRuleSet>C:\_dev\WinDbgTool\AnalyzeRuleSet.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(SolutionName)</TargetName>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\model-libs\objmdl;..\model-libs\viewmdl;..\model-libs\WTL90_4140_Final\Include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
     <IntDir>$(Configuration)\</IntDir>
@@ -114,6 +116,7 @@
     <LinkIncremental>false</LinkIncremental>
     <CodeAnalysisRuleSet>C:\_dev\WinDbgTool\AnalyzeRuleSet.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(SolutionName)</TargetName>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\model-libs\objmdl;..\model-libs\viewmdl;..\model-libs\WTL90_4140_Final\Include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -135,7 +138,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\WTL90_4140_Final\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4206;4238</DisableSpecificWarnings>
     </ClCompile>
@@ -222,7 +225,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <DebugInformationFormat />
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\WTL90_4140_Final\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4206;4238</DisableSpecificWarnings>
     </ClCompile>
@@ -261,7 +264,7 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <PreprocessorDefinitions>__WINXP__;WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\WTL90_4140_Final\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4206;4238</DisableSpecificWarnings>
     </ClCompile>
@@ -408,7 +411,7 @@
     <Image Include="res\Twitter.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\ObjMdl\objmdl_contract_i.idl">
+    <Midl Include="..\model-libs\ObjMdl\objmdl_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_p.c</ProxyFileName>
@@ -419,7 +422,7 @@
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">objmdl_contract_p.c</ProxyFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">objmdl_contract_p.c</ProxyFileName>
     </Midl>
-    <Midl Include="..\ViewMdl\viewmdl_contract_i.idl">
+    <Midl Include="..\model-libs\ViewMdl\viewmdl_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_p.c</ProxyFileName>

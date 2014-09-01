@@ -6,8 +6,8 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
-import "..\ObjMdl\objmdl_contract_i.idl";
-import "..\ViewMdl\viewmdl_contract_i.idl";
+import "objmdl_contract_i.idl";
+import "viewmdl_contract_i.idl";
 
 typedef struct TtagDRAWITEMSTRUCT {
 	UINT        CtlType;

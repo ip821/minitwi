@@ -53,17 +53,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>..\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\model-libs\objmdl</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>..\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\model-libs\objmdl</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>..\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\model-libs\objmdl</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -299,7 +302,7 @@
     <None Include="TwitterConnection.rgs" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\ObjMdl\objmdl_contract_i.idl">
+    <Midl Include="..\model-libs\ObjMdl\objmdl_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_p.c</ProxyFileName>
