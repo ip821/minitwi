@@ -89,7 +89,7 @@ STDMETHODIMP CTimelineService::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_OBJECT_TYPE, &vType));
 
-	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(L"TYPE_IMAGE"))
+	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(TYPE_IMAGE))
 		return S_OK;
 
 	CComVariant vId;
@@ -161,6 +161,17 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 
 	{
 		UpdateScope scope(m_pTimelineControl);
+
+		BOOL bEmpty = FALSE;
+		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
+		if (bEmpty)
+		{
+			CComPtr<IVariantObject> pShowMoreObject;
+			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pShowMoreObject));
+			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_SHOWMORE_OBJECT)));
+			CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
+			RETURN_IF_FAILED(pObjCollection->AddObject(pShowMoreObject));
+		}
 
 		RETURN_IF_FAILED(m_pTimelineControl->SetItems(pObjectArray));
 		CComPtr<IObjArray> pAllItemsObjectArray;
@@ -253,7 +264,7 @@ STDMETHODIMP CTimelineService::ProcessUrls(IObjArray* pObjectArray)
 					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(url.c_str())));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
-					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(L"TYPE_IMAGE")));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE)));
 					RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 					urls.insert(url);
 				}

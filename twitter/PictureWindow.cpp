@@ -101,7 +101,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(vMediaUrl.bstrVal)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &CComVariant((INT64)m_hWnd)));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(L"TYPE_IMAGE_PICTURE_WINDOW")));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_PICTURE_WINDOW)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 	return S_OK;
 }
@@ -113,7 +113,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_OBJECT_TYPE, &vType));
 
-	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(L"TYPE_IMAGE_PICTURE_WINDOW"))
+	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(TYPE_IMAGE_PICTURE_WINDOW))
 		return S_OK;
 
 	CComVariant vId;
