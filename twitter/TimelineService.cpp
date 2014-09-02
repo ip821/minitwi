@@ -173,14 +173,20 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pObjCollection->AddObject(pShowMoreObject));
 		}
 
-		RETURN_IF_FAILED(m_pTimelineControl->SetItems(pObjectArray));
-		CComPtr<IObjArray> pAllItemsObjectArray;
-		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
-		RETURN_IF_FAILED(ProcessUrls(pAllItemsObjectArray));
-		RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
-		RETURN_IF_FAILED(m_pTimelineControl->OnItemsUpdated());
+		RETURN_IF_FAILED(m_pTimelineControl->AppendItemsToTop(pObjectArray));
+		RETURN_IF_FAILED(ProcessAllItems());
 	}
 
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::ProcessAllItems()
+{
+	CComPtr<IObjArray> pAllItemsObjectArray;
+	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
+	RETURN_IF_FAILED(ProcessUrls(pAllItemsObjectArray));
+	RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
+	RETURN_IF_FAILED(m_pTimelineControl->OnItemsUpdated());
 	return S_OK;
 }
 
@@ -315,6 +321,49 @@ STDMETHODIMP CTimelineService::OnItemRemoved(IVariantObject *pItemObject)
 	for (auto& url : urls)
 	{
 		m_pImageManagerService->RemoveImage(CComBSTR(url.c_str()));
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
+{
+	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_COLUMN_SHOW_MORE))
+	{
+		CComPtr<IObjArray> pObjArray;
+		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pObjArray->GetCount(&uiCount));
+		if (uiCount > 1)
+		{
+			CComPtr<IVariantObject> pVariantObject;
+			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 2, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+			CComVariant vId;
+			RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+
+			CComPtr<ISettings> pSettings;
+			{
+				std::lock_guard<std::mutex> lock(m_mutex);
+				pSettings = m_pSettings;
+			}
+
+			CComPtr<ISettings> pSettingsTwitter;
+			RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+
+			CComBSTR bstrKey;
+			RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, KEY_TWITTERKEY, &bstrKey));
+
+			CComBSTR bstrSecret;
+			RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, KEY_TWITTERSECRET, &bstrSecret));
+
+			CComPtr<ITwitterConnection> pConnection;
+			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
+			RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
+
+			CComPtr<IObjArray> pObjectArray;
+			RETURN_IF_FAILED(pConnection->GetHomeTimeline(vId.bstrVal, &pObjectArray));
+			RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, uiCount - 1));
+			RETURN_IF_FAILED(ProcessAllItems());
+		}
 	}
 	return S_OK;
 }

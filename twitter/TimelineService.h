@@ -61,6 +61,8 @@ private:
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
 	STDMETHOD(UpdateRelativeTime)(IObjArray* pObjectArray);
 	STDMETHOD(GetUrls)(IVariantObject* pItemObject, std::vector<std::wstring>& urls);
+	STDMETHOD(ProcessAllItems)();
+
 public:
 	STDMETHOD(Load)(ISettings *pSettings);
 
@@ -76,6 +78,7 @@ public:
 	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
 
 	STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject);
+	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)

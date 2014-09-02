@@ -139,6 +139,7 @@ interface ISkinTimeline : IUnknown
 ]
 interface ITimelineControlEventSink : IUnknown
 {
+	HRESULT OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 	HRESULT OnItemRemoved(IVariantObject* pItemObject);
 };
 
@@ -150,7 +151,8 @@ interface ITimelineControlEventSink : IUnknown
 interface ITimelineControl : IControl2
 {
 	HRESULT GetItems(IObjArray** ppObjectArray);
-	HRESULT SetItems(IObjArray* pObjectArray);
+	HRESULT AppendItemsToTop(IObjArray* pObjectArray);
+	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
 	HRESULT IsEmpty(BOOL* pbIsEmpty);
 	HRESULT Invalidate();
 	HRESULT Clear();
@@ -198,7 +200,6 @@ interface IThemeService : IUnknown
 ]
 interface IOpenUrlService : IUnknown
 {
-	HRESULT OpenColumnAsUrl(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 };
 
 [
