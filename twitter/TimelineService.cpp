@@ -210,13 +210,23 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 		{
 			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60).c_str()) + L"m";
 		}
-		else if (totalSeconds < 60 * 60 * 60 * 24)
+		else if (totalSeconds < 60 * 60 * 24)
 		{
 			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60 / 60).c_str()) + L"h";
 		}
 		else if (totalSeconds < 60 * 60 * 60 * 24 * 5)
 		{
 			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60 / 60 / 24).c_str()) + L"d";
+		}
+		else
+		{
+			boost::posix_time::ptime ptNow(pt.date(), pt.time_of_day() - boost::posix_time::minutes(m_tz.Bias) - boost::posix_time::minutes(m_tz.DaylightBias));
+			boost::local_time::wlocal_time_facet* outputFacet = new boost::local_time::wlocal_time_facet();
+			std::wostringstream outputStream;
+			outputStream.imbue(std::locale(std::locale(""), outputFacet));
+			outputFacet->format(L"%d %b %Y");
+			outputStream << ptNow;
+			strRelTime = outputStream.str().c_str();
 		}
 
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RELATIVE_TIME, &CComVariant(strRelTime)));
