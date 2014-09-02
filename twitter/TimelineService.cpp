@@ -201,7 +201,7 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 		boost::posix_time::time_duration diff(boost::posix_time::second_clock::local_time() - ptCreatedAt);
 
 		CString strRelTime;
-		auto totalSeconds = diff.total_seconds();
+		auto totalSeconds = abs(diff.total_seconds());
 		if (totalSeconds < 60)
 		{
 			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds).c_str()) + L"s";
