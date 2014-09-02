@@ -214,7 +214,7 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 		{
 			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60 / 60).c_str()) + L"h";
 		}
-		else if (totalSeconds < 60 * 60 * 60 * 24 * 5)
+		else if (totalSeconds < 60 * 60 * 24 * 5)
 		{
 			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60 / 60 / 24).c_str()) + L"d";
 		}
