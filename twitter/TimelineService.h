@@ -44,13 +44,15 @@ public:
 
 private:
 	CComPtr<ISettings> m_pSettings;
-	CComPtr<IThreadService> m_pThreadService;
+	CComPtr<IThreadService> m_pThreadServiceUpdateService;
+	CComPtr<IThreadService> m_pThreadServiceShowMoreService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 	CComPtr<ITimerService> m_pTimerService;
-	DWORD m_dwAdviceThreadService = 0;
+	DWORD m_dwAdviceThreadServiceUpdateService = 0;
+	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
 	DWORD m_dwAdviceTimerService = 0;
 	DWORD m_dwAdviceDownloadService = 0;
 	DWORD m_dwAdviceTimelineControl = 0;

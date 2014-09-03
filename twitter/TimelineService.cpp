@@ -29,8 +29,10 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateService));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceUpdateService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreService));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceShowMoreService));
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_DownloadService, &m_pDownloadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &m_dwAdviceDownloadService));
@@ -56,14 +58,15 @@ STDMETHODIMP CTimelineService::OnShutdown()
 {
 	RETURN_IF_FAILED(m_pTimerService->StopTimer());
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
-	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadService));
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimerService, __uuidof(ITimerServiceEventSink), m_dwAdviceTimerService));
 	m_pTimerService.Release();
 	m_pDownloadService.Release();
 	m_pImageManagerService.Release();
 	m_pSettings.Release();
-	m_pThreadService.Release();
+	m_pThreadServiceUpdateService.Release();
 	return S_OK;
 }
 
@@ -139,8 +142,11 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
+	CComVariant vId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
+
 	CComPtr<IObjArray> pObjectArray;
-	RETURN_IF_FAILED(pConnection->GetHomeTimeline(NULL, &pObjectArray));
+	RETURN_IF_FAILED(pConnection->GetHomeTimeline(vId.vt == VT_BSTR ? vId.bstrVal : NULL, &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 
 	return S_OK;
@@ -173,7 +179,19 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pObjCollection->AddObject(pShowMoreObject));
 		}
 
-		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
+		int insertIndex = 0;
+		CComVariant vId;
+		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
+		if (vId.vt == VT_BSTR)
+		{
+			CComPtr<IObjArray> pAllItems;
+			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
+			UINT uiCount = 0;
+			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
+			if (uiCount > 1)
+				insertIndex = uiCount - 2;
+		}
+		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
 		RETURN_IF_FAILED(ProcessAllItems());
 	}
 
@@ -340,29 +358,11 @@ STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 			CComVariant vId;
 			RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
 
-			CComPtr<ISettings> pSettings;
-			{
-				std::lock_guard<std::mutex> lock(m_mutex);
-				pSettings = m_pSettings;
-			}
-
-			CComPtr<ISettings> pSettingsTwitter;
-			RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
-
-			CComBSTR bstrKey;
-			RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, KEY_TWITTERKEY, &bstrKey));
-
-			CComBSTR bstrSecret;
-			RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, KEY_TWITTERSECRET, &bstrSecret));
-
-			CComPtr<ITwitterConnection> pConnection;
-			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-			RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
-
-			CComPtr<IObjArray> pObjectArray;
-			RETURN_IF_FAILED(pConnection->GetHomeTimeline(vId.bstrVal, &pObjectArray));
-			RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, uiCount - 2));
-			RETURN_IF_FAILED(ProcessAllItems());
+			CComPtr<IVariantObject> pThreadContext;
+			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pThreadContext));
+			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_ID, &vId));
+			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->SetThreadContext(pThreadContext));
+			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->Run());
 		}
 	}
 	return S_OK;
