@@ -60,7 +60,7 @@ public:
 
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	void AddItem(IVariantObject* pItemObject);
+	void InsertItem(IVariantObject* pItemObject, int index);
 	void SetSkinTimeline(ISkinTimeline* pSkin);
 	void Clear();
 	HRESULT GetItems(IObjArray** ppObjectArray);

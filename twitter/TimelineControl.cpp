@@ -120,19 +120,14 @@ STDMETHODIMP CTimelineControl::GetItems(IObjArray** ppObjectArray)
 
 STDMETHODIMP CTimelineControl::InsertItems(IObjArray* pObjectArray, UINT uiStartIndex)
 {
-	return S_OK;
-}
-
-STDMETHODIMP CTimelineControl::AppendItemsToTop(IObjArray* pObjectArray)
-{
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IVariantObject> pVariantObject;
-		RETURN_IF_FAILED(pObjectArray->GetAt(uiCount - i - 1, IID_IVariantObject, (LPVOID*)&pVariantObject));
+		RETURN_IF_FAILED(pObjectArray->GetAt(i, IID_IVariantObject, (LPVOID*)&pVariantObject));
 
-		m_listBox.AddItem(pVariantObject);
+		m_listBox.InsertItem(pVariantObject, uiStartIndex + i);
 	}
 	return S_OK;
 }

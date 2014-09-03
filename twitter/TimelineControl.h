@@ -95,7 +95,6 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	STDMETHOD(GetItems)(IObjArray** ppObjectArray);
-	STDMETHOD(AppendItemsToTop)(IObjArray* pObjectArray);
 	STDMETHOD(InsertItems)(IObjArray* pObjectArray, UINT uiStartIndex);
 	STDMETHOD(IsEmpty)(BOOL* pbIsEmpty);
 	STDMETHOD(Invalidate)();

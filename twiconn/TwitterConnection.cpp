@@ -121,14 +121,14 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** ppObjectArray)
+STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, IObjArray** ppObjectArray)
 {
 	USES_CONVERSION;
 
 	std::string strId;
-	if (bstrSinceId)
+	if (bstrMaxId)
 	{
-		strId = W2A(bstrSinceId);
+		strId = W2A(bstrMaxId);
 	}
 
 	auto bRes = m_pTwitObj->timelineHomeGet(strId);

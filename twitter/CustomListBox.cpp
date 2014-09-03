@@ -109,7 +109,7 @@ void CCustomListBox::OnItemsUpdated()
 	}
 }
 
-void CCustomListBox::AddItem(IVariantObject* pItemObject)
+void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 {
 	CComVariant vId;
 	pItemObject->GetVariantValue(VAR_ID, &vId);
@@ -133,28 +133,11 @@ void CCustomListBox::AddItem(IVariantObject* pItemObject)
 			return;
 	}
 
-	m_items.insert(m_items.begin(), CAdapt<CComPtr<IVariantObject> >(pItemObject));
+	m_items.insert(m_items.begin() + index, CAdapt<CComPtr<IVariantObject> >(pItemObject));
 	CComPtr<IColumnRects> pColumnRects;
 	HrCoCreateInstance(CLSID_ColumnRects, &pColumnRects);
-	m_columnRects.insert(m_columnRects.begin(), pColumnRects);
-	auto itemId = SendMessage(LB_INSERTSTRING, 0, (LPARAM)1);
-
-	if (m_items.size() == 100)
-	{
-		const int itemToRemove = 99;
-		auto nID = GetDlgCtrlID();
-		NMITEMREMOVED nm = { 0 };
-		nm.nmhdr.hwndFrom = m_hWnd;
-		nm.nmhdr.idFrom = nID;
-		nm.nmhdr.code = NM_ITEM_REMOVED;
-		nm.pVariantObject = m_items[itemToRemove].m_T;
-		nm.pColumnRects = m_columnRects[itemToRemove].m_T;
-		::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
-
-		SendMessage(LB_DELETESTRING, itemToRemove, 0);
-		m_items.erase(--m_items.end());
-		m_columnRects.erase(--m_columnRects.end());
-	}
+	m_columnRects.insert(m_columnRects.begin() + index, pColumnRects);
+	auto itemId = SendMessage(LB_INSERTSTRING, index, (LPARAM)1);
 }
 
 LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)

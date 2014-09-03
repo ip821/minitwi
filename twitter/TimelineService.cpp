@@ -173,7 +173,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pObjCollection->AddObject(pShowMoreObject));
 		}
 
-		RETURN_IF_FAILED(m_pTimelineControl->AppendItemsToTop(pObjectArray));
+		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
 		RETURN_IF_FAILED(ProcessAllItems());
 	}
 
@@ -361,7 +361,7 @@ STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 
 			CComPtr<IObjArray> pObjectArray;
 			RETURN_IF_FAILED(pConnection->GetHomeTimeline(vId.bstrVal, &pObjectArray));
-			RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, uiCount - 1));
+			RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, uiCount - 2));
 			RETURN_IF_FAILED(ProcessAllItems());
 		}
 	}

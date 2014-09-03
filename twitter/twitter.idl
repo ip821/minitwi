@@ -151,7 +151,6 @@ interface ITimelineControlEventSink : IUnknown
 interface ITimelineControl : IControl2
 {
 	HRESULT GetItems(IObjArray** ppObjectArray);
-	HRESULT AppendItemsToTop(IObjArray* pObjectArray);
 	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
 	HRESULT IsEmpty(BOOL* pbIsEmpty);
 	HRESULT Invalidate();
