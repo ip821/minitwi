@@ -35,7 +35,7 @@ STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProv
 	RETURN_IF_FAILED(AtlAdvise(m_pTimerServiceUpdate, pUnk, __uuidof(ITimerServiceEventSink), &m_dwAdviceTimerServiceUpdate));
 
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StartTimer(300));
-	RETURN_IF_FAILED(m_pTimerServiceCleanup->StartTimer(1000 * 10)); //1 minute
+	RETURN_IF_FAILED(m_pTimerServiceCleanup->StartTimer(1000 * 60)); //1 minute
 	return S_OK;
 }
 
