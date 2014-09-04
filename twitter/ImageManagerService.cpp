@@ -45,8 +45,9 @@ STDMETHODIMP CImageManagerService::SetImage(BSTR bstrKey, BSTR bstrFileName)
 	CHECK_E_POINTER(bstrFileName);
 	{
 		lock_guard<mutex> mutex(m_mutex);
+		ATLASSERT(m_bitmapRefs.find(bstrKey) == m_bitmapRefs.end());
 		m_bitmaps[bstrKey] = std::make_shared<Gdiplus::Bitmap>(bstrFileName);
-		m_bitmapRefs[bstrKey] = 0;
+		m_bitmapRefs[bstrKey] = 1;
 	}
 	return S_OK;
 }

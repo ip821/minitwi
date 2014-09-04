@@ -496,19 +496,30 @@ bool twitCurl::retweetById( std::string& statusId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::timelineHomeGet( std::string maxId, std::string maxCount )
+bool twitCurl::timelineHomeGet(std::string maxId, std::string sinceId, std::string maxCount)
 {
     std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
                            twitterDefaults::TWITCURL_HOME_TIMELINE_URL +
                            twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+
+	BOOL bFirstParam = TRUE;
+
+	if (sinceId.length())
+	{
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_SINCEID + sinceId;
+		bFirstParam = FALSE;
+	}
+
     if( maxId.length() )
     {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_MAXID + maxId;
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_MAXID + maxId;
+		bFirstParam = FALSE;
     }
 
 	if (maxCount.length())
 	{
-		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP + twitCurlDefaults::TWITCURL_COUNT + maxCount;
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_COUNT + maxCount;
+		bFirstParam = FALSE;
 	}
 
     /* Perform GET */

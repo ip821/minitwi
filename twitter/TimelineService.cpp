@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "TimelineService.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 #include "twitconn_contract_i.h"
 #include "UpdateScope.h"
 #include <boost\date_time.hpp>
@@ -121,6 +122,27 @@ STDMETHODIMP CTimelineService::OnDownloadComplete(IVariantObject *pResult)
 STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
+	BOOL bEmpty = FALSE;
+	RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
+	if (bEmpty)
+	{
+		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_COUNT, &CComVariant((UINT)100)));
+	}
+	else
+	{
+		CComVariant vMaxId;
+		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vMaxId));
+		if (vMaxId.vt == VT_EMPTY)
+		{
+			CComPtr<IObjArray> pObjArray;
+			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
+			CComPtr<IVariantObject> pFirstItem;
+			RETURN_IF_FAILED(pObjArray->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
+			CComVariant vId;
+			RETURN_IF_FAILED(pFirstItem->GetVariantValue(VAR_ID, &vId));
+			RETURN_IF_FAILED(pResult->SetVariantValue(VAR_SINCE_ID, &vId));
+		}
+	}
 	return S_OK;
 }
 
@@ -148,14 +170,22 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
-	CComVariant vId;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
+	CComVariant vMaxId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vMaxId));
+
+	CComVariant vSinceId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_SINCE_ID, &vSinceId));
 
 	CComVariant vCount;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_COUNT, &vCount));
 
 	CComPtr<IObjArray> pObjectArray;
-	RETURN_IF_FAILED(pConnection->GetHomeTimeline(vId.vt == VT_BSTR ? vId.bstrVal : NULL, vCount.vt == VT_UI4 ? vCount.uintVal : 0, &pObjectArray));
+	RETURN_IF_FAILED(pConnection->GetHomeTimeline(
+		vMaxId.vt == VT_BSTR ? vMaxId.bstrVal : NULL,
+		vSinceId.vt == VT_BSTR ? vSinceId.bstrVal : NULL,
+		vCount.vt == VT_UI4 ? vCount.uintVal : 0,
+		&pObjectArray));
+
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 
 	return S_OK;
@@ -192,7 +222,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 
 		int insertIndex = 0;
 		CComVariant vId;
-		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
+		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vId));
 		if (vId.vt == VT_BSTR)
 		{
 			CComPtr<IObjArray> pAllItems;
@@ -365,7 +395,7 @@ STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 
 			CComPtr<IVariantObject> pThreadContext;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pThreadContext));
-			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_ID, &vId));
+			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_MAX_ID, &vId));
 			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_COUNT, &CComVariant((UINT)100)));
 			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->SetThreadContext(pThreadContext));
 			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->Run());
