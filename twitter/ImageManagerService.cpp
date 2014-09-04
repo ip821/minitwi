@@ -45,7 +45,8 @@ STDMETHODIMP CImageManagerService::SetImage(BSTR bstrKey, BSTR bstrFileName)
 	CHECK_E_POINTER(bstrFileName);
 	{
 		lock_guard<mutex> mutex(m_mutex);
-		m_bitmaps[CComBSTR(bstrKey)] = std::make_shared<Gdiplus::Bitmap>(bstrFileName);
+		m_bitmaps[bstrKey] = std::make_shared<Gdiplus::Bitmap>(bstrFileName);
+		m_bitmapRefs[bstrKey] = 0;
 	}
 	return S_OK;
 }
@@ -61,12 +62,27 @@ STDMETHODIMP CImageManagerService::ContainsImageKey(BSTR bstrKey, BOOL* pbContai
 	return S_OK;
 }
 
-STDMETHODIMP CImageManagerService::RemoveImage(BSTR bstrKey)
+STDMETHODIMP CImageManagerService::AddImageRef(BSTR bstrKey)
 {
 	CHECK_E_POINTER(bstrKey);
 	{
 		lock_guard<mutex> mutex(m_mutex);
-		m_bitmaps.erase(bstrKey);
+		m_bitmapRefs[bstrKey]++;
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CImageManagerService::RemoveImageRef(BSTR bstrKey)
+{
+	CHECK_E_POINTER(bstrKey);
+	{
+		lock_guard<mutex> mutex(m_mutex);
+		m_bitmapRefs[bstrKey]--;
+		if (m_bitmapRefs[bstrKey] <= 0)
+		{
+			m_bitmapRefs.erase(bstrKey);
+			m_bitmaps.erase(bstrKey);
+		}
 	}
 	return S_OK;
 }

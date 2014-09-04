@@ -44,6 +44,8 @@ STDMETHODIMP CTimelineCleanupService::OnTimer()
 	RETURN_IF_FAILED(m_pTimelineControl->GetTopVisibleItemIndex(&uiTopIndex));
 	if (uiTopIndex < MAX_ITEMS_COUNT)
 		m_counter++;
+	else
+		m_counter = 0;
 
 	if (m_counter > MAX_MINUTES)
 	{ //cleanup
@@ -66,7 +68,7 @@ STDMETHODIMP CTimelineCleanupService::OnItemRemoved(IVariantObject *pItemObject)
 	RETURN_IF_FAILED(CTimelineService::GetUrls(pItemObject, urls));
 	for (auto& url : urls)
 	{
-		m_pImageManagerService->RemoveImage(CComBSTR(url.c_str()));
+		m_pImageManagerService->RemoveImageRef(CComBSTR(url.c_str()));
 	}
 	return S_OK;
 }

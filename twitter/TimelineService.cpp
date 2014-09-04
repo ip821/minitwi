@@ -290,8 +290,13 @@ STDMETHODIMP CTimelineService::ProcessUrls(IObjArray* pObjectArray)
 		for (auto& url : itemUrls)
 		{
 			BOOL bContains = TRUE;
-			m_pImageManagerService->ContainsImageKey(CComBSTR(url.c_str()), &bContains);
-			if (!bContains)
+			CComBSTR bstrImageKey(url.c_str());
+			m_pImageManagerService->ContainsImageKey(bstrImageKey, &bContains);
+			if (bContains)
+			{
+				m_pImageManagerService->AddImageRef(bstrImageKey);
+			}
+			else
 			{
 				if (urls.find(url) == urls.end())
 				{
