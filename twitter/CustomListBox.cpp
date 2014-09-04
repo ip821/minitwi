@@ -34,6 +34,24 @@ void CCustomListBox::Clear()
 	m_columnRects.clear();
 }
 
+void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
+{
+	auto nID = GetDlgCtrlID();
+
+	DeleteString(uiIndex);
+
+	NMITEMREMOVED nm = { 0 };
+	nm.nmhdr.hwndFrom = m_hWnd;
+	nm.nmhdr.idFrom = nID;
+	nm.nmhdr.code = NM_ITEM_REMOVED;
+	nm.pVariantObject = m_items[uiIndex].m_T;
+	nm.pColumnRects = m_columnRects[uiIndex].m_T;
+	::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
+
+	m_items.erase(m_items.begin() + uiIndex);
+	m_columnRects.erase(m_columnRects.begin() + uiIndex);
+}
+
 LRESULT CCustomListBox::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	if (!m_hWnd)

@@ -19,6 +19,18 @@ STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 	return S_OK;
 }
 
+HRESULT CTimelineService::GetTimelineControl(IControl* pControl, CComQIPtr<ITimelineControl>& pTimelineControl)
+{
+	CComQIPtr<IMainWindow> pMainWindow = pControl;
+	CComPtr<IContainerControl> pContainerControl;
+	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
+	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
+	CComPtr<IControl> pControlTimeline;
+	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControlTimeline));
+	pTimelineControl = pControlTimeline;
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
@@ -38,13 +50,7 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
 
-	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
-	CComPtr<IContainerControl> pContainerControl;
-	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
-	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
-	m_pTimelineControl = pControl;
+	RETURN_IF_FAILED(GetTimelineControl(m_pControl, m_pTimelineControl));
 	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_UPDATEIMAGES_TIMER, &m_pTimerService));
@@ -145,8 +151,11 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 	CComVariant vId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
 
+	CComVariant vCount;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_COUNT, &vCount));
+
 	CComPtr<IObjArray> pObjectArray;
-	RETURN_IF_FAILED(pConnection->GetHomeTimeline(vId.vt == VT_BSTR ? vId.bstrVal : NULL, &pObjectArray));
+	RETURN_IF_FAILED(pConnection->GetHomeTimeline(vId.vt == VT_BSTR ? vId.bstrVal : NULL, vCount.vt == VT_UI4 ? vCount.uintVal : 0, &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 
 	return S_OK;
@@ -155,6 +164,8 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
+
+	m_bShowMoreRunning = FALSE;
 
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
@@ -299,7 +310,7 @@ STDMETHODIMP CTimelineService::ProcessUrls(IObjArray* pObjectArray)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::GetUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urls)
+HRESULT CTimelineService::GetUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urls)
 {
 	CComVariant vUserImage;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
@@ -332,20 +343,9 @@ STDMETHODIMP CTimelineService::GetUrls(IVariantObject* pVariantObject, std::vect
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnItemRemoved(IVariantObject *pItemObject)
-{
-	std::vector<std::wstring> urls;
-	RETURN_IF_FAILED(GetUrls(pItemObject, urls));
-	for (auto& url : urls)
-	{
-		m_pImageManagerService->RemoveImage(CComBSTR(url.c_str()));
-	}
-	return S_OK;
-}
-
 STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
 {
-	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_COLUMN_SHOW_MORE))
+	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_COLUMN_SHOW_MORE) && !m_bShowMoreRunning)
 	{
 		CComPtr<IObjArray> pObjArray;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
@@ -361,8 +361,10 @@ STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 			CComPtr<IVariantObject> pThreadContext;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pThreadContext));
 			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_ID, &vId));
+			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_COUNT, &CComVariant((UINT)100)));
 			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->SetThreadContext(pThreadContext));
 			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->Run());
+			m_bShowMoreRunning = TRUE;
 		}
 	}
 	return S_OK;

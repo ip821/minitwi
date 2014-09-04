@@ -496,7 +496,7 @@ bool twitCurl::retweetById( std::string& statusId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::timelineHomeGet( std::string maxId )
+bool twitCurl::timelineHomeGet( std::string maxId, std::string maxCount )
 {
     std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
                            twitterDefaults::TWITCURL_HOME_TIMELINE_URL +
@@ -505,6 +505,11 @@ bool twitCurl::timelineHomeGet( std::string maxId )
     {
         buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_MAXID + maxId;
     }
+
+	if (maxCount.length())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP + twitCurlDefaults::TWITCURL_COUNT + maxCount;
+	}
 
     /* Perform GET */
     return performGet( buildUrl );

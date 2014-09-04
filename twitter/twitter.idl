@@ -159,6 +159,9 @@ interface ITimelineControl : IControl2
 	HRESULT BeginUpdate();
 	HRESULT EndUpdate();
 	HRESULT OnItemsUpdated();
+	HRESULT GetTopVisibleItemIndex(UINT* puiIndex);
+	HRESULT GetItemsCount(UINT* puiCount);
+	HRESULT RemoveItemByIndex(UINT uiIndex);
 };
 
 [
@@ -270,6 +273,15 @@ interface IPictureWindow : IWindow
 interface IWindowService : IUnknown
 {
 	HRESULT OpenWindow(HWND hWndParent, REFCLSID clsid, IVariantObject* pVariantObject);
+};
+
+[
+	object,
+	uuid(4F8E2446-4D39-4ED0-809B-5CAC30D578E5),
+	pointer_default(unique)
+]
+interface ITimelineCleanupService : IUnknown
+{
 };
 
 [
@@ -419,6 +431,13 @@ library twitterLib
 	coclass PictureWindowCopyCommand
 	{
 		[default] interface ICommand;
+	};
+	[
+		uuid(51856EF3-A8A6-4B84-95E7-84C6B107271C)		
+	]
+	coclass TimelineCleanupService
+	{
+		[default] interface ITimelineCleanupService;
 	};
 };
 

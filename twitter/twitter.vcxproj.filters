@@ -172,6 +172,9 @@
     <ClCompile Include="PictureWindowCopyCommand.cpp">
       <Filter>Controls\PictureWindow\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="TimelineCleanupService.cpp">
+      <Filter>Services\TimelineService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -276,6 +279,9 @@
     <ClInclude Include="resource1.h">
       <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TimelineCleanupService.h">
+      <Filter>Services\TimelineService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -343,6 +349,9 @@
     <None Include="PictureWindowCopyCommand1.rgs">
       <Filter>ZZZMisc\Resource Files</Filter>
     </None>
+    <None Include="TimelineCleanupService.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="twitter.idl">
@@ -368,6 +377,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Twitter.ico">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
+    <Image Include="..\Host\res\Twitter.ico">
       <Filter>ZZZMisc\Resource Files</Filter>
     </Image>
   </ItemGroup>

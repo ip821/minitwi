@@ -217,6 +217,26 @@ LRESULT CTimelineControl::OnItemRemove(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	return 0;
 }
 
+STDMETHODIMP CTimelineControl::GetTopVisibleItemIndex(UINT* puiIndex)
+{
+	CHECK_E_POINTER(puiIndex);
+	*puiIndex = m_listBox.GetTopIndex();
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::GetItemsCount(UINT* puiCount)
+{
+	CHECK_E_POINTER(puiCount);
+	*puiCount = m_listBox.GetCount();
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::RemoveItemByIndex(UINT uiIndex)
+{
+	m_listBox.RemoveItemByIndex(uiIndex);
+	return S_OK;
+}
+
 HRESULT CTimelineControl::Fire_OnItemRemoved(IVariantObject *pItemObject)
 {
 	CComPtr<IUnknown> pUnk;

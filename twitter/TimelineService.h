@@ -59,10 +59,10 @@ private:
 	std::hash_set<std::wstring> m_idsToUpdate;
 	std::mutex m_mutex;
 	TIME_ZONE_INFORMATION m_tz;
+	BOOL m_bShowMoreRunning = 0;
 
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
 	STDMETHOD(UpdateRelativeTime)(IObjArray* pObjectArray);
-	STDMETHOD(GetUrls)(IVariantObject* pItemObject, std::vector<std::wstring>& urls);
 	STDMETHOD(ProcessAllItems)();
 
 public:
@@ -79,8 +79,11 @@ public:
 
 	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
 
-	STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject);
 	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
+
+	static HRESULT GetTimelineControl(IControl* pControl, CComQIPtr<ITimelineControl>& pTimelineControl);
+	static HRESULT GetUrls(IVariantObject* pItemObject, std::vector<std::wstring>& urls);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)

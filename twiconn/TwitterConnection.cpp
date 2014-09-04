@@ -4,6 +4,7 @@
 #include "TwitterConnection.h"
 #include "Plugins.h"
 #include <hash_set>
+#include <boost/lexical_cast.hpp>
 
 // CTwitterConnection
 
@@ -121,7 +122,7 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, IObjArray** ppObjectArray)
+STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, UINT uiMaxCount, IObjArray** ppObjectArray)
 {
 	USES_CONVERSION;
 
@@ -131,7 +132,13 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, IObjArray** ppO
 		strId = W2A(bstrMaxId);
 	}
 
-	auto bRes = m_pTwitObj->timelineHomeGet(strId);
+	std::string strMaxCount;
+	if (uiMaxCount)
+	{
+		strMaxCount = boost::lexical_cast<std::string>(uiMaxCount);
+	}
+
+	auto bRes = m_pTwitObj->timelineHomeGet(strId, strMaxCount);
 	if (!bRes)
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);

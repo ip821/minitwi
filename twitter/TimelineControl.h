@@ -106,6 +106,9 @@ public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();
+	STDMETHOD(GetTopVisibleItemIndex)(UINT* puiIndex);
+	STDMETHOD(GetItemsCount)(UINT* puiCount);
+	STDMETHOD(RemoveItemByIndex)(UINT uiIndex);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControl), CTimelineControl)

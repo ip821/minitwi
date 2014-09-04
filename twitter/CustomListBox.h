@@ -66,5 +66,6 @@ public:
 	HRESULT GetItems(IObjArray** ppObjectArray);
 	void IsEmpty(BOOL* pbEmpty);
 	void OnItemsUpdated();
+	void RemoveItemByIndex(UINT uiIndex);
 };
 
