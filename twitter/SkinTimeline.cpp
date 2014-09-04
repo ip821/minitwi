@@ -237,17 +237,20 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 	if (strObjectType == TYPE_SHOWMORE_OBJECT)
 	{
+		CComVariant vDisabled;
+		pItemObject->GetVariantValue(VAR_ITEM_DISABLED, &vDisabled);
+		auto bDisabled = vDisabled.vt == VT_BOOL && vDisabled.boolVal;
 		auto y = PADDING_Y;
 		CSize sz = AddColumn(
 			hdc,
 			pColumnRects,
 			CString(VAR_COLUMN_SHOW_MORE),
-			CString(L"Show more"),
-			CString(L"Show more"),
+			bDisabled ? CString(L"Updating...") : CString(L"Show more"),
+			bDisabled ? CString(L"Updating...") : CString(L"Show more"),
 			0,
 			y,
 			CSize(clientRect.right - clientRect.left),
-			TRUE,
+			!bDisabled,
 			FALSE,
 			0,
 			TRUE

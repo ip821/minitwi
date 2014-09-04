@@ -52,7 +52,6 @@ private:
 	BOOL m_bShowMoreRunning = 0;
 
 	STDMETHOD(UpdateRelativeTime)(IObjArray* pObjectArray);
-	STDMETHOD(ProcessAllItems)();
 
 public:
 	STDMETHOD(Load)(ISettings *pSettings);
@@ -68,7 +67,6 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
 
 	static HRESULT GetTimelineControl(IControl* pControl, CComQIPtr<ITimelineControl>& pTimelineControl);
-	static HRESULT GetUrls(IVariantObject* pItemObject, std::vector<std::wstring>& urls);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)

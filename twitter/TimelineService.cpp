@@ -76,15 +76,24 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 	{
 		CComVariant vMaxId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vMaxId));
+		CComPtr<IObjArray> pObjArray;
+		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
 		if (vMaxId.vt == VT_EMPTY)
 		{
-			CComPtr<IObjArray> pObjArray;
-			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
 			CComPtr<IVariantObject> pFirstItem;
 			RETURN_IF_FAILED(pObjArray->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
 			CComVariant vId;
 			RETURN_IF_FAILED(pFirstItem->GetVariantValue(VAR_ID, &vId));
 			RETURN_IF_FAILED(pResult->SetVariantValue(VAR_SINCE_ID, &vId));
+		}
+		else
+		{
+			UINT uiCount = 0;
+			RETURN_IF_FAILED(pObjArray->GetCount(&uiCount));
+			CComPtr<IVariantObject> pVariantObject;
+			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
+			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
 		}
 	}
 	return S_OK;
@@ -175,19 +184,19 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
 			if (uiCount > 1)
 				insertIndex = uiCount - 2;
+
+			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
+			CComPtr<IVariantObject> pVariantObject;
+			RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(false)));
+			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
 		}
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
-		RETURN_IF_FAILED(ProcessAllItems());
+		CComPtr<IObjArray> pAllItemsObjectArray;
+		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
+		RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
 	}
 
-	return S_OK;
-}
-
-STDMETHODIMP CTimelineService::ProcessAllItems()
-{
-	CComPtr<IObjArray> pAllItemsObjectArray;
-	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
-	RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
 	return S_OK;
 }
 
@@ -238,39 +247,6 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 		}
 
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RELATIVE_TIME, &CComVariant(strRelTime)));
-	}
-	return S_OK;
-}
-
-HRESULT CTimelineService::GetUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urls)
-{
-	CComVariant vUserImage;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
-	if (vUserImage.vt == VT_BSTR)
-	{
-		urls.push_back(vUserImage.bstrVal);
-	}
-
-	CComVariant vMediaUrls;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls));
-	if (vMediaUrls.vt == VT_UNKNOWN)
-	{
-		CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
-		UINT_PTR uiCount = 0;
-		pObjArray->GetCount(&uiCount);
-		for (size_t i = 0; i < uiCount; i++)
-		{
-			CComPtr<IVariantObject> pMediaObject;
-			pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
-
-			CComVariant vMediaUrl;
-			pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrl);
-
-			if (vMediaUrl.vt == VT_BSTR)
-			{
-				urls.push_back(vMediaUrl.bstrVal);
-			}
-		}
 	}
 	return S_OK;
 }

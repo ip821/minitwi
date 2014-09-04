@@ -1,17 +1,16 @@
-// TimelineCleanupService.cpp : Implementation of CTimelineCleanupService
+// TimelineImageService.cpp : Implementation of CTimelineImageService
 
 #include "stdafx.h"
-#include "TimelineCleanupService.h"
+#include "TimelineImageService.h"
 #include "Plugins.h"
 #include "TimelineService.h"
-#include "TimelineService.h"
 
-// CTimelineCleanupService
+// CTimelineImageService
 
 #define MAX_ITEMS_COUNT 100
 #define MAX_MINUTES 4
 
-STDMETHODIMP CTimelineCleanupService::OnInitialized(IServiceProvider *pServiceProvider)
+STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -34,13 +33,13 @@ STDMETHODIMP CTimelineCleanupService::OnInitialized(IServiceProvider *pServicePr
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_UPDATEIMAGES_TIMER, &m_pTimerServiceUpdate));
 	RETURN_IF_FAILED(AtlAdvise(m_pTimerServiceUpdate, pUnk, __uuidof(ITimerServiceEventSink), &m_dwAdviceTimerServiceUpdate));
-	m_pTimerServiceUpdate->StartTimer(300);
 
-	RETURN_IF_FAILED(m_pTimerServiceCleanup->StartTimer(1000 * 60)); //1 minute
+	RETURN_IF_FAILED(m_pTimerServiceUpdate->StartTimer(300));
+	RETURN_IF_FAILED(m_pTimerServiceCleanup->StartTimer(1000 * 10)); //1 minute
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineCleanupService::OnShutdown()
+STDMETHODIMP CTimelineImageService::OnShutdown()
 {
 	RETURN_IF_FAILED(m_pTimerServiceCleanup->StopTimer());
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
@@ -60,7 +59,7 @@ STDMETHODIMP CTimelineCleanupService::OnShutdown()
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineCleanupService::OnTimer(ITimerService* pTimerService)
+STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 {
 	if (pTimerService == m_pTimerServiceCleanup)
 	{
@@ -102,34 +101,37 @@ STDMETHODIMP CTimelineCleanupService::OnTimer(ITimerService* pTimerService)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineCleanupService::OnItemRemoved(IVariantObject *pItemObject)
+STDMETHODIMP CTimelineImageService::OnItemRemoved(IVariantObject *pItemObject)
 {
 	std::vector<std::wstring> urls;
-	RETURN_IF_FAILED(CTimelineService::GetUrls(pItemObject, urls));
+	RETURN_IF_FAILED(GetUrls(pItemObject, urls));
 	for (auto& url : urls)
 	{
-		ATLASSERT(m_imageRefs.find(url) != m_imageRefs.end());
-		m_imageRefs[url]--;
-		if (m_imageRefs[url] <= 0)
 		{
-			m_pImageManagerService->RemoveImage(CComBSTR(url.c_str()));
-			m_imageRefs.erase(url);
+			std::lock_guard<std::mutex> lock(m_mutex);
+			ATLASSERT(m_imageRefs.find(url) != m_imageRefs.end());
+			m_imageRefs[url]--;
+			if (m_imageRefs[url] <= 0)
+			{
+				m_pImageManagerService->RemoveImage(CComBSTR(url.c_str()));
+				m_imageRefs.erase(url);
+			}
 		}
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineCleanupService::OnStart(IVariantObject *pResult)
+STDMETHODIMP CTimelineImageService::OnStart(IVariantObject *pResult)
 {
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineCleanupService::OnRun(IVariantObject *pResult)
+STDMETHODIMP CTimelineImageService::OnRun(IVariantObject *pResult)
 {
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineCleanupService::OnFinish(IVariantObject *pResult)
+STDMETHODIMP CTimelineImageService::OnFinish(IVariantObject *pResult)
 {
 	CComPtr<IObjArray> pAllItems;
 	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
@@ -138,7 +140,7 @@ STDMETHODIMP CTimelineCleanupService::OnFinish(IVariantObject *pResult)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineCleanupService::OnDownloadComplete(IVariantObject *pResult)
+STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 {
 	CComVariant vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_OBJECT_TYPE, &vType));
@@ -155,8 +157,6 @@ STDMETHODIMP CTimelineCleanupService::OnDownloadComplete(IVariantObject *pResult
 
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
-		
-		ATLASSERT(m_imageRefs.find(vUrl.bstrVal) != m_imageRefs.end());
 
 		if (m_imageRefs.find(vUrl.bstrVal) != m_imageRefs.end())
 		{
@@ -169,41 +169,81 @@ STDMETHODIMP CTimelineCleanupService::OnDownloadComplete(IVariantObject *pResult
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineCleanupService::ProcessUrls(IObjArray* pObjectArray)
+STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 {
-	std::hash_set<std::wstring> urls;
-
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
-	for (size_t i = 0; i < uiCount; i++)
 	{
-		CComPtr<IVariantObject> pVariantObject;
-		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+		lock_guard<mutex> lock(m_mutex);
+		m_imageRefs.clear();
 
-		CComVariant vId;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+		hash_set<std::wstring> urls;
 
-		std::vector<std::wstring> itemUrls;
-		RETURN_IF_FAILED(CTimelineService::GetUrls(pVariantObject, itemUrls));
-
-		for (auto& url : itemUrls)
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+		for (size_t i = 0; i < uiCount; i++)
 		{
-			m_imageRefs[url]++;
-			BOOL bContains = TRUE;
-			CComBSTR bstrImageKey(url.c_str());
-			m_pImageManagerService->ContainsImageKey(bstrImageKey, &bContains);
-			if (urls.find(url) == urls.end() && !bContains)
+			CComPtr<IVariantObject> pVariantObject;
+			RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+
+			CComVariant vId;
+			RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+
+			std::vector<std::wstring> itemUrls;
+			RETURN_IF_FAILED(GetUrls(pVariantObject, itemUrls));
+
+			for (auto& url : itemUrls)
 			{
-				CComPtr<IVariantObject> pDownloadTask;
-				RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-				RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(url.c_str())));
-				RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
-				RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE)));
-				RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
-				urls.insert(url);
+				if (m_imageRefs.find(url) == m_imageRefs.end())
+					m_imageRefs[url] = 0;
+				m_imageRefs[url]++;
+
+				BOOL bContains = TRUE;
+				CComBSTR bstrImageKey(url.c_str());
+				m_pImageManagerService->ContainsImageKey(bstrImageKey, &bContains);
+				if (urls.find(url) == urls.end() && !bContains)
+				{
+					CComPtr<IVariantObject> pDownloadTask;
+					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(url.c_str())));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE)));
+					RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
+					urls.insert(url);
+				}
 			}
 		}
 	}
+	return S_OK;
+}
 
+HRESULT CTimelineImageService::GetUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urls)
+{
+	CComVariant vUserImage;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+	if (vUserImage.vt == VT_BSTR)
+	{
+		urls.push_back(vUserImage.bstrVal);
+	}
+
+	CComVariant vMediaUrls;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls));
+	if (vMediaUrls.vt == VT_UNKNOWN)
+	{
+		CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+		UINT_PTR uiCount = 0;
+		pObjArray->GetCount(&uiCount);
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IVariantObject> pMediaObject;
+			pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+			CComVariant vMediaUrl;
+			pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrl);
+
+			if (vMediaUrl.vt == VT_BSTR)
+			{
+				urls.push_back(vMediaUrl.bstrVal);
+			}
+		}
+	}
 	return S_OK;
 }

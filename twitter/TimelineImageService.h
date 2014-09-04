@@ -1,4 +1,4 @@
-// TimelineCleanupService.h : Declaration of the CTimelineCleanupService
+// TimelineImageService.h : Declaration of the CTimelineImageService
 
 #pragma once
 #include "resource.h"       // main symbols
@@ -9,12 +9,12 @@
 using namespace ATL;
 using namespace std;
 
-// CTimelineCleanupService
+// CTimelineImageService
 
-class ATL_NO_VTABLE CTimelineCleanupService :
+class ATL_NO_VTABLE CTimelineImageService :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CTimelineCleanupService, &CLSID_TimelineCleanupService>,
-	public ITimelineCleanupService,
+	public CComCoClass<CTimelineImageService, &CLSID_TimelineImageService>,
+	public ITimelineImageService,
 	public IPluginSupportNotifications,
 	public ITimerServiceEventSink,
 	public IInitializeWithControlImpl,
@@ -23,15 +23,15 @@ class ATL_NO_VTABLE CTimelineCleanupService :
 	public IDownloadServiceEventSink
 {
 public:
-	CTimelineCleanupService()
+	CTimelineImageService()
 	{
 	}
 
-	DECLARE_REGISTRY_RESOURCEID(IDR_TimelineCleanupService)
+	DECLARE_REGISTRY_RESOURCEID(IDR_TimelineImageService)
 
 
-	BEGIN_COM_MAP(CTimelineCleanupService)
-		COM_INTERFACE_ENTRY(ITimelineCleanupService)
+	BEGIN_COM_MAP(CTimelineImageService)
+		COM_INTERFACE_ENTRY(ITimelineImageService)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
@@ -63,6 +63,8 @@ private:
 	DWORD m_counter = 0;
 
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
+	static HRESULT GetUrls(IVariantObject* pItemObject, std::vector<std::wstring>& urls);
+
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
@@ -80,4 +82,4 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject));
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(TimelineCleanupService), CTimelineCleanupService)
+OBJECT_ENTRY_AUTO(__uuidof(TimelineImageService), CTimelineImageService)

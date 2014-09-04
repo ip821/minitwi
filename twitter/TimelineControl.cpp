@@ -149,6 +149,12 @@ STDMETHODIMP CTimelineControl::SetSkinTimeline(ISkinTimeline* pSkinTimeline)
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControl::RefreshItem(UINT uiIndex)
+{
+	m_listBox.RefreshItem(uiIndex);
+	return S_OK;
+}
+
 LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMCOLUMNCLICK* pNm = (NMCOLUMNCLICK*)pnmh;

@@ -109,6 +109,7 @@ public:
 	STDMETHOD(GetTopVisibleItemIndex)(UINT* puiIndex);
 	STDMETHOD(GetItemsCount)(UINT* puiCount);
 	STDMETHOD(RemoveItemByIndex)(UINT uiIndex);
+	STDMETHOD(RefreshItem)(UINT uiIndex);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControl), CTimelineControl)

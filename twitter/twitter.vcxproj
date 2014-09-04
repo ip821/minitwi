@@ -187,7 +187,7 @@
     <ClCompile Include="ColumnRects.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
-    <ClCompile Include="TimelineCleanupService.cpp" />
+    <ClCompile Include="TimelineImageService.cpp" />
     <ClCompile Include="PictureWindow.cpp" />
     <ClCompile Include="PictureWindowCopyCommand.cpp" />
     <ClCompile Include="TimelineControlCopyCommand.cpp" />
@@ -264,7 +264,7 @@
     <ClInclude Include="ColumnRects.h" />
     <ClInclude Include="DownloadService.h" />
     <ClInclude Include="ImageManagerService.h" />
-    <ClInclude Include="TimelineCleanupService.h" />
+    <ClInclude Include="TimelineImageService.h" />
     <ClInclude Include="PictureWindow.h" />
     <ClInclude Include="PictureWindowCopyCommand.h" />
     <ClInclude Include="resource1.h" />
@@ -303,27 +303,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ColumnInfo3.rgs" />
-    <None Include="ColumnInfo4.rgs" />
-    <None Include="ColumnRects.rgs" />
-    <None Include="DownloadService.rgs" />
-    <None Include="FormsService.rgs" />
-    <None Include="ImageManagerService2.rgs" />
-    <None Include="TimelineCleanupService.rgs" />
-    <None Include="PictureWindow.rgs" />
-    <None Include="PictureWindowCopyCommand1.rgs" />
-    <None Include="SkinDefault.rgs" />
-    <None Include="SkinService.rgs" />
-    <None Include="SkinTimeline.rgs" />
-    <None Include="ThemeColorMap.rgs" />
-    <None Include="TimelineControl.rgs" />
-    <None Include="TimelineService.rgs" />
-    <None Include="TimelineUpdateImageService.rgs" />
     <None Include="twitter.def" />
-    <None Include="twitter.rgs" />
-    <None Include="UpdateService.rgs" />
-    <None Include="ViewControllerService.rgs" />
-    <None Include="WindowService.rgs" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="..\model-libs\asyncsvc\asyncsvc_contract_i.idl">

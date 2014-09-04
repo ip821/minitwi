@@ -8,6 +8,7 @@ CCustomListBox::CCustomListBox()
 	m_HoveredColumnIndex = -1;
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
+	HrCoCreateInstance(CLSID_ObjectCollection, &m_pItems);
 }
 
 LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -18,19 +19,23 @@ LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 void CCustomListBox::Clear()
 {
 	auto nID = GetDlgCtrlID();
-
-	for (size_t i = 0; i < m_items.size(); i++)
+	UINT uiCount = 0;
+	m_pItems->GetCount(&uiCount);
+	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IVariantObject> pVariantObject;
+		m_pItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+
 		NMITEMREMOVED nm = { 0 };
 		nm.nmhdr.hwndFrom = m_hWnd;
 		nm.nmhdr.idFrom = nID;
 		nm.nmhdr.code = NM_ITEM_REMOVED;
-		nm.pVariantObject = m_items[i].m_T;
+		nm.pVariantObject = pVariantObject.p;
 		nm.pColumnRects = m_columnRects[i].m_T;
 		::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 	}
 	ResetContent();
-	m_items.clear();
+	m_pItems->Clear();
 	m_columnRects.clear();
 }
 
@@ -40,16 +45,26 @@ void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
 
 	DeleteString(uiIndex);
 
+	CComPtr<IVariantObject> pVariantObject;
+	m_pItems->GetAt(uiIndex, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+
 	NMITEMREMOVED nm = { 0 };
 	nm.nmhdr.hwndFrom = m_hWnd;
 	nm.nmhdr.idFrom = nID;
 	nm.nmhdr.code = NM_ITEM_REMOVED;
-	nm.pVariantObject = m_items[uiIndex].m_T;
+	nm.pVariantObject = pVariantObject.p;
 	nm.pColumnRects = m_columnRects[uiIndex].m_T;
 	::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 
-	m_items.erase(m_items.begin() + uiIndex);
+	m_pItems->RemoveObjectAt(&uiIndex);
 	m_columnRects.erase(m_columnRects.begin() + uiIndex);
+}
+
+void CCustomListBox::RefreshItem(UINT uiIndex)
+{
+	MEASUREITEMSTRUCT s = { 0 };
+	s.itemID = uiIndex;
+	MeasureItem(&s);
 }
 
 LRESULT CCustomListBox::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -83,32 +98,36 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 
 void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
-	m_pSkinTimeline->MeasureItem(m_hWnd, m_items[lpMeasureItemStruct->itemID].m_T, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnRects[lpMeasureItemStruct->itemID].m_T);
+	CComPtr<IVariantObject> pVariantObject;
+	m_pItems->GetAt(lpMeasureItemStruct->itemID, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+
+	m_pSkinTimeline->MeasureItem(m_hWnd, pVariantObject.p, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnRects[lpMeasureItemStruct->itemID].m_T);
 }
 
 void CCustomListBox::IsEmpty(BOOL* pbEmpty)
 {
-	*pbEmpty = m_items.empty();
+	UINT uiCount = 0;
+	m_pItems->GetCount(&uiCount);
+	*pbEmpty = uiCount == 0;
 }
 
 HRESULT CCustomListBox::GetItems(IObjArray** ppObjectArray)
 {
-	CComPtr<IObjCollection> pObjCollection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjCollection));
-	for (size_t i = 0; i < m_items.size(); i++)
-	{
-		RETURN_IF_FAILED(pObjCollection->AddObject(m_items[i].m_T));
-	}
-	RETURN_IF_FAILED(pObjCollection->QueryInterface(ppObjectArray));
+	RETURN_IF_FAILED(m_pItems->QueryInterface(ppObjectArray));
 	return S_OK;
 }
 
 void CCustomListBox::OnItemsUpdated()
 {
-	for (size_t i = 0; i < m_items.size(); i++)
+	UINT uiCount = 0;
+	m_pItems->GetCount(&uiCount);
+	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IVariantObject> pVariantObject;
+		m_pItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+
 		CComVariant v;
-		m_items[i].m_T->GetVariantValue(VAR_TWITTER_RELATIVE_TIME, &v);
+		pVariantObject->GetVariantValue(VAR_TWITTER_RELATIVE_TIME, &v);
 		if (v.vt == VT_BSTR)
 		{
 			UINT uiColumnCount = 0;
@@ -134,24 +153,28 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 
 	if (vId.vt == VT_BSTR)
 	{
-		auto it = std::find_if(
-			m_items.cbegin(),
-			m_items.cend(),
-			[&](CAdapt<CComPtr<IVariantObject> > p)
+		BOOL bFound = FALSE;
+		UINT uiCount = 0;
+		m_pItems->GetCount(&uiCount);
+		for (size_t i = 0; i < uiCount; i++)
 		{
+			CComPtr<IVariantObject> pVariantObject;
+			m_pItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+			
 			CComVariant v;
-			p->GetVariantValue(VAR_ID, &v);
+			pVariantObject->GetVariantValue(VAR_ID, &v);
 			if (v.vt == VT_BSTR && CComBSTR(v.bstrVal) == CComBSTR(vId.bstrVal))
-				return true;
-			return false;
+			{
+				bFound = TRUE;
+				break;
+			}
 		}
-		);
 
-		if (it != m_items.cend())
+		if (bFound)
 			return;
 	}
 
-	m_items.insert(m_items.begin() + index, CAdapt<CComPtr<IVariantObject> >(pItemObject));
+	m_pItems->InsertObject(pItemObject, index);
 	CComPtr<IColumnRects> pColumnRects;
 	HrCoCreateInstance(CLSID_ColumnRects, &pColumnRects);
 	m_columnRects.insert(m_columnRects.begin() + index, pColumnRects);
@@ -274,13 +297,16 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	CPoint pt = { x, y };
 	ClientToScreen(&pt);
 
+	CComPtr<IVariantObject> pVariantObject;
+	m_pItems->GetAt(uiItem, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+
 	NMCOLUMNCLICK nm = { 0 };
 	nm.nmhdr.hwndFrom = m_hWnd;
 	nm.nmhdr.idFrom = nID;
 	nm.nmhdr.code = uiCode;
 	nm.dwCurrentItem = uiItem;
 	nm.pColumnRects = pColumnRects;
-	nm.pVariantObject = m_items[uiItem].m_T;
+	nm.pVariantObject = pVariantObject.p;
 	nm.dwCurrentColumn = -1;
 	nm.x = pt.x;
 	nm.y = pt.y;

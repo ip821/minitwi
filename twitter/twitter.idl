@@ -153,6 +153,7 @@ interface ITimelineControl : IControl2
 {
 	HRESULT GetItems(IObjArray** ppObjectArray);
 	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
+	HRESULT RefreshItem(UINT uiIndex);
 	HRESULT IsEmpty(BOOL* pbIsEmpty);
 	HRESULT Invalidate();
 	HRESULT Clear();
@@ -281,7 +282,7 @@ interface IWindowService : IUnknown
 	uuid(4F8E2446-4D39-4ED0-809B-5CAC30D578E5),
 	pointer_default(unique)
 ]
-interface ITimelineCleanupService : IUnknown
+interface ITimelineImageService : IUnknown
 {
 };
 
@@ -436,9 +437,9 @@ library twitterLib
 	[
 		uuid(51856EF3-A8A6-4B84-95E7-84C6B107271C)		
 	]
-	coclass TimelineCleanupService
+	coclass TimelineImageService
 	{
-		[default] interface ITimelineCleanupService;
+		[default] interface ITimelineImageService;
 	};
 };
 
