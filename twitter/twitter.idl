@@ -54,10 +54,9 @@ interface IImageManagerService : IUnknown
 {
 	HRESULT GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap);
 	HRESULT CreateImageBitmap(BSTR bstrKey, HBITMAP* phBitmap);
-	HRESULT SetImage(BSTR bstrKey, BSTR bstrFileName);
+	HRESULT AddImage(BSTR bstrKey, BSTR bstrFileName);
 	HRESULT ContainsImageKey(BSTR bstrKey, BOOL* pbContains);
-	HRESULT AddImageRef(BSTR bstrKey);
-	HRESULT RemoveImageRef(BSTR bstrKey);
+	HRESULT RemoveImage(BSTR bstrKey);
 
 };
 

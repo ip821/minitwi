@@ -27,16 +27,14 @@ public:
 
 private:
 	std::map<CComBSTR, std::shared_ptr<Gdiplus::Bitmap>> m_bitmaps;
-	std::map<CComBSTR, int> m_bitmapRefs;
 	mutex m_mutex;
 public:
 
 	STDMETHOD(GetImageInfo)(BSTR bstrKey, TBITMAP* phBitmap);
 	STDMETHOD(CreateImageBitmap)(BSTR bstrKey, HBITMAP* ptBitmap);
-	STDMETHOD(SetImage)(BSTR bstrKey, BSTR bstrFileName);
+	STDMETHOD(AddImage)(BSTR bstrKey, BSTR bstrFileName);
 	STDMETHOD(ContainsImageKey)(BSTR bstrKey, BOOL* pbContains);
-	STDMETHOD(AddImageRef)(BSTR bstrKey);
-	STDMETHOD(RemoveImageRef)(BSTR bstrKey);
+	STDMETHOD(RemoveImage)(BSTR bstrKey);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ImageManagerService), CImageManagerService)

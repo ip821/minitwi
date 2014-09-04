@@ -39,15 +39,13 @@ STDMETHODIMP CImageManagerService::GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap)
 	return S_OK;
 }
 
-STDMETHODIMP CImageManagerService::SetImage(BSTR bstrKey, BSTR bstrFileName)
+STDMETHODIMP CImageManagerService::AddImage(BSTR bstrKey, BSTR bstrFileName)
 {
 	CHECK_E_POINTER(bstrKey);
 	CHECK_E_POINTER(bstrFileName);
 	{
 		lock_guard<mutex> mutex(m_mutex);
-		ATLASSERT(m_bitmapRefs.find(bstrKey) == m_bitmapRefs.end());
 		m_bitmaps[bstrKey] = std::make_shared<Gdiplus::Bitmap>(bstrFileName);
-		m_bitmapRefs[bstrKey] = 1;
 	}
 	return S_OK;
 }
@@ -63,29 +61,12 @@ STDMETHODIMP CImageManagerService::ContainsImageKey(BSTR bstrKey, BOOL* pbContai
 	return S_OK;
 }
 
-STDMETHODIMP CImageManagerService::AddImageRef(BSTR bstrKey)
+STDMETHODIMP CImageManagerService::RemoveImage(BSTR bstrKey)
 {
 	CHECK_E_POINTER(bstrKey);
 	{
 		lock_guard<mutex> mutex(m_mutex);
-		m_bitmapRefs[bstrKey]++;
-	}
-	return S_OK;
-}
-
-STDMETHODIMP CImageManagerService::RemoveImageRef(BSTR bstrKey)
-{
-	CHECK_E_POINTER(bstrKey);
-	{
-		lock_guard<mutex> mutex(m_mutex);
-		auto counter = m_bitmapRefs[bstrKey];
-		counter--;
-		m_bitmapRefs[bstrKey] = counter;
-		if (m_bitmapRefs[bstrKey] <= 0)
-		{
-			m_bitmapRefs.erase(bstrKey);
-			m_bitmaps.erase(bstrKey);
-		}
+		m_bitmaps.erase(bstrKey);
 	}
 	return S_OK;
 }
