@@ -78,7 +78,9 @@ STDMETHODIMP CImageManagerService::RemoveImageRef(BSTR bstrKey)
 	CHECK_E_POINTER(bstrKey);
 	{
 		lock_guard<mutex> mutex(m_mutex);
-		m_bitmapRefs[bstrKey]--;
+		auto counter = m_bitmapRefs[bstrKey];
+		counter--;
+		m_bitmapRefs[bstrKey] = counter;
 		if (m_bitmapRefs[bstrKey] <= 0)
 		{
 			m_bitmapRefs.erase(bstrKey);
