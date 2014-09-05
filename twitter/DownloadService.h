@@ -6,6 +6,7 @@
 #include "asyncsvc_contract_i.h"
 
 using namespace ATL;
+using namespace std;
 
 // CDownloadService
 
@@ -39,6 +40,8 @@ public:
 private:
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	DWORD m_dwAdvice = 0;
+	hash_set<wstring> m_urls;
+	mutex m_mutex;
 
 	HRESULT Fire_OnDownloadComplete(IVariantObject *pResult);
 

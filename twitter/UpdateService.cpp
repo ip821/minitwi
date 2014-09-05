@@ -77,7 +77,7 @@ STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/version.txt")));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(L"TYPE_SOFTWARE_UPDATE_VERSION")));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_SOFTWARE_UPDATE_VERSION)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 	return S_OK;
 }
@@ -112,7 +112,7 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 	if (vType.vt != VT_BSTR)
 		return S_OK;
 
-	if (CComBSTR(vType.bstrVal) == CComBSTR(L"TYPE_SOFTWARE_UPDATE_VERSION"))
+	if (CComBSTR(vType.bstrVal) == CComBSTR(L"CLASS_SOFTWARE_UPDATE_VERSION"))
 	{
 		CComVariant vUrl;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
@@ -131,13 +131,13 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 #else
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/Release/Setup.msi")));
 #endif
-			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(L"TYPE_SOFTWARE_UPDATE_MSI")));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_SOFTWARE_UPDATE_MSI)));
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_FILE_EXT, &CComVariant(L".msi")));
 			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 			return S_OK;
 		}
 	}
-	else if (CComBSTR(vType.bstrVal) == CComBSTR(L"TYPE_SOFTWARE_UPDATE_MSI"))
+	else if (CComBSTR(vType.bstrVal) == CComBSTR(TYPE_SOFTWARE_UPDATE_MSI))
 	{
 		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_KEEP_FILE, &CComVariant(true)));
 
@@ -183,7 +183,6 @@ STDMETHODIMP CUpdateService::RunUpdate()
 	ShellExecute(NULL, NULL, strUpdatePath, NULL, NULL, 0);
 
 	exit(0);
-	//PostMessage(m_hControlWnd, WM_CLOSE, 0, 0);
 
 	return S_OK;
 }

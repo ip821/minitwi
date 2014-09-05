@@ -31,7 +31,7 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 
-	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap, LONG ulCustomFixedWidth);
+	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap, LONG ulCustomFixedWidth, BOOL bCenter);
 	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);
 public:
 

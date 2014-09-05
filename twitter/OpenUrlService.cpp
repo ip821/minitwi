@@ -7,17 +7,31 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_WindowService, &m_pWindowService));
+
+	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
+	CComPtr<IContainerControl> pContainerControl;
+	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
+	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
+	m_pTimelineControl = pControl;
+
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdvice));
+
 	return S_OK;
 }
 
 STDMETHODIMP COpenUrlService::OnShutdown()
 {
+	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdvice));
 	m_pWindowService.Release();
 	m_pServiceProvider.Release();
 	return S_OK;
 }
 
-STDMETHODIMP COpenUrlService::OpenColumnAsUrl(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
+STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
 {
 	CHECK_E_POINTER(bstrColumnName);
 	CHECK_E_POINTER(pVariantObject);

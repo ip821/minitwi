@@ -24,6 +24,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_URL, Gdiplus::Color::SteelBlue));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, Gdiplus::Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_CREATED_AT, Gdiplus::Color::Gray));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_COLUMN_SHOW_MORE, Gdiplus::Color::SteelBlue));
 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeFontMap, &m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pSkinTimeline->SetFontMap(m_pThemeFontMap));
@@ -37,6 +38,8 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_NORMALIZED_TEXT, FONT_NAME, FONT_SIZE, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_URL, FONT_NAME, FONT_SIZE, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_URL + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_COLUMN_SHOW_MORE, FONT_NAME, FONT_SIZE, TRUE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_COLUMN_SHOW_MORE + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
 	return S_OK;
 }
 

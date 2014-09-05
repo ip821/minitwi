@@ -32,7 +32,7 @@ public:
 
 	STDMETHOD(GetImageInfo)(BSTR bstrKey, TBITMAP* phBitmap);
 	STDMETHOD(CreateImageBitmap)(BSTR bstrKey, HBITMAP* ptBitmap);
-	STDMETHOD(SetImage)(BSTR bstrKey, BSTR bstrFileName);
+	STDMETHOD(AddImage)(BSTR bstrKey, BSTR bstrFileName);
 	STDMETHOD(ContainsImageKey)(BSTR bstrKey, BOOL* pbContains);
 	STDMETHOD(RemoveImage)(BSTR bstrKey);
 };

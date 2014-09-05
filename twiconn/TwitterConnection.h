@@ -45,7 +45,7 @@ public:
 
 	STDMETHOD(GetAuthKeys)(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrKey, BSTR* pbstrSecret);
 	STDMETHOD(OpenConnection)(BSTR bstrKey, BSTR bstrSecret);
-	STDMETHOD(GetHomeTimeline)(BSTR bstrSinceId, IObjArray** ppObjectArray);
+	STDMETHOD(GetHomeTimeline)(BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterConnection), CTwitterConnection)

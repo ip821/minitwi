@@ -118,16 +118,16 @@ STDMETHODIMP CTimelineControl::GetItems(IObjArray** ppObjectArray)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineControl::SetItems(IObjArray* pObjectArray)
+STDMETHODIMP CTimelineControl::InsertItems(IObjArray* pObjectArray, UINT uiStartIndex)
 {
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IVariantObject> pVariantObject;
-		RETURN_IF_FAILED(pObjectArray->GetAt(uiCount - i - 1, IID_IVariantObject, (LPVOID*)&pVariantObject));
+		RETURN_IF_FAILED(pObjectArray->GetAt(i, IID_IVariantObject, (LPVOID*)&pVariantObject));
 
-		m_listBox.AddItem(pVariantObject);
+		m_listBox.InsertItem(pVariantObject, uiStartIndex + i);
 	}
 	return S_OK;
 }
@@ -149,14 +149,17 @@ STDMETHODIMP CTimelineControl::SetSkinTimeline(ISkinTimeline* pSkinTimeline)
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControl::RefreshItem(UINT uiIndex)
+{
+	m_listBox.RefreshItem(uiIndex);
+	return S_OK;
+}
+
 LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMCOLUMNCLICK* pNm = (NMCOLUMNCLICK*)pnmh;
 	if (pNm->dwCurrentColumn == -1)
 		return 0;
-
-	CComPtr<IOpenUrlService> pOpenUrlService;
-	m_pServiceProvider->QueryService(SERVICE_OPEN_URLS, &pOpenUrlService);
 
 	CComBSTR bstrIsUrl;
 	pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_IS_URL, &bstrIsUrl);
@@ -165,11 +168,7 @@ LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 	{
 		CComBSTR bstrColumnName;
 		pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
-
-		if (pOpenUrlService)
-		{
-			pOpenUrlService->OpenColumnAsUrl(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject);
-		}
+		RETURN_IF_FAILED(Fire_OnColumnClick(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject));
 	}
 
 	return 0;
@@ -224,6 +223,26 @@ LRESULT CTimelineControl::OnItemRemove(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	return 0;
 }
 
+STDMETHODIMP CTimelineControl::GetTopVisibleItemIndex(UINT* puiIndex)
+{
+	CHECK_E_POINTER(puiIndex);
+	*puiIndex = m_listBox.GetTopIndex();
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::GetItemsCount(UINT* puiCount)
+{
+	CHECK_E_POINTER(puiCount);
+	*puiCount = m_listBox.GetCount();
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::RemoveItemByIndex(UINT uiIndex)
+{
+	m_listBox.RemoveItemByIndex(uiIndex);
+	return S_OK;
+}
+
 HRESULT CTimelineControl::Fire_OnItemRemoved(IVariantObject *pItemObject)
 {
 	CComPtr<IUnknown> pUnk;
@@ -243,6 +262,30 @@ HRESULT CTimelineControl::Fire_OnItemRemoved(IVariantObject *pItemObject)
 		if (pConnection)
 		{
 			hr = pConnection->OnItemRemoved(pItemObject);
+		}
+	}
+	return hr;
+}
+
+HRESULT CTimelineControl::Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CTimelineControl* pThis = static_cast<CTimelineControl*>(this);
+	int cConnections = m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		ITimelineControlEventSink * pConnection = static_cast<ITimelineControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnColumnClick(bstrColumnName, dwColumnIndex, pColumnRects, pVariantObject);
 		}
 	}
 	return hr;

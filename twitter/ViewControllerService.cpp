@@ -92,7 +92,7 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 	{
 		BOOL bEmpty = FALSE;
 		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
-		if (bEmpty)
+		if ((bEmpty && !bError) || bError)
 		{
 			RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMessage, bError, TRUE));
 		}

@@ -2,7 +2,7 @@ HKCR
 {
 	NoRemove CLSID
 	{
-		ForceRemove {C4587505-CBA9-4583-A0F0-CA7BEF457FA0} = s 'SkinService Class'
+		ForceRemove {D198B71D-2903-420E-922D-DE933E0B375B} = s 'TimelineCleanupService Class'
 		{
 			ForceRemove Programmable
 			InprocServer32 = s '%MODULE%'

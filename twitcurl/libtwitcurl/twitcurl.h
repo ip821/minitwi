@@ -55,7 +55,7 @@ public:
     bool retweetById( std::string& statusId /* in */ );
 
     /* Twitter timeline APIs */
-    bool timelineHomeGet( std::string sinceId = ""  /* in */ );
+	bool timelineHomeGet(std::string maxId = "", std::string sinceId = "", std::string maxCount = "");
     bool timelinePublicGet();
     bool timelineFriendsGet();
     bool timelineUserGet( bool trimUser /* in */, bool includeRetweets /* in */,

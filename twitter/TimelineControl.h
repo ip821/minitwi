@@ -77,6 +77,7 @@ private:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	HRESULT Fire_OnItemRemoved(IVariantObject *pItemObject);
+	HRESULT Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -94,7 +95,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	STDMETHOD(GetItems)(IObjArray** ppObjectArray);
-	STDMETHOD(SetItems)(IObjArray* pObjectArray);
+	STDMETHOD(InsertItems)(IObjArray* pObjectArray, UINT uiStartIndex);
 	STDMETHOD(IsEmpty)(BOOL* pbIsEmpty);
 	STDMETHOD(Invalidate)();
 	STDMETHOD(Clear)();
@@ -105,6 +106,10 @@ public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();
+	STDMETHOD(GetTopVisibleItemIndex)(UINT* puiIndex);
+	STDMETHOD(GetItemsCount)(UINT* puiCount);
+	STDMETHOD(RemoveItemByIndex)(UINT uiIndex);
+	STDMETHOD(RefreshItem)(UINT uiIndex);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControl), CTimelineControl)

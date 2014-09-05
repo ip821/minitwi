@@ -2,7 +2,7 @@ HKCR
 {
 	NoRemove CLSID
 	{
-		ForceRemove {A31AF0A5-BE10-46FE-974F-55E0AA68070D} = s 'ViewControllerService Class'
+		ForceRemove {ECFFA762-CEF8-430C-8B9F-E6203D228D74} = s 'TimelineCleanupService Class'
 		{
 			ForceRemove Programmable
 			InprocServer32 = s '%MODULE%'

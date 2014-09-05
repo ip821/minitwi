@@ -10,7 +10,8 @@ class ATL_NO_VTABLE COpenUrlService :
 	public CComCoClass<COpenUrlService, &CLSID_FormsService>,
 	public IOpenUrlService,
 	public IPluginSupportNotifications,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public ITimelineControlEventSink
 {
 public:
 
@@ -24,16 +25,20 @@ public:
 		COM_INTERFACE_ENTRY(IOpenUrlService)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
+		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
 	END_COM_MAP()
 
 private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IWindowService> m_pWindowService;
+	CComPtr<ITimelineControl> m_pTimelineControl;
+	DWORD m_dwAdvice = 0;
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
-	STDMETHOD(OpenColumnAsUrl)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
+	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(OpenUrlService), COpenUrlService)

@@ -39,13 +39,13 @@ STDMETHODIMP CImageManagerService::GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap)
 	return S_OK;
 }
 
-STDMETHODIMP CImageManagerService::SetImage(BSTR bstrKey, BSTR bstrFileName)
+STDMETHODIMP CImageManagerService::AddImage(BSTR bstrKey, BSTR bstrFileName)
 {
 	CHECK_E_POINTER(bstrKey);
 	CHECK_E_POINTER(bstrFileName);
 	{
 		lock_guard<mutex> mutex(m_mutex);
-		m_bitmaps[CComBSTR(bstrKey)] = std::make_shared<Gdiplus::Bitmap>(bstrFileName);
+		m_bitmaps[bstrKey] = std::make_shared<Gdiplus::Bitmap>(bstrFileName);
 	}
 	return S_OK;
 }

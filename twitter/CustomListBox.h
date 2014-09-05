@@ -39,7 +39,7 @@ public:
 
 	CCustomListBox();
 private:
-	std::vector<CAdapt<CComPtr<IVariantObject> > > m_items;
+	CComPtr<IObjCollection> m_pItems;
 	std::vector<CAdapt<CComPtr<IColumnRects> > > m_columnRects;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	int m_prevX = 0;
@@ -60,11 +60,13 @@ public:
 
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-	void AddItem(IVariantObject* pItemObject);
+	void InsertItem(IVariantObject* pItemObject, int index);
 	void SetSkinTimeline(ISkinTimeline* pSkin);
 	void Clear();
 	HRESULT GetItems(IObjArray** ppObjectArray);
 	void IsEmpty(BOOL* pbEmpty);
 	void OnItemsUpdated();
+	void RemoveItemByIndex(UINT uiIndex);
+	void RefreshItem(UINT uiIndex);
 };
 

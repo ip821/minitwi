@@ -4,6 +4,7 @@
 #include "TwitterConnection.h"
 #include "Plugins.h"
 #include <hash_set>
+#include <boost/lexical_cast.hpp>
 
 // CTwitterConnection
 
@@ -121,17 +122,29 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** ppObjectArray)
+STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray)
 {
 	USES_CONVERSION;
 
 	std::string strId;
-	if (bstrSinceId)
+	if (bstrMaxId)
 	{
-		strId = W2A(bstrSinceId);
+		strId = W2A(bstrMaxId);
 	}
 
-	auto bRes = m_pTwitObj->timelineHomeGet(strId);
+	std::string strMaxCount;
+	if (uiMaxCount)
+	{
+		strMaxCount = boost::lexical_cast<std::string>(uiMaxCount);
+	}
+
+	std::string strSinceId;
+	if (bstrSinceId)
+	{
+		strSinceId = W2A(bstrSinceId);
+	}
+
+	auto bRes = m_pTwitObj->timelineHomeGet(strId, strSinceId, strMaxCount);
 	if (!bRes)
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
@@ -257,6 +270,7 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrSinceId, IObjArray** p
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_NORMALIZED_TEXT, &CComVariant(strText)));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_TEXT, &CComVariant(text.c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_CREATED_AT, &CComVariant(createdAt.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_TWITTER_OBJECT)));
 
 		if (!retweetedUserDisplayName.empty())
 		{
