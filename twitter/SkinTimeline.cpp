@@ -59,8 +59,11 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 
 	CDCHandle cdc = lpdi->hDC;
 	cdc.SetBkMode(TRANSPARENT);
+	
+	BOOL bDisabledSelection = FALSE;
+	pColumnRects->IsDisabledSelection(&bDisabledSelection);
 
-	if (lpdi->itemState & ODS_SELECTED)
+	if (lpdi->itemState & ODS_SELECTED && !bDisabledSelection)
 	{
 		DWORD dwColor = 0;
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_SELECTED, &dwColor));
@@ -179,7 +182,8 @@ SIZE CSkinTimeline::AddColumn(
 	BOOL bIsUrl = TRUE,
 	BOOL bWordWrap = FALSE,
 	LONG ulMinimumFixedWidth = 0,
-	Justify justify = Justify::None
+	Justify justify = Justify::None,
+	BOOL bDisabledSelection = FALSE
 	)
 {
 	CDC cdc;
@@ -213,6 +217,8 @@ SIZE CSkinTimeline::AddColumn(
 
 	UINT uiIndex = 0;
 	pColumnRects->AddRect(CRect(x, y, x + sz.cx, y + sz.cy), &uiIndex);
+	if (bDisabledSelection)
+		pColumnRects->DisableSelection(TRUE);
 	pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(strColumnName));
 	pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, CComBSTR(strDisplayText));
 	pColumnRects->SetRectStringProp(uiIndex, VAR_VALUE, CComBSTR(strValue));
@@ -262,7 +268,8 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			!bDisabled,
 			FALSE,
 			0,
-			Justify::Center
+			Justify::Center,
+			TRUE
 			);
 
 		lpMeasureItemStruct->itemHeight = y + sz.cy + PADDING_Y;

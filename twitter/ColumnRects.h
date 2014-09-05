@@ -28,6 +28,7 @@ private:
 	std::vector<CRect> m_rects;
 	std::vector< std::map<CString, CString> > m_rectStringProps;
 	std::vector< std::map<CString, BOOL> > m_rectBoolProps;
+	BOOL m_bDisabledSelection = FALSE;
 
 public:
 
@@ -39,7 +40,8 @@ public:
 	STDMETHOD(Clear)();
 	STDMETHOD(GetRect)(UINT uiIndex, RECT* rect);
 	STDMETHOD(GetCount)(UINT* puiCount);
-
+	STDMETHOD(IsDisabledSelection)(BOOL* pbDisabled);
+	STDMETHOD(DisableSelection)(BOOL bDisabled);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ColumnRects), CColumnRects)

@@ -58,3 +58,15 @@ STDMETHODIMP CColumnRects::GetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL* pbV
 	*pbValue = m_rectBoolProps[uiIndex][bstrKey];
 	return S_OK;
 }
+
+STDMETHODIMP CColumnRects::IsDisabledSelection(BOOL* pbDisabled)
+{
+	*pbDisabled = m_bDisabledSelection;
+	return S_OK;
+}
+
+STDMETHODIMP CColumnRects::DisableSelection(BOOL bDisabled)
+{
+	m_bDisabledSelection = bDisabled;
+	return S_OK;
+}

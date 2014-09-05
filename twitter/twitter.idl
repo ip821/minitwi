@@ -118,6 +118,8 @@ interface IColumnRects : IUnknown
 	HRESULT GetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue);
 	HRESULT SetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL bValue);
 	HRESULT GetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL* pbValue);
+	HRESULT IsDisabledSelection(BOOL* pbDisabled);
+	HRESULT DisableSelection(BOOL bDisabled);
 };
 
 [
