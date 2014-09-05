@@ -73,7 +73,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_URL))
 	{
 		CComBSTR bstr;
-		RETURN_IF_FAILED(pColumnRects->GetRectProp(dwColumnIndex, VAR_VALUE, &bstr));
+		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(dwColumnIndex, VAR_VALUE, &bstr));
 		strUrl = bstr;
 	}
 
@@ -81,7 +81,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 	{
 		{
 			CComBSTR bstr;
-			RETURN_IF_FAILED(pColumnRects->GetRectProp(dwColumnIndex, VAR_TWITTER_MEDIAURL, &bstr));
+			RETURN_IF_FAILED(pColumnRects->GetRectStringProp(dwColumnIndex, VAR_TWITTER_MEDIAURL, &bstr));
 
 			CComPtr<IVariantObject> pUrlObject;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));

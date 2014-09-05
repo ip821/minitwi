@@ -161,13 +161,13 @@ LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 	if (pNm->dwCurrentColumn == -1)
 		return 0;
 
-	CComBSTR bstrIsUrl;
-	pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_IS_URL, &bstrIsUrl);
+	BOOL bIsUrl = FALSE;
+	pNm->pColumnRects->GetRectBoolProp(pNm->dwCurrentColumn, VAR_IS_URL, &bIsUrl);
 
-	if (bstrIsUrl == L"1")
+	if (bIsUrl)
 	{
 		CComBSTR bstrColumnName;
-		pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+		pNm->pColumnRects->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
 		RETURN_IF_FAILED(Fire_OnColumnClick(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject));
 	}
 
@@ -190,7 +190,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		if (pInitializeWithColumnName)
 		{
 			CComBSTR bstrColumnName;
-			pNm->pColumnRects->GetRectProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+			pNm->pColumnRects->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
 			RETURN_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
 		}
 	}

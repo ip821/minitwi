@@ -114,8 +114,10 @@ interface IColumnRects : IUnknown
 	HRESULT GetRect(UINT uiIndex, RECT* rect);
 	HRESULT GetCount(UINT* puiCount);
 	HRESULT Clear();
-	HRESULT SetRectProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue);
-	HRESULT GetRectProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue);
+	HRESULT SetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue);
+	HRESULT GetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue);
+	HRESULT SetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL bValue);
+	HRESULT GetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL* pbValue);
 };
 
 [

@@ -23,7 +23,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_DELIMITER, Gdiplus::Color::LightGray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_URL, Gdiplus::Color::SteelBlue));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, Gdiplus::Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_CREATED_AT, Gdiplus::Color::Gray));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_RELATIVE_TIME, Gdiplus::Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_COLUMN_SHOW_MORE, Gdiplus::Color::SteelBlue));
 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeFontMap, &m_pThemeFontMap));

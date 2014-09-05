@@ -96,28 +96,28 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		RECT rect = { 0 };
 		pColumnRects->GetRect(i, &rect);
 		CComBSTR bstrColumnName;
-		pColumnRects->GetRectProp(i, VAR_COLUMN_NAME, &bstrColumnName);
+		pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName);
 		CComBSTR bstrText;
-		pColumnRects->GetRectProp(i, VAR_TEXT, &bstrText);
-		CComBSTR bstrIsUrl;
-		pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
-		CComBSTR bstrIsWordWrap;
-		pColumnRects->GetRectProp(i, VAR_IS_WORDWRAP, &bstrIsWordWrap);
-		CComBSTR bstrIsImage;
-		pColumnRects->GetRectProp(i, VAR_IS_IMAGE, &bstrIsImage);
+		pColumnRects->GetRectStringProp(i, VAR_TEXT, &bstrText);
+		BOOL bIsUrl = FALSE;
+		pColumnRects->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl);
+		BOOL bIsWordWrap = FALSE;
+		pColumnRects->GetRectBoolProp(i, VAR_IS_WORDWRAP, &bIsWordWrap);
+		BOOL bIsImage = FALSE;
+		pColumnRects->GetRectBoolProp(i, VAR_IS_IMAGE, &bIsImage);
 
 		HFONT font = 0;
 		m_pThemeFontMap->GetFont(bstrColumnName, &font);
 
-		if (iHoveredItem == lpdi->itemID && iHoveredColumn == i && bstrIsUrl == L"1")
+		if (iHoveredItem == lpdi->itemID && iHoveredColumn == i && bIsUrl)
 		{
 			m_pThemeFontMap->GetFont(bstrColumnName + VAR_SELECTED_POSTFIX, &font);
 		}
 
-		if (bstrIsImage == L"1")
+		if (bIsImage)
 		{
 			CComBSTR bstrValue;
-			pColumnRects->GetRectProp(i, VAR_VALUE, &bstrValue);
+			pColumnRects->GetRectStringProp(i, VAR_VALUE, &bstrValue);
 
 			CBitmap bitmap;
 			m_pImageManagerService->CreateImageBitmap(bstrValue, &bitmap.m_hBitmap);
@@ -148,11 +148,23 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 			CString str(bstrText);
 			cdc.SelectFont(font);
 			RECT rectText = { x + rect.left, y + rect.top, x + rect.right, y + rect.bottom };
-			cdc.DrawText(str, str.GetLength(), &rectText, bstrIsWordWrap == L"1" ? DT_WORDBREAK : 0);
+			cdc.DrawText(str, str.GetLength(), &rectText, bIsWordWrap ? DT_WORDBREAK : 0);
 		}
 	}
 
 	return S_OK;
+}
+
+void CSkinTimeline::PrepareDC(HDC hdc, SIZE size, CString strColumnName, CDC& cdc)
+{
+	cdc.CreateCompatibleDC(hdc);
+	CBitmap bitmap;
+	bitmap.CreateCompatibleBitmap(cdc, size.cx, size.cy);
+	cdc.SelectBitmap(bitmap);
+
+	HFONT font = 0;
+	m_pThemeFontMap->GetFont(CComBSTR(strColumnName), &font);
+	cdc.SelectFont(font);
 }
 
 SIZE CSkinTimeline::AddColumn(
@@ -166,51 +178,48 @@ SIZE CSkinTimeline::AddColumn(
 	SIZE size,
 	BOOL bIsUrl = TRUE,
 	BOOL bWordWrap = FALSE,
-	LONG ulCustomFixedWidth = 0,
-	BOOL bCenter = FALSE
+	LONG ulMinimumFixedWidth = 0,
+	Justify justify = Justify::None
 	)
 {
 	CDC cdc;
-	cdc.CreateCompatibleDC(hdc);
-	CBitmap bitmap;
-	bitmap.CreateCompatibleBitmap(cdc, size.cx, size.cy);
-	cdc.SelectBitmap(bitmap);
-
-	RECT rect = { 0 };
-	rect.right = size.cx;
-	rect.bottom = size.cy;
-	
-	HFONT font = 0;
-	m_pThemeFontMap->GetFont(CComBSTR(strColumnName), &font);
-	cdc.SelectFont(font);
+	PrepareDC(hdc, size, strColumnName, cdc);
 
 	SIZE sz = { 0 };
 	if (bWordWrap)
 	{
+		RECT rect = { 0 };
+		rect.right = size.cx;
+		rect.bottom = size.cy;
+
 		sz.cx = size.cx;
 		sz.cy = DrawText(cdc, strDisplayText, strDisplayText.GetLength(), &rect, DT_WORDBREAK);
 	}
 	else
 	{
 		GetTextExtentPoint32(cdc, strDisplayText, strDisplayText.GetLength(), &sz);
-		if (ulCustomFixedWidth)
-			sz.cx = ulCustomFixedWidth;
+		if (ulMinimumFixedWidth)
+			sz.cx = max(ulMinimumFixedWidth, sz.cx);
 	}
 
-	if (bCenter)
+	if (justify == Justify::Center)
 	{
 		x = (size.cx / 2) - (sz.cx / 2);
+	}
+	else if (justify == Justify::Right)
+	{
+		x = x - sz.cx;
 	}
 
 	UINT uiIndex = 0;
 	pColumnRects->AddRect(CRect(x, y, x + sz.cx, y + sz.cy), &uiIndex);
-	pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(strColumnName));
-	pColumnRects->SetRectProp(uiIndex, VAR_TEXT, CComBSTR(strDisplayText));
-	pColumnRects->SetRectProp(uiIndex, VAR_VALUE, CComBSTR(strValue));
+	pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(strColumnName));
+	pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, CComBSTR(strDisplayText));
+	pColumnRects->SetRectStringProp(uiIndex, VAR_VALUE, CComBSTR(strValue));
 	if (bWordWrap)
-		pColumnRects->SetRectProp(uiIndex, VAR_IS_WORDWRAP, CComBSTR(L"1"));
+		pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_WORDWRAP, TRUE);
 	if (bIsUrl)
-		pColumnRects->SetRectProp(uiIndex, VAR_IS_URL, CComBSTR(L"1"));
+		pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
 	return sz;
 }
 
@@ -253,7 +262,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			!bDisabled,
 			FALSE,
 			0,
-			TRUE
+			Justify::Center
 			);
 
 		lpMeasureItemStruct->itemHeight = y + sz.cy + PADDING_Y;
@@ -287,10 +296,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			auto y = PADDING_Y * 2;
 			UINT uiIndex = 0;
 			pColumnRects->AddRect(CRect(x, y, x + 48, y + 48), &uiIndex);
-			pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE));
-			pColumnRects->SetRectProp(uiIndex, VAR_TEXT, L"");
-			pColumnRects->SetRectProp(uiIndex, VAR_VALUE, CComBSTR(strImageUrl));
-			pColumnRects->SetRectProp(uiIndex, VAR_IS_IMAGE, L"1");
+			pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE));
+			pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, L"");
+			pColumnRects->SetRectStringProp(uiIndex, VAR_VALUE, CComBSTR(strImageUrl));
+			pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_IMAGE, TRUE);
 		}
 
 		CSize sizeRetweetedDislpayName;
@@ -361,7 +370,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 		CSize sizeDateTime;
 		{
-			auto x = clientRect.right - clientRect.left - COLUMN_X_SPACING * 6;
+			auto x = clientRect.right - clientRect.left;
 			auto y = COLUMN_Y_SPACING + PADDING_Y;
 
 			if (sizeRetweetedDislpayName.cy)
@@ -383,7 +392,8 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
 				TRUE,
 				FALSE,
-				30
+				30,
+				Justify::Right
 				);
 		}
 
@@ -461,12 +471,12 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 						UINT uiIndex = 0;
 						pColumnRects->AddRect(CRect(x, y, x + width, y + height), &uiIndex);
-						pColumnRects->SetRectProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_IMAGE));
-						pColumnRects->SetRectProp(uiIndex, VAR_TEXT, L"");
-						pColumnRects->SetRectProp(uiIndex, VAR_VALUE, vMediaUrlThumb.bstrVal);
-						pColumnRects->SetRectProp(uiIndex, VAR_TWITTER_MEDIAURL, vMediaUrl.bstrVal);
-						pColumnRects->SetRectProp(uiIndex, VAR_IS_IMAGE, L"1");
-						pColumnRects->SetRectProp(uiIndex, VAR_IS_URL, L"1");
+						pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_IMAGE));
+						pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, L"");
+						pColumnRects->SetRectStringProp(uiIndex, VAR_VALUE, vMediaUrlThumb.bstrVal);
+						pColumnRects->SetRectStringProp(uiIndex, VAR_TWITTER_MEDIAURL, vMediaUrl.bstrVal);
+						pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_IMAGE, TRUE);
+						pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
 					}
 
 					lastY += IMAGE_HEIGHT;

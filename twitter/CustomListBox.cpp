@@ -135,11 +135,11 @@ void CCustomListBox::OnItemsUpdated()
 			for (size_t j = 0; j < uiColumnCount; j++)
 			{
 				CComBSTR bstrColumnName;
-				m_columnRects[i]->GetRectProp(j, VAR_COLUMN_NAME, &bstrColumnName);
+				m_columnRects[i]->GetRectStringProp(j, VAR_COLUMN_NAME, &bstrColumnName);
 				if (bstrColumnName == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
 				{
-					m_columnRects[i]->SetRectProp(j, VAR_TEXT, v.bstrVal);
-					m_columnRects[i]->SetRectProp(j, VAR_VALUE, v.bstrVal);
+					m_columnRects[i]->SetRectStringProp(j, VAR_TEXT, v.bstrVal);
+					m_columnRects[i]->SetRectStringProp(j, VAR_VALUE, v.bstrVal);
 				}
 			}
 		}
@@ -214,10 +214,10 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 			if (rect.PtInRect(CPoint(x, y)))
 			{
-				CComBSTR bstrIsUrl;
-				pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
+				BOOL bIsUrl = FALSE;
+				pColumnRects->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl);
 
-				if (bstrIsUrl == L"1")
+				if (bIsUrl)
 				{
 					SetCursor(m_handCursor);
 					m_HoveredItemIndex = uiItem;
@@ -258,10 +258,10 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 			if (rect.PtInRect(point) && (i != m_HoveredColumnIndex || uiItem != m_HoveredItemIndex))
 			{
-				CComBSTR bstrIsUrl;
-				pColumnRects->GetRectProp(i, VAR_IS_URL, &bstrIsUrl);
+				BOOL bIsUrl = FALSE;
+				pColumnRects->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl);
 
-				if (bstrIsUrl == L"1")
+				if (bIsUrl)
 				{
 					InvalidateRect(rect);
 				}

@@ -9,8 +9,9 @@
 STDMETHODIMP CColumnRects::AddRect(RECT rect, UINT* puiIndex)
 {
 	m_rects.push_back(rect);
-	m_rectProps.push_back(std::map<CString, CString>());
-	*puiIndex = m_rectProps.size() - 1;
+	m_rectStringProps.push_back(std::map<CString, CString>());
+	m_rectBoolProps.push_back(std::map<CString, BOOL>());
+	*puiIndex = m_rectStringProps.size() - 1;
 	return S_OK;
 }
 
@@ -29,18 +30,31 @@ STDMETHODIMP CColumnRects::GetCount(UINT* puiCount)
 STDMETHODIMP CColumnRects::Clear()
 {
 	m_rects.clear();
-	m_rectProps.clear();
+	m_rectBoolProps.clear();
+	m_rectStringProps.clear();
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::SetRectProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue)
+STDMETHODIMP CColumnRects::SetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue)
 {
-	m_rectProps[uiIndex][bstrKey] = bstrValue;
+	m_rectStringProps[uiIndex][bstrKey] = bstrValue;
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::GetRectProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue)
+STDMETHODIMP CColumnRects::GetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue)
 {
-	*bstrValue = CComBSTR(m_rectProps[uiIndex][bstrKey]).Detach();
+	*bstrValue = CComBSTR(m_rectStringProps[uiIndex][bstrKey]).Detach();
+	return S_OK;
+}
+
+STDMETHODIMP CColumnRects::SetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL bValue)
+{
+	m_rectBoolProps[uiIndex][bstrKey] = bValue;
+	return S_OK;
+}
+
+STDMETHODIMP CColumnRects::GetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL* pbValue)
+{
+	*pbValue = m_rectBoolProps[uiIndex][bstrKey];
 	return S_OK;
 }

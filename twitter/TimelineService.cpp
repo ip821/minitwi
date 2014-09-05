@@ -224,7 +224,6 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 		inputStream >> pt;
 
 		boost::posix_time::ptime ptCreatedAt(pt.date(), pt.time_of_day() - boost::posix_time::minutes(m_tz.Bias) - boost::posix_time::minutes(m_tz.DaylightBias));
-
 		boost::posix_time::time_duration diff(boost::posix_time::second_clock::local_time() - ptCreatedAt);
 
 		CString strRelTime;
@@ -248,10 +247,10 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 		else
 		{
 			boost::posix_time::ptime ptNow(pt.date(), pt.time_of_day() - boost::posix_time::minutes(m_tz.Bias) - boost::posix_time::minutes(m_tz.DaylightBias));
-			boost::local_time::wlocal_time_facet* outputFacet = new boost::local_time::wlocal_time_facet();
-			std::wostringstream outputStream;
-			outputStream.imbue(std::locale(std::locale(""), outputFacet));
+			boost::posix_time::wtime_facet* outputFacet = new boost::posix_time::wtime_facet();
 			outputFacet->format(L"%d %b %Y");
+			std::wostringstream outputStream;
+			outputStream.imbue(std::locale(outputStream.getloc(), outputFacet));
 			outputStream << ptNow;
 			strRelTime = outputStream.str().c_str();
 		}
