@@ -1,0 +1,16 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {ECFFA762-CEF8-430C-8B9F-E6203D228D74} = s 'TimelineCleanupService Class'
+		{
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{12BF3C97-9ACD-43C3-9E73-698AF2DAE645}'
+			Version = s '1.0'
+		}
+	}
+}

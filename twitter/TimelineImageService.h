@@ -42,7 +42,6 @@ public:
 
 private:
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
-	CComPtr<ITimerService> m_pTimerServiceCleanup;
 	CComPtr<ITimerService> m_pTimerServiceUpdate;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 	CComPtr<IThreadService> m_pThreadServiceUpdateService;
@@ -52,15 +51,12 @@ private:
 	DWORD m_dwAdviceDownloadService = 0;
 	DWORD m_dwAdviceThreadServiceUpdateService = 0;
 	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
-	DWORD m_dwAdviceTimerServiceCleanup = 0;
 	DWORD m_dwAdviceTimerServiceUpdate = 0;
 	DWORD m_dwAdviceTimelineControl = 0;
 
 	std::hash_set<std::wstring> m_idsToUpdate;
 	std::mutex m_mutex;
 	map<wstring, int> m_imageRefs;
-
-	DWORD m_counter = 0;
 
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
 	static HRESULT GetUrls(IVariantObject* pItemObject, std::vector<std::wstring>& urls);

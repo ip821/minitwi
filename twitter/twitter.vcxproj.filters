@@ -175,6 +175,9 @@
     <ClCompile Include="TimelineImageService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
+    <ClCompile Include="TimelineCleanupService.cpp">
+      <Filter>Services\TimelineService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -282,6 +285,9 @@
     <ClInclude Include="TimelineImageService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
+    <ClInclude Include="TimelineCleanupService.h">
+      <Filter>Services\TimelineService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -291,6 +297,9 @@
   <ItemGroup>
     <None Include="twitter.def">
       <Filter>ZZZMisc\Source Files</Filter>
+    </None>
+    <None Include="TimelineCleanupService2.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

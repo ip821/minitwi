@@ -7,9 +7,6 @@
 
 // CTimelineImageService
 
-#define MAX_ITEMS_COUNT 100
-#define MAX_MINUTES 4
-
 STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CComPtr<IUnknown> pUnk;
@@ -17,9 +14,6 @@ STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProv
 
 	RETURN_IF_FAILED(CTimelineService::GetTimelineControl(m_pControl, m_pTimelineControl));
 	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
-
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_CLENUP_TIMER, &m_pTimerServiceCleanup));
-	RETURN_IF_FAILED(AtlAdvise(m_pTimerServiceCleanup, pUnk, __uuidof(ITimerServiceEventSink), &m_dwAdviceTimerServiceCleanup));
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
 
@@ -35,23 +29,19 @@ STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProv
 	RETURN_IF_FAILED(AtlAdvise(m_pTimerServiceUpdate, pUnk, __uuidof(ITimerServiceEventSink), &m_dwAdviceTimerServiceUpdate));
 
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StartTimer(300));
-	RETURN_IF_FAILED(m_pTimerServiceCleanup->StartTimer(1000 * 60)); //1 minute
 	return S_OK;
 }
 
 STDMETHODIMP CTimelineImageService::OnShutdown()
 {
-	RETURN_IF_FAILED(m_pTimerServiceCleanup->StopTimer());
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
-	RETURN_IF_FAILED(AtlUnadvise(m_pTimerServiceCleanup, __uuidof(ITimerServiceEventSink), m_dwAdviceTimerServiceCleanup));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimerServiceUpdate, __uuidof(ITimerServiceEventSink), m_dwAdviceTimerServiceUpdate));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceUpdateService));
 	m_pThreadServiceShowMoreService.Release();
 	m_pThreadServiceUpdateService.Release();
-	m_pTimerServiceCleanup.Release();
 	m_pTimerServiceUpdate.Release();
 	m_pTimelineControl.Release();
 	m_pImageManagerService.Release();
@@ -61,43 +51,18 @@ STDMETHODIMP CTimelineImageService::OnShutdown()
 
 STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 {
-	if (pTimerService == m_pTimerServiceCleanup)
+	std::hash_set<std::wstring> ids;
 	{
-		UINT uiTopIndex = 0;
-		RETURN_IF_FAILED(m_pTimelineControl->GetTopVisibleItemIndex(&uiTopIndex));
-		if (uiTopIndex < MAX_ITEMS_COUNT)
-			m_counter++;
-		else
-			m_counter = 0;
-
-		if (m_counter > MAX_MINUTES)
-		{ //cleanup
-			UINT uiCount = 0;
-			RETURN_IF_FAILED(m_pTimelineControl->GetItemsCount(&uiCount));
-			while (uiCount > MAX_ITEMS_COUNT)
-			{
-				RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(uiCount - 2)); //remove last but not "show more"
-				uiCount--;
-			}
-			m_counter = 0;
-		}
+		std::lock_guard<std::mutex> lock(m_mutex);
+		ids = std::hash_set<std::wstring>(m_idsToUpdate);
+		m_idsToUpdate.clear();
 	}
-	else if (pTimerService == m_pTimerServiceUpdate)
+
+	if (ids.size())
 	{
-		std::hash_set<std::wstring> ids;
-		{
-			std::lock_guard<std::mutex> lock(m_mutex);
-			ids = std::hash_set<std::wstring>(m_idsToUpdate);
-			m_idsToUpdate.clear();
-		}
-
-		if (ids.size())
-		{
-			RETURN_IF_FAILED(m_pTimelineControl->Invalidate());
-		}
-
-		return S_OK;
+		RETURN_IF_FAILED(m_pTimelineControl->Invalidate());
 	}
+
 	return S_OK;
 }
 

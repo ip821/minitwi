@@ -287,6 +287,15 @@ interface ITimelineImageService : IUnknown
 };
 
 [
+	object,
+	uuid(0E1D5F6E-61ED-4168-8C86-D15C43699B72),
+	pointer_default(unique)
+]
+interface ITimelineCleanupService : IUnknown
+{
+};
+
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -440,6 +449,13 @@ library twitterLib
 	coclass TimelineImageService
 	{
 		[default] interface ITimelineImageService;
+	};
+	[
+		uuid(ECFFA762-CEF8-430C-8B9F-E6203D228D74)		
+	]
+	coclass TimelineCleanupService
+	{
+		[default] interface ITimelineCleanupService;
 	};
 };
 
