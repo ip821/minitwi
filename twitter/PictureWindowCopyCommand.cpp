@@ -11,7 +11,7 @@ STDMETHODIMP CPictureWindowCopyCommand::GetCommandText(REFGUID guidCommand, BSTR
 	UNREFERENCED_PARAMETER(guidCommand);
 	CHECK_E_POINTER(bstrText);
 	if (guidCommand == COMMAND_COPY_IMAGE_URL)
-		*bstrText = CComBSTR(L"Copy link").Detach();
+		*bstrText = CComBSTR(L"Copy link\tCtrl+C").Detach();
 	return S_OK;
 }
 

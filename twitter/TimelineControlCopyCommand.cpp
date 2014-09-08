@@ -7,9 +7,9 @@ STDMETHODIMP CTimelineControlCopyCommand::GetCommandText(REFGUID guidCommand, BS
 	UNREFERENCED_PARAMETER(guidCommand);
 	CHECK_E_POINTER(bstrText);
 	if (guidCommand == COMMAND_COPY_TEXT)
-		*bstrText = CComBSTR(L"Copy").Detach();
+		*bstrText = CComBSTR(L"Copy\tCtrl+C").Detach();
 	else if (guidCommand == COMMAND_COPY_URL)
-		*bstrText = CComBSTR(L"Copy link").Detach();
+		*bstrText = CComBSTR(L"Copy link\tCtrl+Shift+C").Detach();
 	return S_OK;
 }
 
