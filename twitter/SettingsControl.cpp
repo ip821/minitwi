@@ -46,6 +46,7 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 STDMETHODIMP CSettingsControl::OnShutdown()
 {
+	RETURN_IF_FAILED(m_pThreadService->Join());
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
