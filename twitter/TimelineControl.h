@@ -21,6 +21,7 @@ class ATL_NO_VTABLE CTimelineControl :
 	public CDialogResize<CTimelineControl>,
 	public IInitializeWithControlImpl,
 	public IPluginSupportNotifications,
+	public ICommandSupportEventSink,
 	public IConnectionPointContainerImpl<CTimelineControl>,
 	public IConnectionPointImpl<CTimelineControl, &__uuidof(ITimelineControlEventSink)>
 {
@@ -41,6 +42,7 @@ public:
 		COM_INTERFACE_ENTRY(IMsgHandler)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IConnectionPointContainer)
+		COM_INTERFACE_ENTRY(ICommandSupportEventSink)
 	END_COM_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CTimelineControl)
@@ -67,6 +69,7 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
+	DWORD m_dwAdviceCommandSupport = 0;
 
 	CMenu m_popupMenu;
 
@@ -110,6 +113,9 @@ public:
 	STDMETHOD(GetItemsCount)(UINT* puiCount);
 	STDMETHOD(RemoveItemByIndex)(UINT uiIndex);
 	STDMETHOD(RefreshItem)(UINT uiIndex);
+
+	STDMETHOD(OnBeforeCommandInvoke)(REFGUID guidCommand, ICommand* pCommand);
+	METHOD_EMPTY(STDMETHOD(OnCommandInvoke)(REFGUID guidCommand));
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControl), CTimelineControl)

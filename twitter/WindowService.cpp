@@ -49,12 +49,21 @@ STDMETHODIMP CWindowService::OpenWindow(HWND hWndParent, REFCLSID clsid, IVarian
 	m_windows[hWnd] = windowData;
 
 	{
+		CComQIPtr<IInitializeWithControl> pInit = pWindow;
+		if (pInit)
+		{
+			RETURN_IF_FAILED(pInit->SetControl(m_pControl));
+		}
+	}
+
+	{
 		CComQIPtr<IPluginSupportNotifications> pInit = pWindow;
 		if (pInit)
 		{
 			RETURN_IF_FAILED(pInit->OnInitialized(m_pServiceProvider));
 		}
 	}
+
 	{
 		CComQIPtr<IInitializeWithVariantObject> pInit = pWindow;
 		if (pInit)

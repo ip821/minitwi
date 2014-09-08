@@ -70,3 +70,11 @@ STDMETHODIMP CPictureWindowCopyCommand::SetVariantObject(IVariantObject* pVarian
 	m_pVariantObject = pVariantObject;
 	return S_OK;
 }
+
+STDMETHODIMP CPictureWindowCopyCommand::GetAccelerator(REFGUID guidCommand, TACCEL *pAccel)
+{
+	CHECK_E_POINTER(pAccel);
+	if (guidCommand == COMMAND_COPY_IMAGE_URL)
+		*pAccel = { FVIRTKEY | FCONTROL, 0x43, 0 }; //CTRL-C
+	return S_OK;
+}

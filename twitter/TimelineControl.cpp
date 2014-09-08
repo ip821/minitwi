@@ -11,11 +11,16 @@ STDMETHODIMP CTimelineControl::OnInitialized(IServiceProvider* pServiceProvider)
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
 
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	RETURN_IF_FAILED(AtlAdvise(m_pCommandSupport, pUnk, __uuidof(ICommandSupportEventSink), &m_dwAdviceCommandSupport));
+
 	return S_OK;
 }
 
 STDMETHODIMP CTimelineControl::OnShutdown()
 {
+	RETURN_IF_FAILED(AtlUnadvise(m_pCommandSupport, __uuidof(ICommandSupportEventSink), m_dwAdviceCommandSupport));
 	m_pServiceProvider.Release();
 	return S_OK;
 }
@@ -45,6 +50,23 @@ STDMETHODIMP CTimelineControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 {
 	CHECK_E_POINTER(pMsg);
 	CHECK_E_POINTER(pbResult);
+	RETURN_IF_FAILED(m_pCommandSupport->PreTranslateMessage(m_hWnd, pMsg, pbResult));
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::OnBeforeCommandInvoke(REFGUID guidCommand, ICommand* pCommand)
+{
+	CComQIPtr<IInitializeWithVariantObject> pInit = pCommand;
+	if (pInit)
+	{
+		CComPtr<IVariantObject> pVariantObject;
+		auto selectedIndex = m_listBox.GetCurSel();
+		CComPtr<IObjArray> pObjArray;
+		RETURN_IF_FAILED(m_listBox.GetItems(&pObjArray));
+		pObjArray->GetAt(selectedIndex, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+		RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObject));
+	}
+
 	return S_OK;
 }
 

@@ -3,6 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
+#include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;
 using namespace std;
@@ -13,6 +14,7 @@ class ATL_NO_VTABLE CWindowService :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CWindowService, &CLSID_WindowService>,
 	public IWindowService,
+	public IInitializeWithControlImpl,
 	public IPluginSupportNotifications,
 	public IWindowEventSink
 {
@@ -27,6 +29,7 @@ public:
 		COM_INTERFACE_ENTRY(IWindowService)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IWindowEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithControl)
 	END_COM_MAP()
 
 private:

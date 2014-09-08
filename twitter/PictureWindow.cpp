@@ -17,17 +17,32 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_DownloadService, &m_pDownloadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &m_dwAdviceDownloadService));
 
+	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
+	ATLENSURE(pMainWindow);
+	RETURN_IF_FAILED(pMainWindow->GetMessageLoop(&m_pMessageLoop));
+	RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
+
 	return S_OK;
 }
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
+	RETURN_IF_FAILED(m_pMessageLoop->RemoveMessageFilter(this));
+	m_pMessageLoop.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	m_pDownloadService.Release();
 	m_pCommandSupport.Release();
 	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
 	m_pPluginSupport.Release();
 
+	return S_OK;
+}
+
+STDMETHODIMP CPictureWindow::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
+{
+	CHECK_E_POINTER(pMsg);
+	CHECK_E_POINTER(bResult);
+	RETURN_IF_FAILED(m_pCommandSupport->PreTranslateMessage(m_hWnd, pMsg, bResult));
 	return S_OK;
 }
 
@@ -52,7 +67,11 @@ LRESULT CPictureWindow::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CPictureWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+#ifdef __WINXP__
+	m_icon.LoadIcon(IDR_TWITTER_XP);
+#else
 	m_icon.LoadIcon(IDR_TWITTER);
+#endif
 	SetClassLong(m_hWnd, GCL_HICONSM, (LONG)m_icon.m_hIcon);
 	SetClassLong(m_hWnd, GCL_HICON, (LONG)m_icon.m_hIcon);
 

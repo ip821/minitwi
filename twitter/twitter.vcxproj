@@ -305,7 +305,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TimelineCleanupService2.rgs" />
     <None Include="twitter.def" />
   </ItemGroup>
   <ItemGroup>

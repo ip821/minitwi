@@ -25,6 +25,9 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 {
 	UNREFERENCED_PARAMETER(guidCommand);
 
+	if (!m_pVariantObject)
+		return S_OK;
+
 	CComPtr<IVariantObject> pTempObject = m_pVariantObject;
 	m_pVariantObject.Release();
 
@@ -96,5 +99,15 @@ STDMETHODIMP CTimelineControlCopyCommand::SetVariantObject(IVariantObject* pVari
 STDMETHODIMP CTimelineControlCopyCommand::SetColumnName(LPCTSTR lpszColumnName)
 {
 	m_strColumnName = lpszColumnName;
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControlCopyCommand::GetAccelerator(REFGUID guidCommand, TACCEL *pAccel)
+{
+	CHECK_E_POINTER(pAccel);
+	if (guidCommand == COMMAND_COPY_TEXT)
+		*pAccel = { FVIRTKEY | FCONTROL, 0x43, 0 }; //CTRL-C
+	else if (guidCommand == COMMAND_COPY_URL)
+		*pAccel = { FVIRTKEY | FCONTROL | FSHIFT, 0x43, 0 };//CTRL-SHIFT-C
 	return S_OK;
 }

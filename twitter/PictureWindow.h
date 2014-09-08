@@ -3,6 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
+#include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;
 using namespace std;
@@ -14,6 +15,8 @@ class ATL_NO_VTABLE CPictureWindow :
 	public CComCoClass<CPictureWindow, &CLSID_PictureWindow>,
 	public CWindowImpl<CPictureWindow>,
 	public IPictureWindow,
+	public IMsgFilter,
+	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
 	public IDownloadServiceEventSink,
 	public IPluginSupportNotifications,
@@ -33,6 +36,7 @@ public:
 	BEGIN_COM_MAP(CPictureWindow)
 		COM_INTERFACE_ENTRY(IPictureWindow)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
+		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IConnectionPointContainer)
@@ -55,6 +59,7 @@ private:
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
+	CComPtr<IMessageLoop> m_pMessageLoop;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmap;
@@ -82,6 +87,8 @@ public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
+
+	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *bResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(PictureWindow), CPictureWindow)

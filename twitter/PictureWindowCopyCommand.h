@@ -12,6 +12,7 @@ class ATL_NO_VTABLE CPictureWindowCopyCommand :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CPictureWindowCopyCommand, &CLSID_PictureWindowCopyCommand>,
 	public ICommand,
+	public IAcceleratorSupport,
 	public IInitializeWithVariantObject
 {
 public:
@@ -23,6 +24,7 @@ public:
 
 	BEGIN_COM_MAP(CPictureWindowCopyCommand)
 		COM_INTERFACE_ENTRY(ICommand)
+		COM_INTERFACE_ENTRY(IAcceleratorSupport)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
@@ -34,7 +36,7 @@ public:
 	STDMETHOD(InstallMenu)(IMenu* pMenu);
 	STDMETHOD(Invoke)(REFGUID guidCommand);
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
-
+	STDMETHOD(GetAccelerator)(REFGUID guidCommand, TACCEL *pAccel);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(PictureWindowCopyCommand), CPictureWindowCopyCommand)
