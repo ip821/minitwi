@@ -68,7 +68,6 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 {
 	RETURN_IF_FAILED(m_pTimerService->StopTimer());
 	m_pTimerService.Release();
-	RETURN_IF_FAILED(m_pThreadPoolService->Stop());
 	m_pThreadPoolService.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	RETURN_IF_FAILED(AtlUnadvise(m_pInfoControlService, __uuidof(IInfoControlEventSink), m_dwInfoControlAdvice));

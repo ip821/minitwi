@@ -51,6 +51,7 @@ STDMETHODIMP CTimelineImageService::OnShutdown()
 
 STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 {
+	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
 	std::hash_set<std::wstring> ids;
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
@@ -62,7 +63,7 @@ STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 	{
 		RETURN_IF_FAILED(m_pTimelineControl->Invalidate());
 	}
-
+	RETURN_IF_FAILED(m_pTimerServiceUpdate->ResumeTimer());
 	return S_OK;
 }
 

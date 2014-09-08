@@ -46,7 +46,6 @@ public:
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(OnTimer)(ITimerService* pTimerService);
-
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineCleanupService), CTimelineCleanupService)

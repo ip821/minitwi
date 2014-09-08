@@ -34,6 +34,7 @@ STDMETHODIMP CTimelineCleanupService::OnShutdown()
 
 STDMETHODIMP CTimelineCleanupService::OnTimer(ITimerService* pTimerService)
 {
+	RETURN_IF_FAILED(m_pTimerServiceCleanup->StopTimer());
 	UINT uiTopIndex = 0;
 	RETURN_IF_FAILED(m_pTimelineControl->GetTopVisibleItemIndex(&uiTopIndex));
 	if (uiTopIndex < MAX_ITEMS_COUNT)
@@ -52,5 +53,8 @@ STDMETHODIMP CTimelineCleanupService::OnTimer(ITimerService* pTimerService)
 		}
 		m_counter = 0;
 	}
+
+	RETURN_IF_FAILED(m_pTimerServiceCleanup->ResumeTimer());
+
 	return S_OK;
 }

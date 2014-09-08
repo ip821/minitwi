@@ -54,7 +54,6 @@ STDMETHODIMP CUpdateService::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadService));
 	RETURN_IF_FAILED(m_pTimerService->StopTimer());
-	RETURN_IF_FAILED(m_pThreadService->Join());
 	m_pThreadService.Release();
 	m_pTimerService.Release();
 	m_pDownloadService.Release();
