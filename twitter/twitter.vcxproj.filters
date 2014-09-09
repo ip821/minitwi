@@ -288,6 +288,9 @@
     <ClInclude Include="TimelineCleanupService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
+    <ClInclude Include="CustomTabControl.h">
+      <Filter>Services\ViewControllerService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">

@@ -263,6 +263,7 @@
   <ItemGroup>
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="ColumnRects.h" />
+    <ClInclude Include="CustomTabControl.h" />
     <ClInclude Include="DownloadService.h" />
     <ClInclude Include="ImageManagerService.h" />
     <ClInclude Include="TimelineCleanupService.h" />
