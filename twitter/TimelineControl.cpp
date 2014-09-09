@@ -22,6 +22,7 @@ STDMETHODIMP CTimelineControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pCommandSupport, __uuidof(ICommandSupportEventSink), m_dwAdviceCommandSupport));
 	m_pServiceProvider.Release();
+	exit(0); //skip OnShutdown calls, thread joins etc.
 	return S_OK;
 }
 
