@@ -452,8 +452,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 					const int IMAGE_WIDTH = 275;
 					auto xOffset = ((clientRect.right - clientRect.left) - (IMAGE_WIDTH * uiCount)) / 2;
 
-					int i = 0;
-					{ //Use only first image due to size
+					const size_t processCount = min(uiCount, 3); //process no more than 3 images
+					const int oneImageWidth = (IMAGE_WIDTH / processCount);
+					for (size_t i = 0; i < processCount; i++)
+					{
 						CComPtr<IVariantObject> pMediaObject;
 						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
@@ -471,9 +473,9 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						TBITMAP tBitmap = { 0 };
 						m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
 
-						auto x = i * IMAGE_WIDTH + xOffset;
+						auto x = i * oneImageWidth + xOffset;
 						auto y = lastY;
-						auto width = IMAGE_WIDTH;
+						auto width = oneImageWidth;
 						auto height = IMAGE_HEIGHT;
 
 						UINT uiIndex = 0;

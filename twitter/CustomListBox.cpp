@@ -275,6 +275,39 @@ Exit:
 	return 0;
 }
 
+LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = FALSE;
+	if (wParam == VK_RETURN)
+	{
+		auto curSel = GetCurSel();
+		if (curSel >= 0)
+		{
+			CComPtr<IColumnRects> pColumnRects = m_columnRects[curSel];
+			UINT uiCount = 0;
+			pColumnRects->GetCount(&uiCount);
+			for (size_t i = 0; i < uiCount; i++)
+			{
+				CComBSTR bstrColumnName;
+				pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName);
+				CComBSTR bstrMediaUrl;
+				pColumnRects->GetRectStringProp(i, VAR_TWITTER_MEDIAURL, &bstrMediaUrl);
+				if (bstrColumnName == CComBSTR(VAR_TWITTER_IMAGE) && bstrMediaUrl != CComBSTR(L""))
+				{
+					CRect itemRect;
+					GetItemRect(curSel, &itemRect);
+					CRect columnRect;
+					pColumnRects->GetRect(i, columnRect);
+					HandleCLick(MAKELONG(itemRect.left + columnRect.left + 1, itemRect.top + columnRect.top + 1), NM_LISTBOX_LCLICK);
+					bHandled = TRUE;
+					break;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
 LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 {
 	auto x = GET_X_LPARAM(lParam);
