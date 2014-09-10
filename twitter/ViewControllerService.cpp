@@ -4,11 +4,8 @@
 #include "ViewControllerService.h"
 #include "Plugins.h"
 #include "twitter_i.h"
-#include "CustomTabControl.h"
 
 // CViewControllerService
-
-CCustomTabControl m_tabControl;
 
 STDMETHODIMP CViewControllerService::Load(ISettings* pSettings)
 {
@@ -31,11 +28,6 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
 	m_pTimelineControl = pControl;
-
-	CComQIPtr<IControl> pTabControl = pTabbedControl;
-	HWND hWndTabControl = 0;
-	pTabControl->GetHWND(&hWndTabControl);
-	m_tabControl.SubclassWindow(hWndTabControl);
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
