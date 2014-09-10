@@ -187,6 +187,7 @@
     <ClCompile Include="ColumnRects.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
+    <ClCompile Include="SkinTabControl.cpp" />
     <ClCompile Include="TimelineCleanupService.cpp" />
     <ClCompile Include="TimelineImageService.cpp" />
     <ClCompile Include="PictureWindow.cpp" />
@@ -263,8 +264,8 @@
   <ItemGroup>
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="ColumnRects.h" />
-    <ClInclude Include="CustomTabControl.h" />
     <ClInclude Include="DownloadService.h" />
+    <ClInclude Include="SkinTabControl.h" />
     <ClInclude Include="ImageManagerService.h" />
     <ClInclude Include="TimelineCleanupService.h" />
     <ClInclude Include="TimelineImageService.h" />

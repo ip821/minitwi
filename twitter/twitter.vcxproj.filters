@@ -80,6 +80,9 @@
     <Filter Include="Controls\PictureWindow\Commands">
       <UniqueIdentifier>{f7c6e900-dc23-4395-bee5-19d98a0eef97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\TabControl">
+      <UniqueIdentifier>{453846c2-4e1e-4b13-9315-0f5f31dbcf72}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -177,6 +180,9 @@
     </ClCompile>
     <ClCompile Include="TimelineCleanupService.cpp">
       <Filter>Services\TimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinTabControl.cpp">
+      <Filter>Controls\TabControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -288,8 +294,8 @@
     <ClInclude Include="TimelineCleanupService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
-    <ClInclude Include="CustomTabControl.h">
-      <Filter>Services\ViewControllerService</Filter>
+    <ClInclude Include="SkinTabControl.h">
+      <Filter>Controls\TabControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

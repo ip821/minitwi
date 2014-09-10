@@ -461,6 +461,13 @@ library twitterLib
 	{
 		[default] interface ITimelineCleanupService;
 	};
+	[
+		uuid(262329E2-B603-4FC0-97CB-40D95D41A1C0)
+	]
+	coclass SkinTabControl
+	{
+		[default] interface ITabbedControl;
+	};
 };
 
 import "shobjidl.idl";
