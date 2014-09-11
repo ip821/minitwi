@@ -43,6 +43,8 @@ public:
 
 	BEGIN_MSG_MAP(CCustomTabControl)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 	END_MSG_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CCustomTabControl)
@@ -50,17 +52,21 @@ public:
 	END_CONNECTION_POINT_MAP()
 
 private:
-	vector<CAdapt<CComPtr<IControl>>> m_pControls;
+	CComPtr<IObjCollection> m_pControls;
 	int m_selectedPageIndex = -1;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ISettings> m_pSettings;
-	CRect m_rectChildControlArea;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
+	CComPtr<IColumnRects> m_pColumnRects;
+	CRect m_rectChildControlArea;
 
 	void SelectPage(DWORD dwIndex);
 
-	CRect& GetChildControlAreaRect();
+	void UpdateChildControlAreaRect();
+	void UpdateSizes();
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);

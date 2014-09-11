@@ -8,6 +8,8 @@ STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 
 STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
+	HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls);
+	HrCoCreateInstance(CLSID_ColumnRects, &m_pColumnRects);
 	*hWnd = __super::Create(hWndParent, CRect(), L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED);
 	return S_OK;
 }
@@ -30,14 +32,17 @@ STDMETHODIMP CCustomTabControl::EnableCommands(BOOL bEnabled)
 STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 {
 	CHECK_E_POINTER(pControl);
+	RETURN_IF_FAILED(m_pControls->AddObject(pControl));
 	HWND hWnd = NULL;
 	RETURN_IF_FAILED(pControl->CreateEx(m_hWnd, &hWnd));
-	m_pControls.push_back(CAdapt<CComPtr<IControl>>(pControl));
-	if (m_pControls.size() > 1)
+
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	if (uiCount > 1)
 		::ShowWindow(hWnd, SW_HIDE);
 	if (m_selectedPageIndex == -1)
 		SelectPage(0);
-	if (m_pControls.size() > 1)
+	if (uiCount > 1)
 		SelectPage(1);
 
 	{
@@ -56,23 +61,34 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 		}
 	}
 
+	UpdateChildControlAreaRect();
+	UpdateSizes();
+
 	return S_OK;
 }
 
 void CCustomTabControl::SelectPage(DWORD dwIndex)
 {
-	ATLASSERT(dwIndex >= 0 && dwIndex < m_pControls.size());
+	UINT uiCount = 0;
+	m_pControls->GetCount(&uiCount);
+	ATLASSERT(dwIndex >= 0 && dwIndex < uiCount);
 	if (m_selectedPageIndex != -1)
 	{
+		CComPtr<IControl> pControl;
+		m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
 		HWND hWnd = 0;
-		m_pControls[m_selectedPageIndex]->GetHWND(&hWnd);
+		pControl->GetHWND(&hWnd);
 		::ShowWindow(hWnd, SW_HIDE);
 		m_selectedPageIndex = -1;
 	}
 
-	HWND hWnd = 0;
-	m_pControls[dwIndex]->GetHWND(&hWnd);
-	::ShowWindow(hWnd, SW_SHOW);
+	{
+		CComPtr<IControl> pControl;
+		m_pControls->GetAt(dwIndex, __uuidof(IControl), (LPVOID*)&pControl);
+		HWND hWnd = 0;
+		pControl->GetHWND(&hWnd);
+		::ShowWindow(hWnd, SW_SHOW);
+	}
 	m_selectedPageIndex = dwIndex;
 }
 
@@ -81,7 +97,11 @@ STDMETHODIMP CCustomTabControl::GetCurrentPage(IControl **ppControl)
 	CHECK_E_POINTER(ppControl);
 	if (m_selectedPageIndex == -1)
 		return E_PENDING;
-	RETURN_IF_FAILED(m_pControls[m_selectedPageIndex]->QueryInterface(ppControl));
+
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl));
+
+	RETURN_IF_FAILED(pControl->QueryInterface(ppControl));
 	return S_OK;
 }
 
@@ -92,43 +112,63 @@ STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 
 STDMETHODIMP CCustomTabControl::ActivatePage(IControl *pControl)
 {
-	auto it = find_if(
-		m_pControls.begin(),
-		m_pControls.end(),
-		[&](CAdapt<CComPtr<IControl>>& pc)
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	size_t index = -1;
+	for (size_t i = 0; i < uiCount; i++)
 	{
-		return pc.m_T == pControl;
+		CComPtr<IControl> pFoundControl;
+		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
+		if (pControl == pFoundControl)
+		{
+			index = i;
+			break;
+		}
 	}
-	);
 
-	if (it == m_pControls.end())
+	if (index == -1)
 		return E_INVALIDARG;
-	SelectPage(distance(it, m_pControls.end()) - 1);
+
+	SelectPage(index);
 	return S_OK;
 }
 
 STDMETHODIMP CCustomTabControl::GetPageCount(DWORD *pdwCount)
 {
 	CHECK_E_POINTER(pdwCount);
-	*pdwCount = m_pControls.size();
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	*pdwCount = uiCount;
 	return S_OK;
 }
 
 STDMETHODIMP CCustomTabControl::GetPage(DWORD dwIndex, IControl **ppControl)
 {
 	CHECK_E_POINTER(ppControl);
-	if (dwIndex > m_pControls.size() - 1 || dwIndex < 0)
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+
+	if (dwIndex > uiCount - 1 || dwIndex < 0)
 		return E_INVALIDARG;
-	RETURN_IF_FAILED(m_pControls[dwIndex]->QueryInterface(ppControl));
+
+	CComPtr<IControl> pFoundControl;
+	m_pControls->GetAt(dwIndex, __uuidof(IControl), (LPVOID*)&pFoundControl);
+
+	RETURN_IF_FAILED(pFoundControl->QueryInterface(ppControl));
 	return S_OK;
 }
 
 STDMETHODIMP CCustomTabControl::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
-	for (auto& pControl : m_pControls)
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
 	{
-		CComQIPtr<IPluginSupportNotifications> pp = pControl.m_T;
+		CComPtr<IControl> pFoundControl;
+		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
+
+		CComQIPtr<IPluginSupportNotifications> pp = pFoundControl;
 		if (pp)
 		{
 			RETURN_IF_FAILED(pp->OnInitialized(pServiceProvider));
@@ -140,9 +180,13 @@ STDMETHODIMP CCustomTabControl::OnInitialized(IServiceProvider* pServiceProvider
 
 STDMETHODIMP CCustomTabControl::OnShutdown()
 {
-	for (auto& pControl : m_pControls)
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
 	{
-		CComQIPtr<IPluginSupportNotifications> pp = pControl.m_T;
+		CComPtr<IControl> pFoundControl;
+		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
+		CComQIPtr<IPluginSupportNotifications> pp = pFoundControl;
 		if (pp)
 		{
 			RETURN_IF_FAILED(pp->OnShutdown());
@@ -156,9 +200,13 @@ STDMETHODIMP CCustomTabControl::OnShutdown()
 STDMETHODIMP CCustomTabControl::Load(ISettings* pSettings)
 {
 	CHECK_E_POINTER(pSettings);
-	for (auto& pControl : m_pControls)
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
 	{
-		CComQIPtr<IInitializeWithSettings> pp = pControl.m_T;
+		CComPtr<IControl> pFoundControl;
+		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
+		CComQIPtr<IInitializeWithSettings> pp = pFoundControl;
 		if (pp)
 		{
 			RETURN_IF_FAILED(pp->Load(pSettings));
@@ -171,9 +219,13 @@ STDMETHODIMP CCustomTabControl::Load(ISettings* pSettings)
 STDMETHODIMP CCustomTabControl::Save(ISettings* pSettings)
 {
 	CHECK_E_POINTER(pSettings);
-	for (auto& pControl : m_pControls)
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
 	{
-		CComQIPtr<IPersistSettings> pp = pControl.m_T;
+		CComPtr<IControl> pFoundControl;
+		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
+		CComQIPtr<IPersistSettings> pp = pFoundControl;
 		if (pp)
 		{
 			RETURN_IF_FAILED(pp->Save(pSettings));
@@ -182,13 +234,17 @@ STDMETHODIMP CCustomTabControl::Save(ISettings* pSettings)
 	return S_OK;
 }
 
-CRect& CCustomTabControl::GetChildControlAreaRect()
+void CCustomTabControl::UpdateChildControlAreaRect()
 {
-	if (m_rectChildControlArea.IsRectEmpty())
-	{
+	m_rectChildControlArea.SetRectEmpty();
+	m_pColumnRects->Clear();
+	CComQIPtr<IObjArray> pObjArray = m_pControls;
+	UINT uiHeight = 0;
+	if (m_pSkinTabControl)
+		m_pSkinTabControl->MeasureHeader(pObjArray, m_pColumnRects, &uiHeight);
 
-	}
-	return m_rectChildControlArea;
+	GetClientRect(&m_rectChildControlArea);
+	m_rectChildControlArea.top += uiHeight;
 }
 
 STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabControl)
@@ -198,18 +254,56 @@ STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabContr
 	return S_OK;
 }
 
-LRESULT CCustomTabControl::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+void CCustomTabControl::UpdateSizes()
 {
-	CRect clientRect;
-	GetClientRect(&clientRect);
+	CRect clientRect = m_rectChildControlArea;
 
-	for (size_t i = 0; i < m_pControls.size(); i++)
+	if (clientRect.IsRectEmpty())
+		return;
+
+	UINT uiCount = 0;
+	m_pControls->GetCount(&uiCount);
+	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IControl> pFoundControl;
+		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
 		HWND hWnd = 0;
-		m_pControls[i]->GetHWND(&hWnd);
-		UINT uiFlags = SWP_NOACTIVATE | SWP_NOMOVE;
+		pFoundControl->GetHWND(&hWnd);
+		UINT uiFlags = SWP_NOACTIVATE;
 		uiFlags |= m_selectedPageIndex == i ? SWP_SHOWWINDOW : SWP_HIDEWINDOW;
 		::SetWindowPos(hWnd, NULL, clientRect.left, clientRect.top, clientRect.right, clientRect.bottom, uiFlags);
 	}
+}
+
+LRESULT CCustomTabControl::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	UpdateChildControlAreaRect();
+	UpdateSizes();
+	return 0;
+}
+
+LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	PAINTSTRUCT ps = { 0 };
+	BeginPaint(&ps);
+	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint);
+
+	CComPtr<IControl> pControl;
+	GetCurrentPage(&pControl);
+	if (pControl)
+	{
+		HWND hWnd = 0;
+		pControl->GetHWND(&hWnd);
+		::InvalidateRect(hWnd, NULL, TRUE);
+	}
+
+	EndPaint(&ps);
+
+	return 0;
+}
+
+LRESULT CCustomTabControl::OnEraseBackground(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_pSkinTabControl->EraseBackground((HDC)wParam);
 	return 0;
 }

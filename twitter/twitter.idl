@@ -179,8 +179,9 @@ interface ISkinTabControl : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
-	HRESULT MeasureHeader();
-	HRESULT DrawHeader();
+	HRESULT MeasureHeader(IObjArray* pObjArray, IColumnRects* pColumnRects, UINT* puiHeight);
+	HRESULT EraseBackground(HDC hdc);
+	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect);
 };
 
 [

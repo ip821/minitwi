@@ -33,8 +33,9 @@ public:
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
 
-	STDMETHOD(MeasureHeader)();
-	STDMETHOD(DrawHeader)();
+	STDMETHOD(MeasureHeader)(IObjArray* pObjArray, IColumnRects* pColumnRects, UINT* puiHeight);
+	STDMETHOD(EraseBackground)(HDC hdc);
+	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect);
 
 };
 

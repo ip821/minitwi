@@ -20,12 +20,18 @@ STDMETHODIMP CSkinTabControl::SetFontMap(IThemeFontMap* pThemeFontMap)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::MeasureHeader()
+STDMETHODIMP CSkinTabControl::MeasureHeader(IObjArray* pObjArray, IColumnRects* pColumnRects, UINT* puiHeight)
+{
+	*puiHeight = 20;
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 {
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawHeader()
+STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect)
 {
 	return S_OK;
 }
