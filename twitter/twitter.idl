@@ -172,14 +172,29 @@ interface ITimelineControl : IControl2
 
 [
 	object,
+	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
+	pointer_default(unique)
+]
+interface ISkinTabControl : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT MeasureHeader();
+	HRESULT DrawHeader();
+};
+
+[
+	object,
 	uuid(825B6027-F439-4586-8DAE-DF9AE8527ABD),
 	pointer_default(unique)
 ]
 interface ITheme : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
+	
+	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
+	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
 };
 
 [
@@ -297,6 +312,16 @@ interface ITimelineImageService : IUnknown
 ]
 interface ITimelineCleanupService : IUnknown
 {
+};
+
+[
+	object,
+	uuid(391D8B43-2FB8-4B9A-B0FF-050BB2F07728),
+	pointer_default(unique)
+]
+interface ICustomTabControl : ITabbedControl
+{
+	HRESULT SetSkinTabControl(ISkinTabControl* pSkinTabControl);
 };
 
 [
@@ -464,9 +489,16 @@ library twitterLib
 	[
 		uuid(262329E2-B603-4FC0-97CB-40D95D41A1C0)
 	]
+	coclass CustomTabControl
+	{
+		[default] interface ICustomTabControl;
+	};
+	[
+		uuid(A4B1D02D-648F-4D71-9907-7B84B9DF2422)		
+	]
 	coclass SkinTabControl
 	{
-		[default] interface ITabbedControl;
+		[default] interface ISkinTabControl;
 	};
 };
 

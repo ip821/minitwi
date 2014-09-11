@@ -181,8 +181,14 @@
     <ClCompile Include="TimelineCleanupService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
-    <ClCompile Include="SkinTabControl.cpp">
+    <ClCompile Include="SkinedTabControl.cpp">
       <Filter>Controls\TabControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomTabControl.cpp">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinTabControl.cpp">
+      <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -294,8 +300,14 @@
     <ClInclude Include="TimelineCleanupService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
-    <ClInclude Include="SkinTabControl.h">
+    <ClInclude Include="SkinedTabControl.h">
       <Filter>Controls\TabControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomTabControl.h">
+      <Filter>ZZZMisc\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinTabControl.h">
+      <Filter>Services\SkinService\Default</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -306,6 +318,9 @@
   <ItemGroup>
     <None Include="twitter.def">
       <Filter>ZZZMisc\Source Files</Filter>
+    </None>
+    <None Include="SkinTabControl.rgs">
+      <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -335,6 +350,9 @@
       <Filter>ZZZMisc\Resource Files</Filter>
     </Image>
     <Image Include="..\Host\res\Twitter.ico">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
+    <Image Include="..\Host\res\Twitter_XP.ico">
       <Filter>ZZZMisc\Resource Files</Filter>
     </Image>
   </ItemGroup>

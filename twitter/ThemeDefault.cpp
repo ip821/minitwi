@@ -12,8 +12,10 @@
 HRESULT CThemeDefault::FinalConstruct()
 {
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinTimeline, &m_pSkinTimeline));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinTabControl, &m_pSkinTabControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeColorMap, &m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pSkinTimeline->SetColorMap(m_pThemeColorMap));
+	RETURN_IF_FAILED(m_pSkinTabControl->SetColorMap(m_pThemeColorMap));
 
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_BACKGROUND, Gdiplus::Color::White));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_SELECTED, Gdiplus::Color::Beige));
@@ -28,6 +30,7 @@ HRESULT CThemeDefault::FinalConstruct()
 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeFontMap, &m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pSkinTimeline->SetFontMap(m_pThemeFontMap));
+	RETURN_IF_FAILED(m_pSkinTabControl->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, FONT_NAME, FONT_SIZE - 2, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_RELATIVE_TIME, FONT_NAME, FONT_SIZE, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_RELATIVE_TIME + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
@@ -47,6 +50,13 @@ STDMETHODIMP CThemeDefault::GetTimelineSkin(ISkinTimeline** ppSkinTimeline)
 {
 	CHECK_E_POINTER(ppSkinTimeline);
 	RETURN_IF_FAILED(m_pSkinTimeline->QueryInterface(ppSkinTimeline));
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::GetTabControlSkin(ISkinTabControl** pSkinTabControl)
+{
+	CHECK_E_POINTER(pSkinTabControl);
+	RETURN_IF_FAILED(m_pSkinTabControl->QueryInterface(pSkinTabControl));
 	return S_OK;
 }
 
