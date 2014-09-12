@@ -251,6 +251,7 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 
 	GetClientRect(&m_rectChildControlArea);
 	m_rectChildControlArea.top += uiHeight;
+	m_rectChildControlArea.bottom -= uiHeight;
 }
 
 STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabControl)

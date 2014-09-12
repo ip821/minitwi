@@ -57,6 +57,7 @@ STDMETHODIMP CSkinCommonControl::RegisterControl(HWND hWnd)
 	}
 
 	m_procs[hWnd] = SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)&WndProc);
+	m_refs[hWnd]++;
 	HWND hWndParent = ::GetParent(hWnd);
 
 	if (m_procs.find(hWndParent) != m_procs.end())
@@ -66,11 +67,13 @@ STDMETHODIMP CSkinCommonControl::RegisterControl(HWND hWnd)
 	}
 
 	m_procs[hWndParent] = SetWindowLongPtr(hWndParent, GWLP_WNDPROC, (LONG_PTR)&WndProc);
+	m_refs[hWndParent]++;
 	return S_OK;
 }
 
 STDMETHODIMP CSkinCommonControl::UnregisterControl(HWND hWnd)
 {
+	ATLASSERT(m_refs.find(hWnd) != m_refs.end());
 	m_refs[hWnd]--;
 	if (m_refs[hWnd] == 0)
 	{
@@ -79,6 +82,7 @@ STDMETHODIMP CSkinCommonControl::UnregisterControl(HWND hWnd)
 		m_refs.erase(hWnd);
 	}
 	HWND hWndParent = ::GetParent(hWnd);
+	ATLASSERT(m_refs.find(hWndParent) != m_refs.end());
 	m_refs[hWndParent]--;
 	if (m_refs[hWndParent] == 0)
 	{
