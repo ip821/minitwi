@@ -93,6 +93,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		::ShowWindow(hWnd, SW_SHOW);
 	}
 	m_selectedPageIndex = dwIndex;
+	Invalidate(TRUE);
 }
 
 STDMETHODIMP CCustomTabControl::GetCurrentPage(IControl **ppControl)
@@ -291,7 +292,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 {
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint);
+	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint, m_selectedPageIndex);
 	EndPaint(&ps);
 
 	return 0;

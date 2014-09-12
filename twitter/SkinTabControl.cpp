@@ -85,6 +85,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 
 		RETURN_IF_FAILED(pColumnRects->AddRect(rectHomeColumn, &uiIndex));
 		RETURN_IF_FAILED(pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnRects->SetRectBoolProp(0, VAR_TAB_HEADER_SELECTED, FALSE));
 	}
 
 	{
@@ -104,6 +105,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 
 		RETURN_IF_FAILED(pColumnRects->AddRect(rect, &uiIndex));
 		RETURN_IF_FAILED(pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnRects->SetRectBoolProp(1, VAR_TAB_HEADER_SELECTED, FALSE));
 	}
 
 	m_rectHeader = clientRect;
@@ -126,7 +128,7 @@ STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect)
+STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex)
 {
 	CDCHandle cdc(hdc);
 	cdc.SetBkMode(TRANSPARENT);
@@ -179,8 +181,17 @@ STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RE
 		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
 		rectText.top = rect.top + ((rect.Height() / 2) - sz.cy / 2);
 
+		BOOL bSelected = selectedPageIndex == i;
+
 		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TAB_HEADER, &dwColor));
+		if (bSelected)
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TAB_HEADER_SELECTED, &dwColor));
+		}
+		else
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TAB_HEADER, &dwColor));
+		}
 		cdc.SetTextColor(dwColor);
 
 		DrawText(cdc, bstr, bstr.Length(), &rectText, 0);

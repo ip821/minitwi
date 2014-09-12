@@ -181,7 +181,7 @@ interface ISkinTabControl : IUnknown
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
 	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(HDC hdc);
-	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect);
+	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
 };
 
 [

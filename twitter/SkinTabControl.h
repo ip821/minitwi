@@ -39,7 +39,7 @@ public:
 
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
-	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect);
+	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
 
 };
 
