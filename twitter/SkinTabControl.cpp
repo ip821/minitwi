@@ -177,8 +177,12 @@ STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RE
 
 		CSize sz;
 		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
-
 		rectText.top = rect.top + ((rect.Height() / 2) - sz.cy / 2);
+
+		DWORD dwColor = 0;
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TAB_HEADER, &dwColor));
+		cdc.SetTextColor(dwColor);
+
 		DrawText(cdc, bstr, bstr.Length(), &rectText, 0);
 	}
 	return S_OK;
