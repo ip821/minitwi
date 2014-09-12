@@ -188,6 +188,7 @@
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="CustomTabControl.cpp" />
+    <ClCompile Include="SkinCommonControl.cpp" />
     <ClCompile Include="SkinTabControl.cpp" />
     <ClCompile Include="TimelineCleanupService.cpp" />
     <ClCompile Include="TimelineImageService.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="DownloadService.h" />
     <ClInclude Include="ImageManagerService.h" />
     <ClInclude Include="CustomTabControl.h" />
+    <ClInclude Include="SkinCommonControl.h" />
     <ClInclude Include="SkinTabControl.h" />
     <ClInclude Include="TimelineCleanupService.h" />
     <ClInclude Include="TimelineImageService.h" />

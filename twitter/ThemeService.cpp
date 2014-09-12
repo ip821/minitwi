@@ -43,6 +43,8 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
 	CComQIPtr<ITimelineControl> pTimelineControl = pControl;
+	CComPtr<IControl> pSettingsControl;
+	RETURN_IF_FAILED(pTabbedControl->GetPage(1, &pSettingsControl));
 
 	GUID gThemeId = GUID_NULL;
 	UINT uiCount = 0;
@@ -85,6 +87,11 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 	RETURN_IF_FAILED(m_pCurrentTheme->GetTabControlSkin(&pSkinTabControl));
 	RETURN_IF_FAILED(pTabbedControl->SetSkinTabControl(pSkinTabControl));
 
+	CComPtr<ISkinCommonControl> pSkinCommonControl;
+	RETURN_IF_FAILED(m_pCurrentTheme->GetCommonControlSkin(&pSkinCommonControl));
+	HWND hWndSettings = 0;
+	RETURN_IF_FAILED(pSettingsControl->GetHWND(&hWndSettings));
+	RETURN_IF_FAILED(pSkinCommonControl->RegisterControl(hWndSettings));
 	return S_OK;
 }
 

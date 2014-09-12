@@ -187,6 +187,9 @@
     <ClCompile Include="CustomTabControl.cpp">
       <Filter>Controls\TabControl</Filter>
     </ClCompile>
+    <ClCompile Include="SkinCommonControl.cpp">
+      <Filter>Services\SkinService\Default</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -299,6 +302,9 @@
     </ClInclude>
     <ClInclude Include="CustomTabControl.h">
       <Filter>Controls\TabControl</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinCommonControl.h">
+      <Filter>Services\SkinService\Default</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

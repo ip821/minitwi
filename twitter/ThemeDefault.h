@@ -32,6 +32,7 @@ public:
 private:
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
+	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
@@ -40,6 +41,7 @@ public:
 
 	STDMETHOD(GetTimelineSkin)(ISkinTimeline** ppSkinTimeline);
 	STDMETHOD(GetTabControlSkin)(ISkinTabControl** pSkinTabControl);
+	STDMETHOD(GetCommonControlSkin)(ISkinCommonControl** pSkinCommonControl);
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 };
