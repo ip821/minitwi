@@ -43,15 +43,19 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	CComPtr<IUpdateService> m_pUpdateService;
+	CComPtr<ITheme> m_pTheme;
 
 	BOOL m_bUpdateAvailable = FALSE;
 	DWORD m_dwAdvice = 0;
 	DWORD m_dwInfoControlAdvice = 0;
 	CComPtr<ISettings> m_pSettings;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
+	HWND m_hWndInfoControl = 0;
 
 	STDMETHOD(ShowControl)(BSTR bstrMessage, BOOL bError);
 	STDMETHOD(HideControl)();
+	void ApplyThemeToInfoControl(HWND hWndInfoControl);
+	void UnapplyThemeToInfoControl();
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
@@ -64,6 +68,7 @@ public:
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 	STDMETHOD(StartTimers)();
 	STDMETHOD(StopTimers)();
+	STDMETHOD(SetTheme)(ITheme* pTheme);
 
 	STDMETHOD(OnLinkClick)(HWND hWnd);
 };

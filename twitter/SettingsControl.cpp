@@ -198,7 +198,9 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 
 STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, L"Authenticating...", FALSE, FALSE));
+	HWND hWnd = 0;
+	RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, L"Authenticating...", FALSE, FALSE, &hWnd));
+	ApplyThemeToInfoControl(hWnd);
 	return S_OK;
 }
 
@@ -238,13 +240,16 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (SUCCEEDED(vHr.intVal))
 	{
+		UnapplyThemeToInfoControl();
 		RETURN_IF_FAILED(m_pInfoControlService->HideControl(m_hWnd));
 	}
 	else
 	{
 		CComVariant vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
-		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, vDesc.bstrVal, TRUE, FALSE));
+		HWND hWndInfoControl = 0;
+		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, vDesc.bstrVal, TRUE, FALSE, &hWndInfoControl));
+		ApplyThemeToInfoControl(hWndInfoControl);
 		return S_OK;
 	}
 
@@ -365,4 +370,37 @@ bool CSettingsControl::DlgResize_PositionControl(int in_nWidth, int in_nHeight, 
 	}
 
 	return l_bSuccess;
+}
+
+void CSettingsControl::ApplyThemeToInfoControl(HWND hWndInfoControl)
+{
+	if (m_hWndInfoControl)
+	{
+		ATLASSERT(hWndInfoControl == m_hWndInfoControl);
+		return;
+	}
+
+	m_hWndInfoControl = hWndInfoControl;
+	CComPtr<ISkinCommonControl> pSkinCommonControl;
+	m_pTheme->GetCommonControlSkin(&pSkinCommonControl);
+	pSkinCommonControl->RegisterControl(m_hWndInfoControl);
+}
+
+void CSettingsControl::UnapplyThemeToInfoControl()
+{
+	ATLASSERT(m_hWndInfoControl);
+	CComPtr<ISkinCommonControl> pSkinCommonControl;
+	m_pTheme->GetCommonControlSkin(&pSkinCommonControl);
+	pSkinCommonControl->UnregisterControl(m_hWndInfoControl);
+	m_hWndInfoControl = 0;
+}
+
+STDMETHODIMP CSettingsControl::SetTheme(ITheme* pTheme)
+{
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
+	CComPtr<ISkinCommonControl> pSkinCommonControl;
+	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&pSkinCommonControl));
+	RETURN_IF_FAILED(pSkinCommonControl->RegisterControl(m_hWnd));
+	return S_OK;
 }

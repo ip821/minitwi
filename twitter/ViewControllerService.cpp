@@ -77,6 +77,29 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	return S_OK;
 }
 
+void CViewControllerService::ApplyThemeToInfoControl(HWND hWndInfoControl)
+{
+	if (m_hWndInfoControl)
+	{
+		ATLASSERT(hWndInfoControl == m_hWndInfoControl);
+		return;
+	}
+
+	m_hWndInfoControl = hWndInfoControl;
+	CComPtr<ISkinCommonControl> pSkinCommonControl;
+	m_pTheme->GetCommonControlSkin(&pSkinCommonControl);
+	pSkinCommonControl->RegisterControl(m_hWndInfoControl);
+}
+
+void CViewControllerService::UnapplyThemeToInfoControl()
+{
+	ATLASSERT(m_hWndInfoControl);
+	CComPtr<ISkinCommonControl> pSkinCommonControl;
+	m_pTheme->GetCommonControlSkin(&pSkinCommonControl);
+	pSkinCommonControl->UnregisterControl(m_hWndInfoControl);
+	m_hWndInfoControl = 0;
+}
+
 STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 {
 	HWND hwndChildControl = 0;
@@ -84,8 +107,10 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
 	if (m_bUpdateAvailable)
 	{
-		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Update available. Click here to install.", FALSE, TRUE));
+		HWND hWndInfoControl = 0;
+		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Update available. Click here to install.", FALSE, TRUE, &hWndInfoControl));
 		RETURN_IF_FAILED(m_pInfoControlService->EnableHyperLink(hwndChildControl));
+		ApplyThemeToInfoControl(hWndInfoControl);
 	}
 	else
 	{
@@ -93,7 +118,9 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
 		if ((bEmpty && !bError) || bError)
 		{
-			RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMessage, bError, TRUE));
+			HWND hWndInfoControl = 0;
+			RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMessage, bError, TRUE, &hWndInfoControl));
+			ApplyThemeToInfoControl(hWndInfoControl);
 		}
 	}
 	return S_OK;
@@ -105,6 +132,7 @@ STDMETHODIMP CViewControllerService::HideControl()
 		return S_OK;
 	HWND hwndChildControl = 0;
 	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
+	UnapplyThemeToInfoControl();
 	RETURN_IF_FAILED(m_pInfoControlService->HideControl(hwndChildControl));
 	return S_OK;
 }
@@ -152,5 +180,12 @@ STDMETHODIMP CViewControllerService::OnLinkClick(HWND hWnd)
 	if (hWnd != hwndChildControl)
 		return S_OK;
 	RETURN_IF_FAILED(m_pUpdateService->RunUpdate());
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::SetTheme(ITheme* pTheme)
+{
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
 	return S_OK;
 }

@@ -10,7 +10,7 @@ STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls);
 	HrCoCreateInstance(CLSID_ColumnRects, &m_pColumnRects);
-	*hWnd = __super::Create(hWndParent, CRect(), L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED);
+	*hWnd = __super::Create(hWndParent, CRect(), L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
 	return S_OK;
 }
 

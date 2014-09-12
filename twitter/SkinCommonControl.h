@@ -30,6 +30,8 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 
+	map<HWND, int> m_refs;
+
 public:
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);

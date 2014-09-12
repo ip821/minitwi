@@ -71,17 +71,6 @@ interface ITimelineService : IUnknown
 
 [
 	object,
-	uuid(27812A7C-A85F-4184-B1DA-7E9EA55B5816),
-	pointer_default(unique)
-]
-interface IViewControllerService : IUnknown
-{
-	HRESULT StartTimers();
-	HRESULT StopTimers();
-};
-
-[
-	object,
 	uuid(627BE6CD-5CB1-4364-817A-1EABA04B52C9),
 	pointer_default(unique)
 ]
@@ -210,6 +199,28 @@ interface ITheme : IUnknown
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
 	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
 	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);
+};
+
+[
+	object,
+	uuid(F32CBA77-77AF-454E-8381-0DAE6A9F9D99),
+	pointer_default(unique)
+]
+interface ISettingsControl : IControl2
+{
+	HRESULT SetTheme(ITheme* pTheme);
+};
+
+[
+	object,
+	uuid(27812A7C-A85F-4184-B1DA-7E9EA55B5816),
+	pointer_default(unique)
+]
+interface IViewControllerService : IUnknown
+{
+	HRESULT StartTimers();
+	HRESULT StopTimers();
+	HRESULT SetTheme(ITheme* pTheme);
 };
 
 [

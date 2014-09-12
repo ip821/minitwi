@@ -43,8 +43,9 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
 	CComQIPtr<ITimelineControl> pTimelineControl = pControl;
-	CComPtr<IControl> pSettingsControl;
-	RETURN_IF_FAILED(pTabbedControl->GetPage(1, &pSettingsControl));
+	pControl.Release();
+	RETURN_IF_FAILED(pTabbedControl->GetPage(1, &pControl));
+	CComQIPtr<ISettingsControl> pSettingsControl = pControl;;
 
 	GUID gThemeId = GUID_NULL;
 	UINT uiCount = 0;
@@ -87,11 +88,11 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 	RETURN_IF_FAILED(m_pCurrentTheme->GetTabControlSkin(&pSkinTabControl));
 	RETURN_IF_FAILED(pTabbedControl->SetSkinTabControl(pSkinTabControl));
 
-	CComPtr<ISkinCommonControl> pSkinCommonControl;
-	RETURN_IF_FAILED(m_pCurrentTheme->GetCommonControlSkin(&pSkinCommonControl));
-	HWND hWndSettings = 0;
-	RETURN_IF_FAILED(pSettingsControl->GetHWND(&hWndSettings));
-	RETURN_IF_FAILED(pSkinCommonControl->RegisterControl(hWndSettings));
+	RETURN_IF_FAILED(pSettingsControl->SetTheme(m_pCurrentTheme));
+
+	CComPtr<IViewControllerService> pViewControllerService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pViewControllerService));
+	RETURN_IF_FAILED(pViewControllerService->SetTheme(m_pCurrentTheme));
 	return S_OK;
 }
 
