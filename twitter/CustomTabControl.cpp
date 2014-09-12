@@ -292,16 +292,6 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
 	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint);
-
-	CComPtr<IControl> pControl;
-	GetCurrentPage(&pControl);
-	if (pControl)
-	{
-		HWND hWnd = 0;
-		pControl->GetHWND(&hWnd);
-		::InvalidateRect(hWnd, NULL, TRUE);
-	}
-
 	EndPaint(&ps);
 
 	return 0;
