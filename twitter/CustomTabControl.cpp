@@ -69,6 +69,9 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 
 void CCustomTabControl::SelectPage(DWORD dwIndex)
 {
+	if (m_selectedPageIndex == dwIndex)
+		return;
+
 	UINT uiCount = 0;
 	m_pControls->GetCount(&uiCount);
 	ATLASSERT(dwIndex >= 0 && dwIndex < uiCount);
@@ -240,8 +243,10 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 	m_pColumnRects->Clear();
 	CComQIPtr<IObjArray> pObjArray = m_pControls;
 	UINT uiHeight = 0;
+	CRect clientRect;
+	GetClientRect(&clientRect);
 	if (m_pSkinTabControl)
-		m_pSkinTabControl->MeasureHeader(pObjArray, m_pColumnRects, &uiHeight);
+		m_pSkinTabControl->MeasureHeader(pObjArray, m_pColumnRects, &clientRect, &uiHeight);
 
 	GetClientRect(&m_rectChildControlArea);
 	m_rectChildControlArea.top += uiHeight;
@@ -305,5 +310,25 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 LRESULT CCustomTabControl::OnEraseBackground(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_pSkinTabControl->EraseBackground((HDC)wParam);
+	return 0;
+}
+
+LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	auto x = GET_X_LPARAM(lParam);
+	auto y = GET_Y_LPARAM(lParam);
+
+	UINT uiCount = 0;
+	m_pColumnRects->GetCount(&uiCount);
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CRect rect;
+		m_pColumnRects->GetRect(i, &rect);
+		if (rect.PtInRect(CPoint(x, y)))
+		{
+			SelectPage(i);
+			break;
+		}
+	}
 	return 0;
 }

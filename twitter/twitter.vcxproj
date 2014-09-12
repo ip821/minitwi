@@ -273,7 +273,6 @@
     <ClInclude Include="TimelineImageService.h" />
     <ClInclude Include="PictureWindow.h" />
     <ClInclude Include="PictureWindowCopyCommand.h" />
-    <ClInclude Include="resource1.h" />
     <ClInclude Include="TimelineControlCopyCommand.h" />
     <ClInclude Include="OpenUrlService.h" />
     <ClInclude Include="CustomListBox.h" />

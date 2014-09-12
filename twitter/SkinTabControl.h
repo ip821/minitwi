@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 
 using namespace ATL;
+using namespace std;
 
 // CSkinTabControl
 
@@ -14,9 +15,7 @@ class ATL_NO_VTABLE CSkinTabControl :
 	public ISkinTabControl
 {
 public:
-	CSkinTabControl()
-	{
-	}
+	CSkinTabControl();
 
 	DECLARE_NO_REGISTRY()
 
@@ -27,13 +26,18 @@ public:
 private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
+	shared_ptr<Gdiplus::Bitmap> m_pBitmapHpme;
+	shared_ptr<Gdiplus::Bitmap> m_pBitmapSettings;
+	CRect m_rectHeader;
+
+	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
 
 public:
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
 
-	STDMETHOD(MeasureHeader)(IObjArray* pObjArray, IColumnRects* pColumnRects, UINT* puiHeight);
+	STDMETHOD(MeasureHeader)(IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
 	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect);
 

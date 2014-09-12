@@ -181,9 +181,6 @@
     <ClCompile Include="TimelineCleanupService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
-    <ClCompile Include="SkinedTabControl.cpp">
-      <Filter>Controls\TabControl</Filter>
-    </ClCompile>
     <ClCompile Include="CustomTabControl.cpp">
       <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
@@ -291,17 +288,11 @@
     <ClInclude Include="PictureWindowCopyCommand.h">
       <Filter>Controls\PictureWindow\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="resource1.h">
-      <Filter>ZZZMisc\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TimelineImageService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
     <ClInclude Include="TimelineCleanupService.h">
       <Filter>Services\TimelineService</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinedTabControl.h">
-      <Filter>Controls\TabControl</Filter>
     </ClInclude>
     <ClInclude Include="CustomTabControl.h">
       <Filter>ZZZMisc\Header Files</Filter>
