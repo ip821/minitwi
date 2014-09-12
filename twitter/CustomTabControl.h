@@ -5,6 +5,7 @@
 
 using namespace ATL;
 using namespace std;
+using namespace Gdiplus;
 
 class CCustomTabControl :
 	public CWindowImpl<CCustomTabControl>,
@@ -46,6 +47,7 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
+		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 	END_MSG_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CCustomTabControl)
@@ -59,7 +61,11 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<IColumnRects> m_pColumnRects;
+	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CRect m_rectChildControlArea;
+	BOOL m_bDrawAnimation = FALSE;
+	int m_iFrameCount = 0;
+	const size_t MAX_COUNT = 3;
 
 	void SelectPage(DWORD dwIndex);
 
@@ -69,6 +75,7 @@ private:
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -93,6 +100,10 @@ public:
 	STDMETHOD(Load)(ISettings* pSettings);
 	STDMETHOD(Save)(ISettings* pSettings);
 	METHOD_EMPTY(STDMETHOD(Reset)(ISettings* /*pSettings*/));
+
+	STDMETHOD(StartAnimation)();
+	STDMETHOD(StopAnimation)();
+
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(CustomTabControl), CCustomTabControl)

@@ -41,6 +41,13 @@ STDMETHODIMP CSkinTabControl::SetColorMap(IThemeColorMap* pThemeColorMap)
 	return S_OK;
 }
 
+STDMETHODIMP CSkinTabControl::GetColorMap(IThemeColorMap** ppThemeColorMap)
+{
+	CHECK_E_POINTER(ppThemeColorMap);
+	m_pThemeColorMap->QueryInterface(ppThemeColorMap);
+	return S_OK;
+}
+
 STDMETHODIMP CSkinTabControl::SetFontMap(IThemeFontMap* pThemeFontMap)
 {
 	CHECK_E_POINTER(pThemeFontMap);

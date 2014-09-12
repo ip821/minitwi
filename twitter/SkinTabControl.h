@@ -36,6 +36,7 @@ public:
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
+	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
 
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);

@@ -28,6 +28,8 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_COLUMN_SHOW_MORE, Gdiplus::Color::SteelBlue));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TAB_HEADER_SELECTED, Gdiplus::Color::Black));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TAB_HEADER, Gdiplus::Color::Gray));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_ANIMATION_ACTIVE, Gdiplus::Color::Black));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_ANIMATION_INACTIVE, Gdiplus::Color::Gray));
 
 	RETURN_IF_FAILED(m_pSkinTimeline->SetColorMap(m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pSkinTabControl->SetColorMap(m_pThemeColorMap));

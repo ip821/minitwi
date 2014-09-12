@@ -44,6 +44,7 @@ private:
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	CComPtr<IUpdateService> m_pUpdateService;
 	CComPtr<ITheme> m_pTheme;
+	CComQIPtr<ICustomTabControl> m_pTabbedControl;
 
 	BOOL m_bUpdateAvailable = FALSE;
 	DWORD m_dwAdvice = 0;

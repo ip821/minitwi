@@ -23,10 +23,10 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
 	CComPtr<IContainerControl> pContainerControl;
 	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
-	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
-	RETURN_IF_FAILED(pTabbedControl->EnableCommands(FALSE));
+	m_pTabbedControl = pContainerControl;
+	RETURN_IF_FAILED(m_pTabbedControl->EnableCommands(FALSE));
 	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
+	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
 	m_pTimelineControl = pControl;
 
 	CComPtr<IUnknown> pUnk;
@@ -74,6 +74,7 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
 	m_pUpdateService.Release();
+	m_pTabbedControl.Release();
 	return S_OK;
 }
 
@@ -139,7 +140,7 @@ STDMETHODIMP CViewControllerService::HideControl()
 
 STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(ShowControl(L"Updating...", FALSE));
+	RETURN_IF_FAILED(m_pTabbedControl->StartAnimation());
 	return S_OK;
 }
 
@@ -150,7 +151,10 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 
 	if (SUCCEEDED(vHr.intVal))
 	{
-		RETURN_IF_FAILED(HideControl());
+		if (m_hWndInfoControl)
+		{
+			RETURN_IF_FAILED(HideControl());
+		}
 	}
 	else
 	{
@@ -169,6 +173,8 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 		}
 		return S_OK;
 	}
+
+	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
 
 	return S_OK;
 }

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CustomTabControl.h"
+#include "Plugins.h"
 
 STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 {
@@ -11,7 +12,34 @@ STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls);
 	HrCoCreateInstance(CLSID_ColumnRects, &m_pColumnRects);
 	*hWnd = __super::Create(hWndParent, CRect(), L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
+
 	return S_OK;
+}
+
+STDMETHODIMP CCustomTabControl::StartAnimation()
+{
+	m_bDrawAnimation = TRUE;
+	SetTimer(1, 200);
+	return S_OK;
+}
+
+STDMETHODIMP CCustomTabControl::StopAnimation()
+{
+	KillTimer(1);
+	m_bDrawAnimation = FALSE;
+	Invalidate();
+	return S_OK;
+}
+
+LRESULT CCustomTabControl::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_iFrameCount++;
+	if (m_iFrameCount == MAX_COUNT)
+		m_iFrameCount = 0;
+
+	Invalidate();
+
+	return 0;
 }
 
 STDMETHODIMP CCustomTabControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
@@ -258,6 +286,7 @@ STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabContr
 {
 	CHECK_E_POINTER(pSkinTabControl);
 	m_pSkinTabControl = pSkinTabControl;
+	RETURN_IF_FAILED(m_pSkinTabControl->GetColorMap(&m_pThemeColorMap));
 	return S_OK;
 }
 
@@ -294,6 +323,39 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
 	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint, m_selectedPageIndex);
+
+	if (m_bDrawAnimation)
+	{
+		const int itemSize = 10;
+		const int itemDistance = 5;
+
+		int left = itemSize * MAX_COUNT + itemDistance * MAX_COUNT;
+		CRect rect;
+		GetClientRect(&rect);
+		rect.left = rect.right - left;
+		rect.bottom = m_rectChildControlArea.top - 1;
+
+		rect.top += rect.Height() / 2 - itemSize / 2 + 2;
+
+		DWORD dwActiveColor = 0;
+		m_pThemeColorMap->GetColor(VAR_ITEM_ANIMATION_ACTIVE, &dwActiveColor);
+		DWORD dwInactiveColor = 0;
+		m_pThemeColorMap->GetColor(VAR_ITEM_ANIMATION_INACTIVE, &dwInactiveColor);
+
+		CBrush brushActive;
+		brushActive.CreateSolidBrush(dwActiveColor);
+		CBrush brushInactive;
+		brushInactive.CreateSolidBrush(dwInactiveColor);
+
+		for (size_t i = 0; i < MAX_COUNT; i++)
+		{
+			auto x = rect.left + itemSize * i + itemDistance * (max(0, i - 1));
+			auto y = rect.top;
+			CRect rectItem = { (int)x, y, (int)x + itemSize, y + itemSize };
+			::FillRect(ps.hdc, rectItem, i == m_iFrameCount ? brushActive : brushInactive);
+		}
+	}
+
 	EndPaint(&ps);
 
 	return 0;

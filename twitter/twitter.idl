@@ -168,6 +168,7 @@ interface ISkinTabControl : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(HDC hdc);
 	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
@@ -348,6 +349,8 @@ interface ITimelineCleanupService : IUnknown
 interface ICustomTabControl : ITabbedControl
 {
 	HRESULT SetSkinTabControl(ISkinTabControl* pSkinTabControl);
+	HRESULT StartAnimation();
+	HRESULT StopAnimation();
 };
 
 [
