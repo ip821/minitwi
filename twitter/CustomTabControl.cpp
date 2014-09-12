@@ -2,6 +2,10 @@
 #include "CustomTabControl.h"
 #include "Plugins.h"
 
+const int ITEM_SIZE = 10;
+const int ITEM_DISTANCE = 5;
+const int ITEM_OFFSET_Y = 2;
+
 STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 {
 	return S_OK;
@@ -326,16 +330,13 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	if (m_bDrawAnimation)
 	{
-		const int itemSize = 10;
-		const int itemDistance = 5;
-
-		int left = itemSize * MAX_COUNT + itemDistance * MAX_COUNT;
+		int left = ITEM_SIZE * MAX_COUNT + ITEM_DISTANCE * MAX_COUNT;
 		CRect rect;
 		GetClientRect(&rect);
 		rect.left = rect.right - left;
 		rect.bottom = m_rectChildControlArea.top - 1;
 
-		rect.top += rect.Height() / 2 - itemSize / 2 + 2;
+		rect.top += rect.Height() / 2 - ITEM_SIZE / 2 + ITEM_OFFSET_Y;
 
 		DWORD dwActiveColor = 0;
 		m_pThemeColorMap->GetColor(VAR_ITEM_ANIMATION_ACTIVE, &dwActiveColor);
@@ -349,9 +350,9 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 		for (size_t i = 0; i < MAX_COUNT; i++)
 		{
-			auto x = rect.left + itemSize * i + itemDistance * (max(0, i - 1));
+			auto x = rect.left + ITEM_SIZE * i + ITEM_DISTANCE * (max(0, i - 1));
 			auto y = rect.top;
-			CRect rectItem = { (int)x, y, (int)x + itemSize, y + itemSize };
+			CRect rectItem = { (int)x, y, (int)x + ITEM_SIZE, y + ITEM_SIZE };
 			::FillRect(ps.hdc, rectItem, i == m_iFrameCount ? brushActive : brushInactive);
 		}
 	}
