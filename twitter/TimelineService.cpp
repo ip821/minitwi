@@ -191,6 +191,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(false)));
 			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
 		}
+		RETURN_IF_FAILED(UpdateRelativeTime(pObjectArray));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
 		CComPtr<IObjArray> pAllItemsObjectArray;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
