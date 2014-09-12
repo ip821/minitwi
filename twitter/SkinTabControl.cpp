@@ -30,7 +30,7 @@ STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, sha
 
 CSkinTabControl::CSkinTabControl()
 {
-	InitImageFromResource(IDR_PICTUREHOME, L"PNG", m_pBitmapHpme);
+	InitImageFromResource(IDR_PICTUREHOME, L"PNG", m_pBitmapHome);
 	InitImageFromResource(IDR_PICTURESETTINGS, L"PNG", m_pBitmapSettings);
 }
 
@@ -50,10 +50,20 @@ STDMETHODIMP CSkinTabControl::SetFontMap(IThemeFontMap* pThemeFontMap)
 
 #define PADDING_Y 5
 #define PADDING_X 10
+#define IMAGE_TO_TEXT_DISTANCE 0
 
-STDMETHODIMP CSkinTabControl::MeasureHeader(IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight)
+STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight)
 {
-	UINT uiHeight = max(m_pBitmapHpme->GetHeight(), m_pBitmapSettings->GetHeight()) + PADDING_Y * 2;
+	CRect clientRect2 = clientRect;
+	CDC hdc(GetDC(hWnd));
+	CDC cdc;
+	cdc.CreateCompatibleDC(hdc);
+
+	HFONT font = 0;
+	m_pThemeFontMap->GetFont(CComBSTR(VAR_TAB_HEADER), &font);
+	cdc.SelectFont(font);
+
+	UINT uiHeight = max(m_pBitmapHome->GetHeight(), m_pBitmapSettings->GetHeight()) + PADDING_Y * 2;
 
 	*puiHeight = uiHeight;
 
@@ -62,8 +72,19 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(IObjArray* pObjArray, IColumnRects* 
 		UINT uiIndex = 0;
 		auto x = PADDING_X;
 		auto y = PADDING_Y;
-		rectHomeColumn = CRect(x, y, x + (int)m_pBitmapHpme->GetWidth(), y + (int)m_pBitmapHpme->GetHeight());
+		rectHomeColumn = CRect(x, y, x + (int)m_pBitmapHome->GetWidth(), y + (int)m_pBitmapHome->GetHeight());
+
+		CComPtr<IControl2> pControl2;
+		RETURN_IF_FAILED(pObjArray->GetAt(0, __uuidof(IControl2), (LPVOID*)&pControl2));
+		CComBSTR bstr;
+		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+
+		CSize sz;
+		GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
+		rectHomeColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+
 		RETURN_IF_FAILED(pColumnRects->AddRect(rectHomeColumn, &uiIndex));
+		RETURN_IF_FAILED(pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, bstr));
 	}
 
 	{
@@ -71,7 +92,18 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(IObjArray* pObjArray, IColumnRects* 
 		auto x = rectHomeColumn.right + PADDING_X;
 		auto y = PADDING_Y;
 		CRect rect = { x, y, x + (int)m_pBitmapSettings->GetWidth(), y + (int)m_pBitmapSettings->GetHeight() };
+
+		CComPtr<IControl2> pControl2;
+		RETURN_IF_FAILED(pObjArray->GetAt(1, __uuidof(IControl2), (LPVOID*)&pControl2));
+		CComBSTR bstr;
+		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+
+		CSize sz;
+		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
+		rect.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+
 		RETURN_IF_FAILED(pColumnRects->AddRect(rect, &uiIndex));
+		RETURN_IF_FAILED(pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, bstr));
 	}
 
 	m_rectHeader = clientRect;
@@ -107,14 +139,20 @@ STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RE
 		CRect rect;
 		RETURN_IF_FAILED(pColumnRects->GetRect(i, &rect));
 
+		UINT imageWidth = 0;
+		UINT imageHeight = 0;
 		CBitmap bitmap;
 		if (i == 0)
 		{
-			m_pBitmapHpme->GetHBITMAP(Gdiplus::Color::White, &bitmap.m_hBitmap);
+			m_pBitmapHome->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
+			imageWidth = m_pBitmapHome->GetWidth();
+			imageHeight = m_pBitmapHome->GetHeight();
 		}
 		else if (i == 1)
 		{
-			m_pBitmapSettings->GetHBITMAP(Gdiplus::Color::White, &bitmap.m_hBitmap);
+			m_pBitmapSettings->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
+			imageWidth = m_pBitmapSettings->GetWidth();
+			imageHeight = m_pBitmapSettings->GetHeight();
 		}
 
 		CDC cdcBitmap;
@@ -122,10 +160,26 @@ STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RE
 		cdcBitmap.SelectBitmap(bitmap);
 		auto x = rect.left;
 		auto y = rect.top;
-		auto width = rect.right - rect.left;
-		auto height = rect.bottom - rect.top;
-		static Gdiplus::Color color(Gdiplus::Color::White);
+		auto width = imageWidth;
+		auto height = imageHeight;
+		static Gdiplus::Color color(Gdiplus::Color::Transparent);
 		TransparentBlt(cdc, x, y, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
+
+		CComBSTR bstr;
+		pColumnRects->GetRectStringProp(i, VAR_TEXT, &bstr);
+
+		HFONT font = 0;
+		m_pThemeFontMap->GetFont(CComBSTR(VAR_TAB_HEADER), &font);
+		cdc.SelectFont(font);
+
+		CRect rectText = rect;
+		rectText.left += imageWidth + PADDING_X + IMAGE_TO_TEXT_DISTANCE;
+
+		CSize sz;
+		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
+
+		rectText.top = rect.top + ((rect.Height() / 2) - sz.cy / 2);
+		DrawText(cdc, bstr, bstr.Length(), &rectText, 0);
 	}
 	return S_OK;
 }

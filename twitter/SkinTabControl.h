@@ -26,7 +26,7 @@ public:
 private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapHpme;
+	shared_ptr<Gdiplus::Bitmap> m_pBitmapHome;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapSettings;
 	CRect m_rectHeader;
 
@@ -37,7 +37,7 @@ public:
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
 
-	STDMETHOD(MeasureHeader)(IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
+	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
 	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect);
 

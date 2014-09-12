@@ -246,7 +246,7 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 	CRect clientRect;
 	GetClientRect(&clientRect);
 	if (m_pSkinTabControl)
-		m_pSkinTabControl->MeasureHeader(pObjArray, m_pColumnRects, &clientRect, &uiHeight);
+		m_pSkinTabControl->MeasureHeader(m_hWnd, pObjArray, m_pColumnRects, &clientRect, &uiHeight);
 
 	GetClientRect(&m_rectChildControlArea);
 	m_rectChildControlArea.top += uiHeight;

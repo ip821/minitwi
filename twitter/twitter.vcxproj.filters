@@ -181,11 +181,11 @@
     <ClCompile Include="TimelineCleanupService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
-    <ClCompile Include="CustomTabControl.cpp">
-      <Filter>ZZZMisc\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SkinTabControl.cpp">
       <Filter>Services\SkinService\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomTabControl.cpp">
+      <Filter>Controls\TabControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -294,11 +294,11 @@
     <ClInclude Include="TimelineCleanupService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
-    <ClInclude Include="CustomTabControl.h">
-      <Filter>ZZZMisc\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SkinTabControl.h">
       <Filter>Services\SkinService\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomTabControl.h">
+      <Filter>Controls\TabControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
