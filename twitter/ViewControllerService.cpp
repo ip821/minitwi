@@ -146,6 +146,8 @@ STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
 
 STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 {
+	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 
@@ -173,8 +175,6 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 		}
 		return S_OK;
 	}
-
-	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
 
 	return S_OK;
 }
