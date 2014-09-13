@@ -171,7 +171,7 @@ interface ISkinTabControl : IUnknown
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(HDC hdc);
-	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
+	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex, BOOL bDrawAnimation);
 };
 
 [

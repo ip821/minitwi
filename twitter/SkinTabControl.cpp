@@ -6,6 +6,11 @@
 
 // CSkinTabControl
 
+const size_t MAX_COUNT = 3;
+const int ITEM_SIZE = 10;
+const int ITEM_DISTANCE = 5;
+const int ITEM_OFFSET_Y = 2;
+
 STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
 {
 	HMODULE hModule = _AtlBaseModule.GetModuleInstance();
@@ -135,11 +140,20 @@ STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex)
+STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex, BOOL bDrawAnimation)
 {
 	CDCHandle cdc(hdc);
 	cdc.SetBkMode(TRANSPARENT);
+	RETURN_IF_FAILED(DrawTabs(pColumnRects, cdc, rect, selectedPageIndex));
+	if (bDrawAnimation)
+	{
+		DrawAnimation(cdc);
+	}
+	return S_OK;
+}
 
+STDMETHODIMP CSkinTabControl::DrawTabs(IColumnRects* pColumnRects, CDCHandle& cdc, RECT rect, int selectedPageIndex)
+{
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pColumnRects->GetCount(&uiCount));
 
@@ -185,7 +199,7 @@ STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RE
 		rectText.left += imageWidth + PADDING_X + IMAGE_TO_TEXT_DISTANCE;
 
 		CSize sz;
-		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
+		GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
 		rectText.top = rect.top + ((rect.Height() / 2) - sz.cy / 2);
 
 		BOOL bSelected = selectedPageIndex == i;
@@ -202,6 +216,38 @@ STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RE
 		cdc.SetTextColor(dwColor);
 
 		DrawText(cdc, bstr, bstr.Length(), &rectText, 0);
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::DrawAnimation(CDCHandle& cdc)
+{
+	m_iFrameCount++;
+	if (m_iFrameCount == MAX_COUNT)
+		m_iFrameCount = 0;
+
+	int left = ITEM_SIZE * MAX_COUNT + ITEM_DISTANCE * MAX_COUNT;
+	CRect rect = m_rectHeader;
+	rect.left = rect.right - left;
+
+	rect.top += rect.Height() / 2 - ITEM_SIZE / 2 + ITEM_OFFSET_Y;
+
+	DWORD dwActiveColor = 0;
+	m_pThemeColorMap->GetColor(VAR_ITEM_ANIMATION_ACTIVE, &dwActiveColor);
+	DWORD dwInactiveColor = 0;
+	m_pThemeColorMap->GetColor(VAR_ITEM_ANIMATION_INACTIVE, &dwInactiveColor);
+
+	CBrush brushActive;
+	brushActive.CreateSolidBrush(dwActiveColor);
+	CBrush brushInactive;
+	brushInactive.CreateSolidBrush(dwInactiveColor);
+
+	for (size_t i = 0; i < MAX_COUNT; i++)
+	{
+		auto x = rect.left + ITEM_SIZE * i + ITEM_DISTANCE * (max(0, i - 1));
+		auto y = rect.top;
+		CRect rectItem = { (int)x, y, (int)x + ITEM_SIZE, y + ITEM_SIZE };
+		cdc.FillRect(rectItem, i == m_iFrameCount ? brushActive : brushInactive);
 	}
 	return S_OK;
 }

@@ -29,8 +29,11 @@ private:
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapHome;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapSettings;
 	CRect m_rectHeader;
+	int m_iFrameCount = 0;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
+	STDMETHOD(DrawTabs)(IColumnRects* pColumnRects, CDCHandle& cdc, RECT rect, int selectedPageIndex);
+	STDMETHOD(DrawAnimation)(CDCHandle& cdc);
 
 public:
 
@@ -40,7 +43,7 @@ public:
 
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
-	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
+	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex, BOOL bDrawAnimation);
 
 };
 

@@ -61,11 +61,9 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<IColumnRects> m_pColumnRects;
-	CComPtr<IThemeColorMap> m_pThemeColorMap;
+
 	CRect m_rectChildControlArea;
 	BOOL m_bDrawAnimation = FALSE;
-	int m_iFrameCount = 0;
-	const size_t MAX_COUNT = 3;
 
 	void SelectPage(DWORD dwIndex);
 
