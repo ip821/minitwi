@@ -347,3 +347,16 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	}
 	return 0;
 }
+
+LRESULT CCustomTabControl::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	CComPtr<IControl> pControl;
+	GetCurrentPage(&pControl);
+	if (pControl)
+	{
+		HWND hWnd = 0;
+		pControl->GetHWND(&hWnd);
+		::SetFocus(hWnd);
+	}
+	return 0;
+}
