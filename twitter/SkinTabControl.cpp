@@ -10,6 +10,7 @@ const size_t MAX_COUNT = 3;
 const int ITEM_SIZE = 10;
 const int ITEM_DISTANCE = 5;
 const int ITEM_OFFSET_Y = 2;
+const int TOOLTIP_ID = 1;
 
 STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
 {
@@ -37,6 +38,8 @@ CSkinTabControl::CSkinTabControl()
 {
 	InitImageFromResource(IDR_PICTUREHOME, L"PNG", m_pBitmapHome);
 	InitImageFromResource(IDR_PICTURESETTINGS, L"PNG", m_pBitmapSettings);
+	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
+	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
 }
 
 STDMETHODIMP CSkinTabControl::SetColorMap(IThemeColorMap* pThemeColorMap)
@@ -66,6 +69,8 @@ STDMETHODIMP CSkinTabControl::SetFontMap(IThemeFontMap* pThemeFontMap)
 
 STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight)
 {
+	m_hWnd = hWnd;
+
 	CRect clientRect2 = clientRect;
 	CDC hdc(GetDC(hWnd));
 	CDC cdc;
@@ -123,6 +128,16 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	m_rectHeader = clientRect;
 	m_rectHeader.bottom = m_rectHeader.top + uiHeight;
 
+	{ // info image rect
+		int imageWidth = m_pBitmapError->GetWidth();
+		int imageHeight = m_pBitmapError->GetHeight();
+
+		int left = imageWidth + ITEM_DISTANCE;
+		m_rectInfoImage = m_rectHeader;
+		m_rectInfoImage.left = m_rectInfoImage.right - left;
+		m_rectInfoImage.top += m_rectInfoImage.Height() / 2 - imageHeight / 2 + ITEM_OFFSET_Y;
+	}
+
 	return S_OK;
 }
 
@@ -140,15 +155,11 @@ STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex, BOOL bDrawAnimation)
+STDMETHODIMP CSkinTabControl::DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex)
 {
 	CDCHandle cdc(hdc);
 	cdc.SetBkMode(TRANSPARENT);
 	RETURN_IF_FAILED(DrawTabs(pColumnRects, cdc, rect, selectedPageIndex));
-	if (bDrawAnimation)
-	{
-		DrawAnimation(cdc);
-	}
 	return S_OK;
 }
 
@@ -220,8 +231,10 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnRects* pColumnRects, CDCHandle& cd
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawAnimation(CDCHandle& cdc)
+STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc)
 {
+	CDCHandle cdc(hdc);
+
 	m_iFrameCount++;
 	if (m_iFrameCount == MAX_COUNT)
 		m_iFrameCount = 0;
@@ -249,5 +262,74 @@ STDMETHODIMP CSkinTabControl::DrawAnimation(CDCHandle& cdc)
 		CRect rectItem = { (int)x, y, (int)x + ITEM_SIZE, y + ITEM_SIZE };
 		cdc.FillRect(rectItem, i == m_iFrameCount ? brushActive : brushInactive);
 	}
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage)
+{
+	if (m_wndTooltip.IsWindow())
+	{
+		m_wndTooltip.UpdateTipText(bstrMessage, m_hWnd, TOOLTIP_ID);
+	}
+
+	int imageWidth = 0;
+	int imageHeight = 0;
+	CBitmap bitmap;
+	if (bError)
+	{
+		imageWidth = m_pBitmapError->GetWidth();
+		imageHeight = m_pBitmapError->GetHeight();
+		m_pBitmapError->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
+	}
+	else
+	{
+		imageWidth = m_pBitmapInfo->GetWidth();
+		imageHeight = m_pBitmapInfo->GetHeight();
+		m_pBitmapInfo->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
+	}
+
+	CDC cdcBitmap;
+	cdcBitmap.CreateCompatibleDC(hdc);
+	cdcBitmap.SelectBitmap(bitmap);
+	auto x = m_rectInfoImage.left;
+	auto y = m_rectInfoImage.top;
+	auto width = imageWidth;
+	auto height = imageHeight;
+	static Gdiplus::Color color(Gdiplus::Color::Transparent);
+	TransparentBlt(hdc, x, y, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::Notify(TabControlNotifyReason reason)
+{
+	if (reason == TabControlNotifyReason::InfoImageIsOn)
+	{
+		if (!m_wndTooltip.IsWindow())
+		{
+			m_wndTooltip.Create(NULL, 0, 0, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, WS_EX_TOPMOST);
+			m_wndTooltip.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+		}
+
+		TOOLINFO ti = { 0 };
+		ti.cbSize = sizeof(ti);
+		ti.hwnd = m_hWnd;
+		ti.uFlags = TTF_SUBCLASS | TTF_CENTERTIP;
+		ti.rect = m_rectInfoImage;
+		ti.uId = TOOLTIP_ID;
+		ti.hinst = NULL;
+		m_wndTooltip.Activate(TRUE);
+		m_wndTooltip.AddTool(&ti);
+	}
+	else if (reason == TabControlNotifyReason::InfoImageIsOff)
+	{
+		m_wndTooltip.DestroyWindow();
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::GetInfoRect(RECT* pRect)
+{
+	CHECK_E_POINTER(pRect);
+	*pRect = m_rectInfoImage;
 	return S_OK;
 }

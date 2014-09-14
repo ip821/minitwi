@@ -28,12 +28,16 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapHome;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapSettings;
+	shared_ptr<Gdiplus::Bitmap> m_pBitmapError;
+	shared_ptr<Gdiplus::Bitmap> m_pBitmapInfo;
 	CRect m_rectHeader;
+	CRect m_rectInfoImage;
 	int m_iFrameCount = 0;
+	CToolTipCtrl m_wndTooltip;
+	HWND m_hWnd;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
 	STDMETHOD(DrawTabs)(IColumnRects* pColumnRects, CDCHandle& cdc, RECT rect, int selectedPageIndex);
-	STDMETHOD(DrawAnimation)(CDCHandle& cdc);
 
 public:
 
@@ -43,8 +47,11 @@ public:
 
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
-	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex, BOOL bDrawAnimation);
-
+	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
+	STDMETHOD(DrawAnimation)(HDC hdc);
+	STDMETHOD(DrawInfoImage)(HDC hdc, BOOL bError, BSTR bstrMessage);
+	STDMETHOD(Notify)(TabControlNotifyReason reason);
+	STDMETHOD(GetInfoRect)(RECT* pRect);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinTabControl), CSkinTabControl)

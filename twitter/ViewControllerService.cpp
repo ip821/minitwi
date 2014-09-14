@@ -32,8 +32,7 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
-	RETURN_IF_FAILED(AtlAdvise(m_pInfoControlService, pUnk, __uuidof(IInfoControlEventSink), &m_dwInfoControlAdvice));
+	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(IInfoControlEventSink), &m_dwAdviceTabbedControl));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_UpdateService, &m_pUpdateService));
 
 	CComPtr<IThemeService> pThemeService;
@@ -70,35 +69,12 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	m_pTimerService.Release();
 	m_pThreadPoolService.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
-	RETURN_IF_FAILED(AtlUnadvise(m_pInfoControlService, __uuidof(IInfoControlEventSink), m_dwInfoControlAdvice));
+	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
 	m_pUpdateService.Release();
 	m_pTabbedControl.Release();
 	return S_OK;
-}
-
-void CViewControllerService::ApplyThemeToInfoControl(HWND hWndInfoControl)
-{
-	if (m_hWndInfoControl)
-	{
-		ATLASSERT(hWndInfoControl == m_hWndInfoControl);
-		return;
-	}
-
-	m_hWndInfoControl = hWndInfoControl;
-	CComPtr<ISkinCommonControl> pSkinCommonControl;
-	m_pTheme->GetCommonControlSkin(&pSkinCommonControl);
-	pSkinCommonControl->RegisterControl(m_hWndInfoControl);
-}
-
-void CViewControllerService::UnapplyThemeToInfoControl()
-{
-	ATLASSERT(m_hWndInfoControl);
-	CComPtr<ISkinCommonControl> pSkinCommonControl;
-	m_pTheme->GetCommonControlSkin(&pSkinCommonControl);
-	pSkinCommonControl->UnregisterControl(m_hWndInfoControl);
-	m_hWndInfoControl = 0;
 }
 
 STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
@@ -108,10 +84,7 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
 	if (m_bUpdateAvailable)
 	{
-		HWND hWndInfoControl = 0;
-		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Update available. Click here to install.", FALSE, TRUE, &hWndInfoControl));
-		RETURN_IF_FAILED(m_pInfoControlService->EnableHyperLink(hwndChildControl));
-		ApplyThemeToInfoControl(hWndInfoControl);
+		RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(FALSE, TRUE, L"Update available. Click here to install."));
 	}
 	else
 	{
@@ -119,9 +92,7 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
 		if ((bEmpty && !bError) || bError)
 		{
-			HWND hWndInfoControl = 0;
-			RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMessage, bError, TRUE, &hWndInfoControl));
-			ApplyThemeToInfoControl(hWndInfoControl);
+			RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(bError, FALSE,bstrMessage));
 		}
 	}
 	return S_OK;
@@ -129,12 +100,7 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 
 STDMETHODIMP CViewControllerService::HideControl()
 {
-	if (m_bUpdateAvailable)
-		return S_OK;
-	HWND hwndChildControl = 0;
-	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-	UnapplyThemeToInfoControl();
-	RETURN_IF_FAILED(m_pInfoControlService->HideControl(hwndChildControl));
+	RETURN_IF_FAILED(m_pTabbedControl->HideInfo());
 	return S_OK;
 }
 
@@ -151,14 +117,7 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 
-	if (SUCCEEDED(vHr.intVal))
-	{
-		if (m_hWndInfoControl)
-		{
-			RETURN_IF_FAILED(HideControl());
-		}
-	}
-	else
+	if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));

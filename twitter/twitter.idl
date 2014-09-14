@@ -159,6 +159,12 @@ interface ITimelineControl : IControl2
 	HRESULT RemoveItemByIndex(UINT uiIndex);
 };
 
+typedef enum
+{
+	InfoImageIsOn,
+	InfoImageIsOff,
+} TabControlNotifyReason;
+
 [
 	object,
 	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
@@ -171,7 +177,11 @@ interface ISkinTabControl : IUnknown
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(HDC hdc);
-	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex, BOOL bDrawAnimation);
+	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
+	HRESULT DrawAnimation(HDC hdc);
+	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
+	HRESULT Notify(TabControlNotifyReason reason);
+	HRESULT GetInfoRect(RECT* pRect);
 };
 
 [
@@ -351,6 +361,8 @@ interface ICustomTabControl : ITabbedControl
 	HRESULT SetSkinTabControl(ISkinTabControl* pSkinTabControl);
 	HRESULT StartAnimation();
 	HRESULT StopAnimation();
+	HRESULT ShowInfo(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
+	HRESULT HideInfo();
 };
 
 [

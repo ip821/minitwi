@@ -87,11 +87,11 @@ private:
 
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IThreadService> m_pThreadService;
-	CComPtr<IInfoControlService> m_pInfoControlService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IFormManager> m_pFormManager;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<ITheme> m_pTheme;
+	CComQIPtr<ICustomTabControl> m_pCustomTabControl;
 
 	DWORD m_dwAdvice = 0;
 	CEdit m_editUser;
@@ -100,13 +100,10 @@ private:
 	CStatic m_labelLoggedUser;
 	CStatic m_labelVersion;
 	CHyperLink m_labelHomePage;
-	HWND m_hWndInfoControl = 0;
 
 	void SwitchToLoginMode();
 	void SwitchToLogoutMode();
-
-	void ApplyThemeToInfoControl(HWND hWndInfoControl);
-	void UnapplyThemeToInfoControl();
+	void EnableLoginControls(BOOL bEnale);
 
 public:
 	enum { IDD = IDD_SETTINGSCONTROL };

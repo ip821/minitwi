@@ -39,6 +39,12 @@ LRESULT CCustomTabControl::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 STDMETHODIMP CCustomTabControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 {
+	CComPtr<IControl> pControl;
+	GetCurrentPage(&pControl);
+	if (pControl)
+	{
+		RETURN_IF_FAILED(pControl->PreTranslateMessage(pMsg, pbResult));
+	}
 	return S_OK;
 }
 
@@ -270,7 +276,10 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 	CRect clientRect;
 	GetClientRect(&clientRect);
 	if (m_pSkinTabControl)
+	{
 		m_pSkinTabControl->MeasureHeader(m_hWnd, pObjArray, m_pColumnRects, &clientRect, &uiHeight);
+		m_pSkinTabControl->GetInfoRect(&m_rectInfoImage);
+	}
 
 	GetClientRect(&m_rectChildControlArea);
 	m_rectChildControlArea.top += uiHeight;
@@ -316,7 +325,13 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 {
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint, m_selectedPageIndex, m_bDrawAnimation);
+	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint, m_selectedPageIndex);
+
+	if (m_bDrawAnimation && !m_bShowInfoImage)
+		m_pSkinTabControl->DrawAnimation(ps.hdc);
+	else if (m_bShowInfoImage)
+		m_pSkinTabControl->DrawInfoImage(ps.hdc, m_bInfoImageIsError, m_bstrInfoMessage);
+
 	EndPaint(&ps);
 
 	return 0;
@@ -333,16 +348,23 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	auto x = GET_X_LPARAM(lParam);
 	auto y = GET_Y_LPARAM(lParam);
 
-	UINT uiCount = 0;
-	m_pColumnRects->GetCount(&uiCount);
-	for (size_t i = 0; i < uiCount; i++)
+	if (m_bShowInfoImage && m_bInfoImageEnableClick && m_rectInfoImage.PtInRect(CPoint(x, y)))
 	{
-		CRect rect;
-		m_pColumnRects->GetRect(i, &rect);
-		if (rect.PtInRect(CPoint(x, y)))
+		Fire_OnLinkClick();
+	}
+	else
+	{
+		UINT uiCount = 0;
+		m_pColumnRects->GetCount(&uiCount);
+		for (size_t i = 0; i < uiCount; i++)
 		{
-			SelectPage(i);
-			break;
+			CRect rect;
+			m_pColumnRects->GetRect(i, &rect);
+			if (rect.PtInRect(CPoint(x, y)))
+			{
+				SelectPage(i);
+				break;
+			}
 		}
 	}
 	return 0;
@@ -359,4 +381,47 @@ LRESULT CCustomTabControl::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		::SetFocus(hWnd);
 	}
 	return 0;
+}
+
+STDMETHODIMP CCustomTabControl::ShowInfo(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage)
+{
+	m_bShowInfoImage = TRUE;
+	m_bInfoImageIsError = bError;
+	m_bstrInfoMessage = bstrMessage;
+	m_bInfoImageEnableClick = bInfoImageEnableClick;
+	m_pSkinTabControl->Notify(TabControlNotifyReason::InfoImageIsOn);
+	return S_OK;
+}
+
+STDMETHODIMP CCustomTabControl::HideInfo()
+{
+	m_bShowInfoImage = FALSE;
+	m_bInfoImageIsError = FALSE;
+	m_bstrInfoMessage.Empty();
+	m_pSkinTabControl->Notify(TabControlNotifyReason::InfoImageIsOff);
+	return S_OK;
+}
+
+HRESULT CCustomTabControl::Fire_OnLinkClick()
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CCustomTabControl* pThis = static_cast<CCustomTabControl*>(this);
+	int cConnections = IConnectionPointImpl_IInfoControlEventSink::m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = IConnectionPointImpl_IInfoControlEventSink::m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		IInfoControlEventSink* pConnection = static_cast<IInfoControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnLinkClick(NULL);
+		}
+	}
+	return hr;
 }

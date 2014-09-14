@@ -7,6 +7,9 @@ using namespace ATL;
 using namespace std;
 using namespace Gdiplus;
 
+class CCustomTabControl;
+typedef IConnectionPointImpl <CCustomTabControl, &__uuidof(IInfoControlEventSink)> IConnectionPointImpl_IInfoControlEventSink;
+
 class CCustomTabControl :
 	public CWindowImpl<CCustomTabControl>,
 	public CComObjectRootEx<CComSingleThreadModel>,
@@ -17,7 +20,8 @@ class CCustomTabControl :
 	public IPersistSettings,
 	public IPluginSupportNotifications,
 	public IConnectionPointContainerImpl<CCustomTabControl>,
-	public IConnectionPointImpl<CCustomTabControl, &__uuidof(ITabbedControlEventSink)>
+	public IConnectionPointImpl<CCustomTabControl, &__uuidof(ITabbedControlEventSink)>,
+	public IConnectionPointImpl_IInfoControlEventSink
 {
 
 public:
@@ -53,6 +57,7 @@ public:
 
 	BEGIN_CONNECTION_POINT_MAP(CCustomTabControl)
 		CONNECTION_POINT_ENTRY(__uuidof(ITabbedControlEventSink))
+		CONNECTION_POINT_ENTRY(__uuidof(IInfoControlEventSink))
 	END_CONNECTION_POINT_MAP()
 
 private:
@@ -64,7 +69,13 @@ private:
 	CComPtr<IColumnRects> m_pColumnRects;
 
 	CRect m_rectChildControlArea;
+	CRect m_rectInfoImage;
 	BOOL m_bDrawAnimation = FALSE;
+
+	BOOL m_bInfoImageEnableClick = FALSE;
+	BOOL m_bShowInfoImage = FALSE;
+	BOOL m_bInfoImageIsError = FALSE;
+	CComBSTR m_bstrInfoMessage;
 
 	void SelectPage(DWORD dwIndex);
 
@@ -76,6 +87,8 @@ private:
 	LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	HRESULT Fire_OnLinkClick();
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -103,6 +116,9 @@ public:
 
 	STDMETHOD(StartAnimation)();
 	STDMETHOD(StopAnimation)();
+
+	STDMETHOD(ShowInfo)(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
+	STDMETHOD(HideInfo)();
 
 };
 
