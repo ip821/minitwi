@@ -163,6 +163,7 @@ typedef enum
 {
 	InfoImageIsOn,
 	InfoImageIsOff,
+	AnimationNextFrame,
 } TabControlNotifyReason;
 
 [

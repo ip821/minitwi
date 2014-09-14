@@ -235,10 +235,6 @@ STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc)
 {
 	CDCHandle cdc(hdc);
 
-	m_iFrameCount++;
-	if (m_iFrameCount == MAX_COUNT)
-		m_iFrameCount = 0;
-
 	int left = ITEM_SIZE * MAX_COUNT + ITEM_DISTANCE * MAX_COUNT;
 	CRect rect = m_rectHeader;
 	rect.left = rect.right - left;
@@ -324,6 +320,12 @@ STDMETHODIMP CSkinTabControl::Notify(TabControlNotifyReason reason)
 	{
 		if (m_wndTooltip.IsWindow())
 			m_wndTooltip.DestroyWindow();
+	}
+	else if (reason == TabControlNotifyReason::AnimationNextFrame)
+	{
+		m_iFrameCount++;
+		if (m_iFrameCount == MAX_COUNT)
+			m_iFrameCount = 0;
 	}
 	return S_OK;
 }

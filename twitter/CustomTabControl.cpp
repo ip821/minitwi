@@ -33,6 +33,8 @@ STDMETHODIMP CCustomTabControl::StopAnimation()
 
 LRESULT CCustomTabControl::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	if (m_pSkinTabControl)
+		m_pSkinTabControl->Notify(TabControlNotifyReason::AnimationNextFrame);
 	Invalidate();
 	return 0;
 }
