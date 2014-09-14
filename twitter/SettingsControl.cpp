@@ -116,7 +116,7 @@ void CSettingsControl::SwitchToLoginMode()
 
 void CSettingsControl::SwitchToLogoutMode()
 {
-	if (m_editUser.IsWindow() && m_editUser.IsWindow())
+	if (m_editUser.IsWindow())
 	{
 		CString strText;
 		m_editUser.GetWindowText(strText);

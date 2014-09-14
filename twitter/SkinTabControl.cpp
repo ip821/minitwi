@@ -9,7 +9,7 @@
 const size_t MAX_COUNT = 3;
 const int ITEM_SIZE = 10;
 const int ITEM_DISTANCE = 5;
-const int ITEM_OFFSET_Y = 2;
+const int ITEM_OFFSET_Y = 1;
 const int TOOLTIP_ID = 1;
 
 STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
@@ -322,7 +322,8 @@ STDMETHODIMP CSkinTabControl::Notify(TabControlNotifyReason reason)
 	}
 	else if (reason == TabControlNotifyReason::InfoImageIsOff)
 	{
-		m_wndTooltip.DestroyWindow();
+		if (m_wndTooltip.IsWindow())
+			m_wndTooltip.DestroyWindow();
 	}
 	return S_OK;
 }
