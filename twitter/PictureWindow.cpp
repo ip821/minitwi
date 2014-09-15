@@ -67,11 +67,8 @@ LRESULT CPictureWindow::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CPictureWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#ifdef __WINXP__
-	m_icon.LoadIcon(IDR_TWITTER_XP);
-#else
 	m_icon.LoadIcon(IDR_TWITTER);
-#endif
+
 	SetClassLong(m_hWnd, GCL_HICONSM, (LONG)m_icon.m_hIcon);
 	SetClassLong(m_hWnd, GCL_HICON, (LONG)m_icon.m_hIcon);
 
