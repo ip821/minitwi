@@ -100,6 +100,8 @@ STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
 
 STDMETHODIMP CViewControllerService::HideControl()
 {
+	if (m_bUpdateAvailable)
+		return S_OK;
 	RETURN_IF_FAILED(m_pTabbedControl->HideInfo());
 	return S_OK;
 }
@@ -117,7 +119,11 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 
-	if (FAILED(vHr.intVal))
+	if (SUCCEEDED(vHr.intVal))
+	{
+		RETURN_IF_FAILED(HideControl());
+	}
+	else
 	{
 		CComVariant vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));

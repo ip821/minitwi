@@ -27,7 +27,12 @@ STDMETHODIMP CCustomTabControl::StopAnimation()
 {
 	KillTimer(1);
 	m_bDrawAnimation = FALSE;
-	Invalidate();
+
+	CRect rectClient;
+	GetClientRect(&rectClient);
+	rectClient.bottom = m_rectChildControlArea.top - 1;
+	InvalidateRect(rectClient);
+
 	return S_OK;
 }
 
@@ -35,7 +40,10 @@ LRESULT CCustomTabControl::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 {
 	if (m_pSkinTabControl)
 		m_pSkinTabControl->Notify(TabControlNotifyReason::AnimationNextFrame);
-	Invalidate();
+	CRect rectClient;
+	GetClientRect(&rectClient);
+	rectClient.bottom = m_rectChildControlArea.top - 1;
+	InvalidateRect(rectClient);
 	return 0;
 }
 
@@ -329,7 +337,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	BeginPaint(&ps);
 	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint, m_selectedPageIndex);
 
-	if (m_bDrawAnimation && !m_bShowInfoImage)
+	if (m_bDrawAnimation)
 		m_pSkinTabControl->DrawAnimation(ps.hdc);
 	else if (m_bShowInfoImage)
 		m_pSkinTabControl->DrawInfoImage(ps.hdc, m_bInfoImageIsError, m_bstrInfoMessage);
