@@ -39,18 +39,19 @@ public:
 private:
 	CComPtr<ITimerService> m_pTimerService;
 	CComPtr<IThreadService> m_pThreadService;
-	CComPtr<IInfoControlService> m_pInfoControlService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	CComPtr<IUpdateService> m_pUpdateService;
+	CComPtr<ITheme> m_pTheme;
+	CComQIPtr<ICustomTabControl> m_pTabbedControl;
 
 	BOOL m_bUpdateAvailable = FALSE;
 	DWORD m_dwAdvice = 0;
-	DWORD m_dwInfoControlAdvice = 0;
+	DWORD m_dwAdviceTabbedControl = 0;
 	CComPtr<ISettings> m_pSettings;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
 
-	STDMETHOD(ShowControl)(BSTR bstrMessage, BOOL bError);
+	STDMETHOD(ShowControl)(BSTR bstrMessage, BOOL bError, BOOL bEnableCLick);
 	STDMETHOD(HideControl)();
 public:
 
@@ -64,6 +65,7 @@ public:
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 	STDMETHOD(StartTimers)();
 	STDMETHOD(StopTimers)();
+	STDMETHOD(SetTheme)(ITheme* pTheme);
 
 	STDMETHOD(OnLinkClick)(HWND hWnd);
 };

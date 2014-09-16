@@ -23,17 +23,16 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
 	CComPtr<IContainerControl> pContainerControl;
 	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
-	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
-	RETURN_IF_FAILED(pTabbedControl->EnableCommands(FALSE));
+	m_pTabbedControl = pContainerControl;
+	RETURN_IF_FAILED(m_pTabbedControl->EnableCommands(FALSE));
 	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
+	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
 	m_pTimelineControl = pControl;
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
-	RETURN_IF_FAILED(AtlAdvise(m_pInfoControlService, pUnk, __uuidof(IInfoControlEventSink), &m_dwInfoControlAdvice));
+	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(IInfoControlEventSink), &m_dwAdviceTabbedControl));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_UpdateService, &m_pUpdateService));
 
 	CComPtr<IThemeService> pThemeService;
@@ -70,61 +69,47 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	m_pTimerService.Release();
 	m_pThreadPoolService.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
-	RETURN_IF_FAILED(AtlUnadvise(m_pInfoControlService, __uuidof(IInfoControlEventSink), m_dwInfoControlAdvice));
+	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
 	m_pUpdateService.Release();
+	m_pTabbedControl.Release();
 	return S_OK;
 }
 
-STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
+STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError = FALSE, BOOL bEnableCLick = FALSE)
 {
-	HWND hwndChildControl = 0;
-	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
-	if (m_bUpdateAvailable)
-	{
-		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, L"Update available. Click here to install.", FALSE, TRUE));
-		RETURN_IF_FAILED(m_pInfoControlService->EnableHyperLink(hwndChildControl));
-	}
-	else
-	{
-		BOOL bEmpty = FALSE;
-		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
-		if ((bEmpty && !bError) || bError)
-		{
-			RETURN_IF_FAILED(m_pInfoControlService->ShowControl(hwndChildControl, bstrMessage, bError, TRUE));
-		}
-	}
+	RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(bError, bEnableCLick, bstrMessage));
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::HideControl()
 {
-	if (m_bUpdateAvailable)
-		return S_OK;
-	HWND hwndChildControl = 0;
-	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-	RETURN_IF_FAILED(m_pInfoControlService->HideControl(hwndChildControl));
+	RETURN_IF_FAILED(m_pTabbedControl->HideInfo());
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(ShowControl(L"Updating...", FALSE));
+	RETURN_IF_FAILED(HideControl());
+	RETURN_IF_FAILED(m_pTabbedControl->StartAnimation());
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 {
+	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
+
+	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 
-	if (SUCCEEDED(vHr.intVal))
+	if (m_bUpdateAvailable)
 	{
-		RETURN_IF_FAILED(HideControl());
+		RETURN_IF_FAILED(ShowControl(L"Update available. Click here to install.", FALSE, TRUE));
 	}
-	else
+	else if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
@@ -147,10 +132,13 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 
 STDMETHODIMP CViewControllerService::OnLinkClick(HWND hWnd)
 {
-	HWND hwndChildControl = 0;
-	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-	if (hWnd != hwndChildControl)
-		return S_OK;
 	RETURN_IF_FAILED(m_pUpdateService->RunUpdate());
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::SetTheme(ITheme* pTheme)
+{
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
 	return S_OK;
 }

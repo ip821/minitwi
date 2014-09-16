@@ -17,8 +17,9 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_AUTH_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
-	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_InfoControlService, &m_pInfoControlService));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &m_pFormManager));
+
+	m_pCustomTabControl = m_pControl;
 
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_TimelineControl, &pControl));
@@ -97,7 +98,7 @@ LRESULT CSettingsControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 STDMETHODIMP CSettingsControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 {
-	return E_NOTIMPL;
+	return S_OK;
 }
 
 void CSettingsControl::SwitchToLoginMode()
@@ -115,7 +116,7 @@ void CSettingsControl::SwitchToLoginMode()
 
 void CSettingsControl::SwitchToLogoutMode()
 {
-	if (m_editUser.IsWindow() && m_editUser.IsWindow())
+	if (m_editUser.IsWindow())
 	{
 		CString strText;
 		m_editUser.GetWindowText(strText);
@@ -198,7 +199,10 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 
 STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, L"Authenticating...", FALSE, FALSE));
+	HWND hWnd = 0;
+	EnableLoginControls(FALSE);
+	RETURN_IF_FAILED(m_pCustomTabControl->HideInfo());
+	RETURN_IF_FAILED(m_pCustomTabControl->StartAnimation());
 	return S_OK;
 }
 
@@ -234,17 +238,17 @@ STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
 
 STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 {
+	EnableLoginControls(TRUE);
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
-	if (SUCCEEDED(vHr.intVal))
-	{
-		RETURN_IF_FAILED(m_pInfoControlService->HideControl(m_hWnd));
-	}
-	else
+	RETURN_IF_FAILED(m_pCustomTabControl->StopAnimation());
+	if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
-		RETURN_IF_FAILED(m_pInfoControlService->ShowControl(m_hWnd, vDesc.bstrVal, TRUE, FALSE));
+		RETURN_IF_FAILED(m_pCustomTabControl->ShowInfo(TRUE, FALSE, vDesc.bstrVal));
+		MessageBox(vDesc.bstrVal, L"Error", MB_OK | MB_ICONERROR);
 		return S_OK;
 	}
 
@@ -365,4 +369,21 @@ bool CSettingsControl::DlgResize_PositionControl(int in_nWidth, int in_nHeight, 
 	}
 
 	return l_bSuccess;
+}
+
+STDMETHODIMP CSettingsControl::SetTheme(ITheme* pTheme)
+{
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
+	CComPtr<ISkinCommonControl> pSkinCommonControl;
+	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&pSkinCommonControl));
+	RETURN_IF_FAILED(pSkinCommonControl->RegisterControl(m_hWnd));
+	return S_OK;
+}
+
+void CSettingsControl::EnableLoginControls(BOOL bEnale)
+{
+	::EnableWindow(GetDlgItem(IDC_BUTTON_LOGIN), bEnale);
+	::EnableWindow(GetDlgItem(IDC_EDITUSER), bEnale);
+	::EnableWindow(GetDlgItem(IDC_EDITPASSWORD), bEnale);
 }

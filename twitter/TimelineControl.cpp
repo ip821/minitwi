@@ -155,9 +155,21 @@ STDMETHODIMP CTimelineControl::InsertItems(IObjArray* pObjectArray, UINT uiStart
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineControl::Invalidate()
+STDMETHODIMP CTimelineControl::InvalidateItems(UINT* pItemIndexArray, UINT uiCountArray)
 {
-	m_listBox.Invalidate(TRUE);
+	UINT firstVisibleIndex = m_listBox.GetTopIndex();
+	UINT lastVisibleIndex = firstVisibleIndex + 20; //well...
+	BOOL bNeedInvalidate = FALSE;
+	for (size_t i = 0; i < uiCountArray; i++)
+	{
+		if (pItemIndexArray[i] >= firstVisibleIndex && pItemIndexArray[i] <= lastVisibleIndex)
+		{
+			bNeedInvalidate = TRUE;
+			break;
+		}
+	}
+	if (bNeedInvalidate)
+		m_listBox.Invalidate(TRUE);
 	return S_OK;
 }
 

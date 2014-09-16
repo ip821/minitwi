@@ -16,7 +16,7 @@ class ATL_NO_VTABLE CSettingsControl :
 	public CComCoClass<CSettingsControl, &CLSID_SettingsControl>,
 	public CAxDialogImpl<CSettingsControl>,
 	public CDialogResize<CSettingsControl>,
-	public IControl2,
+	public ISettingsControl,
 	public IPersistSettings,
 	public IMsgHandler,
 	public IPluginSupportNotifications,
@@ -33,6 +33,7 @@ public:
 	BEGIN_COM_MAP(CSettingsControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
+		COM_INTERFACE_ENTRY(ISettingsControl)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPersistSettings)
 		COM_INTERFACE_ENTRY(IMsgHandler)
@@ -82,13 +83,15 @@ private:
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedLogin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnClickedLogout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnCtlColorStatic(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IThreadService> m_pThreadService;
-	CComPtr<IInfoControlService> m_pInfoControlService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IFormManager> m_pFormManager;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<ITheme> m_pTheme;
+	CComQIPtr<ICustomTabControl> m_pCustomTabControl;
 
 	DWORD m_dwAdvice = 0;
 	CEdit m_editUser;
@@ -100,6 +103,7 @@ private:
 
 	void SwitchToLoginMode();
 	void SwitchToLogoutMode();
+	void EnableLoginControls(BOOL bEnale);
 
 public:
 	enum { IDD = IDD_SETTINGSCONTROL };
@@ -128,6 +132,8 @@ public:
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
+
+	STDMETHOD(SetTheme)(ITheme* pTheme);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SettingsControl), CSettingsControl)

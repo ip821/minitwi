@@ -6,6 +6,8 @@ HRESULT CPluginTable::FinalConstruct()
 {
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeDefault, L"Default theme object"));
 	RETURN_IF_FAILED(AddObject(CLSID_SkinTimeline, L"Timeline skin object"));
+	RETURN_IF_FAILED(AddObject(CLSID_SkinTabControl, L"Tab control skin object"));
+	RETURN_IF_FAILED(AddObject(CLSID_SkinCommonControl, L"Common control skin object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ColumnRects, L"Column rects object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeColorMap, L"Color map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeFontMap, L"Font map object"));
@@ -14,6 +16,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEME, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEMECOLORMAP, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme colors"));
 
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PVIEWTYPE_CONTAINERWINDOW, CONTROL_TABCONTAINER, CLSID_CustomTabControl, _T("Skin tab control")));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PVIEWTYPE_INPLACE_CONTROL, CLSID_TimelineControl, CLSID_TimelineControl, L"Timeline control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PVIEWTYPE_INPLACE_CONTROL, CLSID_SettingsControl, CLSID_SettingsControl, L"Settings control"));
 

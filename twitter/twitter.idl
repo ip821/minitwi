@@ -71,17 +71,6 @@ interface ITimelineService : IUnknown
 
 [
 	object,
-	uuid(27812A7C-A85F-4184-B1DA-7E9EA55B5816),
-	pointer_default(unique)
-]
-interface IViewControllerService : IUnknown
-{
-	HRESULT StartTimers();
-	HRESULT StopTimers();
-};
-
-[
-	object,
 	uuid(627BE6CD-5CB1-4364-817A-1EABA04B52C9),
 	pointer_default(unique)
 ]
@@ -159,7 +148,7 @@ interface ITimelineControl : IControl2
 	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
 	HRESULT RefreshItem(UINT uiIndex);
 	HRESULT IsEmpty(BOOL* pbIsEmpty);
-	HRESULT Invalidate();
+	HRESULT InvalidateItems(UINT* pItemIndexArray, UINT uiCountArray);
 	HRESULT Clear();
 	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
 	HRESULT BeginUpdate();
@@ -170,6 +159,45 @@ interface ITimelineControl : IControl2
 	HRESULT RemoveItemByIndex(UINT uiIndex);
 };
 
+typedef enum
+{
+	InfoImageIsOn,
+	InfoImageIsOff,
+	AnimationNextFrame,
+} TabControlNotifyReason;
+
+[
+	object,
+	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
+	pointer_default(unique)
+]
+interface ISkinTabControl : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
+	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
+	HRESULT EraseBackground(HDC hdc);
+	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
+	HRESULT DrawAnimation(HDC hdc);
+	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
+	HRESULT Notify(TabControlNotifyReason reason);
+	HRESULT GetInfoRect(RECT* pRect);
+};
+
+[
+	object,
+	uuid(83780BED-9F73-4AE3-B583-C1097789398B),
+	pointer_default(unique)
+]
+interface ISkinCommonControl : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT RegisterControl(HWND hWnd);
+	HRESULT UnregisterControl(HWND hWnd);
+};
+
 [
 	object,
 	uuid(825B6027-F439-4586-8DAE-DF9AE8527ABD),
@@ -178,8 +206,33 @@ interface ITimelineControl : IControl2
 interface ITheme : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
+	
+	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
+	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
+	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);
+};
+
+[
+	object,
+	uuid(F32CBA77-77AF-454E-8381-0DAE6A9F9D99),
+	pointer_default(unique)
+]
+interface ISettingsControl : IControl2
+{
+	HRESULT SetTheme(ITheme* pTheme);
+};
+
+[
+	object,
+	uuid(27812A7C-A85F-4184-B1DA-7E9EA55B5816),
+	pointer_default(unique)
+]
+interface IViewControllerService : IUnknown
+{
+	HRESULT StartTimers();
+	HRESULT StopTimers();
+	HRESULT SetTheme(ITheme* pTheme);
 };
 
 [
@@ -297,6 +350,20 @@ interface ITimelineImageService : IUnknown
 ]
 interface ITimelineCleanupService : IUnknown
 {
+};
+
+[
+	object,
+	uuid(391D8B43-2FB8-4B9A-B0FF-050BB2F07728),
+	pointer_default(unique)
+]
+interface ICustomTabControl : ITabbedControl
+{
+	HRESULT SetSkinTabControl(ISkinTabControl* pSkinTabControl);
+	HRESULT StartAnimation();
+	HRESULT StopAnimation();
+	HRESULT ShowInfo(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
+	HRESULT HideInfo();
 };
 
 [
@@ -460,6 +527,27 @@ library twitterLib
 	coclass TimelineCleanupService
 	{
 		[default] interface ITimelineCleanupService;
+	};
+	[
+		uuid(262329E2-B603-4FC0-97CB-40D95D41A1C0)
+	]
+	coclass CustomTabControl
+	{
+		[default] interface ICustomTabControl;
+	};
+	[
+		uuid(A4B1D02D-648F-4D71-9907-7B84B9DF2422)		
+	]
+	coclass SkinTabControl
+	{
+		[default] interface ISkinTabControl;
+	};
+	[
+		uuid(D9BF55FB-091B-4858-82EC-EBD0137D04FB)
+	]
+	coclass SkinCommonControl
+	{
+		[default] interface ISkinCommonControl;
 	};
 };
 

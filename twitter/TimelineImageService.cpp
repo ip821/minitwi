@@ -52,16 +52,17 @@ STDMETHODIMP CTimelineImageService::OnShutdown()
 STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 {
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
-	std::hash_set<std::wstring> ids;
+	std::hash_set<UINT> ids;
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
-		ids = std::hash_set<std::wstring>(m_idsToUpdate);
+		ids = std::hash_set<UINT>(m_idsToUpdate);
 		m_idsToUpdate.clear();
 	}
 
 	if (ids.size())
 	{
-		RETURN_IF_FAILED(m_pTimelineControl->Invalidate());
+		vector<UINT> v(ids.begin(), ids.end());
+		RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&v[0], v.size()));
 	}
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->ResumeTimer());
 	return S_OK;
@@ -120,6 +121,8 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
+	CComVariant vItemIndex;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ITEM_INDEX, &vItemIndex));
 
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
@@ -129,7 +132,7 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
 		}
 
-		m_idsToUpdate.insert(vId.bstrVal);
+		m_idsToUpdate.insert(vItemIndex.uintVal);
 	}
 
 	return S_OK;
@@ -171,6 +174,7 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(url.c_str())));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ITEM_INDEX, &CComVariant(i)));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE)));
 					RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 					urls.insert(url);
