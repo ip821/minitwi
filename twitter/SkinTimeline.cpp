@@ -82,13 +82,14 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		cdc.FillRect(&rect, brush);
 	}
 
+	if (!bDisabledSelection)
 	{
 		DWORD dwColor = 0;
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TWITTER_DELIMITER, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
 		RECT rect = lpdi->rcItem;
-		rect.bottom = rect.top + ITEM_DELIMITER_HEIGHT;
+		rect.top = rect.bottom - ITEM_DELIMITER_HEIGHT;
 		cdc.FillRect(&rect, brush);
 	}
 

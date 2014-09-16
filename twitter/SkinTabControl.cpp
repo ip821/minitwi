@@ -11,6 +11,7 @@ const int ITEM_SIZE = 10;
 const int ITEM_DISTANCE = 5;
 const int ITEM_OFFSET_Y = 1;
 const int TOOLTIP_ID = 1;
+#define ITEM_DELIMITER_HEIGHT 1
 
 STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
 {
@@ -167,6 +168,16 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnRects* pColumnRects, CDCHandle& cd
 {
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pColumnRects->GetCount(&uiCount));
+
+	{
+		DWORD dwColor = 0;
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TWITTER_DELIMITER, &dwColor));
+		CBrush brush;
+		brush.CreateSolidBrush(dwColor);
+		RECT rect = m_rectHeader;
+		rect.top = rect.bottom - ITEM_DELIMITER_HEIGHT;
+		cdc.FillRect(&rect, brush);
+	}
 
 	for (size_t i = 0; i < uiCount; i++)
 	{
