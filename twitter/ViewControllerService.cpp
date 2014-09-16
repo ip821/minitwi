@@ -77,37 +77,21 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	return S_OK;
 }
 
-STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError)
+STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError = FALSE, BOOL bEnableCLick = FALSE)
 {
-	HWND hwndChildControl = 0;
-	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
-	if (m_bUpdateAvailable)
-	{
-		RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(FALSE, TRUE, L"Update available. Click here to install."));
-	}
-	else
-	{
-		BOOL bEmpty = FALSE;
-		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
-		if ((bEmpty && !bError) || bError)
-		{
-			RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(bError, FALSE,bstrMessage));
-		}
-	}
+	RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(bError, bEnableCLick, bstrMessage));
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::HideControl()
 {
-	if (m_bUpdateAvailable)
-		return S_OK;
 	RETURN_IF_FAILED(m_pTabbedControl->HideInfo());
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
 {
+	RETURN_IF_FAILED(HideControl());
 	RETURN_IF_FAILED(m_pTabbedControl->StartAnimation());
 	return S_OK;
 }
@@ -116,14 +100,16 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 {
 	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
 
+	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 
-	if (SUCCEEDED(vHr.intVal))
+	if (m_bUpdateAvailable)
 	{
-		RETURN_IF_FAILED(HideControl());
+		RETURN_IF_FAILED(ShowControl(L"Update available. Click here to install.", FALSE, TRUE));
 	}
-	else
+	else if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
@@ -146,10 +132,6 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 
 STDMETHODIMP CViewControllerService::OnLinkClick(HWND hWnd)
 {
-	HWND hwndChildControl = 0;
-	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hwndChildControl));
-	if (hWnd != hwndChildControl)
-		return S_OK;
 	RETURN_IF_FAILED(m_pUpdateService->RunUpdate());
 	return S_OK;
 }

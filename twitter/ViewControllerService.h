@@ -51,7 +51,7 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
 
-	STDMETHOD(ShowControl)(BSTR bstrMessage, BOOL bError);
+	STDMETHOD(ShowControl)(BSTR bstrMessage, BOOL bError, BOOL bEnableCLick);
 	STDMETHOD(HideControl)();
 public:
 

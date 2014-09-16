@@ -435,3 +435,17 @@ HRESULT CCustomTabControl::Fire_OnLinkClick()
 	}
 	return hr;
 }
+
+LRESULT CCustomTabControl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	SetCursor(m_arrowCursor);
+
+	auto x = GET_X_LPARAM(lParam);
+	auto y = GET_Y_LPARAM(lParam);
+
+	if (m_bShowInfoImage && m_bInfoImageEnableClick && m_rectInfoImage.PtInRect(CPoint(x, y)))
+	{
+		SetCursor(m_handCursor);
+	}
+	return 0;
+}

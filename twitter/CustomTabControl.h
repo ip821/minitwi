@@ -29,7 +29,8 @@ public:
 
 	CCustomTabControl()
 	{
-
+		m_handCursor.LoadSysCursor(IDC_HAND);
+		m_arrowCursor.LoadSysCursor(IDC_ARROW);
 	}
 
 	DECLARE_NO_REGISTRY()
@@ -53,6 +54,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
 		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
+		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 	END_MSG_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CCustomTabControl)
@@ -71,6 +73,8 @@ private:
 	CRect m_rectChildControlArea;
 	CRect m_rectInfoImage;
 	BOOL m_bDrawAnimation = FALSE;
+	CCursor m_handCursor;
+	CCursor m_arrowCursor;
 
 	BOOL m_bInfoImageEnableClick = FALSE;
 	BOOL m_bShowInfoImage = FALSE;
@@ -87,6 +91,7 @@ private:
 	LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	HRESULT Fire_OnLinkClick();
 public:

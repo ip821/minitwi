@@ -300,6 +300,11 @@ STDMETHODIMP CSkinTabControl::Notify(TabControlNotifyReason reason)
 {
 	if (reason == TabControlNotifyReason::InfoImageIsOn)
 	{
+		if (m_wndTooltip.IsWindow())
+		{
+			m_wndTooltip.DestroyWindow();
+		}
+
 		if (!m_wndTooltip.IsWindow())
 		{
 			m_wndTooltip.Create(NULL, 0, 0, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, WS_EX_TOPMOST);
