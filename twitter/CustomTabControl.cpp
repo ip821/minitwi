@@ -172,7 +172,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		BitBlt(cdcBitmap, 0, 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap1 : cdcBitmap2, 0, 0, SRCCOPY);
 		BitBlt(cdcBitmap, m_rectChildControlArea.Width(), 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap2 : cdcBitmap1, 0, 0, SRCCOPY);
 
-		m_wndScroll.SetWindowPos(NULL, m_rectChildControlArea.left, m_rectChildControlArea.top, m_rectChildControlArea.right, m_rectChildControlArea.bottom, SWP_SHOWWINDOW);
+		m_wndScroll.SetWindowPos(NULL, &m_rectChildControlArea, SWP_SHOWWINDOW);
 		m_wndScroll.SetBitmap(m_scrollBitmap.m_hBitmap);
 		m_wndScroll.Scroll(bRightToLeft);
 	}
@@ -354,7 +354,6 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 
 	GetClientRect(&m_rectChildControlArea);
 	m_rectChildControlArea.top += uiHeight;
-	m_rectChildControlArea.bottom -= uiHeight;
 }
 
 STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabControl)
@@ -381,7 +380,7 @@ void CCustomTabControl::UpdateSizes()
 		pFoundControl->GetHWND(&hWnd);
 		UINT uiFlags = SWP_NOACTIVATE;
 		uiFlags |= m_selectedPageIndex == i ? SWP_SHOWWINDOW : SWP_HIDEWINDOW;
-		::SetWindowPos(hWnd, NULL, clientRect.left, clientRect.top, clientRect.right, clientRect.bottom, uiFlags);
+		::SetWindowPos(hWnd, NULL, clientRect.left, clientRect.top, clientRect.Width(), clientRect.Height(), uiFlags);
 	}
 }
 
