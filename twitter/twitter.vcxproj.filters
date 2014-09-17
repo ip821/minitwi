@@ -190,6 +190,9 @@
     <ClCompile Include="SkinCommonControl.cpp">
       <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
+    <ClCompile Include="ScrollControl.cpp">
+      <Filter>Controls\TabControl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -305,6 +308,9 @@
     </ClInclude>
     <ClInclude Include="SkinCommonControl.h">
       <Filter>Services\SkinService\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="ScrollControl.h">
+      <Filter>Controls\TabControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

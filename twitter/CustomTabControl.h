@@ -2,6 +2,7 @@
 
 #include "twitter_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
+#include "ScrollControl.h"
 
 using namespace ATL;
 using namespace std;
@@ -81,6 +82,9 @@ private:
 	BOOL m_bInfoImageIsError = FALSE;
 	CComBSTR m_bstrInfoMessage;
 
+	CScrollControl m_wndScroll;
+	CBitmap m_scrollBitmap;
+
 	void SelectPage(DWORD dwIndex);
 
 	void UpdateChildControlAreaRect();
@@ -95,6 +99,7 @@ private:
 
 	HRESULT Fire_OnLinkClick();
 public:
+	void OnEndScroll();
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
 	STDMETHOD(CreateEx)(HWND hWndParent, HWND *hWnd);

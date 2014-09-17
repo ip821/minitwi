@@ -12,7 +12,8 @@ STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls);
 	HrCoCreateInstance(CLSID_ColumnRects, &m_pColumnRects);
 	*hWnd = __super::Create(hWndParent, CRect(), L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
-
+	m_wndScroll.Create(m_hWnd, CRect(), L"", WS_CHILD | WS_HSCROLL, WS_EX_COMPOSITED);
+	m_wndScroll.SetTabWindow(this);
 	return S_OK;
 }
 
@@ -111,9 +112,15 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 	if (m_selectedPageIndex == dwIndex)
 		return;
 
+	CBitmap bitmap1;
+	CDC cdcBitmap1;
+	CBitmap bitmap2;
+	CDC cdcBitmap2;
+
 	UINT uiCount = 0;
 	m_pControls->GetCount(&uiCount);
 	ATLASSERT(dwIndex >= 0 && dwIndex < uiCount);
+	
 	if (m_selectedPageIndex != -1)
 	{
 		CComPtr<IControl> pControl;
@@ -121,7 +128,15 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		HWND hWnd = 0;
 		pControl->GetHWND(&hWnd);
 		::ShowWindow(hWnd, SW_HIDE);
-		m_selectedPageIndex = -1;
+
+		if (m_selectedPageIndex != -1)
+		{
+			CDC cdc(::GetDC(hWnd));
+			bitmap1.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width(), m_rectChildControlArea.Height());
+			cdcBitmap1.CreateCompatibleDC(cdc);
+			cdcBitmap1.SelectBitmap(bitmap1);
+		}
+		::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap1.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
 	}
 
 	{
@@ -129,9 +144,55 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		m_pControls->GetAt(dwIndex, __uuidof(IControl), (LPVOID*)&pControl);
 		HWND hWnd = 0;
 		pControl->GetHWND(&hWnd);
-		::ShowWindow(hWnd, SW_SHOW);
+
+		if (m_selectedPageIndex != -1)
+		{
+			CDC cdc(::GetDC(hWnd));
+			bitmap2.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width(), m_rectChildControlArea.Height());
+			cdcBitmap2.CreateCompatibleDC(cdc);
+			cdcBitmap2.SelectBitmap(bitmap2);
+		}
+
+		::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap2.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
 	}
+
+	if (m_selectedPageIndex != -1)
+	{
+		if (!m_scrollBitmap.IsNull())
+			m_scrollBitmap.DeleteObject();
+
+		CDC cdc(GetDC());
+		m_scrollBitmap.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width() * 2, m_rectChildControlArea.Height());
+
+		CDC cdcBitmap;
+		cdcBitmap.CreateCompatibleDC(cdc);
+		cdcBitmap.SelectBitmap(m_scrollBitmap);
+
+		BOOL bRightToLeft = (int)dwIndex > m_selectedPageIndex;
+		BitBlt(cdcBitmap, 0, 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap1 : cdcBitmap2, 0, 0, SRCCOPY);
+		BitBlt(cdcBitmap, m_rectChildControlArea.Width(), 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap2 : cdcBitmap1, 0, 0, SRCCOPY);
+
+		m_wndScroll.SetWindowPos(NULL, m_rectChildControlArea.left, m_rectChildControlArea.top, m_rectChildControlArea.right, m_rectChildControlArea.bottom, SWP_SHOWWINDOW);
+		m_wndScroll.SetBitmap(m_scrollBitmap.m_hBitmap);
+		m_wndScroll.Scroll(bRightToLeft);
+	}
+
 	m_selectedPageIndex = dwIndex;
+
+	if (m_selectedPageIndex == -1)
+	{
+		OnEndScroll();
+	}
+}
+
+void CCustomTabControl::OnEndScroll()
+{
+	m_wndScroll.ShowWindow(SW_HIDE);
+	CComPtr<IControl> pControl;
+	m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
+	HWND hWnd = 0;
+	pControl->GetHWND(&hWnd);
+	::ShowWindow(hWnd, SW_SHOW);
 	Invalidate(TRUE);
 }
 
