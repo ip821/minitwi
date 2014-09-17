@@ -53,7 +53,7 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 
 STDMETHODIMP CViewControllerService::StartTimers()
 {
-	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
+	//RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
 	return S_OK;
 }
 
