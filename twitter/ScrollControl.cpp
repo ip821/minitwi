@@ -6,15 +6,6 @@ void CScrollControl::SetBitmap(HBITMAP hBitmap)
 {
 	m_bitmap = hBitmap;
 	Invalidate();
-	SIZE sz = { 0 };
-	m_bitmap.GetSize(sz);
-	SCROLLINFO si = { 0 };
-	si.cbSize = sizeof(si);
-	si.fMask = SIF_RANGE | SIF_POS;
-	si.nMin = 0;
-	si.nMax = sz.cx;
-	si.nPos = 0;
-	SetScrollInfo(SB_HORZ, &si, TRUE);
 }
 
 void CScrollControl::Scroll(BOOL bFromRightToLeft)
@@ -42,14 +33,14 @@ LRESULT CScrollControl::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 {
 	m_dx += m_scrollAmount;
 	m_step++;
+	CRect rectUpdate;
+	ScrollWindowEx(m_scrollAmount, 0, SW_INVALIDATE, 0, 0, 0, &rectUpdate);
 	if (m_step == STEPS)
 	{
 		KillTimer(1);
 		m_pCustomTabControl->OnEndScroll();
 		return 0;
 	}
-	CRect rectUpdate;
-	ScrollWindowEx(m_scrollAmount, 0, SW_INVALIDATE, 0, 0, 0, &rectUpdate);
 	return 0;
 }
 
