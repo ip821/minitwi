@@ -35,7 +35,7 @@ void CScrollControl::Scroll(BOOL bFromRightToLeft)
 	}
 	m_bFromRightToLeft = bFromRightToLeft;
 
-	SetTimer(1, 30);
+	SetTimer(1, 10);
 }
 
 LRESULT CScrollControl::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -50,7 +50,6 @@ LRESULT CScrollControl::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	}
 	CRect rectUpdate;
 	ScrollWindowEx(m_scrollAmount, 0, SW_INVALIDATE, 0, 0, 0, &rectUpdate);
-	InvalidateRect(rectUpdate);
 	return 0;
 }
 
@@ -66,8 +65,7 @@ LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	PAINTSTRUCT ps = { 0 };
 	CDCHandle cdc(BeginPaint(&ps));
 
-	CRect rect;
-	GetClientRect(&rect);
+	CRect rect = ps.rcPaint;
 
 	CDC cdcBitmap;
 	cdcBitmap.CreateCompatibleDC(cdc);

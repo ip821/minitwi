@@ -24,7 +24,7 @@ private:
 	int m_dx = 0;
 	int m_step = 0;
 	int m_scrollAmount = 0;
-	const int STEPS = 5;
+	const int STEPS = 25;
 	BOOL m_bFromRightToLeft = FALSE;
 
 public:
