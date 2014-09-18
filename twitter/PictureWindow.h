@@ -26,9 +26,7 @@ class ATL_NO_VTABLE CPictureWindow :
 public:
 	DECLARE_WND_CLASS(L"PictureWindow")
 
-	CPictureWindow()
-	{
-	}
+	CPictureWindow();
 
 	DECLARE_REGISTRY_RESOURCEID(IDR_PICTUREWINDOW)
 
@@ -49,6 +47,7 @@ public:
 
 	BEGIN_MSG_MAP(CPictureWindow)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtomUp)
@@ -67,8 +66,23 @@ private:
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
 
+	BOOL m_bResizing = FALSE;
+	int m_dx = 0;
+	int m_dy = 0;
+
+	BOOL m_bFading = FALSE;
+	int m_alpha = 0;
+	int m_step = 0;
+	int m_alphaAmount = 0;
+	const int STEPS = 25;
+
+	TIMECAPS m_tc;
+	UINT m_wTimerRes = 0;
+	UINT m_uiTimerId = 0;
+
 	HRESULT Fire_OnClosed(HWND hWnd);
 
+	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -78,6 +92,7 @@ private:
 	void CalcRect(int width, int height, CRect& rect);
 
 public:
+	void OnMMTimer();
 
 	STDMETHOD(Show)(HWND hWndParent);
 	STDMETHOD(GetHWND)(HWND* phWnd);

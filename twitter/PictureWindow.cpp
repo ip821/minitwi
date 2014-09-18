@@ -8,6 +8,16 @@
 
 #define IMAGE_PADDING 25
 
+#define TARGET_RESOLUTION 1
+#define TARGET_INTERVAL 15
+
+CPictureWindow::CPictureWindow()
+{
+	timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
+	m_wTimerRes = min(max(m_tc.wPeriodMin, TARGET_RESOLUTION), m_tc.wPeriodMax);
+	timeBeginPeriod(m_wTimerRes);
+}
+
 STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
@@ -36,6 +46,11 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 	m_pPluginSupport.Release();
 
 	return S_OK;
+}
+
+LRESULT CPictureWindow::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	return 0;
 }
 
 STDMETHODIMP CPictureWindow::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
@@ -96,7 +111,7 @@ STDMETHODIMP CPictureWindow::Show(HWND hWndParent)
 	m_hWndParent = hWndParent;
 	CRect rect(0, 0, 100, 100);
 	CalcRect(rect.right, rect.bottom, rect);
-	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU);
+	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU, WS_EX_COMPOSITED);
 	return S_OK;
 }
 
@@ -122,6 +137,64 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 	return S_OK;
 }
 
+void CALLBACK TimerCallback1(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
+{
+	BOOL bHandled = FALSE;
+	((CPictureWindow*)dwUser)->OnMMTimer();
+}
+
+void CPictureWindow::OnMMTimer()
+{
+	timeKillEvent(m_uiTimerId);
+
+	if (m_bResizing)
+	{
+		m_step++;
+
+		CRect rect;
+		GetWindowRect(&rect);
+
+		auto width = m_step * m_dx;
+		auto height = m_step * m_dy;
+
+		if (width > rect.Width() || height > rect.Height())
+		{
+			CalcRect(width, height, rect);
+			MoveWindow(&rect, TRUE);
+		}
+		
+		if (m_step == STEPS)
+		{
+			CRect rect;
+			GetWindowRect(&rect);
+
+			CalcRect(width, height, rect);
+			SetWindowPos(NULL, &rect, SWP_NOZORDER);
+
+			m_step = 0;
+			m_bResizing = FALSE;
+			m_bFading = TRUE;
+		}
+
+		m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)this, TIME_ONESHOT);
+	}
+	else if (m_bFading)
+	{
+		m_alpha += m_alphaAmount;
+		m_step++;
+		Invalidate();
+
+		if (m_step == STEPS)
+		{
+			m_alpha = 255;
+			m_bFading = FALSE;
+			return;
+		}
+		m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)this, TIME_ONESHOT);
+	}
+
+}
+
 STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
@@ -145,16 +218,28 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		lock_guard<mutex> lock(m_mutex);
 		ATLASSERT(!m_pBitmap);
 		m_pBitmap = make_shared<Gdiplus::Bitmap>(vFilePath.bstrVal);
+
+		m_alpha = 0;
+		m_alphaAmount = (255 / STEPS);
+		m_step = 0;
+		m_dx = 0;
+		m_dy = 0;
+
+		CRect rect;
+		GetClientRect(&rect);
+
+		auto width = (int)m_pBitmap->GetWidth();
+		auto height = (int)m_pBitmap->GetHeight();
+
+		m_dx = (width) / STEPS;
+		m_dy = (height) / STEPS;
+
+		m_bResizing = TRUE;
+		m_bFading = FALSE;
 	}
 
-	CRect rect;
-	GetWindowRect(&rect);
+	m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)this, TIME_ONESHOT);
 
-	auto width = m_pBitmap->GetWidth();
-	auto height = m_pBitmap->GetHeight();
-
-	CalcRect(width, height, rect);
-	SetWindowPos(NULL, &rect, SWP_NOZORDER);
 	return S_OK;
 }
 
@@ -193,13 +278,23 @@ void CPictureWindow::OnFinalMessage(HWND hWnd)
 LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	PAINTSTRUCT ps = { 0 };
-	CDCHandle cdc(BeginPaint(&ps));
+	CDCHandle cdcReal(BeginPaint(&ps));
 
 	CRect rect;
 	GetClientRect(&rect);
 
+	CBitmap bufferBitmap;
+	bufferBitmap.CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
+
+	CDC cdc;
+	cdc.CreateCompatibleDC(cdcReal);
+	cdc.SelectBitmap(bufferBitmap);
+
 	{
 		lock_guard<mutex> lock(m_mutex);
+
+		static Gdiplus::Color colorWhite(Gdiplus::Color::White);
+		cdc.FillSolidRect(&rect, colorWhite.ToCOLORREF());
 
 		if (!m_pBitmap)
 		{
@@ -223,9 +318,15 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			CDC cdcBitmap;
 			cdcBitmap.CreateCompatibleDC(cdc);
 			cdcBitmap.SelectBitmap(bitmap);
-			BitBlt(cdc, x, y, width, height, cdcBitmap, 0, 0, SRCCOPY);
+			BLENDFUNCTION bf = { 0 };
+			bf.BlendOp = AC_SRC_OVER;
+			bf.SourceConstantAlpha = m_alpha;
+			cdc.AlphaBlend(x, y, width, height, cdcBitmap, 0, 0, width, height, bf);
 		}
 	}
+
+	cdcReal.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, SRCCOPY);
+
 	EndPaint(&ps);
 	return 0;
 }
