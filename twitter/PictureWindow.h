@@ -25,7 +25,6 @@ class ATL_NO_VTABLE CPictureWindow :
 {
 public:
 	DECLARE_WND_CLASS(L"PictureWindow")
-
 	CPictureWindow();
 
 	DECLARE_REGISTRY_RESOURCEID(IDR_PICTUREWINDOW)
@@ -52,6 +51,7 @@ public:
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtomUp)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
+		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 	END_MSG_MAP()
 
 private:
@@ -66,11 +66,6 @@ private:
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
 
-	BOOL m_bResizing = FALSE;
-	int m_dx = 0;
-	int m_dy = 0;
-
-	BOOL m_bFading = FALSE;
 	int m_alpha = 0;
 	int m_step = 0;
 	int m_alphaAmount = 0;
@@ -88,6 +83,8 @@ private:
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
 	void OnFinalMessage(HWND hWnd);
 	void CalcRect(int width, int height, CRect& rect);
 

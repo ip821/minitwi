@@ -140,59 +140,24 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 void CALLBACK TimerCallback1(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
 {
 	BOOL bHandled = FALSE;
-	((CPictureWindow*)dwUser)->OnMMTimer();
+	::SendMessage((HWND)dwUser, WM_TIMER, 0, 0);
 }
 
-void CPictureWindow::OnMMTimer()
+LRESULT CPictureWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	timeKillEvent(m_uiTimerId);
 
-	if (m_bResizing)
+	m_alpha += m_alphaAmount;
+	m_step++;
+	Invalidate();
+
+	if (m_step == STEPS)
 	{
-		m_step++;
-
-		CRect rect;
-		GetWindowRect(&rect);
-
-		auto width = m_step * m_dx;
-		auto height = m_step * m_dy;
-
-		if (width > rect.Width() || height > rect.Height())
-		{
-			CalcRect(width, height, rect);
-			MoveWindow(&rect, TRUE);
-		}
-		
-		if (m_step == STEPS)
-		{
-			CRect rect;
-			GetWindowRect(&rect);
-
-			CalcRect(width, height, rect);
-			SetWindowPos(NULL, &rect, SWP_NOZORDER);
-
-			m_step = 0;
-			m_bResizing = FALSE;
-			m_bFading = TRUE;
-		}
-
-		m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)this, TIME_ONESHOT);
+		m_alpha = 255;
+		return 0;
 	}
-	else if (m_bFading)
-	{
-		m_alpha += m_alphaAmount;
-		m_step++;
-		Invalidate();
-
-		if (m_step == STEPS)
-		{
-			m_alpha = 255;
-			m_bFading = FALSE;
-			return;
-		}
-		m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)this, TIME_ONESHOT);
-	}
-
+	m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)m_hWnd, TIME_ONESHOT);
+	return 0;
 }
 
 STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
@@ -222,23 +187,18 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		m_alpha = 0;
 		m_alphaAmount = (255 / STEPS);
 		m_step = 0;
-		m_dx = 0;
-		m_dy = 0;
-
-		CRect rect;
-		GetClientRect(&rect);
 
 		auto width = (int)m_pBitmap->GetWidth();
 		auto height = (int)m_pBitmap->GetHeight();
 
-		m_dx = (width) / STEPS;
-		m_dy = (height) / STEPS;
+		CRect rect;
+		GetWindowRect(&rect);
 
-		m_bResizing = TRUE;
-		m_bFading = FALSE;
+		CalcRect(width, height, rect);
+		SetWindowPos(NULL, &rect, SWP_NOZORDER);
 	}
 
-	m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)this, TIME_ONESHOT);
+	m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)m_hWnd, TIME_ONESHOT);
 
 	return S_OK;
 }
@@ -252,7 +212,7 @@ void CPictureWindow::CalcRect(int width, int height, CRect& rect)
 		MONITORINFO mi = { 0 };
 		mi.cbSize = sizeof(MONITORINFO);
 		GetMonitorInfo(hMonitor, &mi);
-		
+
 		rect = mi.rcWork;
 		rect.left += (mi.rcWork.right - mi.rcWork.left) / 2 - width / 2;
 		rect.top += (mi.rcWork.bottom - mi.rcWork.top) / 2 - height / 2;
