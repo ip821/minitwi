@@ -5,6 +5,7 @@
 #include "Plugins.h"
 #include <hash_set>
 #include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 
 // CTwitterConnection
 
@@ -237,11 +238,11 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, BSTR bstrSinceI
 		std::wstring stdStr(strText);
 
 #ifndef DEBUG
-		static std::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)*)");
-		static std::regex_constants::match_flag_type fl = std::regex_constants::match_default;
+		static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)*)");
+		static boost::regex_constants::match_flag_type fl = boost::regex_constants::match_default;
 
-		std::regex_iterator<std::wstring::iterator> regexIterator(stdStr.begin(), stdStr.end(), regex);
-		std::regex_iterator<std::wstring::iterator> regexIteratorEnd;
+		boost::regex_iterator<std::wstring::iterator> regexIterator(stdStr.begin(), stdStr.end(), regex);
+		boost::regex_iterator<std::wstring::iterator> regexIteratorEnd;
 		while (regexIterator != regexIteratorEnd)
 		{
 			auto strUrl1 = regexIterator->str();
