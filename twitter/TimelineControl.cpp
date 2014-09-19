@@ -105,14 +105,13 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 STDMETHODIMP CTimelineControl::BeginUpdate()
 {
-	m_listBox.SetRedraw(FALSE);
+	m_listBox.BeginUpdate();
 	return S_OK;
 }
 
 STDMETHODIMP CTimelineControl::EndUpdate()
 {
-	m_listBox.SetRedraw();
-	RETURN_IF_FAILED(Invalidate());
+	m_listBox.EndUpdate();
 	return S_OK;
 }
 
@@ -155,21 +154,9 @@ STDMETHODIMP CTimelineControl::InsertItems(IObjArray* pObjectArray, UINT uiStart
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineControl::InvalidateItems(UINT* pItemIndexArray, UINT uiCountArray)
+STDMETHODIMP CTimelineControl::InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray)
 {
-	UINT firstVisibleIndex = m_listBox.GetTopIndex();
-	UINT lastVisibleIndex = firstVisibleIndex + 20; //well...
-	BOOL bNeedInvalidate = FALSE;
-	for (size_t i = 0; i < uiCountArray; i++)
-	{
-		if (pItemIndexArray[i] >= firstVisibleIndex && pItemIndexArray[i] <= lastVisibleIndex)
-		{
-			bNeedInvalidate = TRUE;
-			break;
-		}
-	}
-	if (bNeedInvalidate)
-		m_listBox.Invalidate(TRUE);
+	m_listBox.InvalidateItems(pItemArray, uiCountArray);
 	return S_OK;
 }
 

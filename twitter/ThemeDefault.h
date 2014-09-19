@@ -44,6 +44,7 @@ public:
 	STDMETHOD(GetCommonControlSkin)(ISkinCommonControl** pSkinCommonControl);
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
+	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ThemeDefault), CThemeDefault)

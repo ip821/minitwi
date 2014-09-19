@@ -100,7 +100,7 @@ public:
 	STDMETHOD(GetItems)(IObjArray** ppObjectArray);
 	STDMETHOD(InsertItems)(IObjArray* pObjectArray, UINT uiStartIndex);
 	STDMETHOD(IsEmpty)(BOOL* pbIsEmpty);
-	STDMETHOD(InvalidateItems)(UINT* pItemIndexArray, UINT uiCountArray);
+	STDMETHOD(InvalidateItems)(IVariantObject** pItemArray, UINT uiCountArray);
 	STDMETHOD(Clear)();
 	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);
 	STDMETHOD(BeginUpdate)();

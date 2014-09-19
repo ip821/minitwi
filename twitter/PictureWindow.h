@@ -16,6 +16,7 @@ class ATL_NO_VTABLE CPictureWindow :
 	public CWindowImpl<CPictureWindow>,
 	public IPictureWindow,
 	public IMsgFilter,
+	public IThemeSupport,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
 	public IDownloadServiceEventSink,
@@ -38,6 +39,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IConnectionPointContainer)
 		COM_INTERFACE_ENTRY(IWindow)
+		COM_INTERFACE_ENTRY(IThemeSupport)
 	END_COM_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CPictureWindow)
@@ -59,6 +61,7 @@ private:
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
 	CComPtr<IMessageLoop> m_pMessageLoop;
+	CComPtr<ITheme> m_pTheme;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmap;
@@ -101,6 +104,8 @@ public:
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *bResult);
+
+	STDMETHOD(SetTheme)(ITheme* pTheme);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(PictureWindow), CPictureWindow)

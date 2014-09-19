@@ -307,42 +307,50 @@ STDMETHODIMP CSkinTabControl::DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessa
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::Notify(TabControlNotifyReason reason)
+STDMETHODIMP CSkinTabControl::StartInfoImage()
 {
-	if (reason == TabControlNotifyReason::InfoImageIsOn)
+	if (m_wndTooltip.IsWindow())
 	{
-		if (m_wndTooltip.IsWindow())
-		{
-			m_wndTooltip.DestroyWindow();
-		}
+		m_wndTooltip.DestroyWindow();
+	}
 
-		if (!m_wndTooltip.IsWindow())
-		{
-			m_wndTooltip.Create(NULL, 0, 0, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, WS_EX_TOPMOST);
-			m_wndTooltip.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-		}
+	if (!m_wndTooltip.IsWindow())
+	{
+		m_wndTooltip.Create(NULL, 0, 0, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, WS_EX_TOPMOST);
+		m_wndTooltip.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+	}
 
-		TOOLINFO ti = { 0 };
-		ti.cbSize = sizeof(ti);
-		ti.hwnd = m_hWnd;
-		ti.uFlags = TTF_SUBCLASS | TTF_CENTERTIP;
-		ti.rect = m_rectInfoImage;
-		ti.uId = TOOLTIP_ID;
-		ti.hinst = NULL;
-		m_wndTooltip.Activate(TRUE);
-		m_wndTooltip.AddTool(&ti);
-	}
-	else if (reason == TabControlNotifyReason::InfoImageIsOff)
-	{
-		if (m_wndTooltip.IsWindow())
-			m_wndTooltip.DestroyWindow();
-	}
-	else if (reason == TabControlNotifyReason::AnimationNextFrame)
-	{
-		m_iFrameCount++;
-		if (m_iFrameCount == MAX_COUNT)
-			m_iFrameCount = 0;
-	}
+	TOOLINFO ti = { 0 };
+	ti.cbSize = sizeof(ti);
+	ti.hwnd = m_hWnd;
+	ti.uFlags = TTF_SUBCLASS | TTF_CENTERTIP;
+	ti.rect = m_rectInfoImage;
+	ti.uId = TOOLTIP_ID;
+	ti.hinst = NULL;
+	m_wndTooltip.Activate(TRUE);
+	m_wndTooltip.AddTool(&ti);
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::StopInfoImage()
+{
+	if (m_wndTooltip.IsWindow())
+		m_wndTooltip.DestroyWindow();
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::AnimationGetParams(UINT* puiMilliseconds)
+{
+	CHECK_E_POINTER(puiMilliseconds);
+	*puiMilliseconds = 200;
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::AnimationNextFrame()
+{
+	m_iFrameCount++;
+	if (m_iFrameCount == MAX_COUNT)
+		m_iFrameCount = 0;
 	return S_OK;
 }
 

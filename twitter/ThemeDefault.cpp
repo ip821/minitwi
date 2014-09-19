@@ -91,3 +91,10 @@ STDMETHODIMP CThemeDefault::GetCommonControlSkin(ISkinCommonControl** pSkinCommo
 	RETURN_IF_FAILED(m_pSkinCommonControl->QueryInterface(pSkinCommonControl));
 	return S_OK;
 }
+
+STDMETHODIMP CThemeDefault::GetColorMap(IThemeColorMap** ppThemeColorMap)
+{
+	CHECK_E_POINTER(ppThemeColorMap);
+	RETURN_IF_FAILED(m_pThemeColorMap->QueryInterface(ppThemeColorMap));
+	return S_OK;
+}

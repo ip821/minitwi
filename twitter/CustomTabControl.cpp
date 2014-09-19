@@ -20,7 +20,9 @@ STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 STDMETHODIMP CCustomTabControl::StartAnimation()
 {
 	m_bDrawAnimation = TRUE;
-	SetTimer(1, 200);
+	UINT uiMilliseconds = 0;
+	RETURN_IF_FAILED(m_pSkinTabControl->AnimationGetParams(&uiMilliseconds));
+	SetTimer(1, uiMilliseconds);
 	return S_OK;
 }
 
@@ -40,7 +42,7 @@ STDMETHODIMP CCustomTabControl::StopAnimation()
 LRESULT CCustomTabControl::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	if (m_pSkinTabControl)
-		m_pSkinTabControl->Notify(TabControlNotifyReason::AnimationNextFrame);
+		m_pSkinTabControl->AnimationNextFrame();
 	CRect rectClient;
 	GetClientRect(&rectClient);
 	rectClient.bottom = m_rectChildControlArea.top - 1;
@@ -459,7 +461,7 @@ STDMETHODIMP CCustomTabControl::ShowInfo(BOOL bError, BOOL bInfoImageEnableClick
 	m_bInfoImageIsError = bError;
 	m_bstrInfoMessage = bstrMessage;
 	m_bInfoImageEnableClick = bInfoImageEnableClick;
-	m_pSkinTabControl->Notify(TabControlNotifyReason::InfoImageIsOn);
+	m_pSkinTabControl->StartInfoImage();
 	return S_OK;
 }
 
@@ -468,7 +470,7 @@ STDMETHODIMP CCustomTabControl::HideInfo()
 	m_bShowInfoImage = FALSE;
 	m_bInfoImageIsError = FALSE;
 	m_bstrInfoMessage.Empty();
-	m_pSkinTabControl->Notify(TabControlNotifyReason::InfoImageIsOff);
+	m_pSkinTabControl->StopInfoImage();
 	return S_OK;
 }
 
