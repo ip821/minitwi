@@ -122,8 +122,15 @@ interface ISkinTimeline : IUnknown
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
-	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn);
+	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
+	
+	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn, UINT* puiNotAnimatedColumnIndexes, UINT uiNotAnimatedColumnIndexesCount);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
+
+	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnRects* pColumnRects, int iColumnIndex);
+	HRESULT AnimationGetParams(UINT* puiMilliseconds);
+	HRESULT AnimationGetIndexes(UINT* puiIndexArray, UINT* puiCount);
+	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);
 };
 
 [
@@ -148,7 +155,7 @@ interface ITimelineControl : IControl2
 	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
 	HRESULT RefreshItem(UINT uiIndex);
 	HRESULT IsEmpty(BOOL* pbIsEmpty);
-	HRESULT InvalidateItems(UINT* pItemIndexArray, UINT uiCountArray);
+	HRESULT InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
 	HRESULT Clear();
 	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
 	HRESULT BeginUpdate();
@@ -158,13 +165,6 @@ interface ITimelineControl : IControl2
 	HRESULT GetItemsCount(UINT* puiCount);
 	HRESULT RemoveItemByIndex(UINT uiIndex);
 };
-
-typedef enum
-{
-	InfoImageIsOn,
-	InfoImageIsOff,
-	AnimationNextFrame,
-} TabControlNotifyReason;
 
 [
 	object,
@@ -181,8 +181,11 @@ interface ISkinTabControl : IUnknown
 	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
 	HRESULT DrawAnimation(HDC hdc);
 	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
-	HRESULT Notify(TabControlNotifyReason reason);
 	HRESULT GetInfoRect(RECT* pRect);
+	HRESULT StartInfoImage();
+	HRESULT StopInfoImage();
+	HRESULT AnimationGetParams(UINT* puiMilliseconds);
+	HRESULT AnimationNextFrame();
 };
 
 [

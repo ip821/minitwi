@@ -30,6 +30,7 @@ public:
 
 	BEGIN_MSG_MAP(CCustomListBox)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp);
@@ -41,6 +42,7 @@ public:
 	CCustomListBox();
 private:
 	CComPtr<IObjCollection> m_pItems;
+	std::map<IVariantObject*, int> m_itemsToIndex;
 	std::vector<CAdapt<CComPtr<IColumnRects> > > m_columnRects;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	int m_prevX = 0;
@@ -49,8 +51,17 @@ private:
 	int m_HoveredColumnIndex = -1;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
+	BOOL m_bAnimationNeeded = FALSE;
+	BOOL m_bAnimating = FALSE;
+	TIMECAPS m_tc;
+	UINT m_wTimerRes = 0;
+	UINT m_uiTimerId = 0;
+
+	std::map<IVariantObject*, std::hash_set<int>> m_animatedColumns;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
+	void UpdateAnimatedColumns(IColumnRects* pColumnRects, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
+	void StartAnimationTimer();
 
 public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -59,6 +70,7 @@ public:
 	LRESULT OnLMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
@@ -70,5 +82,8 @@ public:
 	void OnItemsUpdated();
 	void RemoveItemByIndex(UINT uiIndex);
 	void RefreshItem(UINT uiIndex);
+	void BeginUpdate();
+	void EndUpdate();
+	void InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
 };
 

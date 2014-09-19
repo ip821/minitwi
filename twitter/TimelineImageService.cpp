@@ -52,16 +52,16 @@ STDMETHODIMP CTimelineImageService::OnShutdown()
 STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 {
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
-	std::hash_set<UINT> ids;
+	std::hash_set<IVariantObject*> ids;
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
-		ids = std::hash_set<UINT>(m_idsToUpdate);
+		ids = std::hash_set<IVariantObject*>(m_idsToUpdate);
 		m_idsToUpdate.clear();
 	}
 
 	if (ids.size())
 	{
-		vector<UINT> v(ids.begin(), ids.end());
+		vector<IVariantObject*> v(ids.begin(), ids.end());
 		RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&v[0], v.size()));
 	}
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->ResumeTimer());
@@ -77,8 +77,8 @@ STDMETHODIMP CTimelineImageService::OnItemRemoved(IVariantObject *pItemObject)
 		{
 			std::lock_guard<std::mutex> lock(m_mutex);
 			ATLASSERT(m_imageRefs.find(url) != m_imageRefs.end());
-			m_imageRefs[url]--;
-			if (m_imageRefs[url] <= 0)
+			m_imageRefs[url].erase(pItemObject);
+			if (m_imageRefs[url].size() == 0)
 			{
 				m_pImageManagerService->RemoveImage(CComBSTR(url.c_str()));
 				m_imageRefs.erase(url);
@@ -127,12 +127,16 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
 
-		if (m_imageRefs.find(vUrl.bstrVal) != m_imageRefs.end())
+		auto it = m_imageRefs.find(vUrl.bstrVal);
+		if (it != m_imageRefs.end())
 		{
 			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
 		}
 
-		m_idsToUpdate.insert(vItemIndex.uintVal);
+		for (auto& item : it->second)
+		{
+			m_idsToUpdate.insert(item);
+		}
 	}
 
 	return S_OK;
@@ -162,8 +166,8 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 			for (auto& url : itemUrls)
 			{
 				if (m_imageRefs.find(url) == m_imageRefs.end())
-					m_imageRefs[url] = 0;
-				m_imageRefs[url]++;
+					m_imageRefs[url].clear();
+				m_imageRefs[url].insert(pVariantObject.p);
 
 				BOOL bContains = TRUE;
 				CComBSTR bstrImageKey(url.c_str());

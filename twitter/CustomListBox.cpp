@@ -2,6 +2,8 @@
 #include "CustomListBox.h"
 #include "Plugins.h"
 
+#define TARGET_RESOLUTION 1
+
 CCustomListBox::CCustomListBox()
 {
 	m_HoveredItemIndex = -1;
@@ -9,6 +11,10 @@ CCustomListBox::CCustomListBox()
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pItems);
+
+	timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
+	m_wTimerRes = min(max(m_tc.wPeriodMin, TARGET_RESOLUTION), m_tc.wPeriodMax);
+	timeBeginPeriod(m_wTimerRes);
 }
 
 LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -36,7 +42,9 @@ void CCustomListBox::Clear()
 	}
 	ResetContent();
 	m_pItems->Clear();
+	m_itemsToIndex.clear();
 	m_columnRects.clear();
+	m_animatedColumns.clear();
 }
 
 void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
@@ -58,6 +66,11 @@ void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
 
 	m_pItems->RemoveObjectAt(&uiIndex);
 	m_columnRects.erase(m_columnRects.begin() + uiIndex);
+	m_itemsToIndex.erase(pVariantObject.p);
+
+	CComVariant vId;
+	pVariantObject->GetVariantValue(VAR_ID, &vId);
+	m_animatedColumns.erase(pVariantObject.p);
 }
 
 void CCustomListBox::RefreshItem(UINT uiIndex)
@@ -93,7 +106,14 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 	if (lpdi->itemID == -1)
 		return;
 
-	m_pSkinTimeline->DrawItem(m_hWnd, m_columnRects[lpdi->itemID].m_T, (TDRAWITEMSTRUCT*)lpdi, m_HoveredItemIndex, m_HoveredColumnIndex);
+	CComPtr<IVariantObject> pVariantObject;
+	m_pItems->GetAt(lpdi->itemID, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+	auto& columns = m_animatedColumns[pVariantObject.p];
+	std::vector<UINT> vIndexes(columns.begin(), columns.end());
+	UINT* pui = NULL;
+	if (vIndexes.size())
+		pui = &vIndexes[0];
+	m_pSkinTimeline->DrawItem(m_hWnd, m_columnRects[lpdi->itemID].m_T, (TDRAWITEMSTRUCT*)lpdi, m_HoveredItemIndex, m_HoveredColumnIndex, pui, vIndexes.size());
 }
 
 void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
@@ -151,34 +171,48 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	CComVariant vId;
 	pItemObject->GetVariantValue(VAR_ID, &vId);
 
-	if (vId.vt == VT_BSTR)
-	{
-		BOOL bFound = FALSE;
-		UINT uiCount = 0;
-		m_pItems->GetCount(&uiCount);
-		for (size_t i = 0; i < uiCount; i++)
-		{
-			CComPtr<IVariantObject> pVariantObject;
-			m_pItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
-			
-			CComVariant v;
-			pVariantObject->GetVariantValue(VAR_ID, &v);
-			if (v.vt == VT_BSTR && CComBSTR(v.bstrVal) == CComBSTR(vId.bstrVal))
-			{
-				bFound = TRUE;
-				break;
-			}
-		}
-
-		if (bFound)
-			return;
-	}
-
 	m_pItems->InsertObject(pItemObject, index);
+	m_itemsToIndex[pItemObject] = index;
 	CComPtr<IColumnRects> pColumnRects;
 	HrCoCreateInstance(CLSID_ColumnRects, &pColumnRects);
 	m_columnRects.insert(m_columnRects.begin() + index, pColumnRects);
 	auto itemId = SendMessage(LB_INSERTSTRING, index, (LPARAM)1);
+	
+	m_pSkinTimeline->AnimationRegisterItemIndex(index, pColumnRects, -1);
+	UpdateAnimatedColumns(pColumnRects, index, pItemObject, TRUE);
+	m_bAnimationNeeded = TRUE;
+}
+
+void CCustomListBox::UpdateAnimatedColumns(IColumnRects* pColumnRects, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation)
+{
+	CComPtr<IImageManagerService> pImageManagerService;
+	m_pSkinTimeline->GetImageManagerService(&pImageManagerService);
+
+	UINT uiCount = 0;
+	pColumnRects->GetCount(&uiCount);
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		BOOL bImage = FALSE;
+		pColumnRects->GetRectBoolProp(i, VAR_IS_IMAGE, &bImage);
+		if (!bImage)
+			continue;
+
+		CComBSTR bstrValue;
+		pColumnRects->GetRectStringProp(i, VAR_VALUE, &bstrValue);
+
+		BOOL bContains = FALSE;
+		pImageManagerService->ContainsImageKey(bstrValue, &bContains);
+
+		if (!bContains)
+			continue;
+
+		if (m_animatedColumns[pVariantObject].find(i) != m_animatedColumns[pVariantObject].end())
+			continue;
+
+		m_animatedColumns[pVariantObject].insert(i);
+		if (bRegisterForAnimation)
+			m_pSkinTimeline->AnimationRegisterItemIndex(itemIndex, pColumnRects, i);
+	}
 }
 
 LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -374,4 +408,98 @@ LRESULT CCustomListBox::OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 {
 	bHandled = FALSE;
 	return HandleCLick(lParam, NM_LISTBOX_RCLICK);
+}
+
+void CCustomListBox::BeginUpdate()
+{
+	SetRedraw(FALSE);
+}
+
+void CALLBACK TimerCallback3(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
+{
+	BOOL bHandled = FALSE;
+	::SendMessage(((CCustomListBox*)dwUser)->m_hWnd, WM_TIMER, 1, 0);
+}
+
+void CCustomListBox::EndUpdate()
+{
+	if (m_bAnimationNeeded)
+	{
+		StartAnimationTimer();
+	}
+	m_bAnimationNeeded = FALSE;
+	SetRedraw();
+	Invalidate();
+}
+
+void CCustomListBox::StartAnimationTimer()
+{
+	m_bAnimating = TRUE;
+	UINT uiInterval = 0;
+	m_pSkinTimeline->AnimationGetParams(&uiInterval);
+	m_uiTimerId = timeSetEvent(uiInterval, m_wTimerRes, TimerCallback3, (DWORD_PTR)this, TIME_ONESHOT);
+}
+
+LRESULT CCustomListBox::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	timeKillEvent(m_uiTimerId);
+	BOOL bContinueAnimation = FALSE;
+	m_pSkinTimeline->AnimationNextFrame(&bContinueAnimation);
+
+	if (bContinueAnimation)
+	{
+		SetRedraw(FALSE);
+
+		UINT uiCount = 0;
+		m_pSkinTimeline->AnimationGetIndexes(NULL, &uiCount);
+		std::vector<UINT> vIndexes(uiCount);
+		m_pSkinTimeline->AnimationGetIndexes(&vIndexes[0], &uiCount);
+
+		//for (auto& itemIndex : vIndexes)
+		//{
+		//	CRect rect;
+		//	GetItemRect(itemIndex, &rect);
+		//	InvalidateRect(rect);
+		//}
+
+		if (vIndexes.size())
+			Invalidate();
+
+		StartAnimationTimer();
+		SetRedraw();
+		return 0;
+	}
+	m_bAnimating = FALSE;
+	return 0;
+}
+
+void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray)
+{
+	CRect rect;
+	GetClientRect(&rect);
+
+	RedrawWindow(FALSE);
+	UINT firstVisibleIndex = GetTopIndex();
+	BOOL bNeedInvalidate = FALSE;
+	for (size_t i = 0; i < uiCountArray; i++)
+	{
+		auto it = m_itemsToIndex.find(pItemArray[i]);
+		if (it == m_itemsToIndex.end())
+			continue;
+
+		IVariantObject* pVariantObject = pItemArray[i];
+
+		CRect rectItem;
+		GetItemRect(it->second, &rectItem);
+		CRect rectIntersect;
+		BOOL bIntersects = rectIntersect.IntersectRect(rectItem, rect);
+		UpdateAnimatedColumns(m_columnRects[it->second].m_T, it->second, pVariantObject, bIntersects);
+	
+		if (bIntersects)
+			bNeedInvalidate = TRUE;
+	}
+	RedrawWindow();
+
+	if (bNeedInvalidate && !m_bAnimating)
+		StartAnimationTimer();
 }

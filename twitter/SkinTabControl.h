@@ -50,8 +50,12 @@ public:
 	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
 	STDMETHOD(DrawAnimation)(HDC hdc);
 	STDMETHOD(DrawInfoImage)(HDC hdc, BOOL bError, BSTR bstrMessage);
-	STDMETHOD(Notify)(TabControlNotifyReason reason);
 	STDMETHOD(GetInfoRect)(RECT* pRect);
+	STDMETHOD(StartInfoImage)();
+	STDMETHOD(StopInfoImage)();
+	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
+	STDMETHOD(AnimationNextFrame)();
+
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinTabControl), CSkinTabControl)
