@@ -114,3 +114,12 @@ STDMETHODIMP CThemeService::ApplyThemeFromSettings()
 	}
 	return S_OK;
 }
+
+STDMETHODIMP CThemeService::GetCurrentTheme(ITheme** ppTheme)
+{
+	CHECK_E_POINTER(ppTheme);
+	if (!m_pCurrentTheme)
+		return E_PENDING;
+	RETURN_IF_FAILED(m_pCurrentTheme->QueryInterface(ppTheme));
+	return S_OK;
+}

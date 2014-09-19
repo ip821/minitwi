@@ -429,7 +429,6 @@ void CCustomListBox::EndUpdate()
 	}
 	m_bAnimationNeeded = FALSE;
 	SetRedraw();
-	Invalidate();
 }
 
 void CCustomListBox::StartAnimationTimer()
@@ -454,13 +453,6 @@ LRESULT CCustomListBox::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		m_pSkinTimeline->AnimationGetIndexes(NULL, &uiCount);
 		std::vector<UINT> vIndexes(uiCount);
 		m_pSkinTimeline->AnimationGetIndexes(&vIndexes[0], &uiCount);
-
-		//for (auto& itemIndex : vIndexes)
-		//{
-		//	CRect rect;
-		//	GetItemRect(itemIndex, &rect);
-		//	InvalidateRect(rect);
-		//}
 
 		if (vIndexes.size())
 			Invalidate();
@@ -494,6 +486,8 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 		CRect rectIntersect;
 		BOOL bIntersects = rectIntersect.IntersectRect(rectItem, rect);
 		UpdateAnimatedColumns(m_columnRects[it->second].m_T, it->second, pVariantObject, bIntersects);
+		if (bIntersects)
+			OutputDebugString(CString(L"Schedule update due to item index: ") + boost::lexical_cast<std::wstring>(i).c_str() + CString(L"\n"));
 	
 		if (bIntersects)
 			bNeedInvalidate = TRUE;

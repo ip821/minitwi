@@ -216,7 +216,20 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 						bf.SourceConstantAlpha = MAX_ALPHA;
 					}
 				}
-				cdc.AlphaBlend(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, bf);
+
+				if (bstrColumnName == VAR_TWITTER_USER_IMAGE && bf.SourceConstantAlpha == MAX_ALPHA)
+				{
+					static DWORD dwColor = 0;
+					if (!dwColor)
+					{
+						m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor);
+					}
+					cdc.TransparentBlt(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, dwColor);
+				}
+				else
+				{
+					cdc.AlphaBlend(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, bf);
+				}
 			}
 		}
 		else

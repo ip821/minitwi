@@ -57,6 +57,18 @@ STDMETHODIMP CWindowService::OpenWindow(HWND hWndParent, REFCLSID clsid, IVarian
 	}
 
 	{
+		CComQIPtr<IThemeSupport> pThemeSupport = pWindow;
+		if (pThemeSupport)
+		{
+			CComPtr<IThemeService> pThemeService;
+			RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
+			CComPtr<ITheme> pTheme;
+			RETURN_IF_FAILED(pThemeService->GetCurrentTheme(&pTheme));
+			RETURN_IF_FAILED(pThemeSupport->SetTheme(pTheme));
+		}
+	}
+
+	{
 		CComQIPtr<IPluginSupportNotifications> pInit = pWindow;
 		if (pInit)
 		{

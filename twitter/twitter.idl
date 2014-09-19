@@ -211,6 +211,7 @@ interface ITheme : IUnknown
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	
+	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
 	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
 	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);
@@ -255,6 +256,7 @@ interface IThemeService : IUnknown
 	HRESULT ApplyTheme(GUID gId);
 
 	HRESULT ApplyThemeFromSettings();
+	HRESULT GetCurrentTheme(ITheme** ppTheme);
 };
 
 [
@@ -316,6 +318,16 @@ interface IWindow : IUnknown
 {
 	HRESULT Show(HWND hWndParent);
 	HRESULT GetHWND(HWND* phWnd);
+};
+
+[
+	object,
+	uuid(A7C3B442-CF36-48B5-A990-32604D9242B9),
+	pointer_default(unique)
+]
+interface IThemeSupport : IUnknown
+{
+	HRESULT SetTheme(ITheme* pTheme);
 };
 
 [

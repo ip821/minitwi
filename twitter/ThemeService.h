@@ -55,6 +55,7 @@ public:
 	STDMETHOD(GetThemes)(IObjArray** ppObjectArray);
 	STDMETHOD(ApplyTheme)(GUID gId);
 	STDMETHOD(ApplyThemeFromSettings)();
+	STDMETHOD(GetCurrentTheme)(ITheme** ppTheme);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ThemeService), CThemeService)

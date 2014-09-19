@@ -253,8 +253,15 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	{
 		lock_guard<mutex> lock(m_mutex);
 
-		static Gdiplus::Color colorWhite(Gdiplus::Color::White);
-		cdc.FillSolidRect(&rect, colorWhite.ToCOLORREF());
+		static DWORD dwColor = 0;
+		if (!dwColor)
+		{
+			CComPtr<IThemeColorMap> pThemeColorMap;
+			m_pTheme->GetColorMap(&pThemeColorMap);
+			pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor);
+		}
+
+		cdc.FillSolidRect(&rect, dwColor);
 
 		if (!m_pBitmap)
 		{
@@ -320,4 +327,11 @@ LRESULT CPictureWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 	if (wParam == VK_ESCAPE)
 		PostMessage(WM_CLOSE, 0, 0);
 	return 0;
+}
+
+STDMETHODIMP CPictureWindow::SetTheme(ITheme* pTheme)
+{
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
+	return S_OK;
 }
