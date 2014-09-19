@@ -22,6 +22,7 @@ class ATL_NO_VTABLE CTimelineControl :
 	public IInitializeWithControlImpl,
 	public IPluginSupportNotifications,
 	public ICommandSupportEventSink,
+	public IInitializeWithSettings,
 	public IConnectionPointContainerImpl<CTimelineControl>,
 	public IConnectionPointImpl<CTimelineControl, &__uuidof(ITimelineControlEventSink)>
 {
@@ -43,6 +44,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IConnectionPointContainer)
 		COM_INTERFACE_ENTRY(ICommandSupportEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 	END_COM_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CTimelineControl)
@@ -69,6 +71,7 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
+	CComPtr<ISettings> m_pSettings;
 	DWORD m_dwAdviceCommandSupport = 0;
 
 	CMenu m_popupMenu;
@@ -116,6 +119,7 @@ public:
 
 	STDMETHOD(OnBeforeCommandInvoke)(REFGUID guidCommand, ICommand* pCommand);
 	METHOD_EMPTY(STDMETHOD(OnCommandInvoke)(REFGUID guidCommand));
+	STDMETHOD(Load)(ISettings *pSettings);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControl), CTimelineControl)

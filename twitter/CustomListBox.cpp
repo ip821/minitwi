@@ -178,7 +178,8 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	m_columnRects.insert(m_columnRects.begin() + index, pColumnRects);
 	auto itemId = SendMessage(LB_INSERTSTRING, index, (LPARAM)1);
 	
-	m_pSkinTimeline->AnimationRegisterItemIndex(index, pColumnRects, -1);
+	if (m_bEnableAnimation)
+		m_pSkinTimeline->AnimationRegisterItemIndex(index, pColumnRects, -1);
 	UpdateAnimatedColumns(pColumnRects, index, pItemObject, TRUE);
 	m_bAnimationNeeded = TRUE;
 }
@@ -210,7 +211,7 @@ void CCustomListBox::UpdateAnimatedColumns(IColumnRects* pColumnRects, int itemI
 			continue;
 
 		m_animatedColumns[pVariantObject].insert(i);
-		if (bRegisterForAnimation)
+		if (bRegisterForAnimation && m_bEnableAnimation)
 			m_pSkinTimeline->AnimationRegisterItemIndex(itemIndex, pColumnRects, i);
 	}
 }
@@ -425,7 +426,10 @@ void CCustomListBox::EndUpdate()
 {
 	if (m_bAnimationNeeded)
 	{
-		StartAnimationTimer();
+		if (m_bEnableAnimation)
+			StartAnimationTimer();
+		else
+			Invalidate(TRUE);
 	}
 	m_bAnimationNeeded = FALSE;
 	SetRedraw();
@@ -495,5 +499,15 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 	RedrawWindow();
 
 	if (bNeedInvalidate && !m_bAnimating)
-		StartAnimationTimer();
+	{
+		if (m_bEnableAnimation)
+			StartAnimationTimer();
+		else
+			Invalidate(TRUE);
+	}
+}
+
+void CCustomListBox::EnableAnimation(BOOL bEnable)
+{
+	m_bEnableAnimation = bEnable;
 }

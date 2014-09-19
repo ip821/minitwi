@@ -56,6 +56,7 @@ private:
 	TIMECAPS m_tc;
 	UINT m_wTimerRes = 0;
 	UINT m_uiTimerId = 0;
+	BOOL m_bEnableAnimation;
 
 	std::map<IVariantObject*, std::hash_set<int>> m_animatedColumns;
 
@@ -85,5 +86,6 @@ public:
 	void BeginUpdate();
 	void EndUpdate();
 	void InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
+	void EnableAnimation(BOOL bEnable);
 };
 

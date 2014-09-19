@@ -312,3 +312,15 @@ HRESULT CTimelineControl::Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 	}
 	return hr;
 }
+
+STDMETHODIMP CTimelineControl::Load(ISettings *pSettings)
+{
+	CHECK_E_POINTER(pSettings);
+	m_pSettings = pSettings;
+	CComPtr<ISettings> pTimelineSettings;
+	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(VAR_SETTINGS_TIMELINE_PATH, &pTimelineSettings));
+	CComVariant vDisableAnimation;
+	RETURN_IF_FAILED(pTimelineSettings->GetVariantValue(VAR_SETTINGS_TIMELINE_DISABLE_ANIMATION, &vDisableAnimation));
+	m_listBox.EnableAnimation(vDisableAnimation.vt != VT_I4 || (!vDisableAnimation.intVal));
+	return S_OK;
+}
