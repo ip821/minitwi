@@ -13,9 +13,6 @@
 
 CPictureWindow::CPictureWindow()
 {
-	timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
-	m_wTimerRes = min(max(m_tc.wPeriodMin, TARGET_RESOLUTION), m_tc.wPeriodMax);
-	timeBeginPeriod(m_wTimerRes);
 }
 
 STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
@@ -137,16 +134,8 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 	return S_OK;
 }
 
-void CALLBACK TimerCallback1(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
+LRESULT CPictureWindow::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	BOOL bHandled = FALSE;
-	::SendMessage((HWND)dwUser, WM_TIMER, 0, 0);
-}
-
-LRESULT CPictureWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	timeKillEvent(m_uiTimerId);
-
 	m_alpha += m_alphaAmount;
 	m_step++;
 	Invalidate();
@@ -156,7 +145,7 @@ LRESULT CPictureWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		m_alpha = 255;
 		return 0;
 	}
-	m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)m_hWnd, TIME_ONESHOT);
+	StartAnimationTimer(TARGET_INTERVAL);
 	return 0;
 }
 
@@ -198,8 +187,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		SetWindowPos(NULL, &rect, SWP_NOZORDER);
 	}
 
-	m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback1, (DWORD_PTR)m_hWnd, TIME_ONESHOT);
-
+	StartAnimationTimer(TARGET_INTERVAL);
 	return S_OK;
 }
 

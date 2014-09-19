@@ -9,21 +9,12 @@
 
 CScrollControl::CScrollControl()
 {
-	timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
-	m_wTimerRes = min(max(m_tc.wPeriodMin, TARGET_RESOLUTION), m_tc.wPeriodMax);
-	timeBeginPeriod(m_wTimerRes);
 }
 
 void CScrollControl::SetBitmap(HBITMAP hBitmap)
 {
 	m_bitmap = hBitmap;
 	Invalidate();
-}
-
-void CALLBACK TimerCallback(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
-{
-	BOOL bHandled = FALSE;
-	::SendMessage(((CScrollControl*)dwUser)->m_hWnd, WM_TIMER, 1, 0);
 }
 
 void CScrollControl::Scroll(BOOL bFromRightToLeft)
@@ -44,7 +35,7 @@ void CScrollControl::Scroll(BOOL bFromRightToLeft)
 	}
 	m_bFromRightToLeft = bFromRightToLeft;
 
-	m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback, (DWORD_PTR)this, TIME_ONESHOT);
+	StartAnimationTimer(TARGET_INTERVAL);
 }
 
 LRESULT CScrollControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -52,9 +43,8 @@ LRESULT CScrollControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lPara
 	return 0;
 }
 
-LRESULT CScrollControl::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	timeKillEvent(m_uiTimerId);
 	m_dx += m_scrollAmount;
 	m_step++;
 	CRect rectUpdate;
@@ -64,7 +54,7 @@ LRESULT CScrollControl::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		m_pCustomTabControl->OnEndScroll();
 		return 0;
 	}
-	m_uiTimerId = timeSetEvent(TARGET_INTERVAL, m_wTimerRes, TimerCallback, (DWORD_PTR)this, TIME_ONESHOT);
+	StartAnimationTimer(TARGET_INTERVAL);
 	return 0;
 }
 

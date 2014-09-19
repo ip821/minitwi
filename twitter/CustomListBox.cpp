@@ -11,10 +11,6 @@ CCustomListBox::CCustomListBox()
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pItems);
-
-	timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
-	m_wTimerRes = min(max(m_tc.wPeriodMin, TARGET_RESOLUTION), m_tc.wPeriodMax);
-	timeBeginPeriod(m_wTimerRes);
 }
 
 LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -427,7 +423,7 @@ void CCustomListBox::EndUpdate()
 	if (m_bAnimationNeeded)
 	{
 		if (m_bEnableAnimation)
-			StartAnimationTimer();
+			StartAnimation();
 		else
 			Invalidate(TRUE);
 	}
@@ -435,17 +431,16 @@ void CCustomListBox::EndUpdate()
 	SetRedraw();
 }
 
-void CCustomListBox::StartAnimationTimer()
+void CCustomListBox::StartAnimation()
 {
 	m_bAnimating = TRUE;
 	UINT uiInterval = 0;
 	m_pSkinTimeline->AnimationGetParams(&uiInterval);
-	m_uiTimerId = timeSetEvent(uiInterval, m_wTimerRes, TimerCallback3, (DWORD_PTR)this, TIME_ONESHOT);
+	StartAnimationTimer(uiInterval);
 }
 
-LRESULT CCustomListBox::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	timeKillEvent(m_uiTimerId);
 	BOOL bContinueAnimation = FALSE;
 	m_pSkinTimeline->AnimationNextFrame(&bContinueAnimation);
 
@@ -461,7 +456,7 @@ LRESULT CCustomListBox::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		if (vIndexes.size())
 			Invalidate();
 
-		StartAnimationTimer();
+		StartAnimation();
 		SetRedraw();
 		return 0;
 	}
@@ -501,7 +496,7 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 	if (bNeedInvalidate && !m_bAnimating)
 	{
 		if (m_bEnableAnimation)
-			StartAnimationTimer();
+			StartAnimation();
 		else
 			Invalidate(TRUE);
 	}

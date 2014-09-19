@@ -4,6 +4,8 @@
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
+#include "AnimationTimerSupport.h"
+#include "Plugins.h"
 
 using namespace ATL;
 using namespace std;
@@ -13,6 +15,7 @@ using namespace std;
 class ATL_NO_VTABLE CPictureWindow :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CPictureWindow, &CLSID_PictureWindow>,
+	public CAnimationTimerSupport<CPictureWindow>,
 	public CWindowImpl<CPictureWindow>,
 	public IPictureWindow,
 	public IMsgFilter,
@@ -53,7 +56,7 @@ public:
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtomUp)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
-		MESSAGE_HANDLER(WM_TIMER, OnTimer)
+		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 	END_MSG_MAP()
 
 private:
@@ -74,10 +77,6 @@ private:
 	int m_alphaAmount = 0;
 	const int STEPS = 25;
 
-	TIMECAPS m_tc;
-	UINT m_wTimerRes = 0;
-	UINT m_uiTimerId = 0;
-
 	HRESULT Fire_OnClosed(HWND hWnd);
 
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -86,7 +85,7 @@ private:
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void OnFinalMessage(HWND hWnd);
 	void CalcRect(int width, int height, CRect& rect);

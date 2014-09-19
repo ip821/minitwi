@@ -265,6 +265,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationTimerSupport.h" />
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="ColumnRects.h" />
     <ClInclude Include="DownloadService.h" />

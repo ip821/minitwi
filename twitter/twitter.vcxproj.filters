@@ -83,6 +83,9 @@
     <Filter Include="Controls\TabControl">
       <UniqueIdentifier>{453846c2-4e1e-4b13-9315-0f5f31dbcf72}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{81449f12-4e91-4140-8d88-4ad193d29201}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -311,6 +314,9 @@
     </ClInclude>
     <ClInclude Include="ScrollControl.h">
       <Filter>Controls\TabControl</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTimerSupport.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

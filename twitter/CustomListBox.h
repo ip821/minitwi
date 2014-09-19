@@ -2,6 +2,7 @@
 
 #include "atlctrls.h"
 #include "twitter_i.h"
+#include "AnimationTimerSupport.h"
 
 struct NMCOLUMNCLICK
 {
@@ -23,14 +24,15 @@ struct NMITEMREMOVED
 
 class CCustomListBox :
 	public CWindowImpl<CCustomListBox, CListBox>,
-	public COwnerDraw < CCustomListBox >
+	public COwnerDraw <CCustomListBox>,
+	public CAnimationTimerSupport<CCustomListBox>
 {
 public:
 	DECLARE_WND_CLASS(_T("WTL_CCustomListBox"))
 
 	BEGIN_MSG_MAP(CCustomListBox)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
-		MESSAGE_HANDLER(WM_TIMER, OnTimer)
+		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp);
@@ -53,16 +55,13 @@ private:
 	CCursor m_arrowCursor;
 	BOOL m_bAnimationNeeded = FALSE;
 	BOOL m_bAnimating = FALSE;
-	TIMECAPS m_tc;
-	UINT m_wTimerRes = 0;
-	UINT m_uiTimerId = 0;
 	BOOL m_bEnableAnimation;
 
 	std::map<IVariantObject*, std::hash_set<int>> m_animatedColumns;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
 	void UpdateAnimatedColumns(IColumnRects* pColumnRects, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
-	void StartAnimationTimer();
+	void StartAnimation();
 
 public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -71,7 +70,7 @@ public:
 	LRESULT OnLMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
