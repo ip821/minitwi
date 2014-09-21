@@ -56,17 +56,10 @@ STDMETHODIMP CSkinTimeline::SetFontMap(IThemeFontMap* pThemeFontMap)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::DrawItem(
-	HWND hwndControl, 
-	IColumnRects* pColumnRects, 
-	TDRAWITEMSTRUCT* lpdi, 
-	int iHoveredItem, 
-	int iHoveredColumn,
-	UINT* puiNotAnimatedColumnIndexes,
-	UINT uiNotAnimatedColumnIndexesCount)
+STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi)
 {
-	CRect rect = lpdi->rcItem;
-	CDCHandle cdcReal = lpdi->hDC;
+	CRect rect = lpdi->lpdis->rcItem;
+	CDCHandle cdcReal = lpdi->lpdis->hDC;
 
 	CBitmap bitmap;
 	bitmap.CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
@@ -75,35 +68,35 @@ STDMETHODIMP CSkinTimeline::DrawItem(
 	cdc.CreateCompatibleDC(cdcReal);
 	cdc.SelectBitmap(bitmap);
 
-	lpdi->hDC = cdc;
-	lpdi->rcItem.left = 0;
-	lpdi->rcItem.top = 0;
-	lpdi->rcItem.right = rect.Width();
-	lpdi->rcItem.bottom = rect.Height();
-	RETURN_IF_FAILED(DrawItemInternal(hwndControl, pColumnRects, lpdi, iHoveredItem, iHoveredColumn, puiNotAnimatedColumnIndexes, uiNotAnimatedColumnIndexesCount));
-	lpdi->rcItem = rect;
-	lpdi->hDC = cdcReal;
+	lpdi->lpdis->hDC = cdc;
+	lpdi->lpdis->rcItem.left = 0;
+	lpdi->lpdis->rcItem.top = 0;
+	lpdi->lpdis->rcItem.right = rect.Width();
+	lpdi->lpdis->rcItem.bottom = rect.Height();
+	RETURN_IF_FAILED(DrawItemInternal(hwndControl, pColumnRects, lpdi));
+	lpdi->lpdis->rcItem = rect;
+	lpdi->lpdis->hDC = cdcReal;
 
 	BLENDFUNCTION bf = { 0 };
 	bf.BlendOp = AC_SRC_OVER;
 	bf.SourceConstantAlpha = MAX_ALPHA;
-	if (m_steps.find(lpdi->itemID) != m_steps.end())
+	if (m_steps.find(lpdi->lpdis->itemID) != m_steps.end())
 	{
-		bf.SourceConstantAlpha = m_steps[lpdi->itemID].alpha;
+		bf.SourceConstantAlpha = m_steps[lpdi->lpdis->itemID].alpha;
 	}
 	cdcReal.AlphaBlend(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, rect.Width(), rect.Height(), bf);
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn, UINT* puiNotAnimatedColumnIndexes, UINT uiNotAnimatedColumnIndexesCount)
+STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi)
 {
 	std::hash_set<UINT> columnIndexesAlreadyAnimated;
 
-	if (puiNotAnimatedColumnIndexes)
+	if (lpdi->puiNotAnimatedColumnIndexes)
 	{
-		for (size_t i = 0; i < uiNotAnimatedColumnIndexesCount; i++)
+		for (size_t i = 0; i < lpdi->uiNotAnimatedColumnIndexesCount; i++)
 		{
-			columnIndexesAlreadyAnimated.insert(puiNotAnimatedColumnIndexes[i]);
+			columnIndexesAlreadyAnimated.insert(lpdi->puiNotAnimatedColumnIndexes[i]);
 		}
 	}
 
@@ -113,19 +106,19 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
 
-	CDCHandle cdc = lpdi->hDC;
+	CDCHandle cdc = lpdi->lpdis->hDC;
 	cdc.SetBkMode(TRANSPARENT);
 	
 	BOOL bDisabledSelection = FALSE;
 	pColumnRects->IsDisabledSelection(&bDisabledSelection);
 
-	if (lpdi->itemState & ODS_SELECTED && !bDisabledSelection)
+	if (lpdi->lpdis->itemState & ODS_SELECTED && !bDisabledSelection)
 	{
 		DWORD dwColor = 0;
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_SELECTED, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
-		cdc.FillRect(&(lpdi->rcItem), brush);
+		cdc.FillRect(&(lpdi->lpdis->rcItem), brush);
 	}
 	else
 	{
@@ -133,7 +126,7 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
-		RECT rect = lpdi->rcItem;
+		RECT rect = lpdi->lpdis->rcItem;
 		rect.bottom -= COLUMN_Y_SPACING;
 		cdc.FillRect(&rect, brush);
 	}
@@ -144,7 +137,7 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TWITTER_DELIMITER, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
-		RECT rect = lpdi->rcItem;
+		RECT rect = lpdi->lpdis->rcItem;
 		rect.top = rect.bottom - ITEM_DELIMITER_HEIGHT;
 		cdc.FillRect(&rect, brush);
 	}
@@ -169,7 +162,7 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 		HFONT font = 0;
 		m_pThemeFontMap->GetFont(bstrColumnName, &font);
 
-		if (iHoveredItem == lpdi->itemID && iHoveredColumn == i && bIsUrl)
+		if (lpdi->iHoveredItem == lpdi->lpdis->itemID && lpdi->iHoveredColumn == i && bIsUrl)
 		{
 			m_pThemeFontMap->GetFont(bstrColumnName + VAR_SELECTED_POSTFIX, &font);
 		}
@@ -190,8 +183,8 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 				cdcBitmap.CreateCompatibleDC(cdc);
 				cdcBitmap.SelectBitmap(bitmap);
 
-				auto x = lpdi->rcItem.left;
-				auto y = lpdi->rcItem.top;
+				auto x = lpdi->lpdis->rcItem.left;
+				auto y = lpdi->lpdis->rcItem.top;
 				auto width = min(rect.right - rect.left, (int)tBitmap.Width);
 				auto height = min(rect.bottom - rect.top, (int)tBitmap.Height);
 
@@ -199,7 +192,7 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 				bf.BlendOp = AC_SRC_OVER;
 				bf.SourceConstantAlpha = 0;
 
-				auto it = m_steps.find(lpdi->itemID);
+				auto it = m_steps.find(lpdi->lpdis->itemID);
 				if (it == m_steps.end())
 				{
 					if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
@@ -238,8 +231,8 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrColumnName, &dwColor));
 			cdc.SetTextColor(dwColor);
 
-			auto x = lpdi->rcItem.left;
-			auto y = lpdi->rcItem.top;
+			auto x = lpdi->lpdis->rcItem.left;
+			auto y = lpdi->lpdis->rcItem.top;
 
 			CString str(bstrText);
 			cdc.SelectFont(font);

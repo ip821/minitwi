@@ -109,7 +109,13 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 	UINT* pui = NULL;
 	if (vIndexes.size())
 		pui = &vIndexes[0];
-	m_pSkinTimeline->DrawItem(m_hWnd, m_columnRects[lpdi->itemID].m_T, (TDRAWITEMSTRUCT*)lpdi, m_HoveredItemIndex, m_HoveredColumnIndex, pui, vIndexes.size());
+	TDRAWITEMSTRUCTTIMELINE distl = { 0 };
+	distl.lpdis = (TDRAWITEMSTRUCT*)lpdi;
+	distl.iHoveredItem = m_HoveredItemIndex;
+	distl.iHoveredColumn = m_HoveredColumnIndex;
+	distl.puiNotAnimatedColumnIndexes = pui;
+	distl.uiNotAnimatedColumnIndexesCount = vIndexes.size();
+	m_pSkinTimeline->DrawItem(m_hWnd, m_columnRects[lpdi->itemID].m_T, &distl);
 }
 
 void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)

@@ -21,6 +21,15 @@ typedef struct TtagDRAWITEMSTRUCT {
 	ULONG_PTR   itemData;
 } TDRAWITEMSTRUCT;
 
+typedef struct TtagDRAWITEMSTRUCTTIMELINE
+{
+	TDRAWITEMSTRUCT dis;
+	int iHoveredItem;
+	int iHoveredColumn;
+	UINT* puiNotAnimatedColumnIndexes;
+	UINT uiNotAnimatedColumnIndexesCount;
+} TDRAWITEMSTRUCTTIMELINE;
+
 typedef struct TtagMEASUREITEMSTRUCT {
 	UINT       CtlType;
 	UINT       CtlID;
@@ -124,7 +133,7 @@ interface ISkinTimeline : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
 	
-	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCT* lpdi, int iHoveredItem, int iHoveredColumn, UINT* puiNotAnimatedColumnIndexes, UINT uiNotAnimatedColumnIndexesCount);
+	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 
 	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnRects* pColumnRects, int iColumnIndex);
