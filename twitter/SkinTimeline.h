@@ -31,6 +31,7 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
+	map<int, shared_ptr<CBitmap>> m_cacheBitmaps;
 
 	struct AnimationItemImageData
 	{
@@ -62,7 +63,7 @@ private:
 	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);
 	void PrepareDC(HDC hdc, SIZE size, CString strColumnName, CDC& cdc);
 	STDMETHOD(DrawItemInternal)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi);
-
+	void DrawImageColumns(IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi);
 public:
 
 	STDMETHOD(DrawItem)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi);

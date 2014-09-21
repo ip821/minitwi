@@ -61,21 +61,49 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 	CRect rect = lpdi->lpdis->rcItem;
 	CDCHandle cdcReal = lpdi->lpdis->hDC;
 
-	CBitmap bitmap;
-	bitmap.CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
-
 	CDC cdc;
 	cdc.CreateCompatibleDC(cdcReal);
-	cdc.SelectBitmap(bitmap);
 
-	lpdi->lpdis->hDC = cdc;
-	lpdi->lpdis->rcItem.left = 0;
-	lpdi->lpdis->rcItem.top = 0;
-	lpdi->lpdis->rcItem.right = rect.Width();
-	lpdi->lpdis->rcItem.bottom = rect.Height();
-	RETURN_IF_FAILED(DrawItemInternal(hwndControl, pColumnRects, lpdi));
-	lpdi->lpdis->rcItem = rect;
-	lpdi->lpdis->hDC = cdcReal;
+	if (m_steps.find(lpdi->lpdis->itemID) == m_steps.end())
+	{
+		RETURN_IF_FAILED(DrawItemInternal(hwndControl, pColumnRects, lpdi));
+		DrawImageColumns(pColumnRects, lpdi);
+	}
+	else
+	{
+		if (m_cacheBitmaps.find(lpdi->lpdis->itemID) == m_cacheBitmaps.end())
+		{
+			shared_ptr<CBitmap> pbitmap = make_shared<CBitmap>();
+			pbitmap->CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
+			cdc.SelectBitmap(pbitmap.get()->m_hBitmap);
+
+			m_cacheBitmaps[lpdi->lpdis->itemID] = pbitmap;
+
+			lpdi->lpdis->hDC = cdc;
+			lpdi->lpdis->rcItem.left = 0;
+			lpdi->lpdis->rcItem.top = 0;
+			lpdi->lpdis->rcItem.right = rect.Width();
+			lpdi->lpdis->rcItem.bottom = rect.Height();
+			RETURN_IF_FAILED(DrawItemInternal(hwndControl, pColumnRects, lpdi));
+			lpdi->lpdis->rcItem = rect;
+			lpdi->lpdis->hDC = cdcReal;
+		}
+		else
+		{
+			cdc.SelectBitmap(m_cacheBitmaps[lpdi->lpdis->itemID].get()->m_hBitmap);
+		}
+
+		{
+			lpdi->lpdis->hDC = cdc;
+			lpdi->lpdis->rcItem.left = 0;
+			lpdi->lpdis->rcItem.top = 0;
+			lpdi->lpdis->rcItem.right = rect.Width();
+			lpdi->lpdis->rcItem.bottom = rect.Height();
+			DrawImageColumns(pColumnRects, lpdi);
+			lpdi->lpdis->rcItem = rect;
+			lpdi->lpdis->hDC = cdcReal;
+		}
+	}
 
 	BLENDFUNCTION bf = { 0 };
 	bf.BlendOp = AC_SRC_OVER;
@@ -86,6 +114,97 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 	}
 	cdcReal.AlphaBlend(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, rect.Width(), rect.Height(), bf);
 	return S_OK;
+}
+
+void CSkinTimeline::DrawImageColumns(IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi)
+{
+	std::hash_set<UINT> columnIndexesAlreadyAnimated;
+
+	if (lpdi->puiNotAnimatedColumnIndexes)
+	{
+		for (size_t i = 0; i < lpdi->uiNotAnimatedColumnIndexesCount; i++)
+		{
+			columnIndexesAlreadyAnimated.insert(lpdi->puiNotAnimatedColumnIndexes[i]);
+		}
+	}
+
+	CDCHandle cdc = lpdi->lpdis->hDC;
+	cdc.SetBkMode(TRANSPARENT);
+
+	UINT uiCount = 0;
+	pColumnRects->GetCount(&uiCount);
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		RECT rect = { 0 };
+		pColumnRects->GetRect(i, &rect);
+		CComBSTR bstrColumnName;
+		pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName);
+		BOOL bIsImage = FALSE;
+		pColumnRects->GetRectBoolProp(i, VAR_IS_IMAGE, &bIsImage);
+		CComBSTR bstrValue;
+		pColumnRects->GetRectStringProp(i, VAR_VALUE, &bstrValue);
+
+		HFONT font = 0;
+		m_pThemeFontMap->GetFont(bstrColumnName, &font);
+
+		if (!bIsImage)
+			continue;
+
+		CBitmap bitmap;
+		m_pImageManagerService->CreateImageBitmap(bstrValue, &bitmap.m_hBitmap);
+		if (bitmap.m_hBitmap)
+		{
+
+		}
+
+		TBITMAP tBitmap = { 0 };
+		m_pImageManagerService->GetImageInfo(bstrValue, &tBitmap);
+
+		CDC cdcBitmap;
+		cdcBitmap.CreateCompatibleDC(lpdi->lpdis->hDC);
+		cdcBitmap.SelectBitmap(bitmap);
+
+		auto x = lpdi->lpdis->rcItem.left;
+		auto y = lpdi->lpdis->rcItem.top;
+		auto width = min(rect.right - rect.left, (int)tBitmap.Width);
+		auto height = min(rect.bottom - rect.top, (int)tBitmap.Height);
+
+		BLENDFUNCTION bf = { 0 };
+		bf.BlendOp = AC_SRC_OVER;
+		bf.SourceConstantAlpha = 0;
+
+		auto it = m_steps.find(lpdi->lpdis->itemID);
+		if (it == m_steps.end())
+		{
+			if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
+			{
+				bf.SourceConstantAlpha = MAX_ALPHA;
+			}
+		}
+		else
+		{
+			if (it->second.columns.find(i) != it->second.columns.end())
+				bf.SourceConstantAlpha = it->second.columns[i].alpha;
+			else if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
+			{
+				bf.SourceConstantAlpha = MAX_ALPHA;
+			}
+		}
+
+		if (bstrColumnName == VAR_TWITTER_USER_IMAGE && bf.SourceConstantAlpha == MAX_ALPHA)
+		{
+			static DWORD dwColor = 0;
+			if (!dwColor)
+			{
+				m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor);
+			}
+			cdc.TransparentBlt(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, dwColor);
+		}
+		else
+		{
+			cdc.AlphaBlend(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, bf);
+		}
+	}
 }
 
 STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi)
@@ -108,7 +227,7 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 
 	CDCHandle cdc = lpdi->lpdis->hDC;
 	cdc.SetBkMode(TRANSPARENT);
-	
+
 	BOOL bDisabledSelection = FALSE;
 	pColumnRects->IsDisabledSelection(&bDisabledSelection);
 
@@ -169,61 +288,7 @@ STDMETHODIMP CSkinTimeline::DrawItemInternal(HWND hwndControl, IColumnRects* pCo
 
 		if (bIsImage)
 		{
-			CComBSTR bstrValue;
-			pColumnRects->GetRectStringProp(i, VAR_VALUE, &bstrValue);
-
-			CBitmap bitmap;
-			m_pImageManagerService->CreateImageBitmap(bstrValue, &bitmap.m_hBitmap);
-			if (bitmap.m_hBitmap)
-			{
-				TBITMAP tBitmap = { 0 };
-				m_pImageManagerService->GetImageInfo(bstrValue, &tBitmap);
-
-				CDC cdcBitmap;
-				cdcBitmap.CreateCompatibleDC(cdc);
-				cdcBitmap.SelectBitmap(bitmap);
-
-				auto x = lpdi->lpdis->rcItem.left;
-				auto y = lpdi->lpdis->rcItem.top;
-				auto width = min(rect.right - rect.left, (int)tBitmap.Width);
-				auto height = min(rect.bottom - rect.top, (int)tBitmap.Height);
-
-				BLENDFUNCTION bf = { 0 };
-				bf.BlendOp = AC_SRC_OVER;
-				bf.SourceConstantAlpha = 0;
-
-				auto it = m_steps.find(lpdi->lpdis->itemID);
-				if (it == m_steps.end())
-				{
-					if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
-					{
-						bf.SourceConstantAlpha = MAX_ALPHA;
-					}
-				}
-				else
-				{
-					if (it->second.columns.find(i) != it->second.columns.end())
-						bf.SourceConstantAlpha = it->second.columns[i].alpha;
-					else if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
-					{
-						bf.SourceConstantAlpha = MAX_ALPHA;
-					}
-				}
-
-				if (bstrColumnName == VAR_TWITTER_USER_IMAGE && bf.SourceConstantAlpha == MAX_ALPHA)
-				{
-					static DWORD dwColor = 0;
-					if (!dwColor)
-					{
-						m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor);
-					}
-					cdc.TransparentBlt(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, dwColor);
-				}
-				else
-				{
-					cdc.AlphaBlend(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, bf);
-				}
-			}
+			continue;
 		}
 		else
 		{
@@ -712,6 +777,7 @@ STDMETHODIMP CSkinTimeline::AnimationNextFrame(BOOL* pbContinueAnimation)
 	for (auto& item : vIndexesToRemove)
 	{
 		m_steps.erase(item);
+		m_cacheBitmaps.erase(item);
 	}
 
 	*pbContinueAnimation = m_steps.size() != 0;
