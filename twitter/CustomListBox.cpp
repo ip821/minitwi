@@ -110,7 +110,7 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 	if (vIndexes.size())
 		pui = &vIndexes[0];
 	TDRAWITEMSTRUCTTIMELINE distl = { 0 };
-	distl.lpdis = (TDRAWITEMSTRUCT*)lpdi;
+	distl.lpdi = (TDRAWITEMSTRUCT*)lpdi;
 	distl.iHoveredItem = m_HoveredItemIndex;
 	distl.iHoveredColumn = m_HoveredColumnIndex;
 	distl.puiNotAnimatedColumnIndexes = pui;

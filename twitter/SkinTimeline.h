@@ -62,11 +62,11 @@ private:
 	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap, LONG ulCustomFixedWidth, Justify justify, BOOL bDisabledSelection);
 	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);
 	void PrepareDC(HDC hdc, SIZE size, CString strColumnName, CDC& cdc);
-	STDMETHOD(DrawTextColumns)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi);
-	STDMETHOD(DrawImageColumns)(IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi);
+	STDMETHOD(DrawTextColumns)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis);
+	STDMETHOD(DrawImageColumns)(IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis);
 public:
 
-	STDMETHOD(DrawItem)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi);
+	STDMETHOD(DrawItem)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis);
 	STDMETHOD(MeasureItem)(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);

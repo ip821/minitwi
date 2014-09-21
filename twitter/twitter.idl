@@ -23,7 +23,7 @@ typedef struct TtagDRAWITEMSTRUCT {
 
 typedef struct TtagDRAWITEMSTRUCTTIMELINE
 {
-	TDRAWITEMSTRUCT dis;
+	TDRAWITEMSTRUCT* lpdi;
 	int iHoveredItem;
 	int iHoveredColumn;
 	UINT* puiNotAnimatedColumnIndexes;
