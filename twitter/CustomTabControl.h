@@ -70,10 +70,10 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<IColumnRects> m_pColumnRects;
+	int m_cAnimationRefs = 0;
 
 	CRect m_rectChildControlArea;
 	CRect m_rectInfoImage;
-	BOOL m_bDrawAnimation = FALSE;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
 

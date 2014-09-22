@@ -19,7 +19,7 @@ STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 
 STDMETHODIMP CCustomTabControl::StartAnimation()
 {
-	m_bDrawAnimation = TRUE;
+	m_cAnimationRefs++;
 	UINT uiMilliseconds = 0;
 	RETURN_IF_FAILED(m_pSkinTabControl->AnimationGetParams(&uiMilliseconds));
 	SetTimer(1, uiMilliseconds);
@@ -28,9 +28,12 @@ STDMETHODIMP CCustomTabControl::StartAnimation()
 
 STDMETHODIMP CCustomTabControl::StopAnimation()
 {
-	KillTimer(1);
-	m_bDrawAnimation = FALSE;
+	m_cAnimationRefs--;
 
+	if (m_cAnimationRefs > 0)
+		return S_OK;
+
+	KillTimer(1);
 	CRect rectClient;
 	GetClientRect(&rectClient);
 	rectClient.bottom = m_rectChildControlArea.top - 1;
@@ -399,7 +402,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	BeginPaint(&ps);
 	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint, m_selectedPageIndex);
 
-	if (m_bDrawAnimation)
+	if (m_cAnimationRefs > 0)
 		m_pSkinTabControl->DrawAnimation(ps.hdc);
 	else if (m_bShowInfoImage)
 		m_pSkinTabControl->DrawInfoImage(ps.hdc, m_bInfoImageIsError, m_bstrInfoMessage);

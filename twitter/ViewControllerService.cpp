@@ -43,11 +43,15 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(m_pThreadPoolService->SetThreadCount(6));
 	RETURN_IF_FAILED(m_pThreadPoolService->Start());
 
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
-	RETURN_IF_FAILED(m_pThreadService->SetTimerService(SERVICE_TIMELINE_TIMER));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
+	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
 	RETURN_IF_FAILED(StartTimers());
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMoreTimeline));
+
 	return S_OK;
 }
 
@@ -68,9 +72,11 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	RETURN_IF_FAILED(m_pTimerService->StopTimer());
 	m_pTimerService.Release();
 	m_pThreadPoolService.Release();
-	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceShowMoreTimeline));
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceUpdateTimeline));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
-	m_pThreadService.Release();
+	m_pThreadServiceShowMoreTimeline.Release();
+	m_pThreadServiceUpdateTimeline.Release();
 	m_pServiceProvider.Release();
 	m_pUpdateService.Release();
 	m_pTabbedControl.Release();

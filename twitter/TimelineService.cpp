@@ -153,7 +153,22 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
+	{
+		CComVariant vId;
+		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vId));
+		if (vId.vt == VT_BSTR)
+		{
+			CComPtr<IObjArray> pAllItems;
+			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
+			UINT uiCount = 0;
+			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
+			CComPtr<IVariantObject> pVariantObject;
+			RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(false)));
+			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
+		}
 		return S_OK;
+	}
 
 	CComVariant vResult;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
