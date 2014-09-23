@@ -295,6 +295,8 @@ interface IDownloadServiceEventSink : IUnknown
 interface IDownloadService : IUnknown
 {
 	HRESULT AddDownload(IVariantObject *pVariantObject);
+	HRESULT SuspendDownloads();
+	HRESULT ResumeDownloads();
 };
 
 [

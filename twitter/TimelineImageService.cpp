@@ -4,6 +4,7 @@
 #include "TimelineImageService.h"
 #include "Plugins.h"
 #include "TimelineService.h"
+#include "UpdateScope.h"
 
 // CTimelineImageService
 
@@ -144,6 +145,7 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 
 STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 {
+	CDownloadSuspendScope downloadSuspendScope(m_pDownloadService);
 	{
 		lock_guard<mutex> lock(m_mutex);
 		m_imageRefs.clear();

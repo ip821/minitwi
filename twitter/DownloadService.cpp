@@ -157,6 +157,18 @@ STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 	return S_OK;
 }
 
+STDMETHODIMP CDownloadService::SuspendDownloads()
+{
+	RETURN_IF_FAILED(m_pThreadPoolService->Suspend());
+	return S_OK;
+}
+
+STDMETHODIMP CDownloadService::ResumeDownloads()
+{
+	RETURN_IF_FAILED(m_pThreadPoolService->Resume());
+	return S_OK;
+}
+
 HRESULT CDownloadService::Fire_OnDownloadComplete(IVariantObject *pResult)
 {
 	CComPtr<IUnknown> pUnk;

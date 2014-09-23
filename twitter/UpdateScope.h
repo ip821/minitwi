@@ -2,23 +2,37 @@
 
 #include "twitter_i.h"
 
-class UpdateScope
+class CUpdateScope
 {
 public:
-	UpdateScope(ITimelineControl* pTimelineControl);
-	~UpdateScope();
+	CUpdateScope(ITimelineControl* pTimelineControl)
+	{
+		m_pTimelineControl = pTimelineControl;
+		m_pTimelineControl->BeginUpdate();
+	}
+
+	~CUpdateScope()
+	{
+		m_pTimelineControl->EndUpdate();
+	}
 
 private:
 	ITimelineControl* m_pTimelineControl;
 };
 
-UpdateScope::UpdateScope(ITimelineControl* pTimelineControl)
+class CDownloadSuspendScope
 {
-	m_pTimelineControl = pTimelineControl;
-	m_pTimelineControl->BeginUpdate();
-}
+public:
+	CDownloadSuspendScope(IDownloadService* pDownloadService)
+	{
+		m_pDownloadService = pDownloadService;
+		m_pDownloadService->SuspendDownloads();
+	}
 
-UpdateScope::~UpdateScope()
-{
-	m_pTimelineControl->EndUpdate();
-}
+	~CDownloadSuspendScope()
+	{
+		m_pDownloadService->ResumeDownloads();
+	}
+private:
+	IDownloadService* m_pDownloadService;
+};

@@ -55,6 +55,9 @@ public:
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 
 	STDMETHOD(AddDownload)(IVariantObject* pVariantObject);
+
+	STDMETHOD(SuspendDownloads)();
+	STDMETHOD(ResumeDownloads)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(DownloadService), CDownloadService)

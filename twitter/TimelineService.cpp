@@ -175,7 +175,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	{
-		UpdateScope scope(m_pTimelineControl);
+		CUpdateScope scope(m_pTimelineControl);
 
 		BOOL bEmpty = FALSE;
 		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
