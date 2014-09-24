@@ -12,6 +12,8 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeColorMap, L"Color map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeFontMap, L"Font map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_PictureWindow, L"Picture window object"));
+	RETURN_IF_FAILED(AddObject(CLSID_UserAccountControl, L"User account control object"));
+	RETURN_IF_FAILED(AddObject(CLSID_UserInfoControl, L"User info control object"));
 
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEME, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEMECOLORMAP, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme colors"));

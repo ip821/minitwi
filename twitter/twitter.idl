@@ -575,6 +575,20 @@ library twitterLib
 	{
 		[default] interface ISkinCommonControl;
 	};
+	[
+		uuid(C65CC0F7-866D-40F6-89E5-652C0295F15C)
+	]
+	coclass UserInfoControl
+	{
+		[default] interface IControl;
+	};
+	[
+		uuid(45B12203-6FD3-492E-858A-7EA20454493B)
+	]
+	coclass UserAccountControl
+	{
+		[default] interface IControl;
+	};
 };
 
 import "shobjidl.idl";

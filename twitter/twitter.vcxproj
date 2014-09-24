@@ -245,6 +245,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="UpdateService.cpp" />
+    <ClCompile Include="UserAccountControl.cpp" />
+    <ClCompile Include="UserInfoControl.cpp" />
     <ClCompile Include="ViewControllerService.cpp" />
     <ClCompile Include="viewmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -301,6 +303,8 @@
     <ClInclude Include="twitter_i.h" />
     <ClInclude Include="UpdateScope.h" />
     <ClInclude Include="UpdateService.h" />
+    <ClInclude Include="UserAccountControl.h" />
+    <ClInclude Include="UserInfoControl.h" />
     <ClInclude Include="ViewControllerService.h" />
     <ClInclude Include="viewmdl_contract_i.h" />
     <ClInclude Include="WindowService.h" />

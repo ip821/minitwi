@@ -86,6 +86,12 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{81449f12-4e91-4140-8d88-4ad193d29201}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\UserInfoControl">
+      <UniqueIdentifier>{f6ed28dd-0043-475a-b1f0-052600344dbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\UserAccountControl">
+      <UniqueIdentifier>{7bc42faf-7e52-4be6-aed8-d30c4f7bb8e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -195,6 +201,12 @@
     </ClCompile>
     <ClCompile Include="ScrollControl.cpp">
       <Filter>Controls\TabControl</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInfoControl.cpp">
+      <Filter>Controls\UserInfoControl</Filter>
+    </ClCompile>
+    <ClCompile Include="UserAccountControl.cpp">
+      <Filter>Controls\UserAccountControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -317,6 +329,12 @@
     </ClInclude>
     <ClInclude Include="AnimationTimerSupport.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInfoControl.h">
+      <Filter>Controls\UserInfoControl</Filter>
+    </ClInclude>
+    <ClInclude Include="UserAccountControl.h">
+      <Filter>Controls\UserAccountControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
