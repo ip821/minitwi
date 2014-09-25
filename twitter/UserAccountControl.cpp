@@ -24,6 +24,8 @@ STDMETHODIMP CUserAccountControl::GetHWND(HWND *hWnd)
 
 STDMETHODIMP CUserAccountControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
+	CHECK_E_POINTER(hWnd);
+	*hWnd = Create(hWndParent);
 	return S_OK;
 }
 
