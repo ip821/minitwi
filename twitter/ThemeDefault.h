@@ -35,7 +35,7 @@ private:
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
-	CComPtr<IImageManagerService> m_pImageManagerService;
+	CComPtr<ISkinUserAccountControl> m_pSkinUserAccountControl;
 
 public:
 
@@ -46,6 +46,7 @@ public:
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
 	STDMETHOD(GetFontMap)(IThemeFontMap** ppThemeFontMap);
+	STDMETHOD(GetSkinUserAccountControl)(ISkinUserAccountControl** ppSkinUserAccountControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ThemeDefault), CThemeDefault)

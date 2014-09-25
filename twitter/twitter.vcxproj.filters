@@ -208,6 +208,9 @@
     <ClCompile Include="UserAccountControl.cpp">
       <Filter>Controls\UserAccountControl</Filter>
     </ClCompile>
+    <ClCompile Include="SkinUserAccountControl.cpp">
+      <Filter>Services\SkinService\Default</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -335,6 +338,9 @@
     </ClInclude>
     <ClInclude Include="UserAccountControl.h">
       <Filter>Controls\UserAccountControl</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinUserAccountControl.h">
+      <Filter>Services\SkinService\Default</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -92,11 +92,10 @@ STDMETHODIMP CUserInfoControl::SetTheme(ITheme* pTheme)
 {
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
-	CComQIPtr<IThemeSupport> pThemeSupport = m_pUserAccountControl;
-	if (pThemeSupport)
-	{
-		RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pTheme));
-	}
+
+	CComPtr<ISkinUserAccountControl> pSkinUserAccountControl;
+	RETURN_IF_FAILED(pTheme->GetSkinUserAccountControl(&pSkinUserAccountControl));
+	RETURN_IF_FAILED(m_pUserAccountControl->SetSkinUserAccountControl(pSkinUserAccountControl));
 
 	CComPtr<ISkinTimeline> pSkinTimeline;
 	RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&pSkinTimeline));

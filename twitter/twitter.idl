@@ -177,6 +177,30 @@ interface ITimelineControl : IControl2
 
 [
 	object,
+	uuid(99939FE4-3FE1-4AFE-B8AC-2D10B9A9DDCE),
+	pointer_default(unique)
+]
+interface ISkinUserAccountControl : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
+	HRESULT EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+}
+
+[
+	object,
+	uuid(69E6394D-E65E-4DBB-8812-48AA40D507B1),
+	pointer_default(unique)
+]
+interface IUserAccountControl : IControl
+{
+	HRESULT SetSkinUserAccountControl(ISkinUserAccountControl* pSkinUserAccountControl);
+};
+
+[
+	object,
 	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
 	pointer_default(unique)
 ]
@@ -225,6 +249,7 @@ interface ITheme : IUnknown
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
 	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
 	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);
+	HRESULT GetSkinUserAccountControl(ISkinUserAccountControl** ppSkinUserAccountControl);
 };
 
 [
@@ -589,6 +614,13 @@ library twitterLib
 	coclass UserAccountControl
 	{
 		[default] interface IControl;
+	};
+	[
+		uuid(0B2EE239-BF11-41FF-8DF0-525232084378)
+	]
+	coclass SkinUserAccountControl
+	{
+		[default] interface ISkinUserAccountControl;
 	};
 };
 

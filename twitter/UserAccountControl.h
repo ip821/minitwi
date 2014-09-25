@@ -12,8 +12,7 @@ class CUserAccountControl :
 	public CComCoClass<CUserAccountControl, &CLSID_UserAccountControl>,
 	public CWindowImpl<CUserAccountControl>,
 	public CDialogResize<CUserAccountControl>,
-	public IControl,
-	public IThemeSupport,
+	public IUserAccountControl,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
 	public IPluginSupportNotifications
@@ -28,8 +27,8 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
-		COM_INTERFACE_ENTRY(IThemeSupport)
 		COM_INTERFACE_ENTRY(IControl)
+		COM_INTERFACE_ENTRY(IUserAccountControl)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserAccountControl)
@@ -39,7 +38,7 @@ public:
 	END_MSG_MAP()
 
 private:
-	CComPtr<ITheme> m_pTheme;
+	CComPtr<ISkinUserAccountControl> m_pSkinUserAccountControl;
 	CComPtr<IVariantObject> m_pVariantObject;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
@@ -49,8 +48,6 @@ private:
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPrintClient(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	void DrawBackground(HDC hdc);
-	void DrawContents(HDC hdc, LPRECT lpRect);
 
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -62,7 +59,7 @@ public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
-	STDMETHOD(SetTheme)(ITheme* pTheme);
+	STDMETHOD(SetSkinUserAccountControl)(ISkinUserAccountControl* pSkinUserAccountControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserAccountControl), CUserAccountControl)

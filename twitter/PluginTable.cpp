@@ -8,6 +8,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_SkinTimeline, L"Timeline skin object"));
 	RETURN_IF_FAILED(AddObject(CLSID_SkinTabControl, L"Tab control skin object"));
 	RETURN_IF_FAILED(AddObject(CLSID_SkinCommonControl, L"Common control skin object"));
+	RETURN_IF_FAILED(AddObject(CLSID_SkinUserAccountControl, L"User account control skin object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ColumnRects, L"Column rects object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeColorMap, L"Color map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeFontMap, L"Font map object"));
@@ -50,8 +51,5 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND, CLSID_TimelineControlCopyCommand, CLSID_TimelineControlCopyCommand, L"Copy commands for timeline control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_COMMAND, CLSID_PictureWindowCopyCommand, CLSID_PictureWindowCopyCommand, L"Copy commands for picture window"));
 
-	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ImageManagerService, CLSID_ImageManagerService, L"Image manager service for user info control"));
-	//RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_DownloadService, CLSID_DownloadService, L"Download service for user info control"));
-	//RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_USERINFO_THREAD, CLSID_ThreadService, L"Thread service for user info control"));
 	return S_OK;
 }

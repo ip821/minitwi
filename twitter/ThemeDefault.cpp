@@ -15,6 +15,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinTabControl, &m_pSkinTabControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinCommonControl, &m_pSkinCommonControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeColorMap, &m_pThemeColorMap));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinUserAccountControl, &m_pSkinUserAccountControl));
 
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_BACKGROUND, Gdiplus::Color::White));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_SELECTED, Gdiplus::Color::Beige));
@@ -34,6 +35,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pSkinTimeline->SetColorMap(m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pSkinTabControl->SetColorMap(m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetColorMap(m_pThemeColorMap));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetColorMap(m_pThemeColorMap));
 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeFontMap, &m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, FONT_NAME, FONT_SIZE - 2, FALSE, FALSE));
@@ -54,6 +56,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pSkinTimeline->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pSkinTabControl->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetFontMap(m_pThemeFontMap));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetFontMap(m_pThemeFontMap));
 
 	return S_OK;
 }
@@ -82,7 +85,9 @@ STDMETHODIMP CThemeDefault::SetColorMap(IThemeColorMap* pThemeColorMap)
 
 STDMETHODIMP CThemeDefault::SetImageManagerService(IImageManagerService* pImageManagerService)
 {
+	CHECK_E_POINTER(pImageManagerService);
 	RETURN_IF_FAILED(m_pSkinTimeline->SetImageManagerService(pImageManagerService));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetImageManagerService(pImageManagerService));
 	return S_OK;
 }
 
@@ -104,5 +109,12 @@ STDMETHODIMP CThemeDefault::GetFontMap(IThemeFontMap** ppThemeFontMap)
 {
 	CHECK_E_POINTER(ppThemeFontMap);
 	RETURN_IF_FAILED(m_pThemeFontMap->QueryInterface(ppThemeFontMap));
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::GetSkinUserAccountControl(ISkinUserAccountControl** ppSkinUserAccountControl)
+{
+	CHECK_E_POINTER(ppSkinUserAccountControl);
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->QueryInterface(ppSkinUserAccountControl));
 	return S_OK;
 }

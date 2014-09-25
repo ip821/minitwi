@@ -45,7 +45,7 @@ private:
 	CComQIPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<IVariantObject> m_pVariantObject;
-	CComPtr<IControl> m_pUserAccountControl;
+	CComPtr<IUserAccountControl> m_pUserAccountControl;
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	HWND m_hWndUserAccountControl = 0;
 	HWND m_hWndTimelineControl = 0;
