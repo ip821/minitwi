@@ -2,7 +2,7 @@
 #include "UserInfoControl.h"
 #include "Plugins.h"
 
-#define USER_CONTROL_HEIGHT 200
+#define USER_CONTROL_HEIGHT 240
 
 CUserInfoControl::CUserInfoControl()
 {

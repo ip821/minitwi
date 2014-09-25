@@ -30,6 +30,7 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 
+	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
 public:
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
