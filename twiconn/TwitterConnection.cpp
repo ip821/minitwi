@@ -171,15 +171,17 @@ STDMETHODIMP CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pV
 	auto userDisplayName = value[L"name"]->AsString();
 	auto userScreenName = value[L"screen_name"]->AsString();
 	auto userImageUrl = value[L"profile_image_url"]->AsString();
-	auto userBackgroundColor = value[L"profile_background_color"]->AsNumber();
+	auto userBackgroundColor = FromHexString(value[L"profile_background_color"]->AsString());
+	auto userForegroundColor = FromHexString(value[L"profile_text_color"]->AsString());
 	auto followersCount = value[L"followers_count"]->AsNumber();
 	auto friendsCount = value[L"friends_count"]->AsNumber();
 	auto statusesCount = value[L"statuses_count"]->AsNumber();
-
+	
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_IMAGE, &CComVariant(userImageUrl.c_str())));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_BACKCOLOR, &CComVariant((int)userBackgroundColor)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_FORECOLOR, &CComVariant((int)userForegroundColor)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_FOLLOWERS_COUNT, &CComVariant((int)followersCount)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_FRIENDS_COUNT, &CComVariant((int)friendsCount)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_TWEETS_COUNT, &CComVariant((int)statusesCount)));

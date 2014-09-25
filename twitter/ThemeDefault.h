@@ -45,6 +45,7 @@ public:
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
+	STDMETHOD(GetFontMap)(IThemeFontMap** ppThemeFontMap);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ThemeDefault), CThemeDefault)

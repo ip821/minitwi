@@ -43,9 +43,28 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 		CComPtr<IControl> pControl;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_UserInfoControl, &pControl));
 		RETURN_IF_FAILED(m_pTabbedControl->AddPage(pControl));
-		RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
+
+		CComPtr<IThemeService> pThemeService;
+		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
+		CComPtr<ITheme> pTheme;
+		RETURN_IF_FAILED(pThemeService->GetCurrentTheme(&pTheme));
+		CComQIPtr<IThemeSupport> pThemeSupport = pControl;
+		if (pThemeSupport)
+		{
+			RETURN_IF_FAILED(pThemeSupport->SetTheme(pTheme));
+		}
+		
 		RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
-		RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pVariantObject));
+		CComVariant vUserObject;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_OBJECT, &vUserObject));
+		if (vUserObject.vt == VT_UNKNOWN)
+		{
+			CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
+			ATLASSERT(pObj);
+			RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pObj));
+		}
+
+		RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME))

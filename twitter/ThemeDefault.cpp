@@ -49,6 +49,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_COLUMN_SHOW_MORE, FONT_NAME, FONT_SIZE, TRUE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_COLUMN_SHOW_MORE + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TAB_HEADER, FONT_NAME, FONT_SIZE, FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, FONT_NAME, FONT_SIZE * 2, TRUE, FALSE));
 
 	RETURN_IF_FAILED(m_pSkinTimeline->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pSkinTabControl->SetFontMap(m_pThemeFontMap));
@@ -96,5 +97,12 @@ STDMETHODIMP CThemeDefault::GetColorMap(IThemeColorMap** ppThemeColorMap)
 {
 	CHECK_E_POINTER(ppThemeColorMap);
 	RETURN_IF_FAILED(m_pThemeColorMap->QueryInterface(ppThemeColorMap));
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::GetFontMap(IThemeFontMap** ppThemeFontMap)
+{
+	CHECK_E_POINTER(ppThemeFontMap);
+	RETURN_IF_FAILED(m_pThemeFontMap->QueryInterface(ppThemeFontMap));
 	return S_OK;
 }

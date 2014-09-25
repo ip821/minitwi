@@ -221,6 +221,7 @@ interface ITheme : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
+	HRESULT GetFontMap(IThemeFontMap** ppThemeFontMap);
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
 	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
 	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);

@@ -20,6 +20,10 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pTimelineControl, m_pControl));
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, m_pControl));
 
+	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pUserAccountControl, m_pPluginSupport));
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pTimelineControl, m_pPluginSupport));
+
 	return S_OK;
 }
 
@@ -88,14 +92,20 @@ STDMETHODIMP CUserInfoControl::SetTheme(ITheme* pTheme)
 {
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
+	CComQIPtr<IThemeSupport> pThemeSupport = m_pUserAccountControl;
+	if (pThemeSupport)
+	{
+		RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pTheme));
+	}
+
+	CComPtr<ISkinTimeline> pSkinTimeline;
+	RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&pSkinTimeline));
+	RETURN_IF_FAILED(m_pTimelineControl->SetSkinTimeline(pSkinTimeline));
 	return S_OK;
 }
 
 STDMETHODIMP CUserInfoControl::OnActivate()
 {
-	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
-	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pUserAccountControl, m_pPluginSupport));
-	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pTimelineControl, m_pPluginSupport));
 	RETURN_IF_FAILED(m_pTimelineControl->OnActivate());
 	return S_OK;
 }
