@@ -162,7 +162,38 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, BSTR bstrSinceI
 	CComPtr<IObjCollection> pObjectCollection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjectCollection));
 	RETURN_IF_FAILED(pObjectCollection->QueryInterface(ppObjectArray));
+	RETURN_IF_FAILED(ParseTweets(value.get(), pObjectCollection));
+	return S_OK;
+}
 
+STDMETHODIMP CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pVariantObject)
+{
+	auto userDisplayName = value[L"name"]->AsString();
+	auto userScreenName = value[L"screen_name"]->AsString();
+	auto userImageUrl = value[L"profile_image_url"]->AsString();
+	auto userBackgroundColor = value[L"profile_background_color"]->AsNumber();
+	auto followersCount = value[L"followers_count"]->AsNumber();
+	auto friendsCount = value[L"friends_count"]->AsNumber();
+	auto statusesCount = value[L"statuses_count"]->AsNumber();
+
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_IMAGE, &CComVariant(userImageUrl.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_BACKCOLOR, &CComVariant((int)userBackgroundColor)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_FOLLOWERS_COUNT, &CComVariant((int)followersCount)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_FRIENDS_COUNT, &CComVariant((int)friendsCount)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_TWEETS_COUNT, &CComVariant((int)statusesCount)));
+
+	if (value.find(L"profile_banner_url") != value.end())
+	{
+		auto userBannerUrl = value[L"profile_banner_url"]->AsString();
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_BANNER, &CComVariant(userBannerUrl.c_str())));
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* pObjectCollection)
+{
 	auto valueArray = value->AsArray();
 	for (auto it = valueArray.begin(); it != valueArray.end(); it++)
 	{
@@ -188,6 +219,12 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, BSTR bstrSinceI
 
 		auto createdAt = itemObject[L"created_at"]->AsString();
 		auto userObj = itemObject[L"user"]->AsObject();
+
+		CComPtr<IVariantObject> pUserVariantObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));
+		RETURN_IF_FAILED(ParseUser(userObj, pUserVariantObject));
+		pVariantObject->SetVariantValue(VAR_TWITTER_USER_OBJECT, &CComVariant(pUserVariantObject));
+
 		auto userDisplayName = userObj[L"name"]->AsString();
 		auto userScreenName = userObj[L"screen_name"]->AsString();
 		auto userImageUrl = userObj[L"profile_image_url"]->AsString();
@@ -279,7 +316,6 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, BSTR bstrSinceI
 			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RETWEETED_USER_NAME, &CComVariant(retweetedUserScreenName.c_str())));
 		}
 	}
-
 	return S_OK;
 }
 

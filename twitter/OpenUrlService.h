@@ -32,6 +32,7 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IWindowService> m_pWindowService;
 	CComPtr<ITimelineControl> m_pTimelineControl;
+	CComQIPtr<ITabbedControl> m_pTabbedControl;
 	DWORD m_dwAdvice = 0;
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);

@@ -382,5 +382,17 @@
     <Image Include="..\Host\res\Twitter_XP.ico">
       <Filter>ZZZMisc\Resource Files</Filter>
     </Image>
+    <Image Include="res\home.png">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
+    <Image Include="res\services.png">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
+    <Image Include="res\error.png">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
+    <Image Include="res\info.png">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

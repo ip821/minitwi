@@ -375,6 +375,10 @@
   <ItemGroup>
     <Image Include="..\Host\res\Twitter.ico" />
     <Image Include="..\Host\res\Twitter_XP.ico" />
+    <Image Include="res\error.png" />
+    <Image Include="res\home.png" />
+    <Image Include="res\info.png" />
+    <Image Include="res\services.png" />
     <Image Include="res\Twitter.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

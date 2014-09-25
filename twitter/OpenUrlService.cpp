@@ -11,9 +11,9 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
 	CComPtr<IContainerControl> pContainerControl;
 	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
-	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
+	m_pTabbedControl = pContainerControl;
 	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
+	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
 	m_pTimelineControl = pControl;
 
 	CComPtr<IUnknown> pUnk;
@@ -40,12 +40,12 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME) ||
 		CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_NAME))
 	{
-		CComVariant v;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &v));
-		if (v.vt == VT_BSTR)
-		{
-			strUrl = L"https://twitter.com/" + CString(v.bstrVal);
-		}
+		CComPtr<IControl> pControl;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_UserInfoControl, &pControl));
+		RETURN_IF_FAILED(m_pTabbedControl->AddPage(pControl));
+		RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
+		RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
+		RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pVariantObject));
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME))

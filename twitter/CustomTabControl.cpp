@@ -90,21 +90,11 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 	if (uiCount > 1)
 		SelectPage(1);
 
-	{
-		CComQIPtr<IInitializeWithSettings> pp = pControl;
-		if (pp)
-		{
-			RETURN_IF_FAILED(pp->Load(m_pSettings));
-		}
-	}
-
-	{
-		CComQIPtr<IPluginSupportNotifications> pp = pControl;
-		if (pp)
-		{
-			RETURN_IF_FAILED(pp->OnInitialized(m_pServiceProvider));
-		}
-	}
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(IID_IUnknown, (LPVOID*)&pUnk));
+	RETURN_IF_FAILED(HrInitializeWithControl(pControl, pUnk));
+	RETURN_IF_FAILED(HrInitializeWithSettings(pControl, m_pSettings));
+	RETURN_IF_FAILED(HrNotifyOnInitialized(pControl, m_pServiceProvider));
 
 	UpdateChildControlAreaRect();
 	UpdateSizes();
@@ -130,6 +120,13 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 	{
 		CComPtr<IControl> pControl;
 		m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
+
+		CComQIPtr<IControl2> pControl2 = pControl;
+		if (pControl2)
+		{
+			ASSERT_IF_FAILED(pControl2->OnDeactivate());
+		}
+
 		HWND hWnd = 0;
 		pControl->GetHWND(&hWnd);
 		::ShowWindow(hWnd, SW_HIDE);
@@ -198,6 +195,11 @@ void CCustomTabControl::OnEndScroll()
 	HWND hWnd = 0;
 	pControl->GetHWND(&hWnd);
 	::ShowWindow(hWnd, SW_SHOW);
+	CComQIPtr<IControl2> pControl2 = pControl;
+	if (pControl2)
+	{
+		ASSERT_IF_FAILED(pControl2->OnActivate());
+	}
 	Invalidate(TRUE);
 }
 

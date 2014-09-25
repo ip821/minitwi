@@ -34,6 +34,8 @@ private:
 	std::shared_ptr<twitCurl> m_pTwitObj;
 	STDMETHOD(HandleError)(JSONValue* value);
 	STDMETHOD(AppendUrls)(IVariantObject* pVariantObject, std::vector<std::wstring>& urlsVector);
+	STDMETHOD(ParseTweets)(JSONValue* value, IObjCollection* pObjectCollection);
+	STDMETHOD(ParseUser(JSONObject& value, IVariantObject* pVariantObject));
 
 public:
 

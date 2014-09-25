@@ -45,3 +45,20 @@ STDMETHODIMP CUserAccountControl::SetTheme(ITheme* pTheme)
 	m_pTheme = pTheme;
 	return S_OK;
 }
+
+LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	PAINTSTRUCT ps = { 0 };
+	BeginPaint(&ps);
+	
+	CDC cdc(ps.hdc);
+
+	EndPaint(&ps);
+	return 0;
+}
+
+LRESULT CUserAccountControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	CAxDialogImpl<CUserAccountControl>::OnInitDialog(uMsg, wParam, lParam, bHandled);
+	return 0;
+}
