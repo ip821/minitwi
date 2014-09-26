@@ -106,5 +106,13 @@ STDMETHODIMP CUserInfoControl::SetTheme(ITheme* pTheme)
 STDMETHODIMP CUserInfoControl::OnActivate()
 {
 	RETURN_IF_FAILED(m_pTimelineControl->OnActivate());
+	RETURN_IF_FAILED(m_pUserAccountControl->OnActivate());
+	return S_OK;
+}
+
+STDMETHODIMP CUserInfoControl::OnDeactivate()
+{
+	RETURN_IF_FAILED(m_pTimelineControl->OnDeactivate());
+	RETURN_IF_FAILED(m_pUserAccountControl->OnDeactivate());
 	return S_OK;
 }

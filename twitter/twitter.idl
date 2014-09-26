@@ -187,6 +187,9 @@ interface ISkinUserAccountControl : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
 	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+	HRESULT AnimationStart();
+	HRESULT AnimationGetParams(UINT* puiMilliseconds);
+	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);
 }
 
 [
@@ -194,7 +197,7 @@ interface ISkinUserAccountControl : IUnknown
 	uuid(69E6394D-E65E-4DBB-8812-48AA40D507B1),
 	pointer_default(unique)
 ]
-interface IUserAccountControl : IControl
+interface IUserAccountControl : IControl2
 {
 	HRESULT SetSkinUserAccountControl(ISkinUserAccountControl* pSkinUserAccountControl);
 };

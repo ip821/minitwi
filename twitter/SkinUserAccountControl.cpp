@@ -4,6 +4,7 @@
 #define DISTANCE_DISPLAY_NAME 30 / 200
 #define DISTANCE_DESCRIPTION_Y 20
 #define DISTANCE_DESCRIPTION_X 20
+#define TARGET_INTERVAL 15
 
 STDMETHODIMP CSkinUserAccountControl::SetColorMap(IThemeColorMap* pThemeColorMap)
 {
@@ -62,7 +63,7 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 
 		BLENDFUNCTION bf = { 0 };
 		bf.BlendOp = AC_SRC_OVER;
-		bf.SourceConstantAlpha = 255;
+		bf.SourceConstantAlpha = m_alpha;
 		cdc.AlphaBlend(0, 0, rect.Width(), rect.Height(), cdcBitmap, 0, 0, tBitmap.Width, tBitmap.Height, bf);
 	}
 	return S_OK;
@@ -165,4 +166,34 @@ int CSkinUserAccountControl::DrawCounter(HDC hdc, int x, int y, int width, IVari
 	rect.bottom = y;
 	cdc.DrawText(strText, strText.GetLength(), &rect, 0);
 	return y - sz.cy - 1;
+}
+
+STDMETHODIMP CSkinUserAccountControl::AnimationStart()
+{
+	m_alpha = 0;
+	m_step = 0;
+	return S_OK;
+}
+
+STDMETHODIMP CSkinUserAccountControl::AnimationGetParams(UINT* puiMilliseconds)
+{
+	CHECK_E_POINTER(puiMilliseconds);
+	*puiMilliseconds = TARGET_INTERVAL;
+	return S_OK;
+}
+
+STDMETHODIMP CSkinUserAccountControl::AnimationNextFrame(BOOL* pbContinueAnimation)
+{
+	CHECK_E_POINTER(pbContinueAnimation);
+	m_alpha += m_alphaAmount;
+	m_step++;
+
+	if (m_step >= STEPS)
+	{
+		m_alpha = 255;
+		*pbContinueAnimation = FALSE;
+		return 0;
+	}
+	*pbContinueAnimation = TRUE;
+	return 0;
 }

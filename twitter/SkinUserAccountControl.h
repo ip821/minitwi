@@ -30,6 +30,11 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 
+	const int STEPS = 25;
+	int m_alpha = 0;
+	int m_step = 0;
+	int m_alphaAmount = 255 / STEPS;
+
 	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
 public:
 
@@ -38,6 +43,9 @@ public:
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(EraseBackground)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
 	STDMETHOD(Draw)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+	STDMETHOD(AnimationStart)();
+	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
+	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinUserAccountControl), CSkinUserAccountControl)

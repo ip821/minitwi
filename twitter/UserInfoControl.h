@@ -69,7 +69,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
 	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
 	STDMETHOD(OnActivate)();
-	METHOD_EMPTY(STDMETHOD(OnDeactivate)());
+	STDMETHOD(OnDeactivate)();
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	METHOD_EMPTY(STDMETHOD(OnStart)(IVariantObject *pResult));

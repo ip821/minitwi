@@ -2,6 +2,7 @@
 
 #include "twitter_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
+#include "AnimationTimerSupport.h"
 
 using namespace ATL;
 using namespace std;
@@ -15,11 +16,16 @@ class CUserAccountControl :
 	public IUserAccountControl,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
-	public IPluginSupportNotifications
+	public IPluginSupportNotifications,
+	public IDownloadServiceEventSink,
+	public CAnimationTimerSupport<CUserAccountControl>
 {
 public:
 	DECLARE_WND_CLASS(L"UserAccountControl")
-	CUserAccountControl();
+	CUserAccountControl()
+	{
+
+	}
 
 	DECLARE_NO_REGISTRY()
 
@@ -28,13 +34,16 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IControl)
+		COM_INTERFACE_ENTRY(IControl2)
 		COM_INTERFACE_ENTRY(IUserAccountControl)
+		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserAccountControl)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_PRINTCLIENT, OnPrintClient)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 	END_MSG_MAP()
 
 private:
@@ -43,16 +52,28 @@ private:
 	CComPtr<IImageManagerService> m_pImageManagerService;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
+	CComPtr<IDownloadService> m_pDownloadService;
+
+	DWORD dw_mAdviceDownloadService = 0;
+	CComBSTR m_bstrBannerUrl;
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPrintClient(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
+	void StartAnimation();
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);
 	STDMETHOD(CreateEx)(HWND hWndParent, HWND *hWnd);
 	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *pbResult);
+
+	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
+	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
+	STDMETHOD(OnActivate)();
+	STDMETHOD(OnDeactivate)();
+	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	STDMETHOD(SetVariantObject)(IVariantObject *pVariantObject);
 
@@ -60,6 +81,8 @@ public:
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(SetSkinUserAccountControl)(ISkinUserAccountControl* pSkinUserAccountControl);
+
+	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserAccountControl), CUserAccountControl)
