@@ -121,12 +121,6 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		CComPtr<IControl> pControl;
 		m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
 
-		CComQIPtr<IControl2> pControl2 = pControl;
-		if (pControl2)
-		{
-			ASSERT_IF_FAILED(pControl2->OnDeactivate());
-		}
-
 		HWND hWnd = 0;
 		pControl->GetHWND(&hWnd);
 		::ShowWindow(hWnd, SW_HIDE);
@@ -139,6 +133,12 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 			cdcBitmap1.SelectBitmap(bitmap1);
 		}
 		::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap1.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
+
+		CComQIPtr<IControl2> pControl2 = pControl;
+		if (pControl2)
+		{
+			ASSERT_IF_FAILED(pControl2->OnDeactivate());
+		}
 	}
 
 	{

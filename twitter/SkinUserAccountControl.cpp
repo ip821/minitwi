@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SkinUserAccountControl.h"
 
-#define DISTANCE_DISPLAY_NAME 30 / 200
+#define DISTANCE_DISPLAY_NAME 20 / 200
 #define DISTANCE_DESCRIPTION_Y 20
 #define DISTANCE_DESCRIPTION_X 20
 #define TARGET_INTERVAL 15
@@ -61,10 +61,27 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 		cdcBitmap.CreateCompatibleDC(cdc);
 		cdcBitmap.SelectBitmap(bitmap);
 
+		auto x = 0;
+		auto y = 0;
+		int width = tBitmap.Width;
+		int height = tBitmap.Height;
+
+		if (width > rect.Width())
+		{
+			x = width / 2 - rect.Width() / 2;
+			width = rect.Width();
+		}
+
+		if (height > rect.Height())
+		{
+			y = height / 2 - rect.Height() / 2;
+			height = rect.Height();
+		}
+
 		BLENDFUNCTION bf = { 0 };
 		bf.BlendOp = AC_SRC_OVER;
 		bf.SourceConstantAlpha = m_alpha;
-		cdc.AlphaBlend(0, 0, rect.Width(), rect.Height(), cdcBitmap, 0, 0, tBitmap.Width, tBitmap.Height, bf);
+		cdc.AlphaBlend(0, 0, rect.Width(), rect.Height(), cdcBitmap, x, y, width, height, bf);
 	}
 	return S_OK;
 }
@@ -75,19 +92,19 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	CDCHandle cdc(hdc);
 	DWORD dwColor = 0;
 	CComVariant vForeColor;
-	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_FORECOLOR, &vForeColor));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_FORECOLOR, &vForeColor));
 	if (vForeColor.vt == VT_I4)
-		dwColor = Color(vForeColor.intVal).ToCOLORREF();
+		dwColor = Color(Color::White).ToCOLORREF();
 
 	cdc.SetBkMode(TRANSPARENT);
 	cdc.SetTextColor(dwColor);
 
 	CComVariant vDisplayName;
-	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vDisplayName));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vDisplayName));
 	ATLASSERT(vDisplayName.vt == VT_BSTR);
 
 	HFONT font = 0;
-	ASSERT_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, &font));
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, &font));
 	cdc.SelectFont(font);
 
 	CComBSTR bstrDisplayName(vDisplayName.bstrVal);
@@ -101,7 +118,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	cdc.DrawText(bstrDisplayName, bstrDisplayName.Length(), &rectDisplayName, 0);
 
 	CComVariant vScreenName;
-	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vScreenName));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vScreenName));
 	ATLASSERT(vScreenName.vt == VT_BSTR);
 	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
 	CSize szScreenName;
@@ -113,11 +130,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	rectScreenName.bottom = rectScreenName.top + szScreenName.cy;
 	cdc.DrawText(bstrScreenName, bstrScreenName.Length(), &rectScreenName, 0);
 
-	ASSERT_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_NORMALIZED_TEXT, &font));
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_NORMALIZED_TEXT, &font));
 	cdc.SelectFont(font);
 
 	CComVariant vDescription;
-	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DESCRIPTION, &vDescription));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DESCRIPTION, &vDescription));
 	ATLASSERT(vDescription.vt == VT_BSTR);
 	CComBSTR bstrDescription(vDescription.bstrVal);
 	CSize szDescription;
@@ -152,7 +169,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 int CSkinUserAccountControl::DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage)
 {
 	CComVariant v;
-	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(bstrName, &v));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(bstrName, &v));
 	ATLASSERT(v.vt == VT_I4);
 
 	CString strText = CString(bstrMessage) + boost::lexical_cast<wstring>(v.intVal).c_str();
