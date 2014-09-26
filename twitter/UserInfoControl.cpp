@@ -16,6 +16,8 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	m_pServiceProvider = m_pPluginSupport;
 	ATLASSERT(m_pServiceProvider);
 
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
+
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pUserAccountControl, m_pControl));
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pTimelineControl, m_pControl));
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, m_pControl));
@@ -95,10 +97,12 @@ STDMETHODIMP CUserInfoControl::SetTheme(ITheme* pTheme)
 
 	CComPtr<ISkinUserAccountControl> pSkinUserAccountControl;
 	RETURN_IF_FAILED(pTheme->GetSkinUserAccountControl(&pSkinUserAccountControl));
+	RETURN_IF_FAILED(pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
 	RETURN_IF_FAILED(m_pUserAccountControl->SetSkinUserAccountControl(pSkinUserAccountControl));
 
 	CComPtr<ISkinTimeline> pSkinTimeline;
 	RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&pSkinTimeline));
+	RETURN_IF_FAILED(pSkinTimeline->SetImageManagerService(m_pImageManagerService));
 	RETURN_IF_FAILED(m_pTimelineControl->SetSkinTimeline(pSkinTimeline));
 	return S_OK;
 }

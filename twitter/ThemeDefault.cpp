@@ -75,22 +75,6 @@ STDMETHODIMP CThemeDefault::GetTabControlSkin(ISkinTabControl** pSkinTabControl)
 	return S_OK;
 }
 
-STDMETHODIMP CThemeDefault::SetColorMap(IThemeColorMap* pThemeColorMap)
-{
-	CHECK_E_POINTER(pThemeColorMap);
-	m_pThemeColorMap = pThemeColorMap;
-	RETURN_IF_FAILED(m_pSkinTimeline->SetColorMap(m_pThemeColorMap));
-	return S_OK;
-}
-
-STDMETHODIMP CThemeDefault::SetImageManagerService(IImageManagerService* pImageManagerService)
-{
-	CHECK_E_POINTER(pImageManagerService);
-	RETURN_IF_FAILED(m_pSkinTimeline->SetImageManagerService(pImageManagerService));
-	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetImageManagerService(pImageManagerService));
-	return S_OK;
-}
-
 STDMETHODIMP CThemeDefault::GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl)
 {
 	CHECK_E_POINTER(pSkinCommonControl);

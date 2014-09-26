@@ -244,9 +244,6 @@ interface ISkinCommonControl : IUnknown
 ]
 interface ITheme : IUnknown
 {
-	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
-	
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT GetFontMap(IThemeFontMap** ppThemeFontMap);
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);

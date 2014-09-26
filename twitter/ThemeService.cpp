@@ -78,10 +78,10 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 
 	CComPtr<IImageManagerService> pImageManagerService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
-	RETURN_IF_FAILED(m_pCurrentTheme->SetImageManagerService(pImageManagerService));
 	
 	CComPtr<ISkinTimeline> pSkinTimeline;
 	RETURN_IF_FAILED(m_pCurrentTheme->GetTimelineSkin(&pSkinTimeline));
+	RETURN_IF_FAILED(pSkinTimeline->SetImageManagerService(pImageManagerService));
 	RETURN_IF_FAILED(pTimelineControl->SetSkinTimeline(pSkinTimeline));
 
 	CComPtr<ISkinTabControl> pSkinTabControl;

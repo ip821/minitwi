@@ -42,8 +42,6 @@ public:
 	STDMETHOD(GetTimelineSkin)(ISkinTimeline** ppSkinTimeline);
 	STDMETHOD(GetTabControlSkin)(ISkinTabControl** pSkinTabControl);
 	STDMETHOD(GetCommonControlSkin)(ISkinCommonControl** pSkinCommonControl);
-	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
-	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
 	STDMETHOD(GetFontMap)(IThemeFontMap** ppThemeFontMap);
 	STDMETHOD(GetSkinUserAccountControl)(ISkinUserAccountControl** ppSkinUserAccountControl);

@@ -47,6 +47,7 @@ private:
 	CComPtr<IVariantObject> m_pVariantObject;
 	CComPtr<IUserAccountControl> m_pUserAccountControl;
 	CComPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<IImageManagerService> m_pImageManagerService;
 	HWND m_hWndUserAccountControl = 0;
 	HWND m_hWndTimelineControl = 0;
 
