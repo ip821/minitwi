@@ -76,6 +76,7 @@ public:
 
 	STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject);
 	METHOD_EMPTY(STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject));
+	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineImageService), CTimelineImageService)

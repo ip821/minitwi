@@ -103,7 +103,6 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 
 STDMETHODIMP CUserAccountControl::OnDeactivate()
 {
-	RETURN_IF_FAILED(m_pImageManagerService->RemoveImage(m_bstrBannerUrl));
 	return S_OK;
 }
 

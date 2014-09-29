@@ -30,12 +30,10 @@ public:
 	void FinalRelease(){};
 
 private:
-	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
-	CComPtr<ISkinUserAccountControl> m_pSkinUserAccountControl;
 
 public:
 

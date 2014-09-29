@@ -29,6 +29,17 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
 	m_pTimelineControl = pControl;
 
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
+	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
+
+	CComPtr<ITimelineCleanupService> pTimelineCleanupService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineCleanupService, &pTimelineCleanupService));
+	RETURN_IF_FAILED(pTimelineCleanupService->SetTimelineControl(m_pTimelineControl));
+
+	CComPtr<ITimelineImageService> pTimelineImageService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));
+	RETURN_IF_FAILED(pTimelineImageService->SetTimelineControl(m_pTimelineControl));
+
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
@@ -43,15 +54,20 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(m_pThreadPoolService->SetThreadCount(6));
 	RETURN_IF_FAILED(m_pThreadPoolService->Start());
 
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMoreTimeline));
+
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
 	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
+
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::OnInitCompleted()
+{
 	RETURN_IF_FAILED(StartTimers());
-
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMoreTimeline));
-
 	return S_OK;
 }
 

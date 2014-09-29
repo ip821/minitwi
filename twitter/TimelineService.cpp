@@ -20,15 +20,10 @@ STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 	return S_OK;
 }
 
-HRESULT CTimelineService::GetTimelineControl(IControl* pControl, CComQIPtr<ITimelineControl>& pTimelineControl)
+STDMETHODIMP CTimelineService::SetTimelineControl(ITimelineControl* pTimelineControl)
 {
-	CComQIPtr<IMainWindow> pMainWindow = pControl;
-	CComPtr<IContainerControl> pContainerControl;
-	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
-	CComQIPtr<ITabbedControl> pTabbedControl = pContainerControl;
-	CComPtr<IControl> pControlTimeline;
-	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControlTimeline));
-	pTimelineControl = pControlTimeline;
+	CHECK_E_POINTER(pTimelineControl);
+	m_pTimelineControl = pTimelineControl;
 	return S_OK;
 }
 
@@ -46,8 +41,6 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceShowMoreService));
-
-	RETURN_IF_FAILED(GetTimelineControl(m_pControl, m_pTimelineControl));
 	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
 
 	return S_OK;

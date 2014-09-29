@@ -71,15 +71,6 @@ interface IImageManagerService : IUnknown
 
 [
 	object,
-	uuid(03F5DD74-E610-409A-991F-20BDDBA9A625),
-	pointer_default(unique)
-]
-interface ITimelineService : IUnknown
-{
-};
-
-[
-	object,
 	uuid(627BE6CD-5CB1-4364-817A-1EABA04B52C9),
 	pointer_default(unique)
 ]
@@ -173,6 +164,16 @@ interface ITimelineControl : IControl2
 	HRESULT GetTopVisibleItemIndex(UINT* puiIndex);
 	HRESULT GetItemsCount(UINT* puiCount);
 	HRESULT RemoveItemByIndex(UINT uiIndex);
+};
+
+[
+	object,
+	uuid(03F5DD74-E610-409A-991F-20BDDBA9A625),
+	pointer_default(unique)
+]
+interface ITimelineService : IUnknown
+{
+	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 
 [
@@ -393,6 +394,7 @@ interface IWindowService : IUnknown
 ]
 interface ITimelineImageService : IUnknown
 {
+	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 
 [
@@ -402,6 +404,7 @@ interface ITimelineImageService : IUnknown
 ]
 interface ITimelineCleanupService : IUnknown
 {
+	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 
 [

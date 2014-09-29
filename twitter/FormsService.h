@@ -41,6 +41,7 @@ public:
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(OnInitializing)(IServiceProvider* pServiceProvider);
+	METHOD_EMPTY(STDMETHOD(OnInitCompleted()));
 
 	STDMETHOD(Load)(ISettings* pSettings);
 };

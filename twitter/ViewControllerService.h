@@ -15,6 +15,7 @@ class ATL_NO_VTABLE CViewControllerService :
 	public CComCoClass<CViewControllerService, &CLSID_ViewControllerService>,
 	public IViewControllerService,
 	public IPluginSupportNotifications,
+	public IPluginSupportNotifications2,
 	public IThreadServiceEventSink,
 	public IInitializeWithControlImpl,
 	public IInitializeWithSettings,
@@ -30,6 +31,7 @@ public:
 	BEGIN_COM_MAP(CViewControllerService)
 		COM_INTERFACE_ENTRY(IViewControllerService)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(IPluginSupportNotifications2)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
@@ -45,19 +47,22 @@ private:
 	CComPtr<IUpdateService> m_pUpdateService;
 	CComPtr<ITheme> m_pTheme;
 	CComQIPtr<ICustomTabControl> m_pTabbedControl;
+	CComPtr<ISettings> m_pSettings;
+	CComQIPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<ITimelineService> m_pTimelineService;
 
 	BOOL m_bUpdateAvailable = FALSE;
 	DWORD m_dwAdviceUpdateTimeline = 0;
 	DWORD m_dwAdviceShowMoreTimeline = 0;
 	DWORD m_dwAdviceTabbedControl = 0;
-	CComPtr<ISettings> m_pSettings;
-	CComQIPtr<ITimelineControl> m_pTimelineControl;
 
 	STDMETHOD(ShowControl)(BSTR bstrMessage, BOOL bError, BOOL bEnableCLick);
 	STDMETHOD(HideControl)();
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
+	METHOD_EMPTY(STDMETHOD(OnInitializing)(IServiceProvider *pServiceProvider));
+	STDMETHOD(OnInitCompleted());
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(Load)(ISettings* pSettings);

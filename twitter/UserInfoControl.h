@@ -16,7 +16,8 @@ class CUserInfoControl :
 	public IThreadServiceEventSink,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
-	public IPluginSupportNotifications
+	public IPluginSupportNotifications,
+	public IInitializeWithSettings
 {
 public:
 	DECLARE_WND_CLASS(L"UserInfoControl")
@@ -32,11 +33,16 @@ public:
 		COM_INTERFACE_ENTRY(IControl2)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserInfoControl)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		bHandled = TRUE;
+		lResult = OnMessage(uMsg, wParam, lParam, bHandled);
+		if (bHandled)
+			return TRUE;
 	END_MSG_MAP()
 
 private:
@@ -48,11 +54,13 @@ private:
 	CComPtr<IUserAccountControl> m_pUserAccountControl;
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<IImageManagerService> m_pImageManagerService;
+	CComPtr<ISettings> m_pSettings;
 	HWND m_hWndUserAccountControl = 0;
 	HWND m_hWndTimelineControl = 0;
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMessage(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	void AdjustSizes();
 
 public:
@@ -76,6 +84,8 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnStart)(IVariantObject *pResult));
 	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
 	METHOD_EMPTY(STDMETHOD(OnFinish)(IVariantObject *pResult));
+
+	STDMETHOD(Load)(ISettings* pSettings);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserInfoControl), CUserInfoControl)

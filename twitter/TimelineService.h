@@ -65,8 +65,7 @@ public:
 
 	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
-
-	static HRESULT GetTimelineControl(IControl* pControl, CComQIPtr<ITimelineControl>& pTimelineControl);
+	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)
