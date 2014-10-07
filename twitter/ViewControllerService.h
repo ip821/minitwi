@@ -56,8 +56,6 @@ private:
 	DWORD m_dwAdviceShowMoreTimeline = 0;
 	DWORD m_dwAdviceTabbedControl = 0;
 
-	STDMETHOD(ShowControl)(BSTR bstrMessage, BOOL bError, BOOL bEnableCLick);
-	STDMETHOD(HideControl)();
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);

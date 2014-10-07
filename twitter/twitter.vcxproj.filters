@@ -92,6 +92,9 @@
     <Filter Include="Controls\UserAccountControl">
       <UniqueIdentifier>{7bc42faf-7e52-4be6-aed8-d30c4f7bb8e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\TabbedControlStatusService">
+      <UniqueIdentifier>{162e3e54-0234-48ae-aee5-dc6422511c5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -210,6 +213,9 @@
     </ClCompile>
     <ClCompile Include="SkinUserAccountControl.cpp">
       <Filter>Services\SkinService\Default</Filter>
+    </ClCompile>
+    <ClCompile Include="TabbedControlStatusService.cpp">
+      <Filter>Services\TabbedControlStatusService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -341,6 +347,9 @@
     </ClInclude>
     <ClInclude Include="SkinUserAccountControl.h">
       <Filter>Services\SkinService\Default</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbedControlStatusService.h">
+      <Filter>Services\TabbedControlStatusService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

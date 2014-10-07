@@ -192,6 +192,7 @@
     <ClCompile Include="SkinCommonControl.cpp" />
     <ClCompile Include="SkinTabControl.cpp" />
     <ClCompile Include="SkinUserAccountControl.cpp" />
+    <ClCompile Include="TabbedControlStatusService.cpp" />
     <ClCompile Include="TimelineCleanupService.cpp" />
     <ClCompile Include="TimelineImageService.cpp" />
     <ClCompile Include="PictureWindow.cpp" />
@@ -278,6 +279,7 @@
     <ClInclude Include="SkinCommonControl.h" />
     <ClInclude Include="SkinTabControl.h" />
     <ClInclude Include="SkinUserAccountControl.h" />
+    <ClInclude Include="TabbedControlStatusService.h" />
     <ClInclude Include="TimelineCleanupService.h" />
     <ClInclude Include="TimelineImageService.h" />
     <ClInclude Include="PictureWindow.h" />

@@ -99,29 +99,13 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	return S_OK;
 }
 
-STDMETHODIMP CViewControllerService::ShowControl(BSTR bstrMessage, BOOL bError = FALSE, BOOL bEnableCLick = FALSE)
-{
-	RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(bError, bEnableCLick, bstrMessage));
-	return S_OK;
-}
-
-STDMETHODIMP CViewControllerService::HideControl()
-{
-	RETURN_IF_FAILED(m_pTabbedControl->HideInfo());
-	return S_OK;
-}
-
 STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(HideControl());
-	RETURN_IF_FAILED(m_pTabbedControl->StartAnimation());
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
-
 	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
 
 	CComVariant vHr;
@@ -129,16 +113,10 @@ STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
 
 	if (m_bUpdateAvailable)
 	{
-		RETURN_IF_FAILED(ShowControl(L"Update available. Click here to install.", FALSE, TRUE));
+		RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(FALSE, TRUE, L"Update available. Click here to install."));
 	}
 	else if (FAILED(vHr.intVal))
 	{
-		CComVariant vDesc;
-		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
-		CComBSTR bstrMsg = L"Unknown error";
-		if (vDesc.vt == VT_BSTR)
-			bstrMsg = vDesc.bstrVal;
-		RETURN_IF_FAILED(ShowControl(bstrMsg, TRUE));
 		if (vHr.intVal == COMADMIN_E_USERPASSWDNOTVALID)
 		{
 			RETURN_IF_FAILED(pResult->SetVariantValue(KEY_RESTART_TIMER, &CComVariant(FALSE)));

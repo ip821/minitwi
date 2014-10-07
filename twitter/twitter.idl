@@ -626,6 +626,13 @@ library twitterLib
 	{
 		[default] interface ISkinUserAccountControl;
 	};
+	[
+		uuid(51E59535-2665-4C06-B550-3FF56565F89B)
+	]
+	coclass TabbedControlStatusService
+	{
+		[default] interface IUnknown;
+	};
 };
 
 import "shobjidl.idl";

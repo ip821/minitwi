@@ -1,0 +1,48 @@
+#pragma once
+
+#include "resource.h"       // main symbols
+#include "twitter_i.h"
+#include "asyncsvc_contract_i.h"
+#include "..\ViewMdl\IInitializeWithControlImpl.h"
+
+using namespace ATL;
+using namespace std;
+
+class ATL_NO_VTABLE CTabbedControlStatusService :
+	public CComObjectRootEx<CComSingleThreadModel>,
+	public CComCoClass<CTabbedControlStatusService, &CLSID_ViewControllerService>,
+	public IPluginSupportNotifications,
+	public IThreadServiceEventSink,
+	public IInitializeWithControlImpl
+{
+public:
+	CTabbedControlStatusService()
+	{
+	}
+
+	DECLARE_NO_REGISTRY()
+
+	BEGIN_COM_MAP(CTabbedControlStatusService)
+		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithControl)
+	END_COM_MAP()
+
+private:
+	CComQIPtr<ICustomTabControl> m_pTabbedControl;
+	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
+	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
+
+	DWORD m_dwAdviceUpdateTimeline = 0;
+	DWORD m_dwAdviceShowMoreTimeline = 0;
+
+public:
+	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
+	STDMETHOD(OnShutdown)();
+
+	STDMETHOD(OnStart)(IVariantObject *pResult);
+	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
+	STDMETHOD(OnFinish)(IVariantObject *pResult);
+};
+
+OBJECT_ENTRY_AUTO(__uuidof(TabbedControlStatusService), CTabbedControlStatusService)

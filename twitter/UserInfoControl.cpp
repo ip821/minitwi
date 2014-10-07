@@ -25,6 +25,10 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pTimelineControl, pControl));
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, pControl));
 
+	CComPtr<IInitializeWithControl> pTabbedControlStatusService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TabbedControlStatusService, &pTabbedControlStatusService));
+	RETURN_IF_FAILED(pTabbedControlStatusService->SetControl(m_pControl));
+
 	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pUserAccountControl, m_pPluginSupport));
 	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pTimelineControl, m_pPluginSupport));
 	
