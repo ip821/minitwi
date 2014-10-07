@@ -622,45 +622,40 @@ bool twitCurl::mentionsGet( std::string sinceId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::timelineUserGet( bool trimUser, bool includeRetweets, unsigned int tweetCount,
-                                std::string userInfo, bool isUserId )
+bool twitCurl::timelineUserGet(std::string user, std::string maxId, std::string sinceId, std::string maxCount)
 {
     /* Prepare URL */
-    std::string buildUrl;
+    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+							twitterDefaults::TWITCURL_USERTIMELINE_URL +
+                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_USERTIMELINE_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	BOOL bFirstParam = TRUE;
 
-    if( userInfo.empty() )
+	if (user.length())
+	{
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_SCREENNAME + user;
+		bFirstParam = FALSE;
+	}
+
+	if (sinceId.length())
+	{
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_SINCEID + sinceId;
+		bFirstParam = FALSE;
+	}
+
+    if( maxId.length() )
     {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES;
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_MAXID + maxId;
+		bFirstParam = FALSE;
     }
 
-    if( tweetCount )
-    {
-        if( tweetCount > twitCurlDefaults::MAX_TIMELINE_TWEET_COUNT )
-        {
-            tweetCount = twitCurlDefaults::MAX_TIMELINE_TWEET_COUNT;
-        }
-        std::stringstream tmpStrm;
-        tmpStrm << twitCurlDefaults::TWITCURL_URL_SEP_AMP + twitCurlDefaults::TWITCURL_COUNT << tweetCount;
-        buildUrl += tmpStrm.str();
-        tmpStrm.str().clear();
-    }
+	if (maxCount.length())
+	{
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_COUNT + maxCount;
+		bFirstParam = FALSE;
+	}
 
-    if( includeRetweets )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP + twitCurlDefaults::TWITCURL_INCRETWEETS;
-    }
-
-    if( trimUser )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP + twitCurlDefaults::TWITCURL_TRIMUSER;
-    }
-
-    /* Perform GET */
+	/* Perform GET */
     return performGet( buildUrl );
 }
 

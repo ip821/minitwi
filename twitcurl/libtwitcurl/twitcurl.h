@@ -58,10 +58,7 @@ public:
 	bool timelineHomeGet(std::string maxId = "", std::string sinceId = "", std::string maxCount = "");
     bool timelinePublicGet();
     bool timelineFriendsGet();
-    bool timelineUserGet( bool trimUser /* in */, bool includeRetweets /* in */,
-                          unsigned int tweetCount /* in */,
-                          std::string userInfo = "" /* in */,
-                          bool isUserId = false /* in */ );
+	bool timelineUserGet(std::string user, std::string maxId, std::string sinceId, std::string maxCount);
     bool featuredUsersGet();
     bool mentionsGet( std::string sinceId = "" /* in */ );
 

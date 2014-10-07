@@ -173,6 +173,7 @@ interface ITimelineControl : IControl2
 ]
 interface ITimelineService : IUnknown
 {
+	HRESULT SetUserId(BSTR bstrUser);
 	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 

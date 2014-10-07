@@ -123,7 +123,7 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray)
+STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray)
 {
 	USES_CONVERSION;
 
@@ -145,7 +145,22 @@ STDMETHODIMP CTwitterConnection::GetHomeTimeline(BSTR bstrMaxId, BSTR bstrSinceI
 		strSinceId = W2A(bstrSinceId);
 	}
 
-	auto bRes = m_pTwitObj->timelineHomeGet(strId, strSinceId, strMaxCount);
+	std::string strUserId;
+	if (bstrUserId)
+	{
+		strUserId = W2A(bstrUserId);
+	}
+
+	bool bRes = false;
+	if (strUserId.empty())
+	{
+		bRes = m_pTwitObj->timelineHomeGet(strId, strSinceId, strMaxCount);
+	}
+	else
+	{
+		bRes = m_pTwitObj->timelineUserGet(strUserId, strId, strSinceId, strMaxCount);
+	}
+
 	if (!bRes)
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);

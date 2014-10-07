@@ -63,7 +63,10 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 	RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
 	if (bEmpty)
 	{
-		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_COUNT, &CComVariant((UINT)100)));
+		UINT uiMaxCount = 100;
+		if (m_bstrUser != L"")
+			uiMaxCount = 20;
+		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_COUNT, &CComVariant(uiMaxCount)));
 	}
 	else
 	{
@@ -126,7 +129,9 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_COUNT, &vCount));
 
 	CComPtr<IObjArray> pObjectArray;
-	RETURN_IF_FAILED(pConnection->GetHomeTimeline(
+
+	RETURN_IF_FAILED(pConnection->GetTimeline(
+		m_bstrUser,
 		vMaxId.vt == VT_BSTR ? vMaxId.bstrVal : NULL,
 		vSinceId.vt == VT_BSTR ? vSinceId.bstrVal : NULL,
 		vCount.vt == VT_UI4 ? vCount.uintVal : 0,
@@ -134,6 +139,13 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
 
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineService::SetUserId(BSTR bstrUser)
+{
+	CHECK_E_POINTER(bstrUser);
+	m_bstrUser = bstrUser;
 	return S_OK;
 }
 

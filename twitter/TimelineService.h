@@ -50,6 +50,7 @@ private:
 	std::mutex m_mutex;
 	TIME_ZONE_INFORMATION m_tz;
 	BOOL m_bShowMoreRunning = 0;
+	CComBSTR m_bstrUser;
 
 	STDMETHOD(UpdateRelativeTime)(IObjArray* pObjectArray);
 
@@ -66,6 +67,7 @@ public:
 	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
 	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
+	STDMETHOD(SetUserId)(BSTR bstrUser);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)

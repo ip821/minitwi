@@ -33,25 +33,16 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(pThreadPoolService->SetThreadCount(6));
 	RETURN_IF_FAILED(pThreadPoolService->Start());
 
-	CComPtr<ITimelineService> pTimelineService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &pTimelineService));
-	RETURN_IF_FAILED(pTimelineService->SetTimelineControl(m_pTimelineControl));
-	RETURN_IF_FAILED(HrInitializeWithSettings(pTimelineService, m_pSettings));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
+	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
+	RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
 
 	CComPtr<ITimelineImageService> pTimelineImageService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));
 	RETURN_IF_FAILED(pTimelineImageService->SetTimelineControl(m_pTimelineControl));
 
 	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
-
-	CComPtr<IThreadService> pThreadServiceUpdateTimeline;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadServiceUpdateTimeline));
-	RETURN_IF_FAILED(pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
-
-	CComPtr<ITimerService> pTimerService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &pTimerService));
-
-	RETURN_IF_FAILED(pTimerService->StartTimer(60 * 1000));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
 
 	return S_OK;
 }
@@ -141,8 +132,17 @@ STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
+
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pUserAccountControl, m_pVariantObject));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pTimelineControl, m_pVariantObject));
+
+	CComVariant vUserScreenName;
+	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserScreenName));
+	ATLASSERT(vUserScreenName.vt == VT_BSTR);
+
+	RETURN_IF_FAILED(m_pTimelineService->SetUserId(vUserScreenName.bstrVal));
+	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->Run());
+
 	return S_OK;
 }
 
