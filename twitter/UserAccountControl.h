@@ -46,6 +46,11 @@ public:
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 	END_MSG_MAP()
 
+	DECLARE_PROTECT_FINAL_CONSTRUCT()
+
+	HRESULT FinalConstruct();
+	void FinalRelease();
+
 private:
 	CComPtr<ISkinUserAccountControl> m_pSkinUserAccountControl;
 	CComPtr<IVariantObject> m_pVariantObject;

@@ -11,7 +11,7 @@ class CUserInfoControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CUserInfoControl, &CLSID_UserInfoControl>,
 	public CWindowImpl<CUserInfoControl>,
-	public IControl2,
+	public IUserInfoControl,
 	public IThemeSupport,
 	public IThreadServiceEventSink,
 	public IInitializeWithControlImpl,
@@ -29,6 +29,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IThemeSupport)
+		COM_INTERFACE_ENTRY(IUserInfoControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
@@ -44,6 +45,11 @@ public:
 		if (bHandled)
 			return TRUE;
 	END_MSG_MAP()
+
+	DECLARE_PROTECT_FINAL_CONSTRUCT()
+
+	HRESULT FinalConstruct();
+	void FinalRelease();
 
 private:
 

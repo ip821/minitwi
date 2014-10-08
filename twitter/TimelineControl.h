@@ -66,6 +66,11 @@ public:
 		CHAIN_MSG_MAP(CAxDialogImpl<CTimelineControl>)
 	END_MSG_MAP()
 
+	DECLARE_PROTECT_FINAL_CONSTRUCT()
+
+	HRESULT FinalConstruct();
+	void FinalRelease();
+
 private:
 	CCustomListBox m_listBox;
 	CComPtr<IServiceProvider> m_pServiceProvider;

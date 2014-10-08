@@ -18,16 +18,72 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdvice));
+	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
+	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ITabbedControlEventSink), &m_dwAdviceTabbedControl));
 
 	return S_OK;
 }
 
 STDMETHODIMP COpenUrlService::OnShutdown()
 {
-	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdvice));
+	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
+	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ITabbedControlEventSink), m_dwAdviceTabbedControl));
 	m_pWindowService.Release();
 	m_pServiceProvider.Release();
+	m_pTimelineControl.Release();
+	m_pTabbedControl.Release();
+	return S_OK;
+}
+
+STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
+{
+	CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
+	if (pUserInfoControl)
+	{
+		CComQIPtr<IPluginSupportNotifications> pPluginSupportNotifications = pUserInfoControl;
+		if (pPluginSupportNotifications)
+		{
+			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
+			RETURN_IF_FAILED(m_pTabbedControl->RemovePage(pControl));
+		}
+	}
+	return S_OK;
+}
+
+STDMETHODIMP COpenUrlService::OnClose(IControl *pControl)
+{
+	return S_OK;
+}
+
+
+STDMETHODIMP COpenUrlService::OpenUserInfo(IVariantObject* pVariantObject)
+{
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_UserInfoControl, &pControl));
+	RETURN_IF_FAILED(m_pTabbedControl->AddPage(pControl));
+
+	CComPtr<IThemeService> pThemeService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
+	CComPtr<ITheme> pTheme;
+	RETURN_IF_FAILED(pThemeService->GetCurrentTheme(&pTheme));
+	CComQIPtr<IThemeSupport> pThemeSupport = pControl;
+	if (pThemeSupport)
+	{
+		RETURN_IF_FAILED(pThemeSupport->SetTheme(pTheme));
+	}
+
+	RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
+	CComVariant vUserObject;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_OBJECT, &vUserObject));
+	if (vUserObject.vt == VT_UNKNOWN)
+	{
+		CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
+		ATLASSERT(pObj);
+		RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pObj));
+	}
+
+	RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
+
 	return S_OK;
 }
 
@@ -38,33 +94,10 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 
 	CString strUrl;
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME) ||
-		CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_NAME))
+		CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_NAME) ||
+		CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_IMAGE))
 	{
-		CComPtr<IControl> pControl;
-		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_UserInfoControl, &pControl));
-		RETURN_IF_FAILED(m_pTabbedControl->AddPage(pControl));
-
-		CComPtr<IThemeService> pThemeService;
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
-		CComPtr<ITheme> pTheme;
-		RETURN_IF_FAILED(pThemeService->GetCurrentTheme(&pTheme));
-		CComQIPtr<IThemeSupport> pThemeSupport = pControl;
-		if (pThemeSupport)
-		{
-			RETURN_IF_FAILED(pThemeSupport->SetTheme(pTheme));
-		}
-		
-		RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
-		CComVariant vUserObject;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_OBJECT, &vUserObject));
-		if (vUserObject.vt == VT_UNKNOWN)
-		{
-			CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
-			ATLASSERT(pObj);
-			RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pObj));
-		}
-
-		RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
+		RETURN_IF_FAILED(OpenUserInfo(pVariantObject));
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME))

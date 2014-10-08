@@ -133,12 +133,6 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 			cdcBitmap1.SelectBitmap(bitmap1);
 		}
 		::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap1.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
-
-		CComQIPtr<IControl2> pControl2 = pControl;
-		if (pControl2)
-		{
-			ASSERT_IF_FAILED(pControl2->OnDeactivate());
-		}
 	}
 
 	{
@@ -179,6 +173,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		m_wndScroll.Scroll(bRightToLeft);
 	}
 
+	m_prevSelectedPageIndex = m_selectedPageIndex;
 	m_selectedPageIndex = dwIndex;
 
 	if (m_selectedPageIndex == -1)
@@ -195,6 +190,21 @@ void CCustomTabControl::OnEndScroll()
 	HWND hWnd = 0;
 	pControl->GetHWND(&hWnd);
 	::ShowWindow(hWnd, SW_SHOW);
+
+	if (m_prevSelectedPageIndex != -1)
+	{
+		CComPtr<IControl> pControl;
+		ASSERT_IF_FAILED(GetPage(m_prevSelectedPageIndex, &pControl));
+
+		CComQIPtr<IControl2> pControl2 = pControl;
+		if (pControl2)
+		{
+			ASSERT_IF_FAILED(pControl2->OnDeactivate());
+		}
+
+		ASSERT_IF_FAILED(Fire_OnDeactivate(pControl));
+	}
+
 	CComQIPtr<IControl2> pControl2 = pControl;
 	if (pControl2)
 	{
@@ -218,7 +228,37 @@ STDMETHODIMP CCustomTabControl::GetCurrentPage(IControl **ppControl)
 
 STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 {
-	return E_NOTIMPL;
+	CHECK_E_POINTER(pControl);
+
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	size_t index = -1;
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IControl> pFoundControl;
+		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
+		if (pControl == pFoundControl)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	if (index == -1)
+		return E_INVALIDARG;
+
+	{
+		CComQIPtr<IControl2> pControl2 = pControl;
+		if (pControl2)
+		{
+			ASSERT_IF_FAILED(pControl2->OnClose());
+		}
+	}
+
+	m_pControls->RemoveObjectAt(&((UINT)index));
+	Fire_OnClose(pControl);
+
+	return S_OK;
 }
 
 STDMETHODIMP CCustomTabControl::ActivatePage(IControl *pControl)
@@ -479,6 +519,20 @@ STDMETHODIMP CCustomTabControl::HideInfo()
 	return S_OK;
 }
 
+LRESULT CCustomTabControl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	SetCursor(m_arrowCursor);
+
+	auto x = GET_X_LPARAM(lParam);
+	auto y = GET_Y_LPARAM(lParam);
+
+	if (m_bShowInfoImage && m_bInfoImageEnableClick && m_rectInfoImage.PtInRect(CPoint(x, y)))
+	{
+		SetCursor(m_handCursor);
+	}
+	return 0;
+}
+
 HRESULT CCustomTabControl::Fire_OnLinkClick()
 {
 	CComPtr<IUnknown> pUnk;
@@ -503,16 +557,50 @@ HRESULT CCustomTabControl::Fire_OnLinkClick()
 	return hr;
 }
 
-LRESULT CCustomTabControl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+HRESULT CCustomTabControl::Fire_OnDeactivate(IControl* pControl)
 {
-	SetCursor(m_arrowCursor);
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CCustomTabControl* pThis = static_cast<CCustomTabControl*>(this);
+	int cConnections = IConnectionPointImpl_ITabbedControlEventSink::m_vec.GetSize();
 
-	auto x = GET_X_LPARAM(lParam);
-	auto y = GET_Y_LPARAM(lParam);
-
-	if (m_bShowInfoImage && m_bInfoImageEnableClick && m_rectInfoImage.PtInRect(CPoint(x, y)))
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
 	{
-		SetCursor(m_handCursor);
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = IConnectionPointImpl_ITabbedControlEventSink::m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		ITabbedControlEventSink* pConnection = static_cast<ITabbedControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnDeactivate(pControl);
+		}
 	}
-	return 0;
+	return hr;
+}
+
+HRESULT CCustomTabControl::Fire_OnClose(IControl* pControl)
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CCustomTabControl* pThis = static_cast<CCustomTabControl*>(this);
+	int cConnections = IConnectionPointImpl_ITabbedControlEventSink::m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = IConnectionPointImpl_ITabbedControlEventSink::m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		ITabbedControlEventSink* pConnection = static_cast<ITabbedControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnClose(pControl);
+		}
+	}
+	return hr;
 }

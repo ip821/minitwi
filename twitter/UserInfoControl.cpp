@@ -8,11 +8,22 @@ CUserInfoControl::CUserInfoControl()
 {
 }
 
+HRESULT CUserInfoControl::FinalConstruct()
+{
+	return S_OK;
+}
+
+void CUserInfoControl::FinalRelease()
+{
+	if (m_hWnd)
+		DestroyWindow();
+}
+
 STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport));
 	RETURN_IF_FAILED(m_pPluginSupport->InitializePlugins(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE));
-	//RETURN_IF_FAILED(m_pPluginSupport->SetParentServiceProvider(pServiceProvider));
+
 	m_pServiceProvider = m_pPluginSupport;
 	ATLASSERT(m_pServiceProvider);
 
@@ -53,6 +64,18 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 STDMETHODIMP CUserInfoControl::OnShutdown()
 {
+	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
+	m_pPluginSupport.Release();
+	m_pServiceProvider.Release();
+	m_pTheme.Release();
+	m_pVariantObject.Release();
+	m_pUserAccountControl.Release();
+	m_pTimelineControl.Release();
+	m_pImageManagerService.Release();
+	m_pSettings.Release();
+	m_pTimelineService.Release();
+	m_pThreadServiceUpdateTimeline.Release();
+
 	return S_OK;
 }
 

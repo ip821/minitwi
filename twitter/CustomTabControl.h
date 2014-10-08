@@ -10,6 +10,7 @@ using namespace Gdiplus;
 
 class CCustomTabControl;
 typedef IConnectionPointImpl <CCustomTabControl, &__uuidof(IInfoControlEventSink)> IConnectionPointImpl_IInfoControlEventSink;
+typedef IConnectionPointImpl<CCustomTabControl, &__uuidof(ITabbedControlEventSink)> IConnectionPointImpl_ITabbedControlEventSink;
 
 class CCustomTabControl :
 	public CWindowImpl<CCustomTabControl>,
@@ -21,7 +22,7 @@ class CCustomTabControl :
 	public IPersistSettings,
 	public IPluginSupportNotifications,
 	public IConnectionPointContainerImpl<CCustomTabControl>,
-	public IConnectionPointImpl<CCustomTabControl, &__uuidof(ITabbedControlEventSink)>,
+	public IConnectionPointImpl_ITabbedControlEventSink,
 	public IConnectionPointImpl_IInfoControlEventSink
 {
 
@@ -65,6 +66,7 @@ public:
 
 private:
 	CComPtr<IObjCollection> m_pControls;
+	int m_prevSelectedPageIndex = -1;
 	int m_selectedPageIndex = -1;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ISettings> m_pSettings;
@@ -98,6 +100,9 @@ private:
 	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	HRESULT Fire_OnLinkClick();
+	HRESULT Fire_OnDeactivate(IControl* pControl);
+	HRESULT Fire_OnClose(IControl* pControl);
+	
 public:
 	void OnEndScroll();
 

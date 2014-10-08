@@ -2,6 +2,17 @@
 #include "UserAccountControl.h"
 #include "Plugins.h"
 
+HRESULT CUserAccountControl::FinalConstruct()
+{
+	return S_OK;
+}
+
+void CUserAccountControl::FinalRelease()
+{
+	if (m_hWnd)
+		DestroyWindow();
+}
+
 STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
@@ -16,6 +27,15 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 
 STDMETHODIMP CUserAccountControl::OnShutdown()
 {
+	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), dw_mAdviceDownloadService));
+
+	m_pSkinUserAccountControl.Release();
+	m_pVariantObject.Release();
+	m_pImageManagerService.Release();
+	m_pThemeColorMap.Release();
+	m_pThemeFontMap.Release();
+	m_pDownloadService.Release();
+
 	return S_OK;
 }
 

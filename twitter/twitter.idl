@@ -423,6 +423,15 @@ interface ICustomTabControl : ITabbedControl
 };
 
 [
+	object,
+	uuid(970095A2-7854-42C9-BCF7-FCFD07BA5E65),
+	pointer_default(unique)
+]
+interface IUserInfoControl : IControl2
+{
+};
+
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -610,7 +619,7 @@ library twitterLib
 	]
 	coclass UserInfoControl
 	{
-		[default] interface IControl;
+		[default] interface IUserInfoControl;
 	};
 	[
 		uuid(45B12203-6FD3-492E-858A-7EA20454493B)

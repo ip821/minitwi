@@ -11,7 +11,8 @@ class ATL_NO_VTABLE COpenUrlService :
 	public IOpenUrlService,
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
-	public ITimelineControlEventSink
+	public ITimelineControlEventSink,
+	public ITabbedControlEventSink
 {
 public:
 
@@ -26,6 +27,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
+		COM_INTERFACE_ENTRY(ITabbedControlEventSink)
 	END_COM_MAP()
 
 private:
@@ -33,13 +35,21 @@ private:
 	CComPtr<IWindowService> m_pWindowService;
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	CComQIPtr<ITabbedControl> m_pTabbedControl;
-	DWORD m_dwAdvice = 0;
+	DWORD m_dwAdviceTimelineControl = 0;
+	DWORD m_dwAdviceTabbedControl = 0;
+
+private:
+	STDMETHOD(OpenUserInfo)(IVariantObject* pVariantObject);
+
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
 	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+
+	STDMETHOD(OnDeactivate)(IControl *pControl);
+	STDMETHOD(OnClose)(IControl *pControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(OpenUrlService), COpenUrlService)

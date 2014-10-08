@@ -6,6 +6,17 @@
 
 // CTimelineControl
 
+HRESULT CTimelineControl::FinalConstruct()
+{
+	return S_OK;
+}
+
+void CTimelineControl::FinalRelease()
+{
+	if (m_hWnd)
+		DestroyWindow();
+}
+
 STDMETHODIMP CTimelineControl::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);

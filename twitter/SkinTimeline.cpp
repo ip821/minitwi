@@ -442,6 +442,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, L"");
 			pColumnRects->SetRectStringProp(uiIndex, VAR_VALUE, CComBSTR(strImageUrl));
 			pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_IMAGE, TRUE);
+			pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
 		}
 
 		CSize sizeRetweetedDislpayName;
