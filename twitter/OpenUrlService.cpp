@@ -35,11 +35,44 @@ STDMETHODIMP COpenUrlService::OnShutdown()
 	return S_OK;
 }
 
+STDMETHODIMP COpenUrlService::OnActivate(IControl *pControl)
+{
+	{
+		CComQIPtr<ITimelineControl> pTimelineControl = pControl;
+		if (pTimelineControl)
+		{
+			HWND hWnd = 0;
+			RETURN_IF_FAILED(pTimelineControl->GetHWND(&hWnd));
+			::SetFocus(hWnd);
+		}
+	}
+
+	{
+		CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
+		if (pUserInfoControl)
+		{
+			ATLASSERT(!m_dwAdviceTimelineControl2);
+			CComPtr<ITimelineControl> pTimelineControl;
+			RETURN_IF_FAILED(pUserInfoControl->GetTimelineControl(&pTimelineControl));
+			CComPtr<IUnknown> pUnk;
+			RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+			RETURN_IF_FAILED(AtlAdvise(pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl2));
+		}
+	}
+	return S_OK;
+}
+
 STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 {
 	CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
 	if (pUserInfoControl)
 	{
+		ATLASSERT(m_dwAdviceTimelineControl2);
+		CComPtr<ITimelineControl> pTimelineControl;
+		RETURN_IF_FAILED(pUserInfoControl->GetTimelineControl(&pTimelineControl));
+		RETURN_IF_FAILED(AtlUnadvise(pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl2));
+		m_dwAdviceTimelineControl2 = 0;
+
 		CComQIPtr<IPluginSupportNotifications> pPluginSupportNotifications = pUserInfoControl;
 		if (pPluginSupportNotifications)
 		{

@@ -100,6 +100,7 @@ private:
 	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	HRESULT Fire_OnLinkClick();
+	HRESULT Fire_OnActivate(IControl* pControl);
 	HRESULT Fire_OnDeactivate(IControl* pControl);
 	HRESULT Fire_OnClose(IControl* pControl);
 	

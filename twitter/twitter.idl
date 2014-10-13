@@ -429,6 +429,7 @@ interface ICustomTabControl : ITabbedControl
 ]
 interface IUserInfoControl : IControl2
 {
+	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
 };
 
 [

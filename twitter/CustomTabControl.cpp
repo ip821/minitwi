@@ -184,13 +184,6 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 
 void CCustomTabControl::OnEndScroll()
 {
-	m_wndScroll.ShowWindow(SW_HIDE);
-	CComPtr<IControl> pControl;
-	m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
-	HWND hWnd = 0;
-	pControl->GetHWND(&hWnd);
-	::ShowWindow(hWnd, SW_SHOW);
-
 	if (m_prevSelectedPageIndex != -1)
 	{
 		CComPtr<IControl> pControl;
@@ -205,6 +198,14 @@ void CCustomTabControl::OnEndScroll()
 		ASSERT_IF_FAILED(Fire_OnDeactivate(pControl));
 	}
 
+	m_wndScroll.ShowWindow(SW_HIDE);
+	CComPtr<IControl> pControl;
+	m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
+	HWND hWnd = 0;
+	pControl->GetHWND(&hWnd);
+	::ShowWindow(hWnd, SW_SHOW);
+
+	ASSERT_IF_FAILED(Fire_OnActivate(pControl));
 	CComQIPtr<IControl2> pControl2 = pControl;
 	if (pControl2)
 	{
@@ -552,6 +553,30 @@ HRESULT CCustomTabControl::Fire_OnLinkClick()
 		if (pConnection)
 		{
 			hr = pConnection->OnLinkClick(NULL);
+		}
+	}
+	return hr;
+}
+
+HRESULT CCustomTabControl::Fire_OnActivate(IControl* pControl)
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CCustomTabControl* pThis = static_cast<CCustomTabControl*>(this);
+	int cConnections = IConnectionPointImpl_ITabbedControlEventSink::m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = IConnectionPointImpl_ITabbedControlEventSink::m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		ITabbedControlEventSink* pConnection = static_cast<ITabbedControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnActivate(pControl);
 		}
 	}
 	return hr;

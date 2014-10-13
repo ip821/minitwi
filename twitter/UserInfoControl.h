@@ -95,6 +95,8 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnFinish)(IVariantObject *pResult));
 
 	STDMETHOD(Load)(ISettings* pSettings);
+
+	STDMETHOD(GetTimelineControl)(ITimelineControl** ppTimelineControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserInfoControl), CUserInfoControl)

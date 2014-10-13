@@ -212,6 +212,7 @@ STDMETHODIMP CUserInfoControl::OnActivate()
 {
 	RETURN_IF_FAILED(m_pTimelineControl->OnActivate());
 	RETURN_IF_FAILED(m_pUserAccountControl->OnActivate());
+	::SetFocus(m_hWndTimelineControl);
 	return S_OK;
 }
 
@@ -231,5 +232,12 @@ STDMETHODIMP CUserInfoControl::Load(ISettings* pSettings)
 	{
 		RETURN_IF_FAILED(p->Load(m_pSettings));
 	}
+	return S_OK;
+}
+
+STDMETHODIMP CUserInfoControl::GetTimelineControl(ITimelineControl** ppTimelineControl)
+{
+	CHECK_E_POINTER(ppTimelineControl);
+	RETURN_IF_FAILED(m_pTimelineControl->QueryInterface(ppTimelineControl));
 	return S_OK;
 }
