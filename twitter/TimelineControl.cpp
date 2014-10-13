@@ -25,7 +25,7 @@ STDMETHODIMP CTimelineControl::OnInitialized(IServiceProvider* pServiceProvider)
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(AtlAdvise(m_pCommandSupport, pUnk, __uuidof(ICommandSupportEventSink), &m_dwAdviceCommandSupport));
-
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	return S_OK;
 }
 
@@ -33,7 +33,7 @@ STDMETHODIMP CTimelineControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pCommandSupport, __uuidof(ICommandSupportEventSink), m_dwAdviceCommandSupport));
 	m_pServiceProvider.Release();
-	exit(0); //skip OnShutdown calls, thread joins etc.
+	//exit(0); //skip OnShutdown calls, thread joins etc.
 	return S_OK;
 }
 

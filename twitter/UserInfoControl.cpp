@@ -64,6 +64,23 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 STDMETHODIMP CUserInfoControl::OnShutdown()
 {
+	{
+		CComQIPtr <IPluginSupportNotifications> pPluginSupportNotifications = m_pTimelineControl;
+		if (pPluginSupportNotifications)
+		{
+			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
+		}
+	}
+
+	{
+		CComQIPtr <IPluginSupportNotifications> pPluginSupportNotifications = m_pUserAccountControl;
+		if (pPluginSupportNotifications)
+		{
+			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
+		}
+	}
+
+
 	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
 	m_pPluginSupport.Release();
 	m_pServiceProvider.Release();
@@ -75,6 +92,7 @@ STDMETHODIMP CUserInfoControl::OnShutdown()
 	m_pSettings.Release();
 	m_pTimelineService.Release();
 	m_pThreadServiceUpdateTimeline.Release();
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 
 	return S_OK;
 }

@@ -10,6 +10,12 @@
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 // CTimelineService
 
+#ifdef DEBUG
+#define COUNT_ITEMS 10
+#else
+#define COUNT_ITEMS 100
+#endif
+
 STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
@@ -51,8 +57,10 @@ STDMETHODIMP CTimelineService::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceUpdateService));
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	m_pSettings.Release();
 	m_pThreadServiceUpdateService.Release();
+	m_pTimelineControl.Release();
 	return S_OK;
 }
 
@@ -63,7 +71,7 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 	RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
 	if (bEmpty)
 	{
-		UINT uiMaxCount = 100;
+		UINT uiMaxCount = COUNT_ITEMS;
 		if (m_bstrUser != L"")
 			uiMaxCount = 20;
 		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_COUNT, &CComVariant(uiMaxCount)));
@@ -95,11 +103,12 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResult)
+STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 {
-	CHECK_E_POINTER(pResult);
+	CHECK_E_POINTER(pResultObj);
 	CoInitialize(NULL);
 
+	CComPtr<IVariantObject> pResult = pResultObj;
 	CComPtr<ISettings> pSettings;
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
@@ -299,7 +308,7 @@ STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 			CComPtr<IVariantObject> pThreadContext;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pThreadContext));
 			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_MAX_ID, &vId));
-			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_COUNT, &CComVariant((UINT)100)));
+			RETURN_IF_FAILED(pThreadContext->SetVariantValue(VAR_COUNT, &CComVariant((UINT)COUNT_ITEMS)));
 			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->SetThreadContext(pThreadContext));
 			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->Run());
 			m_bShowMoreRunning = TRUE;

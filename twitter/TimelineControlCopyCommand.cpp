@@ -2,6 +2,19 @@
 #include "TimelineControlCopyCommand.h"
 #include "Plugins.h"
 
+STDMETHODIMP CTimelineControlCopyCommand::OnInitialized(IServiceProvider* pServiceProvider)
+{
+	return S_OK;
+}
+
+STDMETHODIMP CTimelineControlCopyCommand::OnShutdown()
+{
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
+	if (m_pVariantObject)
+		m_pVariantObject.Release();
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControlCopyCommand::GetCommandText(REFGUID guidCommand, BSTR* bstrText)
 {
 	UNREFERENCED_PARAMETER(guidCommand);

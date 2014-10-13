@@ -38,9 +38,20 @@ STDMETHODIMP CTabbedControlStatusService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceShowMoreTimeline));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceUpdateTimeline));
+	RETURN_IF_FAILED(StopAnimation());
 	m_pThreadServiceShowMoreTimeline.Release();
 	m_pThreadServiceUpdateTimeline.Release();
 	m_pTabbedControl.Release();
+	return S_OK;
+}
+
+STDMETHODIMP CTabbedControlStatusService::StopAnimation()
+{
+	if (m_bAnimating)
+	{
+		RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
+		m_bAnimating = FALSE;
+	}
 	return S_OK;
 }
 
@@ -48,12 +59,13 @@ STDMETHODIMP CTabbedControlStatusService::OnStart(IVariantObject *pResult)
 {
 	RETURN_IF_FAILED(m_pTabbedControl->HideInfo());
 	RETURN_IF_FAILED(m_pTabbedControl->StartAnimation());
+	m_bAnimating = TRUE;
 	return S_OK;
 }
 
 STDMETHODIMP CTabbedControlStatusService::OnFinish(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
+	RETURN_IF_FAILED(StopAnimation());
 
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));

@@ -16,7 +16,8 @@ class ATL_NO_VTABLE CTimelineControlCopyCommand :
 	public IAcceleratorSupport,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
-	public IInitializeWithColumnName
+	public IInitializeWithColumnName,
+	public IPluginSupportNotifications
 {
 public:
 	CTimelineControlCopyCommand()
@@ -31,6 +32,7 @@ public:
 		COM_INTERFACE_ENTRY(IAcceleratorSupport)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 		COM_INTERFACE_ENTRY(IInitializeWithColumnName)
+		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 	END_COM_MAP()
 
 private:
@@ -44,6 +46,8 @@ public:
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 	STDMETHOD(SetColumnName)(LPCTSTR lpszColumnName);
 	STDMETHOD(GetAccelerator)(REFGUID guidCommand, TACCEL *pAccel);
+	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
+	STDMETHOD(OnShutdown)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineControlCopyCommand), CTimelineControlCopyCommand)

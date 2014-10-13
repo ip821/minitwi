@@ -40,6 +40,7 @@ STDMETHODIMP CTimelineImageService::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimerServiceUpdate, __uuidof(ITimerServiceEventSink), m_dwAdviceTimerServiceUpdate));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceUpdateService));
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	m_pThreadServiceShowMoreService.Release();
 	m_pThreadServiceUpdateService.Release();
 	m_pTimerServiceUpdate.Release();
