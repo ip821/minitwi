@@ -83,12 +83,12 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+
 	if (uiCount > 1)
 		::ShowWindow(hWnd, SW_HIDE);
+
 	if (m_selectedPageIndex == -1)
 		SelectPage(0);
-	if (uiCount > 1)
-		SelectPage(1);
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(IID_IUnknown, (LPVOID*)&pUnk));
@@ -256,7 +256,11 @@ STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 		}
 	}
 
-	m_pControls->RemoveObjectAt(&((UINT)index));
+	ASSERT_IF_FAILED(m_pControls->RemoveObjectAt(&((UINT)index)));
+
+	if (m_selectedPageIndex > index)
+		m_selectedPageIndex--;
+
 	Fire_OnClose(pControl);
 
 	return S_OK;
