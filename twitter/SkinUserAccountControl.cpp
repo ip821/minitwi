@@ -30,14 +30,9 @@ STDMETHODIMP CSkinUserAccountControl::SetImageManagerService(IImageManagerServic
 STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject)
 {
 	CRect rect = *lpRect;
-	DWORD dwBackColor = 0;
+	DWORD dwBackColor = Color(Color::DarkSlateGray).ToCOLORREF();
 	CBitmap bitmap;
 	TBITMAP tBitmap = { 0 };
-
-	CComVariant vBackColor;
-	pVariantObject->GetVariantValue(VAR_TWITTER_USER_BACKCOLOR, &vBackColor);
-	if (vBackColor.vt == VT_I4)
-		dwBackColor = Color(vBackColor.intVal).ToCOLORREF();
 
 	CComVariant vBitmapUrl;
 	pVariantObject->GetVariantValue(VAR_TWITTER_USER_BANNER, &vBitmapUrl);

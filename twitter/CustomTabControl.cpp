@@ -233,11 +233,11 @@ STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
-	size_t index = -1;
-	for (size_t i = 0; i < uiCount; i++)
+	UINT index = -1;
+	for (UINT i = 0; i < uiCount; i++)
 	{
 		CComPtr<IControl> pFoundControl;
-		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
+		RETURN_IF_FAILED(m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl));
 		if (pControl == pFoundControl)
 		{
 			index = i;
@@ -252,13 +252,13 @@ STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 		CComQIPtr<IControl2> pControl2 = pControl;
 		if (pControl2)
 		{
-			ASSERT_IF_FAILED(pControl2->OnClose());
+			RETURN_IF_FAILED(pControl2->OnClose());
 		}
 	}
 
-	ASSERT_IF_FAILED(m_pControls->RemoveObjectAt(&((UINT)index)));
+	RETURN_IF_FAILED(m_pControls->RemoveObjectAt(&index));
 
-	if (m_selectedPageIndex > index)
+	if ((UINT)m_selectedPageIndex > index)
 		m_selectedPageIndex--;
 
 	Fire_OnClose(pControl);
