@@ -126,7 +126,14 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 
 	CComPtr<ITwitterConnection> pConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
+	if (m_bstrUser == NULL)
+	{
+		RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
+	}
+	else
+	{
+		RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
+	}
 
 	CComVariant vMaxId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vMaxId));

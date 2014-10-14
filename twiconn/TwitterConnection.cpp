@@ -88,6 +88,31 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::OpenConnectionWithAppAuth()
+{
+	USES_CONVERSION;
+
+	m_pTwitObj = std::make_shared<twitCurl>();
+	auto bRes = m_pTwitObj->authAppOnly(std::string(W2A(CString(APP_KEY))), std::string(W2A(CString(APP_SECRET))));
+
+	if (!bRes)
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	std::string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = std::shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	auto objValue = value->AsObject();
+	m_strAppToken = objValue[L"access_token"]->AsString();
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 {
 	USES_CONVERSION;
@@ -158,7 +183,15 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 	}
 	else
 	{
-		bRes = m_pTwitObj->timelineUserGet(strUserId, strId, strSinceId, strMaxCount);
+		if (m_strAppToken.empty())
+		{
+			bRes = m_pTwitObj->timelineUserGet(strUserId, strId, strSinceId, strMaxCount);
+		}
+		else
+		{
+			std::string strAppToken = W2A(m_strAppToken.c_str());
+			bRes = m_pTwitObj->timelineUserGetWithAppAuth(strAppToken, strUserId, strId, strSinceId, strMaxCount);
+		}
 	}
 
 	if (!bRes)

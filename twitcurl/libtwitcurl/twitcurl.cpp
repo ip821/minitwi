@@ -4,6 +4,7 @@
 #include "twitcurlurls.h"
 #include "twitcurl.h"
 #include "urlencode.h"
+#include "base64.h"
 
 /*++
 * @method: twitCurl::twitCurl
@@ -15,28 +16,28 @@
 * @output: none
 *
 *--*/
-twitCurl::twitCurl():
-m_curlHandle( NULL ),
-m_curlProxyParamsSet( false ),
-m_curlLoginParamsSet( false ),
-m_curlCallbackParamsSet( false ),
-m_eApiFormatType( twitCurlTypes::eTwitCurlApiFormatJson ),
-m_eProtocolType( twitCurlTypes::eTwitCurlProtocolHttps )
+twitCurl::twitCurl() :
+m_curlHandle(NULL),
+m_curlProxyParamsSet(false),
+m_curlLoginParamsSet(false),
+m_curlCallbackParamsSet(false),
+m_eApiFormatType(twitCurlTypes::eTwitCurlApiFormatJson),
+m_eProtocolType(twitCurlTypes::eTwitCurlProtocolHttps)
 {
-    /* Alloc memory for cURL error responses */
-    m_errorBuffer = (char*)malloc( twitCurlDefaults::TWITCURL_DEFAULT_BUFFSIZE );
+	/* Alloc memory for cURL error responses */
+	m_errorBuffer = (char*)malloc(twitCurlDefaults::TWITCURL_DEFAULT_BUFFSIZE);
 
-    /* Clear callback buffers */
-    clearCurlCallbackBuffers();
+	/* Clear callback buffers */
+	clearCurlCallbackBuffers();
 
-    /* Initialize cURL */
-    m_curlHandle = curl_easy_init();
-    if( NULL == m_curlHandle )
-    {
-        std::string dummyStr;
-        getLastCurlError( dummyStr );
-    }
-    curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+	/* Initialize cURL */
+	m_curlHandle = curl_easy_init();
+	if (NULL == m_curlHandle)
+	{
+		std::string dummyStr;
+		getLastCurlError(dummyStr);
+	}
+	curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
 }
 
 /*++
@@ -51,17 +52,17 @@ m_eProtocolType( twitCurlTypes::eTwitCurlProtocolHttps )
 *--*/
 twitCurl::~twitCurl()
 {
-    /* Cleanup cURL */
-    if( m_curlHandle )
-    {
-        curl_easy_cleanup( m_curlHandle );
-        m_curlHandle = NULL;
-    }
-    if( m_errorBuffer )
-    {
-        free( m_errorBuffer );
-        m_errorBuffer = NULL;
-    }
+	/* Cleanup cURL */
+	if (m_curlHandle)
+	{
+		curl_easy_cleanup(m_curlHandle);
+		m_curlHandle = NULL;
+	}
+	if (m_errorBuffer)
+	{
+		free(m_errorBuffer);
+		m_errorBuffer = NULL;
+	}
 }
 
 /*++
@@ -76,22 +77,22 @@ twitCurl::~twitCurl()
 *--*/
 twitCurl* twitCurl::clone()
 {
-    twitCurl *cloneObj = new twitCurl();
+	twitCurl *cloneObj = new twitCurl();
 
-    /* cURL proxy data */
-    cloneObj->setProxyServerIp(m_proxyServerIp);
-    cloneObj->setProxyServerPort(m_proxyServerPort);
-    cloneObj->setProxyUserName(m_proxyUserName);
-    cloneObj->setProxyPassword(m_proxyPassword);
+	/* cURL proxy data */
+	cloneObj->setProxyServerIp(m_proxyServerIp);
+	cloneObj->setProxyServerPort(m_proxyServerPort);
+	cloneObj->setProxyUserName(m_proxyUserName);
+	cloneObj->setProxyPassword(m_proxyPassword);
 
-    /* Twitter data */
-    cloneObj->setTwitterUsername(m_twitterUsername);
-    cloneObj->setTwitterPassword(m_twitterPassword);
+	/* Twitter data */
+	cloneObj->setTwitterUsername(m_twitterUsername);
+	cloneObj->setTwitterPassword(m_twitterPassword);
 
-    /* OAuth data */
-    cloneObj->m_oAuth = m_oAuth.clone();
+	/* OAuth data */
+	cloneObj->m_oAuth = m_oAuth.clone();
 
-    return cloneObj;
+	return cloneObj;
 }
 
 /*++
@@ -106,7 +107,7 @@ twitCurl* twitCurl::clone()
 *--*/
 bool twitCurl::isCurlInit()
 {
-    return ( NULL != m_curlHandle ) ? true : false;
+	return (NULL != m_curlHandle) ? true : false;
 }
 
 /*++
@@ -121,7 +122,7 @@ bool twitCurl::isCurlInit()
 *--*/
 std::string& twitCurl::getTwitterUsername()
 {
-    return m_twitterUsername;
+	return m_twitterUsername;
 }
 
 /*++
@@ -136,7 +137,7 @@ std::string& twitCurl::getTwitterUsername()
 *--*/
 std::string& twitCurl::getTwitterPassword()
 {
-    return m_twitterPassword;
+	return m_twitterPassword;
 }
 
 /*++
@@ -149,13 +150,13 @@ std::string& twitCurl::getTwitterPassword()
 * @output: none
 *
 *--*/
-void twitCurl::setTwitterUsername( std::string& userName )
+void twitCurl::setTwitterUsername(std::string& userName)
 {
-    if( userName.length() )
-    {
-        m_twitterUsername = userName;
-        m_curlLoginParamsSet = false;
-    }
+	if (userName.length())
+	{
+		m_twitterUsername = userName;
+		m_curlLoginParamsSet = false;
+	}
 }
 
 /*++
@@ -168,13 +169,13 @@ void twitCurl::setTwitterUsername( std::string& userName )
 * @output: none
 *
 *--*/
-void twitCurl::setTwitterPassword( std::string& passWord )
+void twitCurl::setTwitterPassword(std::string& passWord)
 {
-    if( passWord.length() )
-    {
-        m_twitterPassword = passWord;
-        m_curlLoginParamsSet = false;
-    }
+	if (passWord.length())
+	{
+		m_twitterPassword = passWord;
+		m_curlLoginParamsSet = false;
+	}
 }
 
 /*++
@@ -189,7 +190,7 @@ void twitCurl::setTwitterPassword( std::string& passWord )
 *--*/
 std::string& twitCurl::getProxyServerIp()
 {
-    return m_proxyServerIp;
+	return m_proxyServerIp;
 }
 
 /*++
@@ -204,7 +205,7 @@ std::string& twitCurl::getProxyServerIp()
 *--*/
 std::string& twitCurl::getProxyServerPort()
 {
-    return m_proxyServerPort;
+	return m_proxyServerPort;
 }
 
 /*++
@@ -219,7 +220,7 @@ std::string& twitCurl::getProxyServerPort()
 *--*/
 std::string& twitCurl::getProxyUserName()
 {
-    return m_proxyUserName;
+	return m_proxyUserName;
 }
 
 /*++
@@ -234,7 +235,7 @@ std::string& twitCurl::getProxyUserName()
 *--*/
 std::string& twitCurl::getProxyPassword()
 {
-    return m_proxyPassword;
+	return m_proxyPassword;
 }
 
 /*++
@@ -247,17 +248,17 @@ std::string& twitCurl::getProxyPassword()
 * @output: none
 *
 *--*/
-void twitCurl::setProxyServerIp( std::string& proxyServerIp )
+void twitCurl::setProxyServerIp(std::string& proxyServerIp)
 {
-    if( proxyServerIp.length() )
-    {
-        m_proxyServerIp = proxyServerIp;
-        /*
-         * Reset the flag so that next cURL http request
-         * would set proxy details again into cURL.
-         */
-        m_curlProxyParamsSet = false;
-    }
+	if (proxyServerIp.length())
+	{
+		m_proxyServerIp = proxyServerIp;
+		/*
+		 * Reset the flag so that next cURL http request
+		 * would set proxy details again into cURL.
+		 */
+		m_curlProxyParamsSet = false;
+	}
 }
 
 /*++
@@ -270,17 +271,17 @@ void twitCurl::setProxyServerIp( std::string& proxyServerIp )
 * @output: none
 *
 *--*/
-void twitCurl::setProxyServerPort( std::string& proxyServerPort )
+void twitCurl::setProxyServerPort(std::string& proxyServerPort)
 {
-    if( proxyServerPort.length() )
-    {
-        m_proxyServerPort = proxyServerPort;
-        /*
-         * Reset the flag so that next cURL http request
-         * would set proxy details again into cURL.
-         */
-        m_curlProxyParamsSet = false;
-    }
+	if (proxyServerPort.length())
+	{
+		m_proxyServerPort = proxyServerPort;
+		/*
+		 * Reset the flag so that next cURL http request
+		 * would set proxy details again into cURL.
+		 */
+		m_curlProxyParamsSet = false;
+	}
 }
 
 /*++
@@ -293,17 +294,17 @@ void twitCurl::setProxyServerPort( std::string& proxyServerPort )
 * @output: none
 *
 *--*/
-void twitCurl::setProxyUserName( std::string& proxyUserName )
+void twitCurl::setProxyUserName(std::string& proxyUserName)
 {
-    if( proxyUserName.length() )
-    {
-        m_proxyUserName = proxyUserName;
-        /*
-         * Reset the flag so that next cURL http request
-         * would set proxy details again into cURL.
-         */
-        m_curlProxyParamsSet = false;
-    }
+	if (proxyUserName.length())
+	{
+		m_proxyUserName = proxyUserName;
+		/*
+		 * Reset the flag so that next cURL http request
+		 * would set proxy details again into cURL.
+		 */
+		m_curlProxyParamsSet = false;
+	}
 }
 
 /*++
@@ -316,17 +317,17 @@ void twitCurl::setProxyUserName( std::string& proxyUserName )
 * @output: none
 *
 *--*/
-void twitCurl::setProxyPassword( std::string& proxyPassword )
+void twitCurl::setProxyPassword(std::string& proxyPassword)
 {
-    if( proxyPassword.length() )
-    {
-        m_proxyPassword = proxyPassword;
-        /*
-         * Reset the flag so that next cURL http request
-         * would set proxy details again into cURL.
-         */
-        m_curlProxyParamsSet = false;
-    }
+	if (proxyPassword.length())
+	{
+		m_proxyPassword = proxyPassword;
+		/*
+		 * Reset the flag so that next cURL http request
+		 * would set proxy details again into cURL.
+		 */
+		m_curlProxyParamsSet = false;
+	}
 }
 
 /*++
@@ -343,24 +344,24 @@ void twitCurl::setProxyPassword( std::string& proxyPassword )
 * @note: Only ATOM and JSON format supported.
 *
 *--*/
-bool twitCurl::search( std::string& searchQuery, std::string resultCount )
+bool twitCurl::search(std::string& searchQuery, std::string resultCount)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_SEARCH_URL +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] +
-                           twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_SEARCHQUERYSTRING +
-                           searchQuery;
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SEARCH_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] +
+		twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_SEARCHQUERYSTRING +
+		searchQuery;
 
-    /* Add number of results count if provided */
-    if( resultCount.size() )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
-                    twitCurlDefaults::TWITCURL_COUNT + urlencode( resultCount );
-    }
+	/* Add number of results count if provided */
+	if (resultCount.size())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
+			twitCurlDefaults::TWITCURL_COUNT + urlencode(resultCount);
+	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -375,29 +376,29 @@ bool twitCurl::search( std::string& searchQuery, std::string resultCount )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::statusUpdate( std::string& newStatus, std::string inReplyToStatusId )
+bool twitCurl::statusUpdate(std::string& newStatus, std::string inReplyToStatusId)
 {
-    if( newStatus.empty() )
-    {
-        return false;
-    }
+	if (newStatus.empty())
+	{
+		return false;
+	}
 
-    /* Prepare new status message */
-    std::string newStatusMsg = twitCurlDefaults::TWITCURL_STATUSSTRING + urlencode( newStatus );
+	/* Prepare new status message */
+	std::string newStatusMsg = twitCurlDefaults::TWITCURL_STATUSSTRING + urlencode(newStatus);
 
-    /* Append status id to which we're replying to */
-    if( inReplyToStatusId.size() )
-    {
-        newStatusMsg += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
-                        twitCurlDefaults::TWITCURL_INREPLYTOSTATUSID +
-                        urlencode( inReplyToStatusId );
-    }
+	/* Append status id to which we're replying to */
+	if (inReplyToStatusId.size())
+	{
+		newStatusMsg += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
+			twitCurlDefaults::TWITCURL_INREPLYTOSTATUSID +
+			urlencode(inReplyToStatusId);
+	}
 
-    /* Perform POST */
-    return  performPost( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                         twitterDefaults::TWITCURL_STATUSUPDATE_URL +
-                         twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                         newStatusMsg );
+	/* Perform POST */
+	return  performPost(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_STATUSUPDATE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		newStatusMsg);
 }
 
 /*++
@@ -411,20 +412,20 @@ bool twitCurl::statusUpdate( std::string& newStatus, std::string inReplyToStatus
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::statusShowById( std::string& statusId )
+bool twitCurl::statusShowById(std::string& statusId)
 {
-    if( statusId.empty() )
-    {
-        return false;
-    }
+	if (statusId.empty())
+	{
+		return false;
+	}
 
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_STATUSSHOW_URL + statusId +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_STATUSSHOW_URL + statusId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -438,20 +439,20 @@ bool twitCurl::statusShowById( std::string& statusId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::statusDestroyById( std::string& statusId )
+bool twitCurl::statusDestroyById(std::string& statusId)
 {
-    if( statusId.empty() )
-    {
-        return false;
-    }
+	if (statusId.empty())
+	{
+		return false;
+	}
 
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_STATUDESTROY_URL + statusId +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_STATUDESTROY_URL + statusId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Perform DELETE */
-    return performDelete( buildUrl );
+	/* Perform DELETE */
+	return performDelete(buildUrl);
 }
 
 /*++
@@ -465,24 +466,24 @@ bool twitCurl::statusDestroyById( std::string& statusId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::retweetById( std::string& statusId )
+bool twitCurl::retweetById(std::string& statusId)
 {
-    if( statusId.empty() )
-    {
-        return false;
-    }
+	if (statusId.empty())
+	{
+		return false;
+	}
 
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_RETWEET_URL + statusId +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_RETWEET_URL + statusId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Send some dummy data in POST */
-    std::string dummyData = twitCurlDefaults::TWITCURL_TEXTSTRING +
-                            urlencode( std::string( "dummy" ) );
+	/* Send some dummy data in POST */
+	std::string dummyData = twitCurlDefaults::TWITCURL_TEXTSTRING +
+		urlencode(std::string("dummy"));
 
-    /* Perform Retweet */
-    return performPost( buildUrl, dummyData );
+	/* Perform Retweet */
+	return performPost(buildUrl, dummyData);
 }
 
 /*++
@@ -498,9 +499,9 @@ bool twitCurl::retweetById( std::string& statusId )
 *--*/
 bool twitCurl::timelineHomeGet(std::string maxId, std::string sinceId, std::string maxCount)
 {
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_HOME_TIMELINE_URL +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_HOME_TIMELINE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
 	BOOL bFirstParam = TRUE;
 
@@ -510,11 +511,11 @@ bool twitCurl::timelineHomeGet(std::string maxId, std::string sinceId, std::stri
 		bFirstParam = FALSE;
 	}
 
-    if( maxId.length() )
-    {
+	if (maxId.length())
+	{
 		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_MAXID + maxId;
 		bFirstParam = FALSE;
-    }
+	}
 
 	if (maxCount.length())
 	{
@@ -522,8 +523,8 @@ bool twitCurl::timelineHomeGet(std::string maxId, std::string sinceId, std::stri
 		bFirstParam = FALSE;
 	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -539,10 +540,10 @@ bool twitCurl::timelineHomeGet(std::string maxId, std::string sinceId, std::stri
 *--*/
 bool twitCurl::timelinePublicGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_PUBLIC_TIMELINE_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_PUBLIC_TIMELINE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -558,10 +559,10 @@ bool twitCurl::timelinePublicGet()
 *--*/
 bool twitCurl::featuredUsersGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_FEATURED_USERS_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FEATURED_USERS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -577,10 +578,10 @@ bool twitCurl::featuredUsersGet()
 *--*/
 bool twitCurl::timelineFriendsGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_FRIENDS_TIMELINE_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FRIENDS_TIMELINE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -594,18 +595,18 @@ bool twitCurl::timelineFriendsGet()
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::mentionsGet( std::string sinceId )
+bool twitCurl::mentionsGet(std::string sinceId)
 {
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_MENTIONS_URL +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
-    if( sinceId.length() )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_SINCEID + sinceId;
-    }
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_MENTIONS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	if (sinceId.length())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_SINCEID + sinceId;
+	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -624,10 +625,10 @@ bool twitCurl::mentionsGet( std::string sinceId )
 *--*/
 bool twitCurl::timelineUserGet(std::string user, std::string maxId, std::string sinceId, std::string maxCount)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-							twitterDefaults::TWITCURL_USERTIMELINE_URL +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_USERTIMELINE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
 	BOOL bFirstParam = TRUE;
 
@@ -643,11 +644,11 @@ bool twitCurl::timelineUserGet(std::string user, std::string maxId, std::string 
 		bFirstParam = FALSE;
 	}
 
-    if( maxId.length() )
-    {
+	if (maxId.length())
+	{
 		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_MAXID + maxId;
 		bFirstParam = FALSE;
-    }
+	}
 
 	if (maxCount.length())
 	{
@@ -656,7 +657,7 @@ bool twitCurl::timelineUserGet(std::string user, std::string maxId, std::string 
 	}
 
 	/* Perform GET */
-    return performGet( buildUrl );
+	return performGet(buildUrl);
 }
 
 /*++
@@ -671,29 +672,29 @@ bool twitCurl::timelineUserGet(std::string user, std::string maxId, std::string 
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::userLookup( std::vector<std::string> &userInfo, bool isUserId )
+bool twitCurl::userLookup(std::vector<std::string> &userInfo, bool isUserId)
 {
-    if( userInfo.empty() )
-    {
-        return false;
-    }
+	if (userInfo.empty())
+	{
+		return false;
+	}
 
-    std::string userIds = "";
-    std::string sep = "";
-    for( unsigned int i = 0 ; i < std::min((size_t)100, userInfo.size()); i++, sep = "," )
-    {
-        userIds += sep + userInfo[i];
-    }
+	std::string userIds = "";
+	std::string sep = "";
+	for (unsigned int i = 0; i < std::min((size_t)100, userInfo.size()); i++, sep = ",")
+	{
+		userIds += sep + userInfo[i];
+	}
 
-    userIds = ( isUserId ? twitCurlDefaults::TWITCURL_USERID : twitCurlDefaults::TWITCURL_SCREENNAME ) +
-              urlencode( userIds );
+	userIds = (isUserId ? twitCurlDefaults::TWITCURL_USERID : twitCurlDefaults::TWITCURL_SCREENNAME) +
+		urlencode(userIds);
 
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] + 
-                           twitterDefaults::TWITCURL_LOOKUPUSERS_URL + 
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_LOOKUPUSERS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Perform POST */
-    return performPost( buildUrl, userIds);
+	/* Perform POST */
+	return performPost(buildUrl, userIds);
 }
 
 /*++
@@ -708,22 +709,22 @@ bool twitCurl::userLookup( std::vector<std::string> &userInfo, bool isUserId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::userGet( std::string& userInfo, bool isUserId )
+bool twitCurl::userGet(std::string& userInfo, bool isUserId)
 {
-    if( userInfo.empty() )
-    {
-        return false;
-    }
+	if (userInfo.empty())
+	{
+		return false;
+	}
 
-    /* Set URL */
-    std::string buildUrl;
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_SHOWUSERS_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	/* Set URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SHOWUSERS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -738,17 +739,17 @@ bool twitCurl::userGet( std::string& userInfo, bool isUserId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::friendsGet( std::string userInfo, bool isUserId )
+bool twitCurl::friendsGet(std::string userInfo, bool isUserId)
 {
-    /* Set URL */
-    std::string buildUrl;
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_SHOWFRIENDS_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	/* Set URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SHOWFRIENDS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -763,17 +764,17 @@ bool twitCurl::friendsGet( std::string userInfo, bool isUserId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::followersGet( std::string userInfo, bool isUserId )
+bool twitCurl::followersGet(std::string userInfo, bool isUserId)
 {
-    /* Prepare URL */
-    std::string buildUrl;
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_SHOWFOLLOWERS_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	/* Prepare URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SHOWFOLLOWERS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -787,19 +788,19 @@ bool twitCurl::followersGet( std::string userInfo, bool isUserId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::directMessageGet( std::string sinceId )
+bool twitCurl::directMessageGet(std::string sinceId)
 {
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_DIRECTMESSAGES_URL +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_DIRECTMESSAGES_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    if( sinceId.length() )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_SINCEID + sinceId;
-    }
+	if (sinceId.length())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_SINCEID + sinceId;
+	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -815,25 +816,25 @@ bool twitCurl::directMessageGet( std::string sinceId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::directMessageSend( std::string& userInfo, std::string& dMsg, bool isUserId )
+bool twitCurl::directMessageSend(std::string& userInfo, std::string& dMsg, bool isUserId)
 {
-    if( userInfo.empty() || dMsg.empty() )
-    {
-        return false;
-    }
+	if (userInfo.empty() || dMsg.empty())
+	{
+		return false;
+	}
 
-    /* Prepare new direct message */
-    std::string newDm = twitCurlDefaults::TWITCURL_TEXTSTRING + urlencode( dMsg );
+	/* Prepare new direct message */
+	std::string newDm = twitCurlDefaults::TWITCURL_TEXTSTRING + urlencode(dMsg);
 
-    /* Prepare URL */
-    std::string buildUrl;
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_DIRECTMESSAGENEW_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	/* Prepare URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_DIRECTMESSAGENEW_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
 
-    /* Perform POST */
-    return performPost( buildUrl, newDm );
+	/* Perform POST */
+	return performPost(buildUrl, newDm);
 }
 
 /*++
@@ -849,10 +850,10 @@ bool twitCurl::directMessageSend( std::string& userInfo, std::string& dMsg, bool
 *--*/
 bool twitCurl::directMessageGetSent()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_DIRECTMESSAGESSENT_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_DIRECTMESSAGESSENT_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -866,20 +867,20 @@ bool twitCurl::directMessageGetSent()
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::directMessageDestroyById( std::string& dMsgId )
+bool twitCurl::directMessageDestroyById(std::string& dMsgId)
 {
-    if( dMsgId.empty() )
-    {
-        return false;
-    }
+	if (dMsgId.empty())
+	{
+		return false;
+	}
 
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_DIRECTMESSAGEDESTROY_URL + dMsgId +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_DIRECTMESSAGEDESTROY_URL + dMsgId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Perform DELETE */
-    return performDelete( buildUrl );
+	/* Perform DELETE */
+	return performDelete(buildUrl);
 }
 
 /*++
@@ -894,26 +895,26 @@ bool twitCurl::directMessageDestroyById( std::string& dMsgId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::friendshipCreate( std::string& userInfo, bool isUserId )
+bool twitCurl::friendshipCreate(std::string& userInfo, bool isUserId)
 {
-    if( userInfo.empty() )
-    {
-        return false;
-    }
+	if (userInfo.empty())
+	{
+		return false;
+	}
 
-    /* Prepare URL */
-    std::string buildUrl;
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_FRIENDSHIPSCREATE_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	/* Prepare URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FRIENDSHIPSCREATE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
 
-    /* Send some dummy data in POST */
-    std::string dummyData = twitCurlDefaults::TWITCURL_TEXTSTRING +
-                            urlencode( std::string( "dummy" ) );
+	/* Send some dummy data in POST */
+	std::string dummyData = twitCurlDefaults::TWITCURL_TEXTSTRING +
+		urlencode(std::string("dummy"));
 
-    /* Perform POST */
-    return performPost( buildUrl, dummyData );
+	/* Perform POST */
+	return performPost(buildUrl, dummyData);
 }
 
 /*++
@@ -928,22 +929,22 @@ bool twitCurl::friendshipCreate( std::string& userInfo, bool isUserId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::friendshipDestroy( std::string& userInfo, bool isUserId )
+bool twitCurl::friendshipDestroy(std::string& userInfo, bool isUserId)
 {
-    if( userInfo.empty() )
-    {
-        return false;
-    }
+	if (userInfo.empty())
+	{
+		return false;
+	}
 
-    /* Prepare URL */
-    std::string buildUrl;
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_FRIENDSHIPSDESTROY_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	/* Prepare URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FRIENDSHIPSDESTROY_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
 
-    /* Perform DELETE */
-    return performDelete( buildUrl );
+	/* Perform DELETE */
+	return performDelete(buildUrl);
 }
 
 /*++
@@ -958,29 +959,29 @@ bool twitCurl::friendshipDestroy( std::string& userInfo, bool isUserId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::friendshipShow( std::string& userInfo, bool isUserId )
+bool twitCurl::friendshipShow(std::string& userInfo, bool isUserId)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_FRIENDSHIPSSHOW_URL +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
-    if( userInfo.length() )
-    {
-        /* Append username to the URL */
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES;
-        if( isUserId )
-        {
-            buildUrl += twitCurlDefaults::TWITCURL_TARGETUSERID;
-        }
-        else
-        {
-            buildUrl += twitCurlDefaults::TWITCURL_TARGETSCREENNAME;
-        }
-        buildUrl += userInfo;
-    }
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FRIENDSHIPSSHOW_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	if (userInfo.length())
+	{
+		/* Append username to the URL */
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES;
+		if (isUserId)
+		{
+			buildUrl += twitCurlDefaults::TWITCURL_TARGETUSERID;
+		}
+		else
+		{
+			buildUrl += twitCurlDefaults::TWITCURL_TARGETSCREENNAME;
+		}
+		buildUrl += userInfo;
+	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -997,24 +998,24 @@ bool twitCurl::friendshipShow( std::string& userInfo, bool isUserId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::friendsIdsGet( std::string& nextCursor, std::string& userInfo, bool isUserId )
+bool twitCurl::friendsIdsGet(std::string& nextCursor, std::string& userInfo, bool isUserId)
 {
-    /* Prepare URL */
-    std::string buildUrl;
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_FRIENDSIDS_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	/* Prepare URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FRIENDSIDS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
 
-    if( buildUrl.length() && nextCursor.length() )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
-                    twitCurlDefaults::TWITCURL_NEXT_CURSOR +
-                    nextCursor;
-    }
+	if (buildUrl.length() && nextCursor.length())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
+			twitCurlDefaults::TWITCURL_NEXT_CURSOR +
+			nextCursor;
+	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -1031,24 +1032,24 @@ bool twitCurl::friendsIdsGet( std::string& nextCursor, std::string& userInfo, bo
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::followersIdsGet( std::string& nextCursor, std::string& userInfo, bool isUserId )
+bool twitCurl::followersIdsGet(std::string& nextCursor, std::string& userInfo, bool isUserId)
 {
-    /* Prepare URL */
-    std::string buildUrl;
-    utilMakeUrlForUser( buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                        twitterDefaults::TWITCURL_FOLLOWERSIDS_URL +
-                        twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
-                        userInfo, isUserId );
+	/* Prepare URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FOLLOWERSIDS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
 
-    if( buildUrl.length() && nextCursor.length() )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
-                    twitCurlDefaults::TWITCURL_NEXT_CURSOR +
-                    nextCursor;
-    }
+	if (buildUrl.length() && nextCursor.length())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
+			twitCurlDefaults::TWITCURL_NEXT_CURSOR +
+			nextCursor;
+	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -1064,10 +1065,10 @@ bool twitCurl::followersIdsGet( std::string& nextCursor, std::string& userInfo, 
 *--*/
 bool twitCurl::accountRateLimitGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_ACCOUNTRATELIMIT_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_ACCOUNTRATELIMIT_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -1083,10 +1084,10 @@ bool twitCurl::accountRateLimitGet()
 *--*/
 bool twitCurl::accountVerifyCredGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_ACCOUNTVERIFYCRED_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_ACCOUNTVERIFYCRED_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -1102,10 +1103,10 @@ bool twitCurl::accountVerifyCredGet()
 *--*/
 bool twitCurl::favoriteGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_FAVORITESGET_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FAVORITESGET_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -1119,19 +1120,19 @@ bool twitCurl::favoriteGet()
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::favoriteCreate( std::string& statusId )
+bool twitCurl::favoriteCreate(std::string& statusId)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_FAVORITECREATE_URL + statusId +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FAVORITECREATE_URL + statusId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Send some dummy data in POST */
-    std::string dummyData = twitCurlDefaults::TWITCURL_TEXTSTRING +
-                            urlencode( std::string( "dummy" ) );
+	/* Send some dummy data in POST */
+	std::string dummyData = twitCurlDefaults::TWITCURL_TEXTSTRING +
+		urlencode(std::string("dummy"));
 
-    /* Perform POST */
-    return performPost( buildUrl, dummyData );
+	/* Perform POST */
+	return performPost(buildUrl, dummyData);
 }
 
 /*++
@@ -1145,15 +1146,15 @@ bool twitCurl::favoriteCreate( std::string& statusId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::favoriteDestroy( std::string& statusId )
+bool twitCurl::favoriteDestroy(std::string& statusId)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_FAVORITEDESTROY_URL + statusId +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_FAVORITEDESTROY_URL + statusId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Perform DELETE */
-    return performDelete( buildUrl );
+	/* Perform DELETE */
+	return performDelete(buildUrl);
 }
 
 /*++
@@ -1167,19 +1168,19 @@ bool twitCurl::favoriteDestroy( std::string& statusId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::blockCreate( std::string& userInfo )
+bool twitCurl::blockCreate(std::string& userInfo)
 {
-        /* Prepare URL */
-        std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                               twitterDefaults::TWITCURL_BLOCKSCREATE_URL + userInfo +
-                               twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_BLOCKSCREATE_URL + userInfo +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-        /* Send some dummy data in POST */
-        std::string dummyData = twitCurlDefaults::TWITCURL_TEXTSTRING +
-                                urlencode( std::string( "dummy" ) );
+	/* Send some dummy data in POST */
+	std::string dummyData = twitCurlDefaults::TWITCURL_TEXTSTRING +
+		urlencode(std::string("dummy"));
 
-        /* Perform POST */
-        return performPost( buildUrl, dummyData );
+	/* Perform POST */
+	return performPost(buildUrl, dummyData);
 }
 
 /*++
@@ -1193,15 +1194,15 @@ bool twitCurl::blockCreate( std::string& userInfo )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::blockDestroy( std::string& userInfo )
+bool twitCurl::blockDestroy(std::string& userInfo)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_BLOCKSDESTROY_URL + userInfo +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_BLOCKSDESTROY_URL + userInfo +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Perform DELETE */
-    return performDelete( buildUrl );
+	/* Perform DELETE */
+	return performDelete(buildUrl);
 }
 
 /*++
@@ -1218,41 +1219,41 @@ bool twitCurl::blockDestroy( std::string& userInfo )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::blockListGet( std::string& nextCursor, bool includeEntities, bool skipStatus )
+bool twitCurl::blockListGet(std::string& nextCursor, bool includeEntities, bool skipStatus)
 {
-    /* Prepare URL */
-    std::string buildUrl, urlParams;
+	/* Prepare URL */
+	std::string buildUrl, urlParams;
 
-    buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-               twitterDefaults::TWITCURL_BLOCKSLIST_URL +
-               twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
-    if( includeEntities )
-    {
-        urlParams += twitCurlDefaults::TWITCURL_INCLUDE_ENTITIES + std::string("true");
-    }
-    if( skipStatus )
-    {
-        if( urlParams.length() )
-        {
-            urlParams += twitCurlDefaults::TWITCURL_URL_SEP_AMP;
-        }
-        urlParams += twitCurlDefaults::TWITCURL_SKIP_STATUS + std::string("true");
-    }
-    if( nextCursor.length() )
-    {
-        if( urlParams.length() )
-        {
-            urlParams += twitCurlDefaults::TWITCURL_URL_SEP_AMP;
-        }
-        urlParams += twitCurlDefaults::TWITCURL_NEXT_CURSOR + nextCursor;
-    }
-    if( urlParams.length() )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + urlParams;
-    }
+	buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_BLOCKSLIST_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	if (includeEntities)
+	{
+		urlParams += twitCurlDefaults::TWITCURL_INCLUDE_ENTITIES + std::string("true");
+	}
+	if (skipStatus)
+	{
+		if (urlParams.length())
+		{
+			urlParams += twitCurlDefaults::TWITCURL_URL_SEP_AMP;
+		}
+		urlParams += twitCurlDefaults::TWITCURL_SKIP_STATUS + std::string("true");
+	}
+	if (nextCursor.length())
+	{
+		if (urlParams.length())
+		{
+			urlParams += twitCurlDefaults::TWITCURL_URL_SEP_AMP;
+		}
+		urlParams += twitCurlDefaults::TWITCURL_NEXT_CURSOR + nextCursor;
+	}
+	if (urlParams.length())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + urlParams;
+	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -1269,33 +1270,33 @@ bool twitCurl::blockListGet( std::string& nextCursor, bool includeEntities, bool
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::blockIdsGet( std::string& nextCursor, bool stringifyIds )
+bool twitCurl::blockIdsGet(std::string& nextCursor, bool stringifyIds)
 {
-    /* Prepare URL */
-    std::string buildUrl, urlParams;
+	/* Prepare URL */
+	std::string buildUrl, urlParams;
 
-    buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-               twitterDefaults::TWITCURL_BLOCKSIDS_URL +
-               twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
-    if( stringifyIds )
-    {
-        urlParams += twitCurlDefaults::TWITCURL_STRINGIFY_IDS + std::string("true");
-    }
-    if( nextCursor.length() )
-    {
-        if( urlParams.length() )
-        {
-            urlParams += twitCurlDefaults::TWITCURL_URL_SEP_AMP;
-        }
-        urlParams += twitCurlDefaults::TWITCURL_NEXT_CURSOR + nextCursor;
-    }
-    if( urlParams.length() )
-    {
-        buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + urlParams;
-    }
+	buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_BLOCKSIDS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	if (stringifyIds)
+	{
+		urlParams += twitCurlDefaults::TWITCURL_STRINGIFY_IDS + std::string("true");
+	}
+	if (nextCursor.length())
+	{
+		if (urlParams.length())
+		{
+			urlParams += twitCurlDefaults::TWITCURL_URL_SEP_AMP;
+		}
+		urlParams += twitCurlDefaults::TWITCURL_NEXT_CURSOR + nextCursor;
+	}
+	if (urlParams.length())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES + urlParams;
+	}
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -1309,12 +1310,12 @@ bool twitCurl::blockIdsGet( std::string& nextCursor, bool stringifyIds )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::savedSearchGet( )
+bool twitCurl::savedSearchGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_SAVEDSEARCHGET_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SAVEDSEARCHGET_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -1329,15 +1330,15 @@ bool twitCurl::savedSearchGet( )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::savedSearchShow( std::string& searchId )
+bool twitCurl::savedSearchShow(std::string& searchId)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_SAVEDSEARCHSHOW_URL + searchId +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SAVEDSEARCHSHOW_URL + searchId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Perform GET */
-    return performGet( buildUrl );
+	/* Perform GET */
+	return performGet(buildUrl);
 }
 
 /*++
@@ -1351,18 +1352,18 @@ bool twitCurl::savedSearchShow( std::string& searchId )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::savedSearchCreate( std::string& query )
+bool twitCurl::savedSearchCreate(std::string& query)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_SAVEDSEARCHCREATE_URL +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SAVEDSEARCHCREATE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Send some dummy data in POST */
-    std::string queryStr = twitCurlDefaults::TWITCURL_QUERYSTRING + urlencode( query );
+	/* Send some dummy data in POST */
+	std::string queryStr = twitCurlDefaults::TWITCURL_QUERYSTRING + urlencode(query);
 
-    /* Perform POST */
-    return performPost( buildUrl, queryStr );
+	/* Perform POST */
+	return performPost(buildUrl, queryStr);
 }
 
 
@@ -1378,15 +1379,15 @@ bool twitCurl::savedSearchCreate( std::string& query )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::savedSearchDestroy( std::string& searchId )
+bool twitCurl::savedSearchDestroy(std::string& searchId)
 {
-    /* Prepare URL */
-    std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                           twitterDefaults::TWITCURL_SAVEDSEARCHDESTROY_URL + searchId +
-                           twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SAVEDSEARCHDESTROY_URL + searchId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
 
-    /* Perform DELETE */
-    return performDelete( buildUrl );
+	/* Perform DELETE */
+	return performDelete(buildUrl);
 }
 
 
@@ -1403,10 +1404,10 @@ bool twitCurl::savedSearchDestroy( std::string& searchId )
 *--*/
 bool twitCurl::trendsGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_TRENDS_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_TRENDS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 
@@ -1423,10 +1424,10 @@ bool twitCurl::trendsGet()
 *--*/
 bool twitCurl::trendsDailyGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_TRENDSDAILY_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_TRENDSDAILY_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -1442,10 +1443,10 @@ bool twitCurl::trendsDailyGet()
 *--*/
 bool twitCurl::trendsWeeklyGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_TRENDSWEEKLY_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_TRENDSWEEKLY_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -1461,10 +1462,10 @@ bool twitCurl::trendsWeeklyGet()
 *--*/
 bool twitCurl::trendsCurrentGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_TRENDSCURRENT_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_TRENDSCURRENT_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -1480,10 +1481,10 @@ bool twitCurl::trendsCurrentGet()
 *--*/
 bool twitCurl::trendsAvailableGet()
 {
-    /* Perform GET */
-    return performGet( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                       twitterDefaults::TWITCURL_TRENDSAVAILABLE_URL +
-                       twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] );
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_TRENDSAVAILABLE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
 /*++
@@ -1498,13 +1499,13 @@ bool twitCurl::trendsAvailableGet()
 * @output: none
 *
 *--*/
-void twitCurl::getLastWebResponse( std::string& outWebResp )
+void twitCurl::getLastWebResponse(std::string& outWebResp)
 {
-    outWebResp = "";
-    if( m_callbackData.length() )
-    {
-        outWebResp = m_callbackData;
-    }
+	outWebResp = "";
+	if (m_callbackData.length())
+	{
+		outWebResp = m_callbackData;
+	}
 }
 
 /*++
@@ -1519,10 +1520,10 @@ void twitCurl::getLastWebResponse( std::string& outWebResp )
 * @output: none
 *
 *--*/
-void twitCurl::getLastCurlError( std::string& outErrResp )
+void twitCurl::getLastCurlError(std::string& outErrResp)
 {
-    m_errorBuffer[twitCurlDefaults::TWITCURL_DEFAULT_BUFFSIZE-1] = twitCurlDefaults::TWITCURL_EOS;
-    outErrResp.assign( m_errorBuffer );
+	m_errorBuffer[twitCurlDefaults::TWITCURL_DEFAULT_BUFFSIZE - 1] = twitCurlDefaults::TWITCURL_EOS;
+	outErrResp.assign(m_errorBuffer);
 }
 
 /*++
@@ -1539,14 +1540,14 @@ void twitCurl::getLastCurlError( std::string& outErrResp )
 * @remarks: internal method
 *
 *--*/
-int twitCurl::curlCallback( char* data, size_t size, size_t nmemb, twitCurl* pTwitCurlObj )
+int twitCurl::curlCallback(char* data, size_t size, size_t nmemb, twitCurl* pTwitCurlObj)
 {
-    if( pTwitCurlObj && data )
-    {
-        /* Save http response in twitcurl object's buffer */
-        return pTwitCurlObj->saveLastWebResponse( data, ( size*nmemb ) );
-    }
-    return 0;
+	if (pTwitCurlObj && data)
+	{
+		/* Save http response in twitcurl object's buffer */
+		return pTwitCurlObj->saveLastWebResponse(data, (size*nmemb));
+	}
+	return 0;
 }
 
 /*++
@@ -1563,15 +1564,15 @@ int twitCurl::curlCallback( char* data, size_t size, size_t nmemb, twitCurl* pTw
 * @remarks: internal method
 *
 *--*/
-int twitCurl::saveLastWebResponse(  char*& data, size_t size )
+int twitCurl::saveLastWebResponse(char*& data, size_t size)
 {
-    if( data && size )
-    {
-        /* Append data in our internal buffer */
-        m_callbackData.append( data, size );
-        return (int)size;
-    }
-    return 0;
+	if (data && size)
+	{
+		/* Append data in our internal buffer */
+		m_callbackData.append(data, size);
+		return (int)size;
+	}
+	return 0;
 }
 
 /*++
@@ -1589,8 +1590,8 @@ int twitCurl::saveLastWebResponse(  char*& data, size_t size )
 *--*/
 void twitCurl::clearCurlCallbackBuffers()
 {
-    m_callbackData = "";
-    memset( m_errorBuffer, 0, twitCurlDefaults::TWITCURL_DEFAULT_BUFFSIZE );
+	m_callbackData = "";
+	memset(m_errorBuffer, 0, twitCurlDefaults::TWITCURL_DEFAULT_BUFFSIZE);
 }
 
 /*++
@@ -1609,34 +1610,34 @@ void twitCurl::clearCurlCallbackBuffers()
 *--*/
 void twitCurl::prepareCurlProxy()
 {
-    if( m_curlProxyParamsSet )
-    {
-        return;
-    }
+	if (m_curlProxyParamsSet)
+	{
+		return;
+	}
 
-    /* Reset existing proxy details in cURL */
-    curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, NULL );
-    curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERPWD, NULL );
-    curl_easy_setopt( m_curlHandle, CURLOPT_PROXYAUTH, (long)CURLAUTH_ANY );
+	/* Reset existing proxy details in cURL */
+	curl_easy_setopt(m_curlHandle, CURLOPT_PROXY, NULL);
+	curl_easy_setopt(m_curlHandle, CURLOPT_PROXYUSERPWD, NULL);
+	curl_easy_setopt(m_curlHandle, CURLOPT_PROXYAUTH, (long)CURLAUTH_ANY);
 
-    /* Set proxy details in cURL */
-    std::string proxyIpPort("");
-    if( getProxyServerIp().size() )
-    {
-        utilMakeCurlParams( proxyIpPort, getProxyServerIp(), getProxyServerPort() );
-    }
-    curl_easy_setopt( m_curlHandle, CURLOPT_PROXY, proxyIpPort.c_str() );
+	/* Set proxy details in cURL */
+	std::string proxyIpPort("");
+	if (getProxyServerIp().size())
+	{
+		utilMakeCurlParams(proxyIpPort, getProxyServerIp(), getProxyServerPort());
+	}
+	curl_easy_setopt(m_curlHandle, CURLOPT_PROXY, proxyIpPort.c_str());
 
-    /* Prepare username and password for proxy server */
-    if( m_proxyUserName.length() && m_proxyPassword.length() )
-    {
-        std::string proxyUserPass;
-        utilMakeCurlParams( proxyUserPass, getProxyUserName(), getProxyPassword() );
-        curl_easy_setopt( m_curlHandle, CURLOPT_PROXYUSERPWD, proxyUserPass.c_str() );
-    }
+	/* Prepare username and password for proxy server */
+	if (m_proxyUserName.length() && m_proxyPassword.length())
+	{
+		std::string proxyUserPass;
+		utilMakeCurlParams(proxyUserPass, getProxyUserName(), getProxyPassword());
+		curl_easy_setopt(m_curlHandle, CURLOPT_PROXYUSERPWD, proxyUserPass.c_str());
+	}
 
-    /* Set the flag to true indicating that proxy info is set in cURL */
-    m_curlProxyParamsSet = true;
+	/* Set the flag to true indicating that proxy info is set in cURL */
+	m_curlProxyParamsSet = true;
 }
 
 /*++
@@ -1654,20 +1655,20 @@ void twitCurl::prepareCurlProxy()
 *--*/
 void twitCurl::prepareCurlCallback()
 {
-    if( m_curlCallbackParamsSet )
-    {
-        return;
-    }
+	if (m_curlCallbackParamsSet)
+	{
+		return;
+	}
 
-    /* Set buffer to get error */
-    curl_easy_setopt( m_curlHandle, CURLOPT_ERRORBUFFER, m_errorBuffer );
+	/* Set buffer to get error */
+	curl_easy_setopt(m_curlHandle, CURLOPT_ERRORBUFFER, m_errorBuffer);
 
-    /* Set callback function to get response */
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEFUNCTION, curlCallback );
-    curl_easy_setopt( m_curlHandle, CURLOPT_WRITEDATA, this );
+	/* Set callback function to get response */
+	curl_easy_setopt(m_curlHandle, CURLOPT_WRITEFUNCTION, curlCallback);
+	curl_easy_setopt(m_curlHandle, CURLOPT_WRITEDATA, this);
 
-    /* Set the flag to true indicating that callback info is set in cURL */
-    m_curlCallbackParamsSet = true;
+	/* Set the flag to true indicating that callback info is set in cURL */
+	m_curlCallbackParamsSet = true;
 }
 
 /*++
@@ -1686,26 +1687,26 @@ void twitCurl::prepareCurlCallback()
 *--*/
 void twitCurl::prepareCurlUserPass()
 {
-    if( m_curlLoginParamsSet )
-    {
-        return;
-    }
+	if (m_curlLoginParamsSet)
+	{
+		return;
+	}
 
-    /* Reset existing username and password stored in cURL */
-    curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, "" );
+	/* Reset existing username and password stored in cURL */
+	curl_easy_setopt(m_curlHandle, CURLOPT_USERPWD, "");
 
-    if( getTwitterUsername().size() )
-    {
-        /* Prepare username:password */
-        std::string userNamePassword;
-        utilMakeCurlParams( userNamePassword, getTwitterUsername(), getTwitterPassword() );
+	if (getTwitterUsername().size())
+	{
+		/* Prepare username:password */
+		std::string userNamePassword;
+		utilMakeCurlParams(userNamePassword, getTwitterUsername(), getTwitterPassword());
 
-        /* Set username and password */
-        curl_easy_setopt( m_curlHandle, CURLOPT_USERPWD, userNamePassword.c_str() );
-    }
+		/* Set username and password */
+		curl_easy_setopt(m_curlHandle, CURLOPT_USERPWD, userNamePassword.c_str());
+	}
 
-    /* Set the flag to true indicating that twitter credentials are set in cURL */
-    m_curlLoginParamsSet = true;
+	/* Set the flag to true indicating that twitter credentials are set in cURL */
+	m_curlLoginParamsSet = true;
 }
 
 /*++
@@ -1721,25 +1722,138 @@ void twitCurl::prepareCurlUserPass()
 * @remarks: internal method
 *
 *--*/
-void twitCurl::prepareStandardParams()
+void twitCurl::prepareStandardParams(bool bSetAuthData)
 {
-    /* Restore any custom request we may have */
-    curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, NULL );
+	/* Restore any custom request we may have */
+	curl_easy_setopt(m_curlHandle, CURLOPT_CUSTOMREQUEST, NULL);
 
-    /* All supported encodings */
-    curl_easy_setopt( m_curlHandle, CURLOPT_ENCODING, "" );
+	/* All supported encodings */
+	curl_easy_setopt(m_curlHandle, CURLOPT_ENCODING, "");
 
-    /* Clear callback and error buffers */
-    clearCurlCallbackBuffers();
+	/* Clear callback and error buffers */
+	clearCurlCallbackBuffers();
 
-    /* Prepare proxy */
-    prepareCurlProxy();
+	/* Prepare proxy */
+	prepareCurlProxy();
 
-    /* Prepare cURL callback data and error buffer */
-    prepareCurlCallback();
+	/* Prepare cURL callback data and error buffer */
+	prepareCurlCallback();
 
-    /* Prepare username and password for twitter */
-    prepareCurlUserPass();
+	/* Prepare username and password for twitter */
+	if (bSetAuthData)
+		prepareCurlUserPass();
+}
+
+bool twitCurl::authAppOnly(std::string& key, std::string& secret)
+{
+	if (!isCurlInit())
+		return false;
+
+	auto strToken = urlencode(key) + ":" + urlencode(secret);
+	auto strBearerToken = base64_encode((const unsigned char*)strToken.c_str(), strToken.length());
+
+	prepareStandardParams(false);
+
+	std::string getUrl("https://api.twitter.com/oauth2/token");
+
+	/* Set http request and url */
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, getUrl.c_str());
+	curl_easy_setopt(m_curlHandle, CURLOPT_POST, 1);
+	curl_easy_setopt(m_curlHandle, CURLOPT_POSTFIELDS, "grant_type=client_credentials");
+	curl_easy_setopt(m_curlHandle, CURLOPT_HEADER, 0);
+
+	std::string strBearerTokenHeader(std::string("Authorization: Basic ") + strBearerToken);
+
+	struct curl_slist* pHeaderList = NULL;
+	pHeaderList = curl_slist_append(pHeaderList, "POST /oauth2/token HTTP/1.1");
+	curl_slist_append(pHeaderList, "Host: api.twitter.com");
+	curl_slist_append(pHeaderList, "User-Agent: minitwi");
+	curl_slist_append(pHeaderList, strBearerTokenHeader.c_str());
+	curl_slist_append(pHeaderList, "Content-Type: application/x-www-form-urlencoded;charset=UTF-8");
+	curl_slist_append(pHeaderList, "Content-Length: 29");
+
+	curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pHeaderList);
+
+	/* Send http request */
+	if (CURLE_OK == curl_easy_perform(m_curlHandle))
+	{
+		if (pHeaderList)
+		{
+			curl_slist_free_all(pHeaderList);
+		}
+		return true;
+	}
+	if (pHeaderList)
+	{
+		curl_slist_free_all(pHeaderList);
+	}
+	return false;
+}
+
+bool twitCurl::timelineUserGetWithAppAuth(std::string strAppToken, std::string user, std::string maxId, std::string sinceId, std::string maxCount)
+{
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_USERTIMELINE_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+
+	BOOL bFirstParam = TRUE;
+
+	if (user.length())
+	{
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_SCREENNAME + user;
+		bFirstParam = FALSE;
+	}
+
+	if (sinceId.length())
+	{
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_SINCEID + sinceId;
+		bFirstParam = FALSE;
+	}
+
+	if (maxId.length())
+	{
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_MAXID + maxId;
+		bFirstParam = FALSE;
+	}
+
+	if (maxCount.length())
+	{
+		buildUrl += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_COUNT + maxCount;
+		bFirstParam = FALSE;
+	}
+
+	if (!isCurlInit())
+	{
+		return false;
+	}
+
+	prepareStandardParams(false);
+
+	std::string strBearerTokenHeader = std::string("Authorization: Bearer ") + std::string(strAppToken);
+
+	struct curl_slist* pHeaderList = NULL;
+	pHeaderList = curl_slist_append(pHeaderList, "Host: api.twitter.com");
+	curl_slist_append(pHeaderList, "User-Agent: minitwi");
+	curl_slist_append(pHeaderList, strBearerTokenHeader.c_str());
+
+	curl_easy_setopt(m_curlHandle, CURLOPT_HTTPGET, 1);
+	curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pHeaderList);
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, buildUrl.c_str());
+
+	if (CURLE_OK == curl_easy_perform(m_curlHandle))
+	{
+		if (pHeaderList)
+		{
+			curl_slist_free_all(pHeaderList);
+		}
+		return true;
+	}
+	if (pHeaderList)
+	{
+		curl_slist_free_all(pHeaderList);
+	}
+	return false;
 }
 
 /*++
@@ -1755,50 +1869,50 @@ void twitCurl::prepareStandardParams()
 * @remarks: internal method
 *
 *--*/
-bool twitCurl::performGet( const std::string& getUrl )
+bool twitCurl::performGet(const std::string& getUrl)
 {
-    /* Return if cURL is not initialized */
-    if( !isCurlInit() )
-    {
-        return false;
-    }
+	/* Return if cURL is not initialized */
+	if (!isCurlInit())
+	{
+		return false;
+	}
 
-    std::string dataStrDummy;
-    std::string oAuthHttpHeader;
-    struct curl_slist* pOAuthHeaderList = NULL;
+	std::string dataStrDummy;
+	std::string oAuthHttpHeader;
+	struct curl_slist* pOAuthHeaderList = NULL;
 
-    /* Prepare standard params */
-    prepareStandardParams();
+	/* Prepare standard params */
+	prepareStandardParams();
 
-    /* Set OAuth header */
-    m_oAuth.getOAuthHeader( eOAuthHttpGet, getUrl, dataStrDummy, oAuthHttpHeader );
-    if( oAuthHttpHeader.length() )
-    {
-        pOAuthHeaderList = curl_slist_append( pOAuthHeaderList, oAuthHttpHeader.c_str() );
-        if( pOAuthHeaderList )
-        {
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList );
-        }
-    }
+	/* Set OAuth header */
+	m_oAuth.getOAuthHeader(eOAuthHttpGet, getUrl, dataStrDummy, oAuthHttpHeader);
+	if (oAuthHttpHeader.length())
+	{
+		pOAuthHeaderList = curl_slist_append(pOAuthHeaderList, oAuthHttpHeader.c_str());
+		if (pOAuthHeaderList)
+		{
+			curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList);
+		}
+	}
 
-    /* Set http request and url */
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPGET, 1 );
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, getUrl.c_str() );
+	/* Set http request and url */
+	curl_easy_setopt(m_curlHandle, CURLOPT_HTTPGET, 1);
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, getUrl.c_str());
 
-    /* Send http request */
-    if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
-    {
-        if( pOAuthHeaderList )
-        {
-            curl_slist_free_all( pOAuthHeaderList );
-        }
-        return true;
-    }
-    if( pOAuthHeaderList )
-    {
-        curl_slist_free_all( pOAuthHeaderList );
-    }
-    return false;
+	/* Send http request */
+	if (CURLE_OK == curl_easy_perform(m_curlHandle))
+	{
+		if (pOAuthHeaderList)
+		{
+			curl_slist_free_all(pOAuthHeaderList);
+		}
+		return true;
+	}
+	if (pOAuthHeaderList)
+	{
+		curl_slist_free_all(pOAuthHeaderList);
+	}
+	return false;
 }
 
 /*++
@@ -1814,48 +1928,48 @@ bool twitCurl::performGet( const std::string& getUrl )
 * @remarks: internal method
 *
 *--*/
-bool twitCurl::performGetInternal( const std::string& getUrl,
-                                   const std::string& oAuthHttpHeader )
+bool twitCurl::performGetInternal(const std::string& getUrl,
+	const std::string& oAuthHttpHeader)
 {
-    /* Return if cURL is not initialized */
-    if( !isCurlInit() )
-    {
-        return false;
-    }
+	/* Return if cURL is not initialized */
+	if (!isCurlInit())
+	{
+		return false;
+	}
 
-    struct curl_slist* pOAuthHeaderList = NULL;
+	struct curl_slist* pOAuthHeaderList = NULL;
 
-    /* Prepare standard params */
-    prepareStandardParams();
+	/* Prepare standard params */
+	prepareStandardParams();
 
-    /* Set http request and url */
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPGET, 1 );
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, getUrl.c_str() );
+	/* Set http request and url */
+	curl_easy_setopt(m_curlHandle, CURLOPT_HTTPGET, 1);
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, getUrl.c_str());
 
-    /* Set header */
-    if( oAuthHttpHeader.length() )
-    {
-        pOAuthHeaderList = curl_slist_append( pOAuthHeaderList, oAuthHttpHeader.c_str() );
-        if( pOAuthHeaderList )
-        {
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList );
-        }
-    }
+	/* Set header */
+	if (oAuthHttpHeader.length())
+	{
+		pOAuthHeaderList = curl_slist_append(pOAuthHeaderList, oAuthHttpHeader.c_str());
+		if (pOAuthHeaderList)
+		{
+			curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList);
+		}
+	}
 
-    /* Send http request */
-    if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
-    {
-        if( pOAuthHeaderList )
-        {
-            curl_slist_free_all( pOAuthHeaderList );
-        }
-        return true;
-    }
-    if( pOAuthHeaderList )
-    {
-        curl_slist_free_all( pOAuthHeaderList );
-    }
-    return false;
+	/* Send http request */
+	if (CURLE_OK == curl_easy_perform(m_curlHandle))
+	{
+		if (pOAuthHeaderList)
+		{
+			curl_slist_free_all(pOAuthHeaderList);
+		}
+		return true;
+	}
+	if (pOAuthHeaderList)
+	{
+		curl_slist_free_all(pOAuthHeaderList);
+	}
+	return false;
 }
 
 /*++
@@ -1871,51 +1985,51 @@ bool twitCurl::performGetInternal( const std::string& getUrl,
 * @remarks: internal method
 *
 *--*/
-bool twitCurl::performDelete( const std::string& deleteUrl )
+bool twitCurl::performDelete(const std::string& deleteUrl)
 {
-    /* Return if cURL is not initialized */
-    if( !isCurlInit() )
-    {
-        return false;
-    }
+	/* Return if cURL is not initialized */
+	if (!isCurlInit())
+	{
+		return false;
+	}
 
-    std::string dataStrDummy;
-    std::string oAuthHttpHeader;
-    struct curl_slist* pOAuthHeaderList = NULL;
+	std::string dataStrDummy;
+	std::string oAuthHttpHeader;
+	struct curl_slist* pOAuthHeaderList = NULL;
 
-    /* Prepare standard params */
-    prepareStandardParams();
+	/* Prepare standard params */
+	prepareStandardParams();
 
-    /* Set OAuth header */
-    m_oAuth.getOAuthHeader( eOAuthHttpDelete, deleteUrl, dataStrDummy, oAuthHttpHeader );
-    if( oAuthHttpHeader.length() )
-    {
-        pOAuthHeaderList = curl_slist_append( pOAuthHeaderList, oAuthHttpHeader.c_str() );
-        if( pOAuthHeaderList )
-        {
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList );
-        }
-    }
+	/* Set OAuth header */
+	m_oAuth.getOAuthHeader(eOAuthHttpDelete, deleteUrl, dataStrDummy, oAuthHttpHeader);
+	if (oAuthHttpHeader.length())
+	{
+		pOAuthHeaderList = curl_slist_append(pOAuthHeaderList, oAuthHttpHeader.c_str());
+		if (pOAuthHeaderList)
+		{
+			curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList);
+		}
+	}
 
-    /* Set http request and url */
-    curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, deleteUrl.c_str() );
-    curl_easy_setopt( m_curlHandle, CURLOPT_COPYPOSTFIELDS, dataStrDummy.c_str() );
+	/* Set http request and url */
+	curl_easy_setopt(m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE");
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, deleteUrl.c_str());
+	curl_easy_setopt(m_curlHandle, CURLOPT_COPYPOSTFIELDS, dataStrDummy.c_str());
 
-    /* Send http request */
-    if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
-    {
-        if( pOAuthHeaderList )
-        {
-            curl_slist_free_all( pOAuthHeaderList );
-        }
-        return true;
-    }
-    if( pOAuthHeaderList )
-    {
-        curl_slist_free_all( pOAuthHeaderList );
-    }
-    return false;
+	/* Send http request */
+	if (CURLE_OK == curl_easy_perform(m_curlHandle))
+	{
+		if (pOAuthHeaderList)
+		{
+			curl_slist_free_all(pOAuthHeaderList);
+		}
+		return true;
+	}
+	if (pOAuthHeaderList)
+	{
+		curl_slist_free_all(pOAuthHeaderList);
+	}
+	return false;
 }
 
 /*++
@@ -1934,53 +2048,53 @@ bool twitCurl::performDelete( const std::string& deleteUrl )
 *           ex: dataStr = "key=urlencode(value)"
 *
 *--*/
-bool twitCurl::performPost( const std::string& postUrl, std::string dataStr )
+bool twitCurl::performPost(const std::string& postUrl, std::string dataStr)
 {
-    /* Return if cURL is not initialized */
-    if( !isCurlInit() )
-    {
-        return false;
-    }
+	/* Return if cURL is not initialized */
+	if (!isCurlInit())
+	{
+		return false;
+	}
 
-    std::string oAuthHttpHeader;
-    struct curl_slist* pOAuthHeaderList = NULL;
+	std::string oAuthHttpHeader;
+	struct curl_slist* pOAuthHeaderList = NULL;
 
-    /* Prepare standard params */
-    prepareStandardParams();
+	/* Prepare standard params */
+	prepareStandardParams();
 
-    /* Set OAuth header */
-    m_oAuth.getOAuthHeader( eOAuthHttpPost, postUrl, dataStr, oAuthHttpHeader );
-    if( oAuthHttpHeader.length() )
-    {
-        pOAuthHeaderList = curl_slist_append( pOAuthHeaderList, oAuthHttpHeader.c_str() );
-        if( pOAuthHeaderList )
-        {
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList );
-        }
-    }
+	/* Set OAuth header */
+	m_oAuth.getOAuthHeader(eOAuthHttpPost, postUrl, dataStr, oAuthHttpHeader);
+	if (oAuthHttpHeader.length())
+	{
+		pOAuthHeaderList = curl_slist_append(pOAuthHeaderList, oAuthHttpHeader.c_str());
+		if (pOAuthHeaderList)
+		{
+			curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList);
+		}
+	}
 
-    /* Set http request, url and data */
-    curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, postUrl.c_str() );
-    if( dataStr.length() )
-    {
-        curl_easy_setopt( m_curlHandle, CURLOPT_COPYPOSTFIELDS, dataStr.c_str() );
-    }
+	/* Set http request, url and data */
+	curl_easy_setopt(m_curlHandle, CURLOPT_POST, 1);
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, postUrl.c_str());
+	if (dataStr.length())
+	{
+		curl_easy_setopt(m_curlHandle, CURLOPT_COPYPOSTFIELDS, dataStr.c_str());
+	}
 
-    /* Send http request */
-    if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
-    {
-        if( pOAuthHeaderList )
-        {
-            curl_slist_free_all( pOAuthHeaderList );
-        }
-        return true;
-    }
-    if( pOAuthHeaderList )
-    {
-        curl_slist_free_all( pOAuthHeaderList );
-    }
-    return false;
+	/* Send http request */
+	if (CURLE_OK == curl_easy_perform(m_curlHandle))
+	{
+		if (pOAuthHeaderList)
+		{
+			curl_slist_free_all(pOAuthHeaderList);
+		}
+		return true;
+	}
+	if (pOAuthHeaderList)
+	{
+		curl_slist_free_all(pOAuthHeaderList);
+	}
+	return false;
 }
 
 /*++
@@ -1998,10 +2112,10 @@ bool twitCurl::performPost( const std::string& postUrl, std::string dataStr )
 * @remarks: internal method
 *
 *--*/
-void utilMakeCurlParams( std::string& outStr, std::string& inParam1, std::string& inParam2 )
+void utilMakeCurlParams(std::string& outStr, std::string& inParam1, std::string& inParam2)
 {
-    outStr = inParam1;
-    outStr += twitCurlDefaults::TWITCURL_COLON + inParam2;
+	outStr = inParam1;
+	outStr += twitCurlDefaults::TWITCURL_COLON + inParam2;
 }
 
 /*++
@@ -2019,25 +2133,25 @@ void utilMakeCurlParams( std::string& outStr, std::string& inParam1, std::string
 * @remarks: internal method
 *
 *--*/
-void utilMakeUrlForUser( std::string& outUrl, const std::string& baseUrl, std::string& userInfo, bool isUserId )
+void utilMakeUrlForUser(std::string& outUrl, const std::string& baseUrl, std::string& userInfo, bool isUserId)
 {
-    /* Copy base URL */
-    outUrl = baseUrl;
+	/* Copy base URL */
+	outUrl = baseUrl;
 
-    if( userInfo.length() )
-    {
-        /* Append username to the URL */
-        outUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES;
-        if( isUserId )
-        {
-            outUrl += twitCurlDefaults::TWITCURL_USERID;
-        }
-        else
-        {
-            outUrl += twitCurlDefaults::TWITCURL_SCREENNAME;
-        }
-        outUrl += userInfo;
-    }
+	if (userInfo.length())
+	{
+		/* Append username to the URL */
+		outUrl += twitCurlDefaults::TWITCURL_URL_SEP_QUES;
+		if (isUserId)
+		{
+			outUrl += twitCurlDefaults::TWITCURL_USERID;
+		}
+		else
+		{
+			outUrl += twitCurlDefaults::TWITCURL_SCREENNAME;
+		}
+		outUrl += userInfo;
+	}
 }
 
 /*++
@@ -2052,7 +2166,7 @@ void utilMakeUrlForUser( std::string& outUrl, const std::string& baseUrl, std::s
 *--*/
 oAuth& twitCurl::getOAuth()
 {
-    return m_oAuth;
+	return m_oAuth;
 }
 
 /*++
@@ -2067,45 +2181,45 @@ oAuth& twitCurl::getOAuth()
 * @output: true if everything went sucessfully, otherwise false
 *
 *--*/
-bool twitCurl::oAuthRequestToken( std::string& authorizeUrl /* out */ )
+bool twitCurl::oAuthRequestToken(std::string& authorizeUrl /* out */)
 {
-    /* Return if cURL is not initialized */
-    if( !isCurlInit() )
-    {
-        return false;
-    }
+	/* Return if cURL is not initialized */
+	if (!isCurlInit())
+	{
+		return false;
+	}
 
-    /* Get OAuth header for request token */
-    std::string oAuthHeader;
-    authorizeUrl = "";
-    if( m_oAuth.getOAuthHeader( eOAuthHttpGet,
-                                twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                                oAuthTwitterApiUrls::OAUTHLIB_TWITTER_REQUEST_TOKEN_URL,
-                                std::string( "" ),
-                                oAuthHeader ) )
-    {
-        if( performGetInternal( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                                oAuthTwitterApiUrls::OAUTHLIB_TWITTER_REQUEST_TOKEN_URL,
-                                oAuthHeader ) )
-        {
-            /* Tell OAuth object to save access token and secret from web response */
-            std::string twitterResp;
-            getLastWebResponse( twitterResp );
-            m_oAuth.extractOAuthTokenKeySecret( twitterResp );
+	/* Get OAuth header for request token */
+	std::string oAuthHeader;
+	authorizeUrl = "";
+	if (m_oAuth.getOAuthHeader(eOAuthHttpGet,
+		twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		oAuthTwitterApiUrls::OAUTHLIB_TWITTER_REQUEST_TOKEN_URL,
+		std::string(""),
+		oAuthHeader))
+	{
+		if (performGetInternal(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+			oAuthTwitterApiUrls::OAUTHLIB_TWITTER_REQUEST_TOKEN_URL,
+			oAuthHeader))
+		{
+			/* Tell OAuth object to save access token and secret from web response */
+			std::string twitterResp;
+			getLastWebResponse(twitterResp);
+			m_oAuth.extractOAuthTokenKeySecret(twitterResp);
 
-            /* Get access token and secret from OAuth object */
-            std::string oAuthTokenKey;
-            m_oAuth.getOAuthTokenKey( oAuthTokenKey );
+			/* Get access token and secret from OAuth object */
+			std::string oAuthTokenKey;
+			m_oAuth.getOAuthTokenKey(oAuthTokenKey);
 
-            /* Build authorize url so that user can visit in browser and get PIN */
-            authorizeUrl.assign(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                                oAuthTwitterApiUrls::OAUTHLIB_TWITTER_AUTHORIZE_URL );
-            authorizeUrl.append( oAuthTokenKey.c_str() );
+			/* Build authorize url so that user can visit in browser and get PIN */
+			authorizeUrl.assign(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+				oAuthTwitterApiUrls::OAUTHLIB_TWITTER_AUTHORIZE_URL);
+			authorizeUrl.append(oAuthTokenKey.c_str());
 
-            return true;
-        }
-    }
-    return false;
+			return true;
+		}
+	}
+	return false;
 }
 
 /*++
@@ -2120,32 +2234,32 @@ bool twitCurl::oAuthRequestToken( std::string& authorizeUrl /* out */ )
 *--*/
 bool twitCurl::oAuthAccessToken()
 {
-    /* Return if cURL is not initialized */
-    if( !isCurlInit() )
-    {
-        return false;
-    }
-    /* Get OAuth header for access token */
-    std::string oAuthHeader;
-    if( m_oAuth.getOAuthHeader( eOAuthHttpGet,
-                                twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                                oAuthTwitterApiUrls::OAUTHLIB_TWITTER_ACCESS_TOKEN_URL,
-                                std::string( "" ),
-                                oAuthHeader, true ) )
-    {
-        if( performGetInternal( twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
-                                oAuthTwitterApiUrls::OAUTHLIB_TWITTER_ACCESS_TOKEN_URL,
-                                oAuthHeader ) )
-        {
-            /* Tell OAuth object to save access token and secret from web response */
-            std::string twitterResp;
-            getLastWebResponse( twitterResp );
-            m_oAuth.extractOAuthTokenKeySecret( twitterResp );
+	/* Return if cURL is not initialized */
+	if (!isCurlInit())
+	{
+		return false;
+	}
+	/* Get OAuth header for access token */
+	std::string oAuthHeader;
+	if (m_oAuth.getOAuthHeader(eOAuthHttpGet,
+		twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		oAuthTwitterApiUrls::OAUTHLIB_TWITTER_ACCESS_TOKEN_URL,
+		std::string(""),
+		oAuthHeader, true))
+	{
+		if (performGetInternal(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+			oAuthTwitterApiUrls::OAUTHLIB_TWITTER_ACCESS_TOKEN_URL,
+			oAuthHeader))
+		{
+			/* Tell OAuth object to save access token and secret from web response */
+			std::string twitterResp;
+			getLastWebResponse(twitterResp);
+			m_oAuth.extractOAuthTokenKeySecret(twitterResp);
 
-            return true;
-        }
-    }
-    return false;
+			return true;
+		}
+	}
+	return false;
 }
 
 /*++
@@ -2160,144 +2274,144 @@ bool twitCurl::oAuthAccessToken()
 * @output: true if everything went sucessfully, otherwise false
 *
 *--*/
-bool twitCurl::oAuthHandlePIN( const std::string& authorizeUrl /* in */ )
+bool twitCurl::oAuthHandlePIN(const std::string& authorizeUrl /* in */)
 {
-    /* Return if cURL is not initialized */
-    if( !isCurlInit() )
-    {
-        return false;
-    }
+	/* Return if cURL is not initialized */
+	if (!isCurlInit())
+	{
+		return false;
+	}
 
-    std::string dataStr;
-    std::string oAuthHttpHeader;
-    std::string authenticityTokenVal;
-    std::string oauthTokenVal;
-    std::string pinCodeVal;
-    unsigned long httpStatusCode = 0;
-    size_t nPosStart, nPosEnd;
-    struct curl_slist* pOAuthHeaderList = NULL;
+	std::string dataStr;
+	std::string oAuthHttpHeader;
+	std::string authenticityTokenVal;
+	std::string oauthTokenVal;
+	std::string pinCodeVal;
+	unsigned long httpStatusCode = 0;
+	size_t nPosStart, nPosEnd;
+	struct curl_slist* pOAuthHeaderList = NULL;
 
-    /* Prepare standard params */
-    prepareStandardParams();
+	/* Prepare standard params */
+	prepareStandardParams();
 
-    /* Set OAuth header */
-    m_oAuth.getOAuthHeader( eOAuthHttpGet, authorizeUrl, dataStr, oAuthHttpHeader );
-    if( oAuthHttpHeader.length() )
-    {
-        pOAuthHeaderList = curl_slist_append( pOAuthHeaderList, oAuthHttpHeader.c_str() );
-        if( pOAuthHeaderList )
-        {
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList );
-        }
-    }
+	/* Set OAuth header */
+	m_oAuth.getOAuthHeader(eOAuthHttpGet, authorizeUrl, dataStr, oAuthHttpHeader);
+	if (oAuthHttpHeader.length())
+	{
+		pOAuthHeaderList = curl_slist_append(pOAuthHeaderList, oAuthHttpHeader.c_str());
+		if (pOAuthHeaderList)
+		{
+			curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList);
+		}
+	}
 
-    /* Set http request and url */
-    curl_easy_setopt( m_curlHandle, CURLOPT_HTTPGET, 1 );
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, authorizeUrl.c_str() );
+	/* Set http request and url */
+	curl_easy_setopt(m_curlHandle, CURLOPT_HTTPGET, 1);
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, authorizeUrl.c_str());
 
-    /* Send http request */
-    if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
-    {
-        if( pOAuthHeaderList )
-        {
-            curl_easy_getinfo( m_curlHandle, CURLINFO_HTTP_CODE, &httpStatusCode );
-            curl_slist_free_all( pOAuthHeaderList );
+	/* Send http request */
+	if (CURLE_OK == curl_easy_perform(m_curlHandle))
+	{
+		if (pOAuthHeaderList)
+		{
+			curl_easy_getinfo(m_curlHandle, CURLINFO_HTTP_CODE, &httpStatusCode);
+			curl_slist_free_all(pOAuthHeaderList);
 
-            // Now, let's find the authenticity token and oauth token
-            nPosStart = m_callbackData.find( oAuthLibDefaults::OAUTHLIB_AUTHENTICITY_TOKEN_TWITTER_RESP_KEY );
-            if( std::string::npos == nPosStart )
-            {
-                return false;
-            }
-            nPosStart += oAuthLibDefaults::OAUTHLIB_AUTHENTICITY_TOKEN_TWITTER_RESP_KEY.length();
-            nPosEnd = m_callbackData.substr( nPosStart ).find( oAuthLibDefaults::OAUTHLIB_TOKEN_END_TAG_TWITTER_RESP );
-            if( std::string::npos == nPosEnd )
-            {
-                return false;
-            }
-            authenticityTokenVal = m_callbackData.substr( nPosStart, nPosEnd );
+			// Now, let's find the authenticity token and oauth token
+			nPosStart = m_callbackData.find(oAuthLibDefaults::OAUTHLIB_AUTHENTICITY_TOKEN_TWITTER_RESP_KEY);
+			if (std::string::npos == nPosStart)
+			{
+				return false;
+			}
+			nPosStart += oAuthLibDefaults::OAUTHLIB_AUTHENTICITY_TOKEN_TWITTER_RESP_KEY.length();
+			nPosEnd = m_callbackData.substr(nPosStart).find(oAuthLibDefaults::OAUTHLIB_TOKEN_END_TAG_TWITTER_RESP);
+			if (std::string::npos == nPosEnd)
+			{
+				return false;
+			}
+			authenticityTokenVal = m_callbackData.substr(nPosStart, nPosEnd);
 
-            nPosStart = m_callbackData.find( oAuthLibDefaults::OAUTHLIB_TOKEN_TWITTER_RESP_KEY );
-            if( std::string::npos == nPosStart )
-            {
-                return false;
-            }
-            nPosStart += oAuthLibDefaults::OAUTHLIB_TOKEN_TWITTER_RESP_KEY.length();
-            nPosEnd = m_callbackData.substr( nPosStart ).find( oAuthLibDefaults::OAUTHLIB_TOKEN_END_TAG_TWITTER_RESP );
-            if( std::string::npos == nPosEnd )
-            {
-                return false;
-            }
-            oauthTokenVal = m_callbackData.substr( nPosStart, nPosEnd );
-        }
-    }
-    else if( pOAuthHeaderList )
-    {
-        curl_slist_free_all( pOAuthHeaderList );
-        return false;
-    }
+			nPosStart = m_callbackData.find(oAuthLibDefaults::OAUTHLIB_TOKEN_TWITTER_RESP_KEY);
+			if (std::string::npos == nPosStart)
+			{
+				return false;
+			}
+			nPosStart += oAuthLibDefaults::OAUTHLIB_TOKEN_TWITTER_RESP_KEY.length();
+			nPosEnd = m_callbackData.substr(nPosStart).find(oAuthLibDefaults::OAUTHLIB_TOKEN_END_TAG_TWITTER_RESP);
+			if (std::string::npos == nPosEnd)
+			{
+				return false;
+			}
+			oauthTokenVal = m_callbackData.substr(nPosStart, nPosEnd);
+		}
+	}
+	else if (pOAuthHeaderList)
+	{
+		curl_slist_free_all(pOAuthHeaderList);
+		return false;
+	}
 
-    // Second phase for the authorization
-    pOAuthHeaderList = NULL;
-    oAuthHttpHeader.clear();
+	// Second phase for the authorization
+	pOAuthHeaderList = NULL;
+	oAuthHttpHeader.clear();
 
-    /* Prepare standard params */
-    prepareStandardParams();
+	/* Prepare standard params */
+	prepareStandardParams();
 
-    /*
-    Now, we need to make a data string for POST operation
-    which includes oauth token, authenticity token, username, password.
-    */
-    dataStr = oAuthLibDefaults::OAUTHLIB_TOKEN_KEY + "=" + oauthTokenVal + "&" +                      \
-              oAuthLibDefaults::OAUTHLIB_AUTHENTICITY_TOKEN_KEY + "=" + authenticityTokenVal + "&" +  \
-              oAuthLibDefaults::OAUTHLIB_SESSIONUSERNAME_KEY + "=" + getTwitterUsername() + "&" +     \
-              oAuthLibDefaults::OAUTHLIB_SESSIONPASSWORD_KEY + "=" + getTwitterPassword();
+	/*
+	Now, we need to make a data string for POST operation
+	which includes oauth token, authenticity token, username, password.
+	*/
+	dataStr = oAuthLibDefaults::OAUTHLIB_TOKEN_KEY + "=" + oauthTokenVal + "&" + \
+		oAuthLibDefaults::OAUTHLIB_AUTHENTICITY_TOKEN_KEY + "=" + authenticityTokenVal + "&" + \
+		oAuthLibDefaults::OAUTHLIB_SESSIONUSERNAME_KEY + "=" + getTwitterUsername() + "&" + \
+		oAuthLibDefaults::OAUTHLIB_SESSIONPASSWORD_KEY + "=" + getTwitterPassword();
 
-    /* Set OAuth header */
-    m_oAuth.getOAuthHeader( eOAuthHttpPost, authorizeUrl, dataStr, oAuthHttpHeader );
-    if( oAuthHttpHeader.length() )
-    {
-        pOAuthHeaderList = curl_slist_append( pOAuthHeaderList, oAuthHttpHeader.c_str() );
-        if( pOAuthHeaderList )
-        {
-            curl_easy_setopt( m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList );
-        }
-    }
+	/* Set OAuth header */
+	m_oAuth.getOAuthHeader(eOAuthHttpPost, authorizeUrl, dataStr, oAuthHttpHeader);
+	if (oAuthHttpHeader.length())
+	{
+		pOAuthHeaderList = curl_slist_append(pOAuthHeaderList, oAuthHttpHeader.c_str());
+		if (pOAuthHeaderList)
+		{
+			curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pOAuthHeaderList);
+		}
+	}
 
-    /* Set http request and url */
-    curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, authorizeUrl.c_str() );
-    curl_easy_setopt( m_curlHandle, CURLOPT_COPYPOSTFIELDS, dataStr.c_str() );
+	/* Set http request and url */
+	curl_easy_setopt(m_curlHandle, CURLOPT_POST, 1);
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, authorizeUrl.c_str());
+	curl_easy_setopt(m_curlHandle, CURLOPT_COPYPOSTFIELDS, dataStr.c_str());
 
-    /* Send http request */
-    if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
-    {
-        if( pOAuthHeaderList )
-        {
-            curl_easy_getinfo( m_curlHandle, CURLINFO_HTTP_CODE, &httpStatusCode );
-            curl_slist_free_all( pOAuthHeaderList );
+	/* Send http request */
+	if (CURLE_OK == curl_easy_perform(m_curlHandle))
+	{
+		if (pOAuthHeaderList)
+		{
+			curl_easy_getinfo(m_curlHandle, CURLINFO_HTTP_CODE, &httpStatusCode);
+			curl_slist_free_all(pOAuthHeaderList);
 
-            // Now, let's find the PIN CODE
-            nPosStart = m_callbackData.find( oAuthLibDefaults::OAUTHLIB_PIN_TWITTER_RESP_KEY );
-            if( std::string::npos == nPosStart )
-            {
-                return false;
-            }
-            nPosStart += oAuthLibDefaults::OAUTHLIB_PIN_TWITTER_RESP_KEY.length();
-            nPosEnd = m_callbackData.substr( nPosStart ).find( oAuthLibDefaults::OAUTHLIB_PIN_END_TAG_TWITTER_RESP );
-            if( std::string::npos == nPosEnd )
-            {
-                return false;
-            }
-            pinCodeVal = m_callbackData.substr( nPosStart, nPosEnd );
-            getOAuth().setOAuthPin( pinCodeVal );
-            return true;
-        }
-    }
-    else if( pOAuthHeaderList )
-    {
-        curl_slist_free_all( pOAuthHeaderList );
-    }
-    return false;
+			// Now, let's find the PIN CODE
+			nPosStart = m_callbackData.find(oAuthLibDefaults::OAUTHLIB_PIN_TWITTER_RESP_KEY);
+			if (std::string::npos == nPosStart)
+			{
+				return false;
+			}
+			nPosStart += oAuthLibDefaults::OAUTHLIB_PIN_TWITTER_RESP_KEY.length();
+			nPosEnd = m_callbackData.substr(nPosStart).find(oAuthLibDefaults::OAUTHLIB_PIN_END_TAG_TWITTER_RESP);
+			if (std::string::npos == nPosEnd)
+			{
+				return false;
+			}
+			pinCodeVal = m_callbackData.substr(nPosStart, nPosEnd);
+			getOAuth().setOAuthPin(pinCodeVal);
+			return true;
+		}
+	}
+	else if (pOAuthHeaderList)
+	{
+		curl_slist_free_all(pOAuthHeaderList);
+	}
+	return false;
 }
 

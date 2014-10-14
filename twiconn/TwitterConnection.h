@@ -32,6 +32,7 @@ private:
 
 	CString m_errMsg;
 	std::shared_ptr<twitCurl> m_pTwitObj;
+	std::wstring m_strAppToken;
 	STDMETHOD(HandleError)(JSONValue* value);
 	STDMETHOD(AppendUrls)(IVariantObject* pVariantObject, std::vector<std::wstring>& urlsVector);
 	STDMETHOD(ParseTweets)(JSONValue* value, IObjCollection* pObjectCollection);
@@ -47,6 +48,7 @@ public:
 
 	STDMETHOD(GetAuthKeys)(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrKey, BSTR* pbstrSecret);
 	STDMETHOD(OpenConnection)(BSTR bstrKey, BSTR bstrSecret);
+	STDMETHOD(OpenConnectionWithAppAuth)();
 	STDMETHOD(GetTimeline)(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
 };
 

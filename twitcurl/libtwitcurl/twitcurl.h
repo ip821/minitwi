@@ -135,6 +135,10 @@ public:
     /* Clones this object */
     twitCurl* clone();
 
+	/* App auth only*/
+	bool authAppOnly(std::string& key, std::string& secret);
+	bool timelineUserGetWithAppAuth(std::string strAppToken, std::string user, std::string maxId, std::string sinceId, std::string maxCount);
+
 private:
     /* cURL data */
     CURL* m_curlHandle;
@@ -168,7 +172,7 @@ private:
     void prepareCurlProxy();
     void prepareCurlCallback();
     void prepareCurlUserPass();
-    void prepareStandardParams();
+    void prepareStandardParams(bool bSetAuthData = true);
     bool performGet( const std::string& getUrl );
     bool performGetInternal( const std::string& getUrl,
                              const std::string& oAuthHttpHeader );
