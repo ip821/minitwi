@@ -153,16 +153,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	CSize szDescription;
 	szDescription.cx = rect.Width() - DISTANCE_DESCRIPTION_X * 2;
 	{
-		CBitmap bitmapString;
-		bitmapString.CreateCompatibleBitmap(cdc, szDescription.cx, rect.Height());
-		CDC cdcString;
-		cdcString.CreateCompatibleDC(cdc);
-		cdcString.SelectBitmap(bitmapString);
-		cdcString.SelectFont(font);
 		CRect rect1;
 		rect1.right = szDescription.cx;
 		rect1.bottom = rect.Height();
-		szDescription.cy = cdcString.DrawTextEx(bstrDescription, bstrDescription.Length(), &rect1, DT_WORDBREAK | DT_CENTER, NULL);
+		szDescription.cy = cdc.DrawTextEx(bstrDescription, bstrDescription.Length(), &rect1, DT_WORDBREAK | DT_CENTER | DT_CALCRECT, NULL);
+		szDescription.cx = rect1.Width();
 	}
 	CRect rectDescription;
 	rectDescription.left = rect.Width() / 2 - szDescription.cx / 2;
