@@ -3,6 +3,7 @@
 
 #define DISTANCE_DISPLAY_NAME 20 / 200
 #define DISTANCE_DESCRIPTION_Y 20
+#define DISTANCE_COUNTERS_Y 15
 #define DISTANCE_DESCRIPTION_X 20
 #define TARGET_INTERVAL 15
 
@@ -81,6 +82,21 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 	return S_OK;
 }
 
+void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText)
+{
+	const int diff_x = 10;
+	const int diff_y = 0; // diff_x / 2;
+
+	CRgn rgn;
+	rgn.CreateRoundRectRgn(rectText.left - diff_x, rectText.top - diff_y, rectText.right + diff_x, rectText.bottom + diff_y, 10, 10);
+
+	Gdiplus::Region r(rgn);
+	Gdiplus::Graphics g(cdc);
+	static Color colorBrush(0x882F4F4F);
+	static Gdiplus::SolidBrush brush(colorBrush);
+	g.FillRegion(&brush, &r);
+}
+
 STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject)
 {
 	CRect rect = *lpRect;
@@ -110,6 +126,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	rectDisplayName.top = rect.Height() * DISTANCE_DISPLAY_NAME;
 	rectDisplayName.right = rectDisplayName.left + szDisplayName.cx;
 	rectDisplayName.bottom = rectDisplayName.top + szDisplayName.cy;
+	DrawRoundedRect(cdc, rectDisplayName);
 	cdc.DrawText(bstrDisplayName, bstrDisplayName.Length(), &rectDisplayName, 0);
 
 	CComVariant vScreenName;
@@ -123,6 +140,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	rectScreenName.top = rectDisplayName.bottom + 1;
 	rectScreenName.right = rectScreenName.left + szScreenName.cx;
 	rectScreenName.bottom = rectScreenName.top + szScreenName.cy;
+	DrawRoundedRect(cdc, rectScreenName);
 	cdc.DrawText(bstrScreenName, bstrScreenName.Length(), &rectScreenName, 0);
 
 	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_NORMALIZED_TEXT, &font));
@@ -151,9 +169,10 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	rectDescription.top = rectScreenName.bottom + DISTANCE_DESCRIPTION_Y;
 	rectDescription.right = rectDescription.left + szDescription.cx;
 	rectDescription.bottom = rectDescription.top + szDescription.cy;
+	DrawRoundedRect(cdc, rectDescription);
 	cdc.DrawTextEx(bstrDescription, bstrDescription.Length(), &rectDescription, DT_WORDBREAK | DT_CENTER, NULL);
 
-	auto bottom = rect.bottom - DISTANCE_DESCRIPTION_X;
+	auto bottom = rect.bottom - DISTANCE_COUNTERS_Y;
 	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_FOLLOWERS_COUNT, L"Followers: ");
 	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_FRIENDS_COUNT, L"Following: ");
 	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_TWEETS_COUNT, L"Tweets: ");
@@ -174,8 +193,9 @@ int CSkinUserAccountControl::DrawCounter(HDC hdc, int x, int y, int width, IVari
 	CRect rect;
 	rect.left = x;
 	rect.top = y - sz.cy;
-	rect.right = rect.left + width;
+	rect.right = rect.left + sz.cx;
 	rect.bottom = y;
+	DrawRoundedRect(cdc, rect);
 	cdc.DrawText(strText, strText.GetLength(), &rect, 0);
 	return y - sz.cy - 1;
 }

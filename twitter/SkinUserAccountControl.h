@@ -36,6 +36,7 @@ private:
 	int m_alphaAmount = 255 / STEPS;
 
 	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
+	void DrawRoundedRect(CDCHandle& cdc, CRect rectText);
 public:
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
