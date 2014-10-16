@@ -35,6 +35,7 @@ public:
 	STDMETHOD(AddImage)(BSTR bstrKey, BSTR bstrFileName);
 	STDMETHOD(ContainsImageKey)(BSTR bstrKey, BOOL* pbContains);
 	STDMETHOD(RemoveImage)(BSTR bstrKey);
+	STDMETHOD(CopyImageTo)(BSTR bstrKey, IImageManagerService* pDest);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ImageManagerService), CImageManagerService)

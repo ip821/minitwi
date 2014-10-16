@@ -54,6 +54,7 @@ public:
 private:
 
 	CComPtr<IPluginSupport> m_pPluginSupport;
+	CComQIPtr<IServiceProvider> m_pServiceProviderParent;
 	CComQIPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<IVariantObject> m_pVariantObject;

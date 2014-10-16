@@ -41,6 +41,19 @@ STDMETHODIMP CImageManagerService::GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap)
 	return S_OK;
 }
 
+STDMETHODIMP CImageManagerService::CopyImageTo(BSTR bstrKey, IImageManagerService* pDest)
+{
+	CHECK_E_POINTER(bstrKey);
+	CHECK_E_POINTER(pDest);
+	{
+		lock_guard<mutex> mutexSource(m_mutex);
+		CImageManagerService* pDestClass = static_cast<CImageManagerService*>(pDest);
+		lock_guard<mutex> mutexDest(pDestClass->m_mutex);
+		pDestClass->m_bitmaps[bstrKey] = m_bitmaps[bstrKey];
+	}
+	return S_OK;
+}
+
 STDMETHODIMP CImageManagerService::AddImage(BSTR bstrKey, BSTR bstrFileName)
 {
 	CHECK_E_POINTER(bstrKey);

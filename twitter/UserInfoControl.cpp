@@ -24,15 +24,12 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport));
 	RETURN_IF_FAILED(m_pPluginSupport->InitializePlugins(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE));
 
+	m_pServiceProviderParent = pServiceProvider;
 	m_pServiceProvider = m_pPluginSupport;
 	ATLASSERT(m_pServiceProvider);
 
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
 	
-	{
-		
-	}
-
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IControl), (LPVOID*)&pControl));
 
@@ -87,6 +84,7 @@ STDMETHODIMP CUserInfoControl::OnShutdown()
 
 	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
 	m_pPluginSupport.Release();
+	m_pServiceProviderParent.Release();
 	m_pServiceProvider.Release();
 	m_pTheme.Release();
 	m_pVariantObject.Release();
@@ -182,6 +180,23 @@ STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
+
+	CComPtr<IImageManagerService> pParentImageService;
+	RETURN_IF_FAILED(m_pServiceProviderParent->QueryService(CLSID_ImageManagerService, &pParentImageService));
+	if (pParentImageService)
+	{
+		CComVariant vUserImage;
+		RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+		if (vUserImage.vt == VT_BSTR)
+		{
+			BOOL bContains = FALSE;
+			RETURN_IF_FAILED(pParentImageService->ContainsImageKey(vUserImage.bstrVal, &bContains));
+			if (bContains)
+			{
+				RETURN_IF_FAILED(pParentImageService->CopyImageTo(vUserImage.bstrVal, m_pImageManagerService));
+			}
+		}
+	}
 
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pUserAccountControl, m_pVariantObject));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pTimelineControl, m_pVariantObject));
