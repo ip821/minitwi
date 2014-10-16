@@ -84,13 +84,16 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 	return S_OK;
 }
 
-void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText)
+void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect = false)
 {
 	const int diff_x = 10;
 	const int diff_y = 0; // diff_x / 2;
 
 	CRgn rgn;
-	rgn.CreateRoundRectRgn(rectText.left - diff_x, rectText.top - diff_y, rectText.right + diff_x, rectText.bottom + diff_y, 10, 10);
+	if (strictRect)
+		rgn.CreateRoundRectRgn(rectText.left, rectText.top, rectText.right, rectText.bottom, 10, 10);
+	else
+		rgn.CreateRoundRectRgn(rectText.left - diff_x, rectText.top - diff_y, rectText.right + diff_x, rectText.bottom + diff_y, 10, 10);
 
 	Gdiplus::Region r(rgn);
 	Gdiplus::Graphics g(cdc);
@@ -123,13 +126,6 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	CComBSTR bstrDisplayName(vDisplayName.bstrVal);
 	CSize szDisplayName;
 	cdc.GetTextExtent(bstrDisplayName, bstrDisplayName.Length(), &szDisplayName);
-	CRect rectDisplayName;
-	rectDisplayName.left = rect.Width() / 2 - szDisplayName.cx / 2;
-	rectDisplayName.top = rect.Height() * DISTANCE_DISPLAY_NAME;
-	rectDisplayName.right = rectDisplayName.left + szDisplayName.cx;
-	rectDisplayName.bottom = rectDisplayName.top + szDisplayName.cy;
-	DrawRoundedRect(cdc, rectDisplayName);
-	cdc.DrawText(bstrDisplayName, bstrDisplayName.Length(), &rectDisplayName, 0);
 
 	CComVariant vScreenName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vScreenName));
@@ -137,13 +133,30 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
 	CSize szScreenName;
 	cdc.GetTextExtent(bstrScreenName, bstrScreenName.Length(), &szScreenName);
+
+	auto maxWidth = max(szDisplayName.cx, szScreenName.cx);
+	auto boxHeight = szDisplayName.cy + szScreenName.cy + 1 - 10;
+	auto boxWidth = boxHeight;
+	auto boxLeft = rect.Width() / 2 - maxWidth / 2 - boxWidth / 2;
+
+	CRect rectDisplayName;
+	rectDisplayName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
+	rectDisplayName.top = rect.Height() * DISTANCE_DISPLAY_NAME;
+	rectDisplayName.right = rectDisplayName.left + szDisplayName.cx;
+	rectDisplayName.bottom = rectDisplayName.top + szDisplayName.cy;
+	DrawRoundedRect(cdc, rectDisplayName);
+	cdc.DrawText(bstrDisplayName, bstrDisplayName.Length(), &rectDisplayName, 0);
+
 	CRect rectScreenName;
-	rectScreenName.left = rect.Width() / 2 - szScreenName.cx / 2;
+	rectScreenName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
 	rectScreenName.top = rectDisplayName.bottom + 1;
 	rectScreenName.right = rectScreenName.left + szScreenName.cx;
 	rectScreenName.bottom = rectScreenName.top + szScreenName.cy;
 	DrawRoundedRect(cdc, rectScreenName);
 	cdc.DrawText(bstrScreenName, bstrScreenName.Length(), &rectScreenName, 0);
+
+	auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
+	DrawRoundedRect(cdc, CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight), true);
 
 	CComVariant vUserImage;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
@@ -152,12 +165,6 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	{
 		TBITMAP tBitmap = { 0 };
 		RETURN_IF_FAILED(m_pImageManagerService->GetImageInfo(vUserImage.bstrVal, &tBitmap));
-
-		auto boxHeight = rectScreenName.bottom - rectDisplayName.top - 10;
-		auto boxWidth = boxHeight;
-		auto boxLeft = min(rectScreenName.left, rectDisplayName.left) - boxWidth - DISTANCE_USER_IMAGE_X;
-		auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
-		DrawRoundedRect(cdc, CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight));
 
 		CDC cdcBitmap;
 		cdcBitmap.CreateCompatibleDC(cdc);

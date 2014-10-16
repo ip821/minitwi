@@ -108,31 +108,31 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 {
 	CComVariant vBannerUrl;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_BANNER, &vBannerUrl));
-	if(vBannerUrl.vt != VT_BSTR)
-		return S_OK;
+	if (vBannerUrl.vt == VT_BSTR)
+	{
+		m_bstrBannerUrl = vBannerUrl.bstrVal;
 
-	m_bstrBannerUrl = vBannerUrl.bstrVal;
-
-	CComPtr<IVariantObject> pDownloadObject;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObject));
-	RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_URL, &vBannerUrl));
-	RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_USER_BANNER)));
-	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObject));
+		CComPtr<IVariantObject> pDownloadObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObject));
+		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_URL, &vBannerUrl));
+		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_USER_BANNER)));
+		RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObject));
+	}
 
 	CComVariant vUserImage;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
-	if (vUserImage.vt != VT_BSTR)
-		return S_OK;
-
-	BOOL bContains = FALSE;
-	RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUserImage.bstrVal, &bContains));
-	if (!bContains)
+	if (vUserImage.vt == VT_BSTR)
 	{
-		CComPtr<IVariantObject> pDownloadObjectUserImage;
-		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObjectUserImage));
-		RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_URL, &vUserImage));
-		RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_USER_IMAGE)));
-		RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObjectUserImage));
+		BOOL bContains = FALSE;
+		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUserImage.bstrVal, &bContains));
+		if (!bContains)
+		{
+			CComPtr<IVariantObject> pDownloadObjectUserImage;
+			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObjectUserImage));
+			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_URL, &vUserImage));
+			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_USER_IMAGE)));
+			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObjectUserImage));
+		}
 	}
 	return S_OK;
 }
