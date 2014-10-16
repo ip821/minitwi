@@ -5,6 +5,8 @@
 #define DISTANCE_DESCRIPTION_Y 20
 #define DISTANCE_COUNTERS_Y 15
 #define DISTANCE_DESCRIPTION_X 20
+#define DISTANCE_USER_IMAGE_X 20
+#define ALPHA_USER_IMAGE 200
 #define TARGET_INTERVAL 15
 
 STDMETHODIMP CSkinUserAccountControl::SetColorMap(IThemeColorMap* pThemeColorMap)
@@ -142,6 +144,35 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	rectScreenName.bottom = rectScreenName.top + szScreenName.cy;
 	DrawRoundedRect(cdc, rectScreenName);
 	cdc.DrawText(bstrScreenName, bstrScreenName.Length(), &rectScreenName, 0);
+
+	CComVariant vUserImage;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+	CBitmap bitmapUserImage;
+	if (vUserImage.vt == VT_BSTR && SUCCEEDED(m_pImageManagerService->CreateImageBitmap(vUserImage.bstrVal, &bitmapUserImage.m_hBitmap)))
+	{
+		TBITMAP tBitmap = { 0 };
+		RETURN_IF_FAILED(m_pImageManagerService->GetImageInfo(vUserImage.bstrVal, &tBitmap));
+
+		auto boxHeight = rectScreenName.bottom - rectDisplayName.top - 10;
+		auto boxWidth = boxHeight;
+		auto boxLeft = min(rectScreenName.left, rectDisplayName.left) - boxWidth - DISTANCE_USER_IMAGE_X;
+		auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
+		DrawRoundedRect(cdc, CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight));
+
+		CDC cdcBitmap;
+		cdcBitmap.CreateCompatibleDC(cdc);
+		cdcBitmap.SelectBitmap(bitmapUserImage);
+
+		auto diff_x = (boxWidth / 2) - (tBitmap.Width / 2);
+		auto diff_y = (boxHeight / 2) - (tBitmap.Height / 2);
+		CRect rectBimtpaUserImage;
+		rectBimtpaUserImage.left = boxLeft + diff_x;
+		rectBimtpaUserImage.top = boxTop + diff_y;
+		rectBimtpaUserImage.right = rectBimtpaUserImage.left + tBitmap.Width;
+		rectBimtpaUserImage.bottom = rectBimtpaUserImage.top + tBitmap.Height;
+		static Color colorTransparent((ARGB)Color::White);
+		cdc.TransparentBlt(rectBimtpaUserImage.left, rectBimtpaUserImage.top, rectBimtpaUserImage.Width(), rectBimtpaUserImage.Height(), cdcBitmap, 0, 0, tBitmap.Width, tBitmap.Height, colorTransparent.ToCOLORREF());
+	}
 
 	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_NORMALIZED_TEXT, &font));
 	cdc.SelectFont(font);

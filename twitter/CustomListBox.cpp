@@ -231,6 +231,9 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	m_HoveredItemIndex = INVALID_ITEM_INDEX;
 	m_HoveredColumnIndex = INVALID_COLUMN_INDEX;
 
+	if (m_columnRects.empty())
+		goto Exit;
+
 	{ //Current point
 		BOOL bOutside = FALSE;
 		int uiItem = ItemFromPoint(CPoint(x, y), bOutside);

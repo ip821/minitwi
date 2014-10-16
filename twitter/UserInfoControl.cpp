@@ -28,6 +28,10 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	ATLASSERT(m_pServiceProvider);
 
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
+	
+	{
+		
+	}
 
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IControl), (LPVOID*)&pControl));
@@ -170,6 +174,7 @@ STDMETHODIMP CUserInfoControl::CreateEx(HWND hWndParent, HWND *hWnd)
 
 STDMETHODIMP CUserInfoControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 {
+	RETURN_IF_FAILED(m_pTimelineControl->PreTranslateMessage(pMsg, pbResult));
 	return S_OK;
 }
 

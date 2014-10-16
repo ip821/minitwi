@@ -118,6 +118,22 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 	RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_URL, &vBannerUrl));
 	RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_USER_BANNER)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObject));
+
+	CComVariant vUserImage;
+	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+	if (vUserImage.vt != VT_BSTR)
+		return S_OK;
+
+	BOOL bContains = FALSE;
+	RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUserImage.bstrVal, &bContains));
+	if (!bContains)
+	{
+		CComPtr<IVariantObject> pDownloadObjectUserImage;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObjectUserImage));
+		RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_URL, &vUserImage));
+		RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_USER_IMAGE)));
+		RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObjectUserImage));
+	}
 	return S_OK;
 }
 
@@ -134,6 +150,18 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
+
+	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == CComBSTR(TYPE_IMAGE_USER_IMAGE) && vUrl.vt == VT_BSTR && vFilePath.vt == VT_BSTR)
+	{
+		BOOL bContains = FALSE;
+		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
+		if (!bContains)
+		{
+			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
+		}
+		Invalidate();
+	}
+
 	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == CComBSTR(TYPE_IMAGE_USER_BANNER) && vUrl.vt == VT_BSTR && m_bstrBannerUrl == vUrl.bstrVal && vFilePath.vt == VT_BSTR)
 	{
 		RETURN_IF_FAILED(m_pSkinUserAccountControl->AnimationStart());
