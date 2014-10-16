@@ -11,8 +11,9 @@ STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls);
 	HrCoCreateInstance(CLSID_ColumnRects, &m_pColumnRects);
-	*hWnd = __super::Create(hWndParent, CRect(), L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
-	m_wndScroll.Create(m_hWnd, CRect(), L"", WS_CHILD, WS_EX_COMPOSITED);
+	CRect rect;
+	*hWnd = __super::Create(hWndParent, rect, L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
+	m_wndScroll.Create(m_hWnd, rect, L"", WS_CHILD, WS_EX_COMPOSITED);
 	m_wndScroll.SetTabWindow(this);
 	return S_OK;
 }
@@ -87,7 +88,7 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 	if (uiCount > 1)
 		::ShowWindow(hWnd, SW_HIDE);
 
-	if (m_selectedPageIndex == -1)
+	if (m_selectedPageIndex == INVALID_PAGE_INDEX)
 		SelectPage(0);
 
 	CComPtr<IUnknown> pUnk;
@@ -104,7 +105,7 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 
 void CCustomTabControl::SelectPage(DWORD dwIndex)
 {
-	if (m_selectedPageIndex == dwIndex)
+	if (m_selectedPageIndex == (int)dwIndex)
 		return;
 
 	CBitmap bitmap1;
@@ -116,7 +117,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 	m_pControls->GetCount(&uiCount);
 	ATLASSERT(dwIndex >= 0 && dwIndex < uiCount);
 	
-	if (m_selectedPageIndex != -1)
+	if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 	{
 		CComPtr<IControl> pControl;
 		m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
@@ -125,7 +126,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		pControl->GetHWND(&hWnd);
 		::ShowWindow(hWnd, SW_HIDE);
 
-		if (m_selectedPageIndex != -1)
+		if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 		{
 			CDC cdc(::GetDC(hWnd));
 			bitmap1.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width(), m_rectChildControlArea.Height());
@@ -141,7 +142,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		HWND hWnd = 0;
 		pControl->GetHWND(&hWnd);
 
-		if (m_selectedPageIndex != -1)
+		if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 		{
 			CDC cdc(::GetDC(hWnd));
 			bitmap2.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width(), m_rectChildControlArea.Height());
@@ -152,7 +153,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap2.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
 	}
 
-	if (m_selectedPageIndex != -1)
+	if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 	{
 		if (!m_scrollBitmap.IsNull())
 			m_scrollBitmap.DeleteObject();
@@ -176,7 +177,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 	m_prevSelectedPageIndex = m_selectedPageIndex;
 	m_selectedPageIndex = dwIndex;
 
-	if (m_selectedPageIndex == -1)
+	if (m_selectedPageIndex == INVALID_PAGE_INDEX)
 	{
 		OnEndScroll();
 	}
@@ -184,7 +185,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 
 void CCustomTabControl::OnEndScroll()
 {
-	if (m_prevSelectedPageIndex != -1)
+	if (m_prevSelectedPageIndex != INVALID_PAGE_INDEX)
 	{
 		CComPtr<IControl> pControl;
 		ASSERT_IF_FAILED(GetPage(m_prevSelectedPageIndex, &pControl));
@@ -217,7 +218,7 @@ void CCustomTabControl::OnEndScroll()
 STDMETHODIMP CCustomTabControl::GetCurrentPage(IControl **ppControl)
 {
 	CHECK_E_POINTER(ppControl);
-	if (m_selectedPageIndex == -1)
+	if (m_selectedPageIndex == INVALID_PAGE_INDEX)
 		return E_PENDING;
 
 	CComPtr<IControl> pControl;
@@ -233,7 +234,7 @@ STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
-	UINT index = -1;
+	int index = INVALID_PAGE_INDEX;
 	for (UINT i = 0; i < uiCount; i++)
 	{
 		CComPtr<IControl> pFoundControl;
@@ -245,7 +246,7 @@ STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 		}
 	}
 
-	if (index == -1)
+	if (index == INVALID_PAGE_INDEX)
 		return E_INVALIDARG;
 
 	{
@@ -256,9 +257,9 @@ STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 		}
 	}
 
-	RETURN_IF_FAILED(m_pControls->RemoveObjectAt(&index));
+	RETURN_IF_FAILED(m_pControls->RemoveObjectAt(index));
 
-	if ((UINT)m_selectedPageIndex > index)
+	if (m_selectedPageIndex > index)
 		m_selectedPageIndex--;
 
 	Fire_OnClose(pControl);
@@ -270,7 +271,7 @@ STDMETHODIMP CCustomTabControl::ActivatePage(IControl *pControl)
 {
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
-	size_t index = -1;
+	int index = INVALID_PAGE_INDEX;
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IControl> pFoundControl;
@@ -282,7 +283,7 @@ STDMETHODIMP CCustomTabControl::ActivatePage(IControl *pControl)
 		}
 	}
 
-	if (index == -1)
+	if (index == INVALID_PAGE_INDEX)
 		return E_INVALIDARG;
 
 	SelectPage(index);
@@ -427,11 +428,11 @@ void CCustomTabControl::UpdateSizes()
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IControl> pFoundControl;
-		m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pFoundControl);
+		m_pControls->GetAt((UINT)i, __uuidof(IControl), (LPVOID*)&pFoundControl);
 		HWND hWnd = 0;
 		pFoundControl->GetHWND(&hWnd);
 		UINT uiFlags = SWP_NOACTIVATE;
-		uiFlags |= m_selectedPageIndex == i ? SWP_SHOWWINDOW : SWP_HIDEWINDOW;
+		uiFlags |= (UINT)m_selectedPageIndex == i ? SWP_SHOWWINDOW : SWP_HIDEWINDOW;
 		::SetWindowPos(hWnd, NULL, clientRect.left, clientRect.top, clientRect.Width(), clientRect.Height(), uiFlags);
 	}
 }

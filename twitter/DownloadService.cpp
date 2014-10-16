@@ -48,7 +48,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	CString strTempFolder;
 	StrGetTempPath(strTempFolder);
 	GUID guid = { 0 };
-	CoCreateGuid(&guid);
+	RETURN_IF_FAILED(CoCreateGuid(&guid));
 	CString strGuid;
 	StrGuidToString(guid, strGuid);
 	StrPathAppend(strTempFolder, strGuid);

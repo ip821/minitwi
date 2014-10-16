@@ -30,10 +30,10 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 
-	const int STEPS = 25;
-	int m_alpha = 0;
-	int m_step = 0;
-	int m_alphaAmount = 255 / STEPS;
+	const BYTE STEPS = 25;
+	BYTE m_alpha = 0;
+	BYTE m_step = 0;
+	BYTE m_alphaAmount = 255 / STEPS;
 
 	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
 	void DrawRoundedRect(CDCHandle& cdc, CRect rectText);

@@ -31,7 +31,7 @@ STDMETHODIMP CSkinUserAccountControl::SetImageManagerService(IImageManagerServic
 STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject)
 {
 	CRect rect = *lpRect;
-	DWORD dwBackColor = Color(Color::DarkSlateGray).ToCOLORREF();
+	auto dwBackColor = Color((ARGB)Color::DarkSlateGray).ToCOLORREF();
 	CBitmap bitmap;
 	TBITMAP tBitmap = { 0 };
 
@@ -101,11 +101,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 {
 	CRect rect = *lpRect;
 	CDCHandle cdc(hdc);
-	DWORD dwColor = 0;
+	COLORREF dwColor = 0;
 	CComVariant vForeColor;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_FORECOLOR, &vForeColor));
 	if (vForeColor.vt == VT_I4)
-		dwColor = Color(Color::White).ToCOLORREF();
+		dwColor = Color((ARGB)Color::White).ToCOLORREF();
 
 	cdc.SetBkMode(TRANSPARENT);
 	cdc.SetTextColor(dwColor);

@@ -189,7 +189,7 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 	CHECK_E_POINTER(pSettings);
 	CComVariant vValue;
 	CComBSTR bstr;
-	if (SUCCEEDED(pSettings->GetVariantValue(bstrKey, &vValue) && vValue.vt == VT_BSTR))
+	if (SUCCEEDED(pSettings->GetVariantValue(bstrKey, &vValue)) && vValue.vt == VT_BSTR)
 		bstr = vValue.bstrVal;
 
 	CEdit wndServerTextBox = GetDlgItem(id);
@@ -199,7 +199,6 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 
 STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
-	HWND hWnd = 0;
 	EnableLoginControls(FALSE);
 	RETURN_IF_FAILED(m_pCustomTabControl->HideInfo());
 	RETURN_IF_FAILED(m_pCustomTabControl->StartAnimation());
@@ -345,7 +344,6 @@ bool CSettingsControl::DlgResize_PositionControl(int in_nWidth, int in_nHeight, 
 			int l_nGroupWidth = in_sGroupRect.right - in_sGroupRect.left;
 			int l_nGroupStart = (in_nWidth / 2) - (l_nGroupWidth / 2);
 
-			int l_nSegment = l_nGroupWidth / l_nItems;
 			l_cArea.MoveToX(l_nGroupStart + offsetX/*(l_nSegment * l_nItem)*/);
 		}
 

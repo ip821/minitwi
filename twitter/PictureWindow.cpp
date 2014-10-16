@@ -171,7 +171,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	{
 		lock_guard<mutex> lock(m_mutex);
 		ATLASSERT(!m_pBitmap);
-		m_pBitmap = make_shared<Gdiplus::Bitmap>(vFilePath.bstrVal);
+		m_pBitmap = make_shared<Bitmap>(vFilePath.bstrVal);
 
 		m_alpha = 0;
 		m_alphaAmount = (255 / STEPS);
@@ -269,7 +269,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			auto y = (rect.bottom - rect.top) / 2 - (height / 2);
 
 			CBitmap bitmap;
-			m_pBitmap->GetHBITMAP(Gdiplus::Color::White, &bitmap.m_hBitmap);
+			m_pBitmap->GetHBITMAP(static_cast<ARGB>(Color::White), &bitmap.m_hBitmap);
 			CDC cdcBitmap;
 			cdcBitmap.CreateCompatibleDC(cdc);
 			cdcBitmap.SelectBitmap(bitmap);

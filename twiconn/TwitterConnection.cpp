@@ -50,8 +50,10 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 
 	USES_CONVERSION;
 
-	twitterObj.setTwitterUsername(std::string(W2A(bstrUser)));
-	twitterObj.setTwitterPassword(std::string(W2A(bstrPass)));
+	auto strUser = std::string(W2A(bstrUser));
+	twitterObj.setTwitterUsername(strUser);
+	auto strPass = std::string(W2A(bstrPass));
+	twitterObj.setTwitterPassword(strPass);
 
 	twitterObj.getOAuth().setConsumerKey(std::string(APP_KEY));
 	twitterObj.getOAuth().setConsumerSecret(std::string(APP_SECRET));
@@ -93,7 +95,9 @@ STDMETHODIMP CTwitterConnection::OpenConnectionWithAppAuth()
 	USES_CONVERSION;
 
 	m_pTwitObj = std::make_shared<twitCurl>();
-	auto bRes = m_pTwitObj->authAppOnly(std::string(W2A(CString(APP_KEY))), std::string(W2A(CString(APP_SECRET))));
+	auto strAppKey = std::string(W2A(CString(APP_KEY)));
+	auto strAppSecret = std::string(W2A(CString(APP_SECRET)));
+	auto bRes = m_pTwitObj->authAppOnly(strAppKey, strAppSecret);
 
 	if (!bRes)
 	{

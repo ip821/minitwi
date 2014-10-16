@@ -22,7 +22,6 @@ public:
 
 	static void CALLBACK TimerCallback(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
 	{
-		BOOL bHandled = FALSE;
 		auto p = (T*)(dwUser);
 		timeKillEvent(p->m_uiTimerId);
 		::SendMessage(p->m_hWnd, WM_ANIMATION_TIMER, 0, 0);

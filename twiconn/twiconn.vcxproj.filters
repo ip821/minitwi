@@ -52,9 +52,6 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xdlldata.c">
-      <Filter>ZZZMisc\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="twiconn_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>

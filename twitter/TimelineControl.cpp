@@ -190,8 +190,8 @@ STDMETHODIMP CTimelineControl::RefreshItem(UINT uiIndex)
 
 LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-	NMCOLUMNCLICK* pNm = (NMCOLUMNCLICK*)pnmh;
-	if (pNm->dwCurrentColumn == -1)
+	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);
+	if (pNm->dwCurrentColumn == CCustomListBox::INVALID_COLUMN_INDEX)
 		return 0;
 
 	BOOL bIsUrl = FALSE;
@@ -209,7 +209,7 @@ LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 
 LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	NMCOLUMNCLICK* pNm = (NMCOLUMNCLICK*)pnmh;
+	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);
 
 	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
 	if (pInitializeWithVariantObject)
@@ -217,7 +217,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		RETURN_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pNm->pVariantObject));
 	}
 
-	if (pNm->dwCurrentColumn != -1)
+	if (pNm->dwCurrentColumn != CCustomListBox::INVALID_COLUMN_INDEX)
 	{
 		CComQIPtr<IInitializeWithColumnName> pInitializeWithColumnName = m_pCommandSupport;
 		if (pInitializeWithColumnName)
@@ -251,7 +251,7 @@ LRESULT CTimelineControl::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 LRESULT CTimelineControl::OnItemRemove(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	NMITEMREMOVED* pNm = (NMITEMREMOVED*)pnmh;
+	NMITEMREMOVED* pNm = reinterpret_cast<NMITEMREMOVED*>(pnmh);
 	RETURN_IF_FAILED(Fire_OnItemRemoved(pNm->pVariantObject));
 	return 0;
 }

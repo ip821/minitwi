@@ -224,7 +224,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnRects* pColumnRects, CDCHandle& cd
 		GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
 		rectText.top = rect.top + ((rect.Height() / 2) - sz.cy / 2);
 
-		BOOL bSelected = selectedPageIndex == i;
+		BOOL bSelected = selectedPageIndex == (int)i;
 
 		DWORD dwColor = 0;
 		if (bSelected)
@@ -262,9 +262,9 @@ STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc)
 	CBrush brushInactive;
 	brushInactive.CreateSolidBrush(dwInactiveColor);
 
-	for (size_t i = 0; i < MAX_COUNT; i++)
+	for (int i = 0; i < MAX_COUNT; i++)
 	{
-		auto x = rect.left + ITEM_SIZE * i + ITEM_DISTANCE * (max(0, i - 1));
+		auto x = rect.left + ITEM_SIZE * i + ITEM_DISTANCE * (max(0, i));
 		auto y = rect.top;
 		CRect rectItem = { (int)x, y, (int)x + ITEM_SIZE, y + ITEM_SIZE };
 		cdc.FillRect(rectItem, i == m_iFrameCount ? brushActive : brushInactive);

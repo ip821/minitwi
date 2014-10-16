@@ -9,6 +9,7 @@
 
 using namespace ATL;
 using namespace std;
+using namespace Gdiplus;
 
 // CPictureWindow
 
@@ -71,10 +72,10 @@ private:
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
 
-	int m_alpha = 0;
+	BYTE m_alpha = 0;
 	int m_step = 0;
-	int m_alphaAmount = 0;
-	const int STEPS = 25;
+	BYTE m_alphaAmount = 0;
+	const BYTE STEPS = 25;
 
 	HRESULT Fire_OnClosed(HWND hWnd);
 

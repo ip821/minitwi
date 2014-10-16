@@ -23,6 +23,7 @@
 #define PADDING_Y 7
 #define ITEM_SPACING 10
 #define ITEM_DELIMITER_HEIGHT 1
+#include "CustomListBox.h"
 
 CSkinTimeline::CSkinTimeline()
 {
@@ -208,7 +209,6 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 	}
 
 	CListBox wndListBox(hwndControl);
-	auto selectedItemId = wndListBox.GetCurSel();
 
 	RECT clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
@@ -269,7 +269,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 		HFONT font = 0;
 		RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrColumnName, &font));
 
-		if (lpdis->iHoveredItem == lpdis->lpdi->itemID && lpdis->iHoveredColumn == i && bIsUrl)
+		if (lpdis->iHoveredItem == static_cast<int>(lpdis->lpdi->itemID) && lpdis->iHoveredColumn == static_cast<int>(i) && bIsUrl)
 		{
 			RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrColumnName + VAR_SELECTED_POSTFIX, &font));
 		}
@@ -293,18 +293,6 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 	return S_OK;
 }
 
-void CSkinTimeline::PrepareDC(HDC hdc, SIZE size, CString strColumnName, CDC& cdc)
-{
-	cdc.CreateCompatibleDC(hdc);
-	CBitmap bitmap;
-	bitmap.CreateCompatibleBitmap(cdc, size.cx, size.cy);
-	cdc.SelectBitmap(bitmap);
-
-	HFONT font = 0;
-	m_pThemeFontMap->GetFont(CComBSTR(strColumnName), &font);
-	cdc.SelectFont(font);
-}
-
 SIZE CSkinTimeline::AddColumn(
 	HDC hdc,
 	IColumnRects* pColumnRects,
@@ -322,7 +310,10 @@ SIZE CSkinTimeline::AddColumn(
 	)
 {
 	CDC cdc;
-	PrepareDC(hdc, size, strColumnName, cdc);
+	cdc.CreateCompatibleDC(hdc);
+	HFONT font = nullptr;
+	m_pThemeFontMap->GetFont(CComBSTR(strColumnName), &font);
+	cdc.SelectFont(font);
 
 	SIZE sz = { 0 };
 	if (bWordWrap)
@@ -332,7 +323,7 @@ SIZE CSkinTimeline::AddColumn(
 		rect.bottom = size.cy;
 
 		sz.cx = size.cx;
-		sz.cy = DrawText(cdc, strDisplayText, strDisplayText.GetLength(), &rect, DT_WORDBREAK);
+		sz.cy = DrawText(cdc, strDisplayText, strDisplayText.GetLength(), &rect, DT_WORDBREAK | DT_CALCRECT);
 	}
 	else
 	{
@@ -341,13 +332,19 @@ SIZE CSkinTimeline::AddColumn(
 			sz.cx = max(ulMinimumFixedWidth, sz.cx);
 	}
 
-	if (justify == Justify::Center)
+	switch (justify)
 	{
+	case Center:
 		x = (size.cx / 2) - (sz.cx / 2);
-	}
-	else if (justify == Justify::Right)
-	{
+		break;
+
+	case Right:
 		x = x - sz.cx;
+		break;
+
+	case None:
+	default:
+		break;
 	}
 
 	UINT uiIndex = 0;
@@ -680,7 +677,7 @@ STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnRect
 		it = m_steps.find(uiIndex);
 	}
 
-	if (iColumnIndex == -1)
+	if (iColumnIndex == CCustomListBox::INVALID_COLUMN_INDEX)
 	{
 		it->second.step = 0;
 		it->second.alpha = 0;

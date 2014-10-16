@@ -77,8 +77,8 @@ class JSONValue
 	
 		JSONType type;
 		std::wstring string_value;
-		bool bool_value;
-		double number_value;
+		bool bool_value = false;
+		double number_value = 0;
 		JSONArray array_value;
 		JSONObject object_value;
 };

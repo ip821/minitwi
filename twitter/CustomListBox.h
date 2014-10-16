@@ -7,8 +7,8 @@
 struct NMCOLUMNCLICK
 {
 	NMHDR nmhdr;
-	DWORD dwCurrentItem;
-	DWORD dwCurrentColumn;
+	int dwCurrentItem;
+	int dwCurrentColumn;
 	IColumnRects* pColumnRects;
 	IVariantObject* pVariantObject;
 	int x;
@@ -42,15 +42,19 @@ public:
 	END_MSG_MAP()
 
 	CCustomListBox();
+
+	static const int INVALID_COLUMN_INDEX = -1;
+	static const int INVALID_ITEM_INDEX = -1;
+
 private:
 	CComPtr<IObjCollection> m_pItems;
 	std::map<IVariantObject*, int> m_itemsToIndex;
-	std::vector<CAdapt<CComPtr<IColumnRects> > > m_columnRects;
+	std::vector<CAdapt<CComPtr<IColumnRects>>> m_columnRects;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	int m_prevX = 0;
 	int m_prevY = 0;
-	int m_HoveredItemIndex = -1;
-	int m_HoveredColumnIndex = -1;
+	int m_HoveredItemIndex = INVALID_ITEM_INDEX;
+	int m_HoveredColumnIndex = INVALID_COLUMN_INDEX;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
 	BOOL m_bAnimationNeeded = FALSE;

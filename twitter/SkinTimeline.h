@@ -37,19 +37,19 @@ private:
 	{
 		int index = 0;
 		int step = 0;
-		int alpha = 0;
+		BYTE alpha = 0;
 	};
 
 	struct AnimationItemData
 	{
 		int step = 0;
-		int alpha = 0;
+		BYTE alpha = 0;
 		map<int, AnimationItemImageData> columns;
 	};
 
-	const int MAX_ALPHA = 255;
-	const int STEPS = 5;
-	const int STEP_ALPHA = MAX_ALPHA / STEPS;
+	const BYTE MAX_ALPHA = 255;
+	const BYTE STEPS = 5;
+	const BYTE STEP_ALPHA = MAX_ALPHA / STEPS;
 	map<UINT, AnimationItemData> m_steps;
 
 	enum Justify
@@ -61,7 +61,6 @@ private:
 
 	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap, LONG ulCustomFixedWidth, Justify justify, BOOL bDisabledSelection);
 	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);
-	void PrepareDC(HDC hdc, SIZE size, CString strColumnName, CDC& cdc);
 	STDMETHOD(DrawTextColumns)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis);
 	STDMETHOD(DrawImageColumns)(IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis);
 public:

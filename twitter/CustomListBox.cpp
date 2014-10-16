@@ -6,8 +6,8 @@
 
 CCustomListBox::CCustomListBox()
 {
-	m_HoveredItemIndex = -1;
-	m_HoveredColumnIndex = -1;
+	m_HoveredItemIndex = INVALID_ITEM_INDEX;
+	m_HoveredColumnIndex = INVALID_COLUMN_INDEX;
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pItems);
@@ -60,7 +60,7 @@ void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
 	nm.pColumnRects = m_columnRects[uiIndex].m_T;
 	::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 
-	m_pItems->RemoveObjectAt(&uiIndex);
+	m_pItems->RemoveObjectAt(uiIndex);
 	m_columnRects.erase(m_columnRects.begin() + uiIndex);
 	m_itemsToIndex.erase(pVariantObject.p);
 
@@ -99,18 +99,18 @@ void CCustomListBox::SetSkinTimeline(ISkinTimeline* pSkin)
 
 void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 {
-	if (lpdi->itemID == -1)
+	if (lpdi->itemID == (UINT)INVALID_ITEM_INDEX)
 		return;
 
 	CComPtr<IVariantObject> pVariantObject;
 	m_pItems->GetAt(lpdi->itemID, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
 	auto& columns = m_animatedColumns[pVariantObject.p];
 	std::vector<UINT> vIndexes(columns.begin(), columns.end());
-	UINT* pui = NULL;
+	UINT* pui = nullptr;
 	if (vIndexes.size())
 		pui = &vIndexes[0];
 	TDRAWITEMSTRUCTTIMELINE distl = { 0 };
-	distl.lpdi = (TDRAWITEMSTRUCT*)lpdi;
+	distl.lpdi = reinterpret_cast<TDRAWITEMSTRUCT*>(lpdi);
 	distl.iHoveredItem = m_HoveredItemIndex;
 	distl.iHoveredColumn = m_HoveredColumnIndex;
 	distl.puiNotAnimatedColumnIndexes = pui;
@@ -178,10 +178,10 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	CComPtr<IColumnRects> pColumnRects;
 	HrCoCreateInstance(CLSID_ColumnRects, &pColumnRects);
 	m_columnRects.insert(m_columnRects.begin() + index, pColumnRects);
-	auto itemId = SendMessage(LB_INSERTSTRING, index, (LPARAM)1);
+	SendMessage(LB_INSERTSTRING, index, (LPARAM)1);
 	
 	if (m_bEnableAnimation)
-		m_pSkinTimeline->AnimationRegisterItemIndex(index, pColumnRects, -1);
+		m_pSkinTimeline->AnimationRegisterItemIndex(index, pColumnRects, INVALID_COLUMN_INDEX);
 	UpdateAnimatedColumns(pColumnRects, index, pItemObject, TRUE);
 	m_bAnimationNeeded = TRUE;
 }
@@ -228,21 +228,21 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 	SetCursor(m_arrowCursor);
 
-	m_HoveredItemIndex = 0xFFFF;
-	m_HoveredColumnIndex = -1;
+	m_HoveredItemIndex = INVALID_ITEM_INDEX;
+	m_HoveredColumnIndex = INVALID_COLUMN_INDEX;
 
 	{ //Current point
 		BOOL bOutside = FALSE;
-		auto uiItem = ItemFromPoint(CPoint(x, y), bOutside);
+		int uiItem = ItemFromPoint(CPoint(x, y), bOutside);
 		RECT itemRect = { 0 };
 		GetItemRect(uiItem, &itemRect);
-		if (bOutside || uiItem == 0xFFFF)
+		if (bOutside || uiItem == INVALID_ITEM_INDEX)
 			goto Exit;
 
 		CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
 		UINT uiCount = 0;
 		pColumnRects->GetCount(&uiCount);
-		for (size_t i = 0; i < uiCount; i++)
+		for (int i = 0; i < (int)uiCount; i++)
 		{
 			CRect rect;
 			pColumnRects->GetRect(i, &rect);
@@ -267,26 +267,26 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 				break;
 			}
 		}
-		if (m_HoveredItemIndex == 0xFFFF)
+		if (m_HoveredItemIndex == INVALID_ITEM_INDEX)
 		{
 			m_HoveredItemIndex = uiItem;
-			m_HoveredColumnIndex = -1;
+			m_HoveredColumnIndex = INVALID_COLUMN_INDEX;
 		}
 	}
 
 	{ //Previous point
 		BOOL bOutside = FALSE;
 		CPoint point(m_prevX, m_prevY);
-		auto uiItem = ItemFromPoint(point, bOutside);
+		int uiItem = ItemFromPoint(point, bOutside);
 		RECT itemRect = { 0 };
 		GetItemRect(uiItem, &itemRect);
-		if (bOutside || uiItem == 0xFFFF)
+		if (bOutside || uiItem == INVALID_ITEM_INDEX)
 			goto Exit;
 
 		CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
 		UINT uiCount = 0;
 		pColumnRects->GetCount(&uiCount);
-		for (size_t i = 0; i < uiCount; i++)
+		for (int i = 0; i < (int)uiCount; i++)
 		{
 			CRect rect;
 			pColumnRects->GetRect(i, &rect);
@@ -354,7 +354,7 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	auto uiItem = ItemFromPoint(CPoint(x, y), bOutside);
 	RECT itemRect = { 0 };
 	GetItemRect(uiItem, &itemRect);
-	if (bOutside || uiItem == 0xFFFF)
+	if (bOutside || uiItem == (UINT)INVALID_ITEM_INDEX)
 		return 0;
 
 	if (uiCode == NM_LISTBOX_RCLICK)
@@ -377,7 +377,7 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	nm.dwCurrentItem = uiItem;
 	nm.pColumnRects = pColumnRects;
 	nm.pVariantObject = pVariantObject.p;
-	nm.dwCurrentColumn = -1;
+	nm.dwCurrentColumn = INVALID_COLUMN_INDEX;
 	nm.x = pt.x;
 	nm.y = pt.y;
 
@@ -420,7 +420,6 @@ void CCustomListBox::BeginUpdate()
 
 void CALLBACK TimerCallback3(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
 {
-	BOOL bHandled = FALSE;
 	::SendMessage(((CCustomListBox*)dwUser)->m_hWnd, WM_TIMER, 1, 0);
 }
 
@@ -476,7 +475,6 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 	GetClientRect(&rect);
 
 	RedrawWindow(FALSE);
-	UINT firstVisibleIndex = GetTopIndex();
 	BOOL bNeedInvalidate = FALSE;
 	for (size_t i = 0; i < uiCountArray; i++)
 	{

@@ -6,8 +6,12 @@
 #include "..\twiconn\Plugins.h"
 #include "twitconn_contract_i.h"
 #include "UpdateScope.h"
+
+#pragma warning(push)
+#pragma warning(disable:4245)
 #include <boost\date_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
+#pragma warning(pop)
 // CTimelineService
 
 #ifdef DEBUG

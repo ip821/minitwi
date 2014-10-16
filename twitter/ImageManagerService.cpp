@@ -18,6 +18,8 @@ STDMETHODIMP CImageManagerService::CreateImageBitmap(BSTR bstrKey, HBITMAP* phBi
 			return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
 
 		auto status = it->second->GetHBITMAP(Gdiplus::Color::Transparent, phBitmap);
+		if (status != Gdiplus::Status::Ok)
+			return E_FAIL;
 	}
 	return S_OK;
 }

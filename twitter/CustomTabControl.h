@@ -66,8 +66,9 @@ public:
 
 private:
 	CComPtr<IObjCollection> m_pControls;
-	int m_prevSelectedPageIndex = -1;
-	int m_selectedPageIndex = -1;
+	const int INVALID_PAGE_INDEX = -1;
+	int m_prevSelectedPageIndex = INVALID_PAGE_INDEX;
+	int m_selectedPageIndex = INVALID_PAGE_INDEX;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
