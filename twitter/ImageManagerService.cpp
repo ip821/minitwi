@@ -71,7 +71,7 @@ STDMETHODIMP CImageManagerService::ContainsImageKey(BSTR bstrKey, BOOL* pbContai
 	CHECK_E_POINTER(pbContains);
 	{
 		lock_guard<mutex> mutex(m_mutex);
-		*pbContains = m_bitmaps.find(bstrKey) != m_bitmaps.end();
+		*pbContains = m_bitmaps.find(CComBSTR(bstrKey)) != m_bitmaps.end();
 	}
 	return S_OK;
 }

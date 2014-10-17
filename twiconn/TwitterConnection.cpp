@@ -283,7 +283,7 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 
 		auto userDisplayName = userObj[L"name"]->AsString();
 		auto userScreenName = userObj[L"screen_name"]->AsString();
-		auto userImageUrl = userObj[L"profile_image_url"]->AsString();
+		auto userImageUrl = userObj[L"profile_image_url_https"]->AsString();
 		auto text = itemObject[L"text"]->AsString();
 		auto entities = itemObject[L"entities"]->AsObject();
 		auto urls = entities[L"urls"]->AsArray();
