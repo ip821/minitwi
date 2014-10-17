@@ -34,6 +34,7 @@ private:
 	BYTE m_alpha = 0;
 	BYTE m_step = 0;
 	BYTE m_alphaAmount = 255 / STEPS;
+	CRect m_rectUserImage;
 
 	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
 	void DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect);
@@ -47,6 +48,7 @@ public:
 	STDMETHOD(AnimationStart)();
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);
+	STDMETHOD(GetColumnRect)(BSTR bstrColumnName, RECT* pRect);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinUserAccountControl), CSkinUserAccountControl)

@@ -156,7 +156,9 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	cdc.DrawText(bstrScreenName, bstrScreenName.Length(), &rectScreenName, 0);
 
 	auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
-	DrawRoundedRect(cdc, CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight), true);
+	CRect rectBox = CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight);
+	m_rectUserImage = rectBox;
+	DrawRoundedRect(cdc, rectBox, true);
 
 	CComVariant vUserImage;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
@@ -261,4 +263,14 @@ STDMETHODIMP CSkinUserAccountControl::AnimationNextFrame(BOOL* pbContinueAnimati
 	}
 	*pbContinueAnimation = TRUE;
 	return 0;
+}
+
+STDMETHODIMP CSkinUserAccountControl::GetColumnRect(BSTR bstrColumnName, RECT* pRect)
+{
+	CHECK_E_POINTER(bstrColumnName);
+	CHECK_E_POINTER(pRect);
+	if (CComBSTR(bstrColumnName) != CComBSTR(VAR_TWITTER_USER_IMAGE))
+		return E_INVALIDARG;
+	*pRect = m_rectUserImage;
+	return S_OK;
 }

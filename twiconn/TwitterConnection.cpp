@@ -222,7 +222,7 @@ STDMETHODIMP CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pV
 {
 	auto userDisplayName = value[L"name"]->AsString();
 	auto userScreenName = value[L"screen_name"]->AsString();
-	auto userImageUrl = value[L"profile_image_url"]->AsString();
+	auto userImageUrl = value[L"profile_image_url_https"]->AsString();
 	auto userBackgroundColor = FromHexString(value[L"profile_background_color"]->AsString());
 	auto userForegroundColor = FromHexString(value[L"profile_text_color"]->AsString());
 	auto followersCount = value[L"followers_count"]->AsNumber();

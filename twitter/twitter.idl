@@ -190,6 +190,7 @@ interface ISkinUserAccountControl : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
 	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+	HRESULT GetColumnRect(BSTR bstrColumnName, RECT* pRect);
 	HRESULT AnimationStart();
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);

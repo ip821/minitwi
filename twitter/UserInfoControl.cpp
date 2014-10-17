@@ -25,6 +25,7 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(m_pPluginSupport->InitializePlugins(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE));
 
 	m_pServiceProviderParent = pServiceProvider;
+	RETURN_IF_FAILED(m_pPluginSupport->SetParentServiceProvider(m_pServiceProviderParent));
 	m_pServiceProvider = m_pPluginSupport;
 	ATLASSERT(m_pServiceProvider);
 
