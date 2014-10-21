@@ -583,9 +583,9 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				{
 					const int IMAGE_HEIGHT = 100;
 					const int IMAGE_WIDTH = 275;
-					auto xOffset = ((clientRect.right - clientRect.left) - (IMAGE_WIDTH * uiCount)) / 2;
+					auto xOffset = ((clientRect.right - clientRect.left) - (IMAGE_WIDTH)) / 2;
 
-					const size_t processCount = min(uiCount, 3); //process no more than 3 images
+					const size_t processCount = uiCount;
 					const int oneImageWidth = (IMAGE_WIDTH / processCount);
 					for (size_t i = 0; i < processCount; i++)
 					{
@@ -608,7 +608,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 						auto x = i * oneImageWidth + xOffset;
 						auto y = lastY;
-						auto width = oneImageWidth;
+						auto width = oneImageWidth - 4;
 						auto height = IMAGE_HEIGHT;
 
 						UINT uiIndex = 0;

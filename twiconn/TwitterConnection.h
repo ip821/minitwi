@@ -4,7 +4,10 @@
 #include "resource.h"       // main symbols
 #include "twiconn_i.h"
 
+#include <hash_set>
+
 using namespace ATL;
+using namespace std;
 
 // CTwitterConnection
 
@@ -31,12 +34,13 @@ public:
 private:
 
 	CString m_errMsg;
-	std::shared_ptr<twitCurl> m_pTwitObj;
-	std::wstring m_strAppToken;
+	shared_ptr<twitCurl> m_pTwitObj;
+	wstring m_strAppToken;
 	STDMETHOD(HandleError)(JSONValue* value);
-	STDMETHOD(AppendUrls)(IVariantObject* pVariantObject, std::vector<std::wstring>& urlsVector);
+	STDMETHOD(AppendUrls)(IVariantObject* pVariantObject, vector<wstring>& urlsVector);
 	STDMETHOD(ParseTweets)(JSONValue* value, IObjCollection* pObjectCollection);
 	STDMETHOD(ParseUser(JSONObject& value, IVariantObject* pVariantObject));
+	STDMETHOD(ParseMedias)(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, hash_set<wstring>& processedMediaUrls);
 
 public:
 

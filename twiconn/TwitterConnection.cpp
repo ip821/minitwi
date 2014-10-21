@@ -50,22 +50,22 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 
 	USES_CONVERSION;
 
-	auto strUser = std::string(W2A(bstrUser));
+	auto strUser = string(W2A(bstrUser));
 	twitterObj.setTwitterUsername(strUser);
-	auto strPass = std::string(W2A(bstrPass));
+	auto strPass = string(W2A(bstrPass));
 	twitterObj.setTwitterPassword(strPass);
 
-	twitterObj.getOAuth().setConsumerKey(std::string(APP_KEY));
-	twitterObj.getOAuth().setConsumerSecret(std::string(APP_SECRET));
+	twitterObj.getOAuth().setConsumerKey(string(APP_KEY));
+	twitterObj.getOAuth().setConsumerSecret(string(APP_SECRET));
 
-	std::string authUrl;
+	string authUrl;
 	twitterObj.oAuthRequestToken(authUrl);
 
 	twitterObj.oAuthHandlePIN(authUrl);
 	twitterObj.oAuthAccessToken();
 
-	std::string myOAuthAccessTokenKey;
-	std::string myOAuthAccessTokenSecret;
+	string myOAuthAccessTokenKey;
+	string myOAuthAccessTokenSecret;
 
 	twitterObj.getOAuth().getOAuthTokenKey(myOAuthAccessTokenKey);
 	twitterObj.getOAuth().getOAuthTokenSecret(myOAuthAccessTokenSecret);
@@ -79,10 +79,10 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
 
-	std::string strResponse;
+	string strResponse;
 	twitterObj.getLastWebResponse(strResponse);
 
-	auto value = std::shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
 	auto hr = HandleError(value.get());
 	if (FAILED(hr))
 		return hr;
@@ -94,9 +94,9 @@ STDMETHODIMP CTwitterConnection::OpenConnectionWithAppAuth()
 {
 	USES_CONVERSION;
 
-	m_pTwitObj = std::make_shared<twitCurl>();
-	auto strAppKey = std::string(W2A(CString(APP_KEY)));
-	auto strAppSecret = std::string(W2A(CString(APP_SECRET)));
+	m_pTwitObj = make_shared<twitCurl>();
+	auto strAppKey = string(W2A(CString(APP_KEY)));
+	auto strAppSecret = string(W2A(CString(APP_SECRET)));
 	auto bRes = m_pTwitObj->authAppOnly(strAppKey, strAppSecret);
 
 	if (!bRes)
@@ -104,10 +104,10 @@ STDMETHODIMP CTwitterConnection::OpenConnectionWithAppAuth()
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
 
-	std::string strResponse;
+	string strResponse;
 	m_pTwitObj->getLastWebResponse(strResponse);
 
-	auto value = std::shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
 	auto hr = HandleError(value.get());
 	if (FAILED(hr))
 		return hr;
@@ -128,13 +128,13 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 		return COMADMIN_E_USERPASSWDNOTVALID;
 	}
 
-	m_pTwitObj = std::make_shared<twitCurl>();
+	m_pTwitObj = make_shared<twitCurl>();
 
-	m_pTwitObj->getOAuth().setConsumerKey(std::string(APP_KEY));
-	m_pTwitObj->getOAuth().setConsumerSecret(std::string(APP_SECRET));
+	m_pTwitObj->getOAuth().setConsumerKey(string(APP_KEY));
+	m_pTwitObj->getOAuth().setConsumerSecret(string(APP_SECRET));
 
-	m_pTwitObj->getOAuth().setOAuthTokenKey(std::string(W2A(bstrKey)));
-	m_pTwitObj->getOAuth().setOAuthTokenSecret(std::string(W2A(bstrSecret)));
+	m_pTwitObj->getOAuth().setOAuthTokenKey(string(W2A(bstrKey)));
+	m_pTwitObj->getOAuth().setOAuthTokenSecret(string(W2A(bstrSecret)));
 
 	auto bRes = m_pTwitObj->accountVerifyCredGet();
 	if (!bRes)
@@ -142,10 +142,10 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
 
-	std::string strResponse;
+	string strResponse;
 	m_pTwitObj->getLastWebResponse(strResponse);
 
-	auto value = std::shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
 	auto hr = HandleError(value.get());
 	if (FAILED(hr))
 		return hr;
@@ -156,25 +156,25 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 {
 	USES_CONVERSION;
 
-	std::string strId;
+	string strId;
 	if (bstrMaxId)
 	{
 		strId = W2A(bstrMaxId);
 	}
 
-	std::string strMaxCount;
+	string strMaxCount;
 	if (uiMaxCount)
 	{
-		strMaxCount = boost::lexical_cast<std::string>(uiMaxCount);
+		strMaxCount = boost::lexical_cast<string>(uiMaxCount);
 	}
 
-	std::string strSinceId;
+	string strSinceId;
 	if (bstrSinceId)
 	{
 		strSinceId = W2A(bstrSinceId);
 	}
 
-	std::string strUserId;
+	string strUserId;
 	if (bstrUserId)
 	{
 		strUserId = W2A(bstrUserId);
@@ -193,7 +193,7 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 		}
 		else
 		{
-			std::string strAppToken = W2A(m_strAppToken.c_str());
+			string strAppToken = W2A(m_strAppToken.c_str());
 			bRes = m_pTwitObj->timelineUserGetWithAppAuth(strAppToken, strUserId, strId, strSinceId, strMaxCount);
 		}
 	}
@@ -203,10 +203,10 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
 
-	std::string strResponse;
+	string strResponse;
 	m_pTwitObj->getLastWebResponse(strResponse);
 
-	auto value = std::shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
 	auto hr = HandleError(value.get());
 	if (FAILED(hr))
 		return hr;
@@ -260,8 +260,8 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
 		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
 
-		std::wstring retweetedUserDisplayName;
-		std::wstring retweetedUserScreenName;
+		wstring retweetedUserDisplayName;
+		wstring retweetedUserScreenName;
 		auto id = itemObject[L"id_str"]->AsString();
 
 		if (itemObject.find(L"retweeted_status") != itemObject.end())
@@ -289,7 +289,7 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 		auto urls = entities[L"urls"]->AsArray();
 
 		CString strText = text.c_str();
-		std::hash_set<std::wstring> urlsHashSet;
+		hash_set<wstring> urlsHashSet;
 
 		if (urls.size())
 		{
@@ -300,42 +300,45 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 			}
 		}
 
-		auto entitiesObj = itemObject[L"entities"]->AsObject();
-		if (entitiesObj.find(L"media") != entitiesObj.end())
-		{
-			CComPtr<IObjCollection> pMediaObjectCollection;
-			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pMediaObjectCollection));
-			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURLS, &CComVariant(pMediaObjectCollection)));
+		CComPtr<IObjCollection> pMediaObjectCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pMediaObjectCollection));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURLS, &CComVariant(pMediaObjectCollection)));
 
-			auto mediaArray = entitiesObj[L"media"]->AsArray();
-			for (size_t i = 0; i < mediaArray.size(); i++)
+		hash_set<wstring> processedMediaUrls;
+
+		{
+			auto entitiesObj = itemObject[L"entities"]->AsObject();
+			if (entitiesObj.find(L"media") != entitiesObj.end())
 			{
-				auto mediaObj = mediaArray[i]->AsObject();
-				auto url = mediaObj[L"media_url"]->AsString();
-				auto shortUrl = mediaObj[L"url"]->AsString();
-				CComPtr<IVariantObject> pMediaObject;
-				RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pMediaObject));
-				RETURN_IF_FAILED(pMediaObjectCollection->AddObject(pMediaObject));
-				RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL_SHORT, &CComVariant(shortUrl.c_str())));
-				RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(url.c_str())));
-				RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &CComVariant((url + L":small").c_str())));
+				auto mediaArray = entitiesObj[L"media"]->AsArray();
+				ParseMedias(mediaArray, pMediaObjectCollection, processedMediaUrls);
 			}
 		}
 
-		auto urlsVector = std::vector<std::wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
+		if (itemObject.find(L"extended_entities") != itemObject.end())
+		{
+			auto entitiesObj = itemObject[L"extended_entities"]->AsObject();
+			if (entitiesObj.find(L"media") != entitiesObj.end())
+			{
+				auto mediaArray = entitiesObj[L"media"]->AsArray();
+				ParseMedias(mediaArray, pMediaObjectCollection, processedMediaUrls);
+			}
+		}
+
+		auto urlsVector = vector<wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
 		for (size_t i = 0; i < urlsVector.size(); i++)
 		{
 			strText.Replace(urlsVector[i].c_str(), L"");
 		}
 
-		std::wstring stdStr(strText);
+		wstring stdStr(strText);
 
 #ifndef DEBUG
 		static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)*)");
 		static boost::regex_constants::match_flag_type fl = boost::regex_constants::match_default;
 
-		boost::regex_iterator<std::wstring::iterator> regexIterator(stdStr.begin(), stdStr.end(), regex);
-		boost::regex_iterator<std::wstring::iterator> regexIteratorEnd;
+		boost::regex_iterator<wstring::iterator> regexIterator(stdStr.begin(), stdStr.end(), regex);
+		boost::regex_iterator<wstring::iterator> regexIteratorEnd;
 		while (regexIterator != regexIteratorEnd)
 		{
 			auto strUrl1 = regexIterator->str();
@@ -344,7 +347,7 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 		}
 #endif
 
-		urlsVector = std::vector<std::wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
+		urlsVector = vector<wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
 		AppendUrls(pVariantObject, urlsVector);
 
 		for (size_t i = 0; i < urlsVector.size(); i++)
@@ -375,7 +378,27 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urlsVector)
+STDMETHODIMP CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, hash_set<wstring>& processedMediaUrls)
+{
+	for (size_t i = 0; i < mediaArray.size(); i++)
+	{
+		auto mediaObj = mediaArray[i]->AsObject();
+		auto url = mediaObj[L"media_url"]->AsString();
+		if (processedMediaUrls.find(url) != processedMediaUrls.end())
+			continue;
+		processedMediaUrls.insert(url);
+		auto shortUrl = mediaObj[L"url"]->AsString();
+		CComPtr<IVariantObject> pMediaObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pMediaObject));
+		RETURN_IF_FAILED(pMediaObjectCollection->AddObject(pMediaObject));
+		RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL_SHORT, &CComVariant(shortUrl.c_str())));
+		RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(url.c_str())));
+		RETURN_IF_FAILED(pMediaObject->SetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &CComVariant((url + L":small").c_str())));
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, vector<wstring>& urlsVector)
 {
 	CComPtr<IBstrCollection> pBstrCollection;
 	CComVariant vCollection;
