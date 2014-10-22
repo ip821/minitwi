@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "PictureWindow.h"
 #include "Plugins.h"
+#include "SkinUserAccountControl.h"
 
 // CPictureWindow
 
@@ -41,7 +42,6 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 	m_pCommandSupport.Release();
 	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
 	m_pPluginSupport.Release();
-
 	return S_OK;
 }
 
@@ -56,6 +56,34 @@ STDMETHODIMP CPictureWindow::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 	CHECK_E_POINTER(bResult);
 	RETURN_IF_FAILED(m_pCommandSupport->PreTranslateMessage(m_hWnd, pMsg, bResult));
 	return S_OK;
+}
+
+LRESULT CPictureWindow::OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	lock_guard<mutex> lock(m_mutex);
+
+	if (m_currentBitmapIndex == -1)
+		return 0;
+	if (m_bitmaps.size() == 1)
+		return 0;
+
+	++m_currentBitmapIndex;
+
+	if ((size_t)m_currentBitmapIndex == m_bitmaps.size())
+		m_currentBitmapIndex = 0;
+
+	if (m_bitmaps[m_currentBitmapIndex].pBitmap != nullptr)
+	{
+		ResizeToCurrentBitmap();
+		Invalidate();
+		return 0;
+	}
+
+	ASSERT_IF_FAILED(ResetAnimation());
+	ASSERT_IF_FAILED(StartNextDownload(m_currentBitmapIndex));
+	m_currentBitmapIndex = -1;
+	Invalidate();
+	return 0;
 }
 
 LRESULT CPictureWindow::OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -125,12 +153,51 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 		RETURN_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pVariantObject));
 	}
 
+	int currentBitmapIndex = 0;
+	CComVariant vMediaUrls;
+	if (SUCCEEDED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls)))
+	{
+		CComQIPtr<IObjArray> pMediaUrls = vMediaUrls.punkVal;
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pMediaUrls->GetCount(&uiCount));
+		m_bitmaps.resize(uiCount);
+		for (size_t i = 0; i < uiCount; ++i)
+		{
+			CComPtr<IVariantObject> pMediaUrlObject;
+			RETURN_IF_FAILED(pMediaUrls->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaUrlObject));
+			CComVariant vMediaUrlForObject;
+			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrlForObject));
+			UrlInfo ui = { 0 };
+			ui.strUrl = vMediaUrlForObject.bstrVal;
+			m_bitmaps[i] = ui;
+
+			if (CComBSTR(vMediaUrlForObject.bstrVal) == CComBSTR(vMediaUrl.bstrVal))
+				currentBitmapIndex = i;
+		}
+	}
+	else
+	{
+		UrlInfo ui = { 0 };
+		ui.strUrl = vMediaUrl.bstrVal;
+		m_bitmaps.push_back(ui);
+		currentBitmapIndex = 0;
+	}
+
+	StartNextDownload(currentBitmapIndex);
+	return S_OK;
+}
+
+STDMETHODIMP CPictureWindow::StartNextDownload(int index)
+{
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(vMediaUrl.bstrVal)));
+	CString str = m_bitmaps[index].strUrl;
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(str)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &CComVariant((INT64)m_hWnd)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ITEM_INDEX, &CComVariant(index)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_PICTURE_WINDOW)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
+
 	return S_OK;
 }
 
@@ -149,6 +216,14 @@ LRESULT CPictureWindow::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam
 	return 0;
 }
 
+STDMETHODIMP CPictureWindow::ResetAnimation()
+{
+	m_alpha = 0;
+	m_alphaAmount = (255 / STEPS);
+	m_step = 0;
+	return S_OK;
+}
+
 STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
@@ -165,30 +240,36 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	if (vId.vt != VT_I8 || vId.llVal != (INT64)m_hWnd)
 		return S_OK;
 
+	CComVariant vIndex;
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ITEM_INDEX, &vIndex));
+
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 
 	{
 		lock_guard<mutex> lock(m_mutex);
-		ATLASSERT(!m_pBitmap);
-		m_pBitmap = make_shared<Bitmap>(vFilePath.bstrVal);
+		m_currentBitmapIndex = vIndex.intVal;
+		m_bitmaps[m_currentBitmapIndex].pBitmap = make_shared<Bitmap>(vFilePath.bstrVal);
 
-		m_alpha = 0;
-		m_alphaAmount = (255 / STEPS);
-		m_step = 0;
-
-		auto width = (int)m_pBitmap->GetWidth();
-		auto height = (int)m_pBitmap->GetHeight();
-
-		CRect rect;
-		GetWindowRect(&rect);
-
-		CalcRect(width, height, rect);
-		SetWindowPos(NULL, &rect, SWP_NOZORDER);
+		RETURN_IF_FAILED(ResetAnimation());
+		ResizeToCurrentBitmap();
 	}
 
 	StartAnimationTimer(TARGET_INTERVAL);
 	return S_OK;
+}
+
+void CPictureWindow::ResizeToCurrentBitmap()
+{
+	shared_ptr<Bitmap>& pBitmap = m_bitmaps[m_currentBitmapIndex].pBitmap;
+	auto width = (int)pBitmap->GetWidth();
+	auto height = (int)pBitmap->GetHeight();
+
+	CRect rect;
+	GetWindowRect(&rect);
+
+	CalcRect(width, height, rect);
+	SetWindowPos(NULL, &rect, SWP_NOZORDER);
 }
 
 void CPictureWindow::CalcRect(int width, int height, CRect& rect)
@@ -241,35 +322,53 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	{
 		lock_guard<mutex> lock(m_mutex);
 
-		static DWORD dwColor = 0;
-		if (!dwColor)
+		static DWORD dwBrushColor = 0;
+		static DWORD dwTextColor = 0;
+		if (!dwBrushColor)
 		{
 			CComPtr<IThemeColorMap> pThemeColorMap;
-			m_pTheme->GetColorMap(&pThemeColorMap);
-			pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor);
+			ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
+			ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwBrushColor));
+			ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_PICTURE_WINDOW_TEXT, &dwTextColor));
 		}
 
-		cdc.FillSolidRect(&rect, dwColor);
+		static HFONT font = 0;
+		if (!font)
+		{
+			CComPtr<IThemeFontMap> pThemeFontMap;
+			ASSERT_IF_FAILED(m_pTheme->GetFontMap(&pThemeFontMap));
+			ASSERT_IF_FAILED(pThemeFontMap->GetFont(VAR_PICTURE_WINDOW_TEXT, &font));
+		}
+		cdc.SelectFont(font);
 
-		if (!m_pBitmap)
+		cdc.SetBkMode(TRANSPARENT);
+		cdc.SetTextColor(dwTextColor);
+
+		cdc.FillSolidRect(&rect, dwBrushColor);
+
+		if (m_currentBitmapIndex == -1)
 		{
 			CString str = L"Downloading...";
 			CSize size;
-			GetTextExtentPoint32(cdc, str, str.GetLength(), &size);
+			cdc.GetTextExtent(str, str.GetLength(), &size);
 
 			auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
 			auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
-			cdc.DrawText(str, str.GetLength(), CRect(x, y, x + size.cx, y + size.cy), 0);
+
+			CRect rectText(x, y, x + size.cx, y + size.cy);
+			CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
+			cdc.DrawText(str, str.GetLength(), rectText, 0);
 		}
 		else
 		{
-			auto width = m_pBitmap->GetWidth();
-			auto height = m_pBitmap->GetHeight();
+			shared_ptr<Bitmap>& pBitmap = m_bitmaps[m_currentBitmapIndex].pBitmap;
+			auto width = pBitmap->GetWidth();
+			auto height = pBitmap->GetHeight();
 			auto x = (rect.right - rect.left) / 2 - (width / 2);
 			auto y = (rect.bottom - rect.top) / 2 - (height / 2);
 
 			CBitmap bitmap;
-			m_pBitmap->GetHBITMAP(static_cast<ARGB>(Color::White), &bitmap.m_hBitmap);
+			ASSERT_IF_FAILED(pBitmap->GetHBITMAP(static_cast<ARGB>(Color::White), &bitmap.m_hBitmap));
 			CDC cdcBitmap;
 			cdcBitmap.CreateCompatibleDC(cdc);
 			cdcBitmap.SelectBitmap(bitmap);
@@ -277,6 +376,21 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			bf.BlendOp = AC_SRC_OVER;
 			bf.SourceConstantAlpha = m_alpha;
 			cdc.AlphaBlend(x, y, width, height, cdcBitmap, 0, 0, width, height, bf);
+		}
+
+		if (m_bitmaps.size() > 1 && m_currentBitmapIndex >= 0)
+		{
+			CString str;
+			str.Format(L"%u / %u", m_currentBitmapIndex + 1, m_bitmaps.size());
+			CSize sz;
+			cdc.GetTextExtent(str, str.GetLength(), &sz);
+
+			auto x = rect.Width() / 2;
+			auto y = rect.bottom - sz.cy - IMAGE_PADDING * 2;
+
+			CRect rectText(x, y, x + sz.cx, y + sz.cy);
+			CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
+			cdc.DrawText(str, str.GetLength(), rectText, 0);
 		}
 	}
 

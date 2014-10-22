@@ -185,6 +185,12 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
 		RETURN_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(bstr)));
 
+		CComVariant vMediaUrls;
+		if (SUCCEEDED(pVariantObject ->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls)))
+		{
+			RETURN_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls));
+		}
+
 		RETURN_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
 		return S_OK;
 	}

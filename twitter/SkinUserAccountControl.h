@@ -37,8 +37,9 @@ private:
 	CRect m_rectUserImage;
 
 	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
-	void DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect);
 public:
+
+	static void DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect);
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);

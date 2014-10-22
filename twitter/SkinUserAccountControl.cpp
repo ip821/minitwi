@@ -106,14 +106,10 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 {
 	CRect rect = *lpRect;
 	CDCHandle cdc(hdc);
-	COLORREF dwColor = 0;
-	CComVariant vForeColor;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_FORECOLOR, &vForeColor));
-	if (vForeColor.vt == VT_I4)
-		dwColor = Color((ARGB)Color::White).ToCOLORREF();
+	COLORREF dwTextColor = Color((ARGB)Color::White).ToCOLORREF();
 
 	cdc.SetBkMode(TRANSPARENT);
-	cdc.SetTextColor(dwColor);
+	cdc.SetTextColor(dwTextColor);
 
 	CComVariant vDisplayName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vDisplayName));

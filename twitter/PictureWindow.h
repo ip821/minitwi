@@ -55,11 +55,18 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtomUp)
+		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtomUp)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 	END_MSG_MAP()
 
 private:
+	struct UrlInfo
+	{
+		CString strUrl;
+		shared_ptr<Gdiplus::Bitmap> pBitmap;
+	};
+
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
@@ -67,7 +74,8 @@ private:
 	CComPtr<ITheme> m_pTheme;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmap;
+	int m_currentBitmapIndex = -1;
+	vector<UrlInfo> m_bitmaps;
 	mutex m_mutex;
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
@@ -84,11 +92,15 @@ private:
 	LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void OnFinalMessage(HWND hWnd);
 	void CalcRect(int width, int height, CRect& rect);
+	STDMETHOD(StartNextDownload)(int index);
+	STDMETHOD(ResetAnimation)();
+	void ResizeToCurrentBitmap();
 
 public:
 	void OnMMTimer();
