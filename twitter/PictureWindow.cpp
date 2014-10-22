@@ -72,6 +72,8 @@ LRESULT CPictureWindow::OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	if ((size_t)m_currentBitmapIndex == m_bitmaps.size())
 		m_currentBitmapIndex = 0;
 
+	RETURN_IF_FAILED(InitCommandSupport(m_currentBitmapIndex));
+
 	if (m_bitmaps[m_currentBitmapIndex].pBitmap != nullptr)
 	{
 		ResizeToCurrentBitmap();
@@ -140,18 +142,26 @@ STDMETHODIMP CPictureWindow::Show(HWND hWndParent)
 	return S_OK;
 }
 
+STDMETHODIMP CPictureWindow::InitCommandSupport(int index)
+{
+	ATLASSERT(index >= 0);
+
+	CComPtr<IVariantObject> pVariantObject;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(m_bitmaps[index].strUrl)));
+
+	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
+	ATLASSERT(pInitializeWithVariantObject);
+	RETURN_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pVariantObject));
+	return S_OK;
+}
+
 STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
 
 	CComVariant vMediaUrl;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl));
-
-	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
-	if (pInitializeWithVariantObject)
-	{
-		RETURN_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pVariantObject));
-	}
 
 	int currentBitmapIndex = 0;
 	CComVariant vMediaUrls;
@@ -182,8 +192,9 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 		m_bitmaps.push_back(ui);
 		currentBitmapIndex = 0;
 	}
-
-	StartNextDownload(currentBitmapIndex);
+	
+	RETURN_IF_FAILED(InitCommandSupport(currentBitmapIndex));
+	RETURN_IF_FAILED(StartNextDownload(currentBitmapIndex));
 	return S_OK;
 }
 

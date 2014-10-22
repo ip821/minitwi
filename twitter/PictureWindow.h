@@ -101,6 +101,7 @@ private:
 	STDMETHOD(StartNextDownload)(int index);
 	STDMETHOD(ResetAnimation)();
 	void ResizeToCurrentBitmap();
+	STDMETHOD(InitCommandSupport)(int index);
 
 public:
 	void OnMMTimer();
