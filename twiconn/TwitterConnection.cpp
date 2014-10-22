@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "TwitterConnection.h"
 #include "Plugins.h"
+#include "TextNormalizeTable.h"
 #include <hash_set>
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
@@ -355,9 +356,10 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 			strText.Replace(urlsVector[i].c_str(), L"");
 		}
 
-		strText.Replace(L"\r\n", L" ");
-		strText.Replace(L"\n", L" ");
-		strText.Replace(L"\t", L" ");
+		for (auto it = NormalizeTable.begin(); it != NormalizeTable.end(); it++)
+		{
+			strText.Replace(it->first, it->second);
+		}
 		strText = strText.Trim();
 
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(id.c_str())));

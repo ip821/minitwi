@@ -153,6 +153,9 @@
     <ClInclude Include="twitconn_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="TextNormalizeTable.h">
+      <Filter>Connection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twiconn.rc">
