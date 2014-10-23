@@ -273,8 +273,6 @@ interface ISettingsControl : IControl2
 ]
 interface IViewControllerService : IUnknown
 {
-	HRESULT StartTimers();
-	HRESULT StopTimers();
 	HRESULT SetTheme(ITheme* pTheme);
 };
 
@@ -430,6 +428,16 @@ interface ICustomTabControl : ITabbedControl
 	pointer_default(unique)
 ]
 interface IUserInfoControl : IControl2
+{
+	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
+};
+
+[
+	object,
+	uuid(CDDDE357-19CA-441E-9F3B-7828A900A4DC),
+	pointer_default(unique)
+]
+interface IHomeTimeLineControl : IControl2
 {
 	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
 };
@@ -644,6 +652,13 @@ library twitterLib
 	coclass TabbedControlStatusService
 	{
 		[default] interface IUnknown;
+	};
+	[
+		uuid(80F4CF87-03B7-4929-8ABB-11DC7D57B99E)
+	]
+	coclass HomeTimeLineControl
+	{
+		[default] interface IHomeTimeLineControl;
 	};
 };
 

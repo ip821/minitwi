@@ -39,21 +39,13 @@ public:
 	END_COM_MAP()
 
 private:
-	CComPtr<ITimerService> m_pTimerService;
-	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
-	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	CComPtr<IUpdateService> m_pUpdateService;
-	CComPtr<ITheme> m_pTheme;
 	CComQIPtr<ICustomTabControl> m_pTabbedControl;
 	CComPtr<ISettings> m_pSettings;
-	CComQIPtr<ITimelineControl> m_pTimelineControl;
-	CComPtr<ITimelineService> m_pTimelineService;
 
 	BOOL m_bUpdateAvailable = FALSE;
-	DWORD m_dwAdviceUpdateTimeline = 0;
-	DWORD m_dwAdviceShowMoreTimeline = 0;
 	DWORD m_dwAdviceTabbedControl = 0;
 
 public:

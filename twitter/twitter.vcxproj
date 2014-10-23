@@ -192,6 +192,7 @@
     </ClCompile>
     <ClCompile Include="ColumnRects.cpp" />
     <ClCompile Include="DownloadService.cpp" />
+    <ClCompile Include="HomeTimeLineControl.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="CustomTabControl.cpp" />
     <ClCompile Include="ScrollControl.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="ColumnRects.h" />
     <ClInclude Include="DownloadService.h" />
+    <ClInclude Include="HomeTimeLineControl.h" />
     <ClInclude Include="ImageManagerService.h" />
     <ClInclude Include="CustomTabControl.h" />
     <ClInclude Include="ScrollControl.h" />

@@ -95,6 +95,9 @@
     <Filter Include="Services\TabbedControlStatusService">
       <UniqueIdentifier>{162e3e54-0234-48ae-aee5-dc6422511c5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\HomeTimeLineControl">
+      <UniqueIdentifier>{e188ec27-44ea-4b97-80fd-2a3c9569695e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -213,6 +216,9 @@
     </ClCompile>
     <ClCompile Include="TabbedControlStatusService.cpp">
       <Filter>Services\TabbedControlStatusService</Filter>
+    </ClCompile>
+    <ClCompile Include="HomeTimeLineControl.cpp">
+      <Filter>Controls\HomeTimeLineControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -347,6 +353,9 @@
     </ClInclude>
     <ClInclude Include="TabbedControlStatusService.h">
       <Filter>Services\TabbedControlStatusService</Filter>
+    </ClInclude>
+    <ClInclude Include="HomeTimeLineControl.h">
+      <Filter>Controls\HomeTimeLineControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

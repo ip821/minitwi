@@ -27,18 +27,6 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(m_pTabbedControl->EnableCommands(FALSE));
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
-	m_pTimelineControl = pControl;
-
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
-	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
-
-	CComPtr<ITimelineCleanupService> pTimelineCleanupService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineCleanupService, &pTimelineCleanupService));
-	RETURN_IF_FAILED(pTimelineCleanupService->SetTimelineControl(m_pTimelineControl));
-
-	CComPtr<ITimelineImageService> pTimelineImageService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));
-	RETURN_IF_FAILED(pTimelineImageService->SetTimelineControl(m_pTimelineControl));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -51,48 +39,23 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(pThemeService->ApplyThemeFromSettings());
 
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThreadPoolService, &m_pThreadPoolService));
-	RETURN_IF_FAILED(m_pThreadPoolService->SetThreadCount(6));
+	RETURN_IF_FAILED(m_pThreadPoolService->SetThreadCount(2));
 	RETURN_IF_FAILED(m_pThreadPoolService->Start());
 
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMoreTimeline));
-
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
-	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
+	ATLASSERT(FALSE); //implement update check visual icon! it's broken now!!!
 
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::OnInitCompleted()
 {
-	RETURN_IF_FAILED(StartTimers());
-	return S_OK;
-}
-
-STDMETHODIMP CViewControllerService::StartTimers()
-{
-	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
-	return S_OK;
-}
-
-STDMETHODIMP CViewControllerService::StopTimers()
-{
-	RETURN_IF_FAILED(m_pTimerService->StopTimer());
 	return S_OK;
 }
 
 STDMETHODIMP CViewControllerService::OnShutdown()
 {
-	RETURN_IF_FAILED(m_pTimerService->StopTimer());
-	m_pTimerService.Release();
 	m_pThreadPoolService.Release();
-	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceShowMoreTimeline));
-	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceUpdateTimeline));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
-	m_pThreadServiceShowMoreTimeline.Release();
-	m_pThreadServiceUpdateTimeline.Release();
 	m_pServiceProvider.Release();
 	m_pUpdateService.Release();
 	m_pTabbedControl.Release();
@@ -139,6 +102,5 @@ STDMETHODIMP CViewControllerService::OnLinkClick(HWND hWnd)
 STDMETHODIMP CViewControllerService::SetTheme(ITheme* pTheme)
 {
 	CHECK_E_POINTER(pTheme);
-	m_pTheme = pTheme;
 	return S_OK;
 }
