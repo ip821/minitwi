@@ -13,6 +13,74 @@ void CHomeTimeLineControl::FinalRelease()
 		DestroyWindow();
 }
 
+STDMETHODIMP CHomeTimeLineControl::OnInitialized(IServiceProvider* pServiceProvider)
+{
+	CHECK_E_POINTER(pServiceProvider);
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport));
+	RETURN_IF_FAILED(m_pPluginSupport->InitializePlugins(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE));
+
+	m_pServiceProviderParent = pServiceProvider;
+	RETURN_IF_FAILED(m_pPluginSupport->SetParentServiceProvider(m_pServiceProviderParent));
+	m_pServiceProvider = m_pPluginSupport;
+	ATLASSERT(m_pServiceProvider);
+
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IControl), (LPVOID*)&pControl));
+
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+
+	RETURN_IF_FAILED(HrInitializeWithControl(m_pTimelineControl, pControl));
+	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, pControl));
+
+	CComPtr<IInitializeWithControl> pTabbedControlStatusService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TabbedControlStatusService, &pTabbedControlStatusService));
+	RETURN_IF_FAILED(pTabbedControlStatusService->SetControl(m_pControl));
+
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pTimelineControl, m_pPluginSupport));
+
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
+	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
+
+	CComPtr<ITimelineCleanupService> pTimelineCleanupService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineCleanupService, &pTimelineCleanupService));
+	RETURN_IF_FAILED(pTimelineCleanupService->SetTimelineControl(m_pTimelineControl));
+
+	CComPtr<ITimelineImageService> pTimelineImageService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));
+	RETURN_IF_FAILED(pTimelineImageService->SetTimelineControl(m_pTimelineControl));
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMoreTimeline));
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
+	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
+
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
+	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
+	RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
+
+	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
+
+	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
+}
+
+STDMETHODIMP CHomeTimeLineControl::OnShutdown()
+{
+	{
+		CComQIPtr <IPluginSupportNotifications> pPluginSupportNotifications = m_pTimelineControl;
+		if (pPluginSupportNotifications)
+		{
+			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
+		}
+	}
+
+	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
+}
+
 STDMETHODIMP CHomeTimeLineControl::GetTimelineControl(ITimelineControl** ppTimelineControl)
 {
 	CHECK_E_POINTER(ppTimelineControl);
@@ -76,57 +144,6 @@ STDMETHODIMP CHomeTimeLineControl::SetTheme(ITheme* pTheme)
 	return S_OK;
 }
 
-STDMETHODIMP CHomeTimeLineControl::OnInitialized(IServiceProvider* pServiceProvider)
-{
-	CHECK_E_POINTER(pServiceProvider);
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport));
-	RETURN_IF_FAILED(m_pPluginSupport->InitializePlugins(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE));
-
-	m_pServiceProviderParent = pServiceProvider;
-	RETURN_IF_FAILED(m_pPluginSupport->SetParentServiceProvider(m_pServiceProviderParent));
-	m_pServiceProvider = m_pPluginSupport;
-	ATLASSERT(m_pServiceProvider);
-
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(QueryInterface(__uuidof(IControl), (LPVOID*)&pControl));
-
-	RETURN_IF_FAILED(HrInitializeWithControl(m_pTimelineControl, pControl));
-	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, pControl));
-
-	CComPtr<IInitializeWithControl> pTabbedControlStatusService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TabbedControlStatusService, &pTabbedControlStatusService));
-	RETURN_IF_FAILED(pTabbedControlStatusService->SetControl(m_pControl));
-
-	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pTimelineControl, m_pPluginSupport));
-
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
-	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
-
-	CComPtr<ITimelineCleanupService> pTimelineCleanupService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineCleanupService, &pTimelineCleanupService));
-	RETURN_IF_FAILED(pTimelineCleanupService->SetTimelineControl(m_pTimelineControl));
-
-	CComPtr<ITimelineImageService> pTimelineImageService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));
-	RETURN_IF_FAILED(pTimelineImageService->SetTimelineControl(m_pTimelineControl));
-
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMoreTimeline));
-
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
-	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
-
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
-	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
-	RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
-
-	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
-
-	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
-}
-
 LRESULT CHomeTimeLineControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TimelineControl, &m_pTimelineControl));
@@ -175,18 +192,4 @@ LRESULT CHomeTimeLineControl::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam,
 		}
 	}
 	return 0;
-}
-
-STDMETHODIMP CHomeTimeLineControl::OnShutdown()
-{
-	{
-		CComQIPtr <IPluginSupportNotifications> pPluginSupportNotifications = m_pTimelineControl;
-		if (pPluginSupportNotifications)
-		{
-			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
-		}
-	}
-
-	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
-	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 }

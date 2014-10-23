@@ -54,6 +54,8 @@ private:
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<ISettings> m_pSettings;
 
+	HWND m_hWndTimelineControl = 0;
+
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMessage(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
