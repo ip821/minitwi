@@ -165,7 +165,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 
 	int currentBitmapIndex = 0;
 	CComVariant vMediaUrls;
-	if (SUCCEEDED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls)))
+	if (SUCCEEDED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls)) && vMediaUrls.vt == VT_UNKNOWN)
 	{
 		CComQIPtr<IObjArray> pMediaUrls = vMediaUrls.punkVal;
 		UINT uiCount = 0;
