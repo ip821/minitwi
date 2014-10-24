@@ -29,7 +29,7 @@ public:
 	END_COM_MAP()
 
 private:
-	CComQIPtr<ICustomTabControl> m_pTabbedControl;
+	CComQIPtr<IViewControllerService> m_pViewControllerService;
 	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
 	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
 

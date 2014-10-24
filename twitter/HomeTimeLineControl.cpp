@@ -56,15 +56,16 @@ STDMETHODIMP CHomeTimeLineControl::OnInitialized(IServiceProvider* pServiceProvi
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
 	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
 
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
 	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
 	RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
 
 	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
 
-	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
+	RETURN_IF_FAILED(StartTimers());
+	return S_OK;
 }
 
 STDMETHODIMP CHomeTimeLineControl::OnShutdown()
@@ -77,8 +78,36 @@ STDMETHODIMP CHomeTimeLineControl::OnShutdown()
 		}
 	}
 
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceShowMoreTimeline));
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceUpdateTimeline));
+
 	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
+
+	m_pThreadServiceShowMoreTimeline.Release();
+	m_pThreadServiceUpdateTimeline.Release();
+	m_pTimerService.Release();
+	m_pSettings.Release();
+	m_pTimelineService.Release();
+	m_pTimelineControl.Release();
+	m_pTheme.Release();
+	m_pServiceProvider.Release();
+	m_pServiceProviderParent.Release();
+	m_pPluginSupport.Release();
+
+	return S_OK;
+}
+
+STDMETHODIMP CHomeTimeLineControl::StartTimers()
+{
+	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
+	return S_OK;
+}
+
+STDMETHODIMP CHomeTimeLineControl::StopTimers()
+{
+	RETURN_IF_FAILED(m_pTimerService->StopTimer());
+	return S_OK;
 }
 
 STDMETHODIMP CHomeTimeLineControl::GetTimelineControl(ITimelineControl** ppTimelineControl)
@@ -112,6 +141,7 @@ STDMETHODIMP CHomeTimeLineControl::OnActivate()
 {
 	RETURN_IF_FAILED(m_pTimelineControl->OnActivate());
 	::SetFocus(m_hWndTimelineControl);
+	return S_OK;
 }
 
 STDMETHODIMP CHomeTimeLineControl::OnDeactivate()
@@ -137,9 +167,11 @@ STDMETHODIMP CHomeTimeLineControl::SetTheme(ITheme* pTheme)
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
 
+	CComPtr<IImageManagerService> pImageManagerService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
 	CComPtr<ISkinTimeline> pSkinTimeline;
 	RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&pSkinTimeline));
-	RETURN_IF_FAILED(pSkinTimeline->SetImageManagerService(m_pImageManagerService));
+	RETURN_IF_FAILED(pSkinTimeline->SetImageManagerService(pImageManagerService));
 	RETURN_IF_FAILED(m_pTimelineControl->SetSkinTimeline(pSkinTimeline));
 	return S_OK;
 }

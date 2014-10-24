@@ -42,8 +42,6 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(m_pThreadPoolService->SetThreadCount(2));
 	RETURN_IF_FAILED(m_pThreadPoolService->Start());
 
-	ATLASSERT(FALSE); //implement update check visual icon! it's broken now!!!
-
 	return S_OK;
 }
 
@@ -54,42 +52,12 @@ STDMETHODIMP CViewControllerService::OnInitCompleted()
 
 STDMETHODIMP CViewControllerService::OnShutdown()
 {
-	m_pThreadPoolService.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
+	m_pThreadPoolService.Release();
 	m_pServiceProvider.Release();
 	m_pUpdateService.Release();
 	m_pTabbedControl.Release();
-	return S_OK;
-}
-
-STDMETHODIMP CViewControllerService::OnStart(IVariantObject *pResult)
-{
-	return S_OK;
-}
-
-STDMETHODIMP CViewControllerService::OnFinish(IVariantObject *pResult)
-{
-	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
-
-	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
-
-	if (m_bUpdateAvailable)
-	{
-		RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(FALSE, TRUE, L"Update available. Click here to install."));
-	}
-	else if (FAILED(vHr.intVal))
-	{
-		if (vHr.intVal == COMADMIN_E_USERPASSWDNOTVALID)
-		{
-			RETURN_IF_FAILED(pResult->SetVariantValue(KEY_RESTART_TIMER, &CComVariant(FALSE)));
-			CComPtr<IFormManager> pFormManager;
-			RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
-			RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_SettingsControl));
-		}
-		return S_OK;
-	}
-
 	return S_OK;
 }
 
@@ -102,5 +70,46 @@ STDMETHODIMP CViewControllerService::OnLinkClick(HWND hWnd)
 STDMETHODIMP CViewControllerService::SetTheme(ITheme* pTheme)
 {
 	CHECK_E_POINTER(pTheme);
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::StartAnimation()
+{
+	RETURN_IF_FAILED(m_pTabbedControl->StartAnimation());
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::StopAnimation()
+{
+	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::ShowInfo(HRESULT hr, BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage)
+{
+	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
+
+	if (m_bUpdateAvailable)
+	{
+		RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(FALSE, TRUE, L"Update available. Click here to install."));
+	}
+	else if (FAILED(hr))
+	{
+		if (hr == COMADMIN_E_USERPASSWDNOTVALID)
+		{
+			CComPtr<IFormManager> pFormManager;
+			RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
+			RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_SettingsControl));
+		}
+		return S_OK;
+	}
+
+	RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(bError, bInfoImageEnableClick, bstrMessage));
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::HideInfo()
+{
+	RETURN_IF_FAILED(m_pTabbedControl->HideInfo());
 	return S_OK;
 }

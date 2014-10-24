@@ -179,6 +179,11 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
 	{
+		if (vHr.intVal == COMADMIN_E_USERPASSWDNOTVALID)
+		{
+			RETURN_IF_FAILED(pResult->SetVariantValue(KEY_RESTART_TIMER, &CComVariant(FALSE)));
+		}
+
 		CComVariant vId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vId));
 		if (vId.vt == VT_BSTR)

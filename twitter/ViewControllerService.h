@@ -16,7 +16,6 @@ class ATL_NO_VTABLE CViewControllerService :
 	public IViewControllerService,
 	public IPluginSupportNotifications,
 	public IPluginSupportNotifications2,
-	public IThreadServiceEventSink,
 	public IInitializeWithControlImpl,
 	public IInitializeWithSettings,
 	public IInfoControlEventSink
@@ -33,7 +32,6 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications2)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
-		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IInfoControlEventSink)
 	END_COM_MAP()
@@ -57,12 +55,11 @@ public:
 
 	STDMETHOD(Load)(ISettings* pSettings);
 
-	STDMETHOD(OnStart)(IVariantObject *pResult);
-	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
-	STDMETHOD(OnFinish)(IVariantObject *pResult);
-	STDMETHOD(StartTimers)();
-	STDMETHOD(StopTimers)();
 	STDMETHOD(SetTheme)(ITheme* pTheme);
+	STDMETHOD(StartAnimation)();
+	STDMETHOD(StopAnimation)();
+	STDMETHOD(ShowInfo)(HRESULT hr, BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
+	STDMETHOD(HideInfo)();
 
 	STDMETHOD(OnLinkClick)(HWND hWnd);
 };

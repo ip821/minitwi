@@ -2,6 +2,7 @@
 
 #include "twitter_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
+#include "asyncsvc_contract_i.h"
 
 using namespace ATL;
 using namespace std;
@@ -52,8 +53,14 @@ private:
 	CComQIPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<ITimelineService> m_pTimelineService;
 	CComPtr<ISettings> m_pSettings;
+	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
+	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
+	CComPtr<ITimerService> m_pTimerService;
 
+	DWORD m_dwAdviceUpdateTimeline = 0;
+	DWORD m_dwAdviceShowMoreTimeline = 0;
 	HWND m_hWndTimelineControl = 0;
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -63,6 +70,8 @@ private:
 
 public:
 	STDMETHOD(GetTimelineControl)(ITimelineControl** ppTimelineControl);
+	STDMETHOD(StartTimers)();
+	STDMETHOD(StopTimers)();
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
 	STDMETHOD(CreateEx)(HWND hWndParent, HWND *hWnd);
