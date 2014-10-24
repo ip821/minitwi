@@ -8,21 +8,21 @@
 using namespace ATL;
 using namespace std;
 
-class ATL_NO_VTABLE CHomeTimeLineControl :
+class ATL_NO_VTABLE CTwitViewControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CHomeTimeLineControl, &CLSID_HomeTimeLineControl>,
-	public CWindowImpl<CHomeTimeLineControl>,
-	public CBaseTimeLineControl<CHomeTimeLineControl>,
-	public IHomeTimeLineControl
+	public CComCoClass<CTwitViewControl, &CLSID_HomeTimeLineControl>,
+	public CWindowImpl<CTwitViewControl>,
+	public CBaseTimeLineControl<CTwitViewControl>,
+	public ITwitViewControl
 {
 public:
-	CHomeTimeLineControl()
+	CTwitViewControl()
 	{
 	}
 
 	DECLARE_NO_REGISTRY()
-	BEGIN_COM_MAP(CHomeTimeLineControl)
-		COM_INTERFACE_ENTRY(IHomeTimeLineControl)
+	BEGIN_COM_MAP(CTwitViewControl)
+		COM_INTERFACE_ENTRY(ITwitViewControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
 		COM_INTERFACE_ENTRY(IThemeSupport)
@@ -33,7 +33,7 @@ public:
 		COM_INTERFACE_ENTRY(ITimelineControlSupport)
 	END_COM_MAP()
 
-	BEGIN_MSG_MAP(CUserInfoControl)
+	BEGIN_MSG_MAP(CTwitViewControl)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		bHandled = TRUE;
@@ -56,11 +56,19 @@ public:
 	}
 
 private:
+	CComPtr<IPluginSupport> m_pPluginSupport;
+	CComQIPtr<IServiceProvider> m_pServiceProviderParent;
+	CComQIPtr<IServiceProvider> m_pServiceProvider;
+	CComPtr<ITheme> m_pTheme;
+	CComPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<ITimelineService> m_pTimelineService;
+	CComPtr<ISettings> m_pSettings;
+	CComPtr<ITimerService> m_pTimerService;
+
+	HWND m_hWndTimelineControl = 0;
 
 public:
-	STDMETHOD(StartTimers)();
-	STDMETHOD(StopTimers)();
-	STDMETHOD(GetText)(BSTR* pbstr);
+	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(HomeTimeLineControl), CHomeTimeLineControl)
+OBJECT_ENTRY_AUTO(__uuidof(TwitViewControl), CTwitViewControl)

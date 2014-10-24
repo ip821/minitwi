@@ -25,7 +25,9 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
 	m_pHomeTimeLineControl = pControl;
 	ATLASSERT(m_pHomeTimeLineControl);
-	RETURN_IF_FAILED(m_pHomeTimeLineControl->GetTimelineControl(&m_pTimelineControl));
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pHomeTimeLineControl;
+	ATLASSERT(pTimelineControlSupport);
+	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
 
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));

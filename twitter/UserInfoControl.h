@@ -18,7 +18,8 @@ class CUserInfoControl :
 	public IInitializeWithVariantObject,
 	public IPluginSupportNotifications,
 	public IInitializeWithSettings,
-	public IServiceProviderSupport
+	public IServiceProviderSupport,
+	public IControl2
 {
 public:
 	DECLARE_WND_CLASS(L"UserInfoControl")

@@ -15,7 +15,9 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
 	CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
-	RETURN_IF_FAILED(pHomeTimeLineControl->GetTimelineControl(&m_pTimelineControl));
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pHomeTimeLineControl;
+	ATLASSERT(pTimelineControlSupport);
+	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));

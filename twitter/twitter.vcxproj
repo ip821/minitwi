@@ -253,6 +253,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TwitViewControl.cpp" />
     <ClCompile Include="UpdateService.cpp" />
     <ClCompile Include="UserAccountControl.cpp" />
     <ClCompile Include="UserInfoControl.cpp" />
@@ -267,7 +268,9 @@
   <ItemGroup>
     <ClInclude Include="AnimationTimerSupport.h" />
     <ClInclude Include="asyncsvc_contract_i.h" />
+    <ClInclude Include="BaseTimeLineControl.h" />
     <ClInclude Include="ColumnRects.h" />
+    <ClInclude Include="TwitViewControl.h" />
     <ClInclude Include="DownloadService.h" />
     <ClInclude Include="HomeTimeLineControl.h" />
     <ClInclude Include="ImageManagerService.h" />

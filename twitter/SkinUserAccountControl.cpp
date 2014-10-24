@@ -98,7 +98,7 @@ void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText, bo
 	Gdiplus::Region r(rgn);
 	Gdiplus::Graphics g(cdc);
 	static Color colorBrush(0x882F4F4F);
-	static Gdiplus::SolidBrush brush(colorBrush);
+	Gdiplus::SolidBrush brush(colorBrush);
 	g.FillRegion(&brush, &r);
 }
 

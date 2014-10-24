@@ -438,12 +438,21 @@ interface ICustomTabControl : ITabbedControl
 
 [
 	object,
+	uuid(C20DBDD1-9959-4352-9EC7-7CD4F6B57938),
+	pointer_default(unique)
+]
+interface ITimelineControlSupport : IUnknown
+{
+	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
+};
+
+[
+	object,
 	uuid(970095A2-7854-42C9-BCF7-FCFD07BA5E65),
 	pointer_default(unique)
 ]
-interface IUserInfoControl : IControl2
+interface IUserInfoControl : ITimelineControlSupport
 {
-	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
 };
 
 [
@@ -451,11 +460,19 @@ interface IUserInfoControl : IControl2
 	uuid(CDDDE357-19CA-441E-9F3B-7828A900A4DC),
 	pointer_default(unique)
 ]
-interface IHomeTimeLineControl : IControl2
+interface IHomeTimeLineControl : IUnknown
 {
-	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
 	HRESULT StartTimers();
 	HRESULT StopTimers();
+};
+
+[
+	object,
+	uuid(F09D2C6D-3AF5-4178-B4FD-5D4976EFFC1C),
+	pointer_default(unique)
+]
+interface ITwitViewControl : IUnknown
+{
 };
 
 [
@@ -675,6 +692,13 @@ library twitterLib
 	coclass HomeTimeLineControl
 	{
 		[default] interface IHomeTimeLineControl;
+	};
+	[
+		uuid(7C7062D1-A7B6-499B-B6FC-78B2458515DC)
+	]
+	coclass TwitViewControl
+	{
+		[default] interface ITwitViewControl;
 	};
 };
 

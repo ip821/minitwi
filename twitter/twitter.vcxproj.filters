@@ -98,6 +98,9 @@
     <Filter Include="Controls\HomeTimeLineControl">
       <UniqueIdentifier>{e188ec27-44ea-4b97-80fd-2a3c9569695e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\TwitViewControl">
+      <UniqueIdentifier>{6e207d57-9115-48bb-a9af-dcd3a132082b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -219,6 +222,9 @@
     </ClCompile>
     <ClCompile Include="HomeTimeLineControl.cpp">
       <Filter>Controls\HomeTimeLineControl</Filter>
+    </ClCompile>
+    <ClCompile Include="TwitViewControl.cpp">
+      <Filter>Controls\TwitViewControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -355,6 +361,12 @@
       <Filter>Services\TabbedControlStatusService</Filter>
     </ClInclude>
     <ClInclude Include="HomeTimeLineControl.h">
+      <Filter>Controls\HomeTimeLineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="TwitViewControl.h">
+      <Filter>Controls\TwitViewControl</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTimeLineControl.h">
       <Filter>Controls\HomeTimeLineControl</Filter>
     </ClInclude>
   </ItemGroup>
