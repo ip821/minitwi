@@ -15,7 +15,8 @@ class ATL_NO_VTABLE CHomeTimeLineControl :
 	public IThemeSupport,
 	public IInitializeWithControlImpl,
 	public IPluginSupportNotifications,
-	public IInitializeWithSettings
+	public IInitializeWithSettings,
+	public IServiceProviderSupport
 {
 public:
 	CHomeTimeLineControl()
@@ -31,6 +32,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
+		COM_INTERFACE_ENTRY(IServiceProviderSupport)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserInfoControl)
@@ -55,12 +57,8 @@ private:
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<ITimelineService> m_pTimelineService;
 	CComPtr<ISettings> m_pSettings;
-	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
-	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
 	CComPtr<ITimerService> m_pTimerService;
 
-	DWORD m_dwAdviceUpdateTimeline = 0;
-	DWORD m_dwAdviceShowMoreTimeline = 0;
 	HWND m_hWndTimelineControl = 0;
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -78,7 +76,7 @@ public:
 	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *pbResult);
 
 	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
-	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
+	STDMETHOD(GetText)(BSTR* pbstr);
 	STDMETHOD(OnActivate)();
 	STDMETHOD(OnDeactivate)();
 	METHOD_EMPTY(STDMETHOD(OnClose)());
@@ -89,6 +87,7 @@ public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();
+	STDMETHOD(GetServiceProvider)(IServiceProvider** ppServiceProvider);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(HomeTimeLineControl), CHomeTimeLineControl)

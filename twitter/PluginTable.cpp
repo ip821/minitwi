@@ -13,6 +13,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeColorMap, L"Color map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeFontMap, L"Font map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_PictureWindow, L"Picture window object"));
+	RETURN_IF_FAILED(AddObject(CLSID_TimelineControl, L"Timeline control object"));
 	RETURN_IF_FAILED(AddObject(CLSID_UserAccountControl, L"User account control object"));
 	RETURN_IF_FAILED(AddObject(CLSID_UserInfoControl, L"User info control object"));
 

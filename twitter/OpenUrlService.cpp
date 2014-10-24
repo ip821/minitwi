@@ -14,7 +14,8 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	m_pTabbedControl = pContainerControl;
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
-	m_pTimelineControl = pControl;
+	CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
+	RETURN_IF_FAILED(pHomeTimeLineControl->GetTimelineControl(&m_pTimelineControl));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -37,16 +38,6 @@ STDMETHODIMP COpenUrlService::OnShutdown()
 
 STDMETHODIMP COpenUrlService::OnActivate(IControl *pControl)
 {
-	{
-		CComQIPtr<ITimelineControl> pTimelineControl = pControl;
-		if (pTimelineControl)
-		{
-			HWND hWnd = 0;
-			RETURN_IF_FAILED(pTimelineControl->GetHWND(&hWnd));
-			::SetFocus(hWnd);
-		}
-	}
-
 	{
 		CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
 		if (pUserInfoControl)
@@ -106,6 +97,38 @@ STDMETHODIMP COpenUrlService::OpenUserInfo(IVariantObject* pVariantObject)
 	}
 
 	RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
+
+	{
+		CComPtr<IControl> pCurrentControl;
+		RETURN_IF_FAILED(m_pTabbedControl->GetCurrentPage(&pCurrentControl));
+		ATLASSERT(pCurrentControl);
+		CComQIPtr<IServiceProviderSupport> pCurrentControlServiceProviderSupport = pCurrentControl;
+		ATLASSERT(pCurrentControlServiceProviderSupport);
+		CComPtr<IServiceProvider> pCurrentControlServiceProvider;
+		RETURN_IF_FAILED(pCurrentControlServiceProviderSupport->GetServiceProvider(&pCurrentControlServiceProvider));
+		CComPtr<IImageManagerService> pCurrentControlImageService;
+		RETURN_IF_FAILED(pCurrentControlServiceProvider->QueryService(CLSID_ImageManagerService, &pCurrentControlImageService));
+
+		CComQIPtr<IServiceProviderSupport> pUserInfoServiceProviderSupport = pControl;
+		ATLASSERT(pUserInfoServiceProviderSupport);
+		CComPtr<IServiceProvider> pUserInfoServiceProvider;
+		RETURN_IF_FAILED(pUserInfoServiceProviderSupport->GetServiceProvider(&pUserInfoServiceProvider));
+		CComPtr<IImageManagerService> pUserInfoImageManagerService;
+		RETURN_IF_FAILED(pUserInfoServiceProvider->QueryService(CLSID_ImageManagerService, &pUserInfoImageManagerService));
+
+		CComVariant vUserImage;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+		if (vUserImage.vt == VT_BSTR)
+		{
+			BOOL bContains = FALSE;
+			RETURN_IF_FAILED(pCurrentControlImageService->ContainsImageKey(vUserImage.bstrVal, &bContains));
+			if (bContains)
+			{
+				RETURN_IF_FAILED(pCurrentControlImageService->CopyImageTo(vUserImage.bstrVal, pUserInfoImageManagerService));
+			}
+		}
+	}
+
 	CComVariant vUserObject;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_OBJECT, &vUserObject));
 	if (vUserObject.vt == VT_UNKNOWN)
@@ -186,7 +209,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 		RETURN_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(bstr)));
 
 		CComVariant vMediaUrls;
-		if (SUCCEEDED(pVariantObject ->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls)))
+		if (SUCCEEDED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls)))
 		{
 			RETURN_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls));
 		}

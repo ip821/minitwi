@@ -54,12 +54,12 @@ private:
 	DWORD m_dwAdviceTimerServiceUpdate = 0;
 	DWORD m_dwAdviceTimelineControl = 0;
 
-	std::hash_set<IVariantObject*> m_idsToUpdate;
-	std::mutex m_mutex;
+	hash_set<IVariantObject*> m_idsToUpdate;
+	mutex m_mutex;
 	map<wstring, hash_set<IVariantObject*>> m_imageRefs;
 
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
-	static HRESULT GetUrls(IVariantObject* pItemObject, std::vector<std::wstring>& urls);
+	static HRESULT GetUrls(IVariantObject* pItemObject, vector<wstring>& urls);
 
 public:
 

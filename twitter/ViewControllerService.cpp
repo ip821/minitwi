@@ -25,8 +25,6 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
 	m_pTabbedControl = pContainerControl;
 	RETURN_IF_FAILED(m_pTabbedControl->EnableCommands(FALSE));
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -47,6 +45,10 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 
 STDMETHODIMP CViewControllerService::OnInitCompleted()
 {
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
+	CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
+	RETURN_IF_FAILED(pHomeTimeLineControl->StartTimers());
 	return S_OK;
 }
 

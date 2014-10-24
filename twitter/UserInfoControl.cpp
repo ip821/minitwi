@@ -38,10 +38,6 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pTimelineControl, pControl));
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, pControl));
 
-	CComPtr<IInitializeWithControl> pTabbedControlStatusService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TabbedControlStatusService, &pTabbedControlStatusService));
-	RETURN_IF_FAILED(pTabbedControlStatusService->SetControl(m_pControl));
-
 	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pUserAccountControl, m_pPluginSupport));
 	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pTimelineControl, m_pPluginSupport));
 	
@@ -182,23 +178,6 @@ STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
 
-	CComPtr<IImageManagerService> pParentImageService;
-	RETURN_IF_FAILED(m_pServiceProviderParent->QueryService(CLSID_ImageManagerService, &pParentImageService));
-	if (pParentImageService)
-	{
-		CComVariant vUserImage;
-		RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
-		if (vUserImage.vt == VT_BSTR)
-		{
-			BOOL bContains = FALSE;
-			RETURN_IF_FAILED(pParentImageService->ContainsImageKey(vUserImage.bstrVal, &bContains));
-			if (bContains)
-			{
-				RETURN_IF_FAILED(pParentImageService->CopyImageTo(vUserImage.bstrVal, m_pImageManagerService));
-			}
-		}
-	}
-
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pUserAccountControl, m_pVariantObject));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pTimelineControl, m_pVariantObject));
 
@@ -260,5 +239,12 @@ STDMETHODIMP CUserInfoControl::GetTimelineControl(ITimelineControl** ppTimelineC
 {
 	CHECK_E_POINTER(ppTimelineControl);
 	RETURN_IF_FAILED(m_pTimelineControl->QueryInterface(ppTimelineControl));
+	return S_OK;
+}
+
+STDMETHODIMP CUserInfoControl::GetServiceProvider(IServiceProvider** ppServiceProvider)
+{
+	CHECK_E_POINTER(ppServiceProvider);
+	RETURN_IF_FAILED(m_pServiceProvider->QueryInterface(ppServiceProvider));
 	return S_OK;
 }

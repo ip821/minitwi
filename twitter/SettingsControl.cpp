@@ -177,6 +177,8 @@ STDMETHODIMP CSettingsControl::Reset(ISettings *pSettings)
 
 HRESULT CSettingsControl::SaveEditBoxText(int id, BSTR bstrKey, ISettings* pSettings)
 {
+	if (!IsWindow())
+		return S_OK;
 	CEdit wndTextBox = GetDlgItem(id);
 	CComBSTR bstr;
 	wndTextBox.GetWindowText(&bstr);

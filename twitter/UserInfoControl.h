@@ -17,7 +17,8 @@ class CUserInfoControl :
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
 	public IPluginSupportNotifications,
-	public IInitializeWithSettings
+	public IInitializeWithSettings,
+	public IServiceProviderSupport
 {
 public:
 	DECLARE_WND_CLASS(L"UserInfoControl")
@@ -35,6 +36,7 @@ public:
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
+		COM_INTERFACE_ENTRY(IServiceProviderSupport)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserInfoControl)
@@ -98,6 +100,7 @@ public:
 	STDMETHOD(Load)(ISettings* pSettings);
 
 	STDMETHOD(GetTimelineControl)(ITimelineControl** ppTimelineControl);
+	STDMETHOD(GetServiceProvider)(IServiceProvider** ppServiceProvider);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserInfoControl), CUserInfoControl)

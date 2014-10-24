@@ -282,6 +282,16 @@ interface IViewControllerService : IUnknown
 
 [
 	object,
+	uuid(E0DCCDDB-E725-4F6D-B490-220F23977CEB),
+	pointer_default(unique)
+]
+interface IServiceProviderSupport : IUnknown
+{
+	HRESULT GetServiceProvider(IServiceProvider** ppServiceProvider);
+};
+
+[
+	object,
 	uuid(3A2E1784-55A2-4075-8617-2253A70762FF),
 	pointer_default(unique)
 ]
