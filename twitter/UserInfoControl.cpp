@@ -46,7 +46,7 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(pThreadPoolService->SetThreadCount(6));
 	RETURN_IF_FAILED(pThreadPoolService->Start());
 
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE, &m_pTimelineService));
 	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
 	RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
 
@@ -181,11 +181,9 @@ STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pUserAccountControl, m_pVariantObject));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pTimelineControl, m_pVariantObject));
 
-	CComVariant vUserScreenName;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserScreenName));
-	ATLASSERT(vUserScreenName.vt == VT_BSTR);
-
-	RETURN_IF_FAILED(m_pTimelineService->SetUserId(vUserScreenName.bstrVal));
+	CComQIPtr<IInitializeWithVariantObject> pInit = m_pTimelineService;
+	ATLASSERT(pInit);
+	RETURN_IF_FAILED(pInit->SetVariantObject(m_pVariantObject));
 	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->Run());
 
 	return S_OK;

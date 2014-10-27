@@ -20,7 +20,8 @@ class ATL_NO_VTABLE CTimelineService :
 	public IInitializeWithSettings,
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
-	public ITimelineControlEventSink
+	public ITimelineControlEventSink,
+	public IInitializeWithVariantObject
 {
 public:
 	CTimelineService()
@@ -36,6 +37,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
 private:
@@ -66,8 +68,10 @@ public:
 
 	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
+
 	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
-	STDMETHOD(SetUserId)(BSTR bstrUser);
+	
+	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)

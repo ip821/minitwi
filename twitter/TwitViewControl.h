@@ -13,7 +13,8 @@ class ATL_NO_VTABLE CTwitViewControl :
 	public CComCoClass<CTwitViewControl, &CLSID_HomeTimeLineControl>,
 	public CWindowImpl<CTwitViewControl>,
 	public CBaseTimeLineControl<CTwitViewControl>,
-	public ITwitViewControl
+	public ITwitViewControl,
+	public IInitializeWithVariantObject
 {
 public:
 	CTwitViewControl()
@@ -31,6 +32,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IServiceProviderSupport)
 		COM_INTERFACE_ENTRY(ITimelineControlSupport)
+		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CTwitViewControl)
@@ -56,19 +58,10 @@ public:
 	}
 
 private:
-	CComPtr<IPluginSupport> m_pPluginSupport;
-	CComQIPtr<IServiceProvider> m_pServiceProviderParent;
-	CComQIPtr<IServiceProvider> m_pServiceProvider;
-	CComPtr<ITheme> m_pTheme;
-	CComPtr<ITimelineControl> m_pTimelineControl;
-	CComPtr<ITimelineService> m_pTimelineService;
-	CComPtr<ISettings> m_pSettings;
-	CComPtr<ITimerService> m_pTimerService;
-
-	HWND m_hWndTimelineControl = 0;
 
 public:
 	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
+	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitViewControl), CTwitViewControl)

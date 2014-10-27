@@ -62,7 +62,12 @@ STDMETHODIMP CTimelineService::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
-	m_pSettings.Release();
+
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		m_pSettings.Release();
+	}
+
 	m_pThreadServiceUpdateService.Release();
 	m_pTimelineControl.Release();
 	return S_OK;
@@ -162,10 +167,14 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::SetUserId(BSTR bstrUser)
+STDMETHODIMP CTimelineService::SetVariantObject(IVariantObject* pVariantObject)
 {
-	CHECK_E_POINTER(bstrUser);
-	m_bstrUser = bstrUser;
+	CHECK_E_POINTER(pVariantObject);
+
+	CComVariant vUserScreenName;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserScreenName));
+	ATLASSERT(vUserScreenName.vt == VT_BSTR);
+	m_bstrUser = vUserScreenName.bstrVal;
 	return S_OK;
 }
 

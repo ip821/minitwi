@@ -61,7 +61,7 @@ public:
 		RETURN_IF_FAILED(pTimelineImageService->SetTimelineControl(m_pTimelineControl));
 
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineService, &m_pTimelineService));
+		RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE, &m_pTimelineService));
 		RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
 		RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
 
