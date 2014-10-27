@@ -41,6 +41,7 @@ private:
 
 private:
 	STDMETHOD(OpenUserInfo)(IVariantObject* pVariantObject);
+	STDMETHOD(OpenTwitView)(IVariantObject* pVariantObject);
 
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);

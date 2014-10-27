@@ -55,6 +55,9 @@ public:
 			DestroyWindow();
 	}
 
+protected:
+	virtual HRESULT Initializing();
+	virtual HRESULT Initialized();
 private:
 
 public:

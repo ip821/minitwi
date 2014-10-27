@@ -25,6 +25,16 @@ protected:
 
 	HWND m_hWndTimelineControl = 0;
 
+	virtual HRESULT Initializing()
+	{
+		return S_OK;
+	}
+
+	virtual HRESULT Initialized()
+	{
+		return S_OK;
+	}
+
 public:
 	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
 	METHOD_EMPTY(STDMETHOD(OnClose)());
@@ -34,7 +44,7 @@ public:
 
 		CHECK_E_POINTER(pServiceProvider);
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport));
-		RETURN_IF_FAILED(m_pPluginSupport->InitializePlugins(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE));
+		RETURN_IF_FAILED(Initializing());
 
 		m_pServiceProviderParent = pServiceProvider;
 		RETURN_IF_FAILED(m_pPluginSupport->SetParentServiceProvider(m_pServiceProviderParent));
@@ -53,8 +63,11 @@ public:
 		RETURN_IF_FAILED(HrNotifyOnInitialized(m_pTimelineControl, m_pPluginSupport));
 
 		CComPtr<ITimelineCleanupService> pTimelineCleanupService;
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineCleanupService, &pTimelineCleanupService));
-		RETURN_IF_FAILED(pTimelineCleanupService->SetTimelineControl(m_pTimelineControl));
+		if (pTimelineCleanupService)
+		{
+			RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineCleanupService, &pTimelineCleanupService));
+			RETURN_IF_FAILED(pTimelineCleanupService->SetTimelineControl(m_pTimelineControl));
+		}
 
 		CComPtr<ITimelineImageService> pTimelineImageService;
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));
@@ -75,6 +88,8 @@ public:
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThreadPoolService, &pThreadPoolService));
 		RETURN_IF_FAILED(pThreadPoolService->SetThreadCount(6));
 		RETURN_IF_FAILED(pThreadPoolService->Start());
+
+		RETURN_IF_FAILED(Initialized());
 
 		return S_OK;
 	}

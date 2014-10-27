@@ -106,6 +106,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	STDMETHOD(GetItems)(IObjArray** ppObjectArray);
+	STDMETHOD(InsertItem)(IVariantObject* pVariantObject, UINT uiIndex);
 	STDMETHOD(InsertItems)(IObjArray* pObjectArray, UINT uiStartIndex);
 	STDMETHOD(IsEmpty)(BOOL* pbIsEmpty);
 	STDMETHOD(InvalidateItems)(IVariantObject** pItemArray, UINT uiCountArray);

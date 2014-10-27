@@ -12,7 +12,8 @@ class ATL_NO_VTABLE CTwitViewRepliesService :
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,
-	public ITwitViewRepliesService
+	public ITwitViewRepliesService,
+	public IInitializeWithVariantObject
 {
 public:
 	CTwitViewRepliesService()
@@ -28,6 +29,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(ITwitViewRepliesService)
 		COM_INTERFACE_ENTRY(ITimelineService)
+		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
 private:
@@ -50,6 +52,8 @@ public:
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
+
+	METHOD_EMPTY(STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject));
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitViewRepliesService), CTwitViewRepliesService)

@@ -81,6 +81,29 @@ STDMETHODIMP COpenUrlService::OnClose(IControl *pControl)
 	return S_OK;
 }
 
+STDMETHODIMP COpenUrlService::OpenTwitView(IVariantObject* pVariantObject)
+{
+	CComPtr<IControl> pControl;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitViewControl, &pControl));
+	RETURN_IF_FAILED(m_pTabbedControl->AddPage(pControl));
+
+	CComPtr<IThemeService> pThemeService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
+	CComPtr<ITheme> pTheme;
+	RETURN_IF_FAILED(pThemeService->GetCurrentTheme(&pTheme));
+	CComQIPtr<IThemeSupport> pThemeSupport = pControl;
+	if (pThemeSupport)
+	{
+		RETURN_IF_FAILED(pThemeSupport->SetTheme(pTheme));
+	}
+
+	RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
+	RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pVariantObject));
+
+	RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
+
+	return S_OK;
+}
 
 STDMETHODIMP COpenUrlService::OpenUserInfo(IVariantObject* pVariantObject)
 {
@@ -169,14 +192,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
 	{
-		CComVariant vUserName;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
-		CComVariant v;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &v));
-		if (vUserName.vt == VT_BSTR && v.vt == VT_BSTR)
-		{
-			strUrl = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(v.bstrVal);
-		}
+		RETURN_IF_FAILED(OpenTwitView(pVariantObject));
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_URL))

@@ -151,6 +151,12 @@ STDMETHODIMP CTimelineControl::GetItems(IObjArray** ppObjectArray)
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControl::InsertItem(IVariantObject* pVariantObject, UINT uiIndex)
+{
+	m_listBox.InsertItem(pVariantObject, uiIndex);
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::InsertItems(IObjArray* pObjectArray, UINT uiStartIndex)
 {
 	UINT uiCount = 0;

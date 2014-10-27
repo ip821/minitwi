@@ -36,6 +36,7 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<ISettings> m_pSettings;
+	CComPtr<ITimelineControl> m_pTimelineControl;
 
 	DWORD m_dwAdvice = 0;
 	mutex m_mutex;
@@ -49,6 +50,8 @@ public:
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
+
+	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitViewParentTwitService), CTwitViewParentTwitService)

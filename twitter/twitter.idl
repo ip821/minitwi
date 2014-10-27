@@ -153,6 +153,7 @@ interface ITimelineControlEventSink : IUnknown
 interface ITimelineControl : IControl2
 {
 	HRESULT GetItems(IObjArray** ppObjectArray);
+	HRESULT InsertItem(IVariantObject* pVariantObject, UINT uiIndex);
 	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
 	HRESULT RefreshItem(UINT uiIndex);
 	HRESULT IsEmpty(BOOL* pbIsEmpty);
@@ -481,6 +482,7 @@ interface ITwitViewControl : IUnknown
 ]
 interface ITwitViewParentTwitService : IUnknown
 {
+	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 
 [

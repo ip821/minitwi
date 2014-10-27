@@ -21,7 +21,15 @@ STDMETHODIMP CTwitViewParentTwitService::OnShutdown()
 		m_pSettings.Release();
 	}
 	m_pThreadService.Release();
+	m_pTimelineControl.Release();
 	m_pServiceProvider.Release();
+	return S_OK;
+}
+
+STDMETHODIMP CTwitViewParentTwitService::SetTimelineControl(ITimelineControl* pTimelineControl)
+{
+	CHECK_E_POINTER(pTimelineControl);
+	m_pTimelineControl = pTimelineControl;
 	return S_OK;
 }
 
