@@ -8,7 +8,18 @@
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 #include <mutex>
 
+#pragma warning(push)
+#pragma warning(disable:4245)
+#include <boost\date_time.hpp>
+#include <boost\date_time\c_local_time_adjustor.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
+#pragma warning(pop)
+
 using namespace ATL;
+using namespace std;
+using namespace boost;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
 
 // CTimelineService
 
@@ -47,7 +58,7 @@ private:
 	DWORD m_dwAdviceThreadServiceUpdateService = 0;
 	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
 	DWORD m_dwAdviceTimelineControl = 0;
-	std::mutex m_mutex;
+	mutex m_mutex;
 	TIME_ZONE_INFORMATION m_tz;
 	BOOL m_bShowMoreRunning = 0;
 	CComBSTR m_bstrUser;

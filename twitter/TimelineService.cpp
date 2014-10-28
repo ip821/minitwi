@@ -7,11 +7,6 @@
 #include "twitconn_contract_i.h"
 #include "UpdateScope.h"
 
-#pragma warning(push)
-#pragma warning(disable:4245)
-#include <boost\date_time.hpp>
-#include <boost/date_time/posix_time/posix_time_io.hpp>
-#pragma warning(pop)
 // CTimelineService
 
 #ifdef DEBUG
@@ -24,7 +19,7 @@ STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		lock_guard<mutex> lock(m_mutex);
 		m_pSettings = pSettings;
 	}
 	return S_OK;
@@ -115,7 +110,7 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 	CComPtr<IVariantObject> pResult = pResultObj;
 	CComPtr<ISettings> pSettings;
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		lock_guard<mutex> lock(m_mutex);
 		pSettings = m_pSettings;
 	}
 
@@ -256,42 +251,50 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 		if (v.vt != VT_BSTR)
 			continue;
 
-		boost::local_time::wlocal_time_input_facet* inputFacet = new boost::local_time::wlocal_time_input_facet();
+		local_time::wlocal_time_input_facet* inputFacet = new local_time::wlocal_time_input_facet();
 		inputFacet->format(L"%a %b %d %H:%M:%S +0000 %Y");
-		std::wistringstream inputStream;
-		inputStream.imbue(std::locale(inputStream.getloc(), inputFacet));
-		inputStream.str(std::wstring(v.bstrVal));
-		boost::posix_time::ptime pt;
+		wistringstream inputStream;
+		inputStream.imbue(locale(inputStream.getloc(), inputFacet));
+		inputStream.str(wstring(v.bstrVal));
+		posix_time::ptime pt;
 		inputStream >> pt;
 
-		boost::posix_time::ptime ptCreatedAt(pt.date(), pt.time_of_day() - boost::posix_time::minutes(m_tz.Bias) - boost::posix_time::minutes(m_tz.DaylightBias));
-		boost::posix_time::time_duration diff(boost::posix_time::second_clock::local_time() - ptCreatedAt);
+		static time_duration utcDiff;
+		if (utcDiff.ticks() == 0)
+		{
+			ptime someUtcTime(date(2008, Jan, 1), time_duration(0, 0, 0, 0));
+			ptime someLocalTime = date_time::c_local_adjustor<ptime>::utc_to_local(someUtcTime);
+			utcDiff = someLocalTime - someUtcTime;
+		}
+
+		ptime ptCreatedAt(pt.date(), pt.time_of_day() + utcDiff);
+		posix_time::time_duration diff(posix_time::second_clock::local_time() - ptCreatedAt);
 
 		CString strRelTime;
 		auto totalSeconds = abs(diff.total_seconds());
 		if (totalSeconds < 60)
 		{
-			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds).c_str()) + L"s";
+			strRelTime = CString(lexical_cast<wstring>(totalSeconds).c_str()) + L"s";
 		}
 		else if (totalSeconds < 60 * 60)
 		{
-			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60).c_str()) + L"m";
+			strRelTime = CString(lexical_cast<wstring>(totalSeconds / 60).c_str()) + L"m";
 		}
 		else if (totalSeconds < 60 * 60 * 24)
 		{
-			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60 / 60).c_str()) + L"h";
+			strRelTime = CString(lexical_cast<wstring>(totalSeconds / 60 / 60).c_str()) + L"h";
 		}
 		else if (totalSeconds < 60 * 60 * 24 * 5)
 		{
-			strRelTime = CString(boost::lexical_cast<std::wstring>(totalSeconds / 60 / 60 / 24).c_str()) + L"d";
+			strRelTime = CString(lexical_cast<wstring>(totalSeconds / 60 / 60 / 24).c_str()) + L"d";
 		}
 		else
 		{
-			boost::posix_time::ptime ptNow(pt.date(), pt.time_of_day() - boost::posix_time::minutes(m_tz.Bias) - boost::posix_time::minutes(m_tz.DaylightBias));
-			boost::posix_time::wtime_facet* outputFacet = new boost::posix_time::wtime_facet();
+			posix_time::ptime ptNow(pt.date(), pt.time_of_day() - posix_time::minutes(m_tz.Bias) - posix_time::minutes(m_tz.DaylightBias));
+			posix_time::wtime_facet* outputFacet = new posix_time::wtime_facet();
 			outputFacet->format(L"%d %b %Y");
-			std::wostringstream outputStream;
-			outputStream.imbue(std::locale(outputStream.getloc(), outputFacet));
+			wostringstream outputStream;
+			outputStream.imbue(locale(outputStream.getloc(), outputFacet));
 			outputStream << ptNow;
 			strRelTime = outputStream.str().c_str();
 		}
