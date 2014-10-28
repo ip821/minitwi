@@ -340,15 +340,15 @@ SIZE CSkinTimeline::AddColumn(
 
 	switch (justify)
 	{
-	case Center:
+	case Justify::Center:
 		x = (size.cx / 2) - (sz.cx / 2);
 		break;
 
-	case Right:
+	case Justify::Right:
 		x = x - sz.cx;
 		break;
 
-	case None:
+	case Justify::None:
 	default:
 		break;
 	}
@@ -572,7 +572,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				FALSE,
 				TRUE,
 				0,
-				None,
+				Justify::None,
 				FALSE,
 				bDoubleSize
 				);

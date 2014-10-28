@@ -52,7 +52,7 @@ private:
 	const BYTE STEP_ALPHA = MAX_ALPHA / STEPS;
 	map<UINT, AnimationItemData> m_steps;
 
-	enum Justify
+	enum class Justify
 	{
 		None = 0,
 		Center,
