@@ -142,6 +142,7 @@ interface ISkinTimeline : IUnknown
 interface ITimelineControlEventSink : IUnknown
 {
 	HRESULT OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	HRESULT OnItemDoubleClick(IVariantObject* pVariantObject);
 	HRESULT OnItemRemoved(IVariantObject* pItemObject);
 };
 

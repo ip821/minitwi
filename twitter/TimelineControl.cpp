@@ -194,6 +194,13 @@ STDMETHODIMP CTimelineControl::RefreshItem(UINT uiIndex)
 	return S_OK;
 }
 
+LRESULT CTimelineControl::OnItemDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);
+	ASSERT_IF_FAILED(Fire_OnItemDoubleClick(pNm->pVariantObject));
+	return 0;
+}
+
 LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);
@@ -207,7 +214,7 @@ LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 	{
 		CComBSTR bstrColumnName;
 		pNm->pColumnRects->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
-		RETURN_IF_FAILED(Fire_OnColumnClick(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject));
+		ASSERT_IF_FAILED(Fire_OnColumnClick(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject));
 	}
 
 	return 0;
@@ -220,7 +227,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
 	if (pInitializeWithVariantObject)
 	{
-		RETURN_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pNm->pVariantObject));
+		ASSERT_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pNm->pVariantObject));
 	}
 
 	if (pNm->dwCurrentColumn != CCustomListBox::INVALID_COLUMN_INDEX)
@@ -230,7 +237,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		{
 			CComBSTR bstrColumnName;
 			pNm->pColumnRects->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
-			RETURN_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
+			ASSERT_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
 		}
 	}
 
@@ -239,7 +246,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	if (pIdleHandler)
 	{
 		BOOL bResult = FALSE;
-		RETURN_IF_FAILED(pIdleHandler->OnIdle(&bResult));
+		ASSERT_IF_FAILED(pIdleHandler->OnIdle(&bResult));
 	}
 
 	m_popupMenu.TrackPopupMenu(0, pNm->x, pNm->y, m_hWnd);
@@ -250,7 +257,7 @@ LRESULT CTimelineControl::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 {
 	BOOL bResult = FALSE;
 	LRESULT lResult = 0;
-	RETURN_IF_FAILED(m_pCommandSupport->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lResult, &bResult));
+	ASSERT_IF_FAILED(m_pCommandSupport->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lResult, &bResult));
 	bHandled = bResult;
 	return lResult;
 }
@@ -325,6 +332,30 @@ HRESULT CTimelineControl::Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 		if (pConnection)
 		{
 			hr = pConnection->OnColumnClick(bstrColumnName, dwColumnIndex, pColumnRects, pVariantObject);
+		}
+	}
+	return hr;
+}
+
+HRESULT CTimelineControl::Fire_OnItemDoubleClick(IVariantObject* pVariantObject)
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CTimelineControl* pThis = static_cast<CTimelineControl*>(this);
+	int cConnections = m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		ITimelineControlEventSink * pConnection = static_cast<ITimelineControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnItemDoubleClick(pVariantObject);
 		}
 	}
 	return hr;

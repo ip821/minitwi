@@ -76,6 +76,8 @@ public:
 
 	STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject);
 	METHOD_EMPTY(STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject));
+	METHOD_EMPTY(STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject));
+
 	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
 };
 

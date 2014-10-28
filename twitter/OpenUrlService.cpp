@@ -168,6 +168,12 @@ STDMETHODIMP COpenUrlService::OpenUserInfo(IVariantObject* pVariantObject)
 	return S_OK;
 }
 
+STDMETHODIMP COpenUrlService::OnItemDoubleClick(IVariantObject* pVariantObject)
+{
+	RETURN_IF_FAILED(OpenTwitView(pVariantObject));
+	return S_OK;
+}
+
 STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
 {
 	CHECK_E_POINTER(bstrColumnName);

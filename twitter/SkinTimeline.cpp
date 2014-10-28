@@ -134,9 +134,6 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnRects* pColumnRects, TDRAWIT
 		CComBSTR bstrValue;
 		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_VALUE, &bstrValue));
 
-		HFONT font = 0;
-		m_pThemeFontMap->GetFont(bstrColumnName, &font);
-
 		if (!bIsImage)
 			continue;
 
@@ -265,9 +262,14 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 		RETURN_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_WORDWRAP, &bIsWordWrap));
 		BOOL bIsImage = FALSE;
 		RETURN_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_IMAGE, &bIsImage));
+		BOOL bDoubleSize = FALSE;
+		RETURN_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_ITEM_DOUBLE_SIZE, &bDoubleSize));
 
 		HFONT font = 0;
-		RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrColumnName, &font));
+		auto bstrFontName = CComBSTR(bstrColumnName);
+		if (bDoubleSize)
+			bstrFontName += VAR_DOUBLE_SIZE_POSTFIX;
+		RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrFontName, &font));
 
 		if (lpdis->iHoveredItem == static_cast<int>(lpdis->lpdi->itemID) && lpdis->iHoveredColumn == static_cast<int>(i) && bIsUrl)
 		{
@@ -306,13 +308,17 @@ SIZE CSkinTimeline::AddColumn(
 	BOOL bWordWrap = FALSE,
 	LONG ulMinimumFixedWidth = 0,
 	Justify justify = Justify::None,
-	BOOL bDisabledSelection = FALSE
+	BOOL bDisabledSelection = FALSE,
+	BOOL bDoubleSize = FALSE
 	)
 {
 	CDC cdc;
 	cdc.CreateCompatibleDC(hdc);
 	HFONT font = nullptr;
-	m_pThemeFontMap->GetFont(CComBSTR(strColumnName), &font);
+	auto bstrFontName = CComBSTR(strColumnName);
+	if (bDoubleSize)
+		bstrFontName += VAR_DOUBLE_SIZE_POSTFIX;
+	m_pThemeFontMap->GetFont(bstrFontName, &font);
 	cdc.SelectFont(font);
 
 	SIZE sz = { 0 };
@@ -358,6 +364,8 @@ SIZE CSkinTimeline::AddColumn(
 		pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_WORDWRAP, TRUE);
 	if (bIsUrl)
 		pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
+	if (bDoubleSize)
+		pColumnRects->SetRectBoolProp(uiIndex, VAR_ITEM_DOUBLE_SIZE, TRUE);
 	return sz;
 }
 
@@ -429,6 +437,9 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 		CString strImageUrl;
 		GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_IMAGE), strImageUrl);
+		
+		CComVariant vDoubleSize;
+		RETURN_IF_FAILED(pItemObject->GetVariantValue(VAR_ITEM_DOUBLE_SIZE, &vDoubleSize));
 
 		{
 			auto x = 10;
@@ -548,6 +559,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
 			}
 
+			auto bDoubleSize = vDoubleSize.vt == VT_BOOL && vDoubleSize.boolVal;
 			sizeText = AddColumn(
 				hdc,
 				pColumnRects,
@@ -558,7 +570,11 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				y,
 				CSize((clientRect.right - clientRect.left - COLUMN_X_SPACING * 2) - COL_NAME_LEFT, 255),
 				FALSE,
-				TRUE
+				TRUE,
+				0,
+				None,
+				FALSE,
+				bDoubleSize
 				);
 		}
 

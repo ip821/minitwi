@@ -404,6 +404,12 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	return 0;
 }
 
+LRESULT CCustomListBox::OnLMouseDoubleClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = FALSE;
+	return HandleCLick(lParam, NM_LISTBOX_LDOUBLECLICK);
+}
+
 LRESULT CCustomListBox::OnLMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
