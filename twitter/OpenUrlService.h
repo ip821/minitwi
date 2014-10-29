@@ -38,7 +38,8 @@ private:
 	CComQIPtr<ITabbedControl> m_pTabbedControl;
 	DWORD m_dwAdviceTimelineControl = 0;
 	DWORD m_dwAdviceTabbedControl = 0;
-	DWORD m_dwAdviceTimelineControl2 = 0;
+	DWORD m_dwAdviceTimelineControlInUserInfoControl = 0;
+	DWORD m_dwAdviceTimelineControlInTwitViewControl = 0;
 
 private:
 	STDMETHOD(OpenUserInfo)(IVariantObject* pVariantObject);

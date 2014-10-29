@@ -41,15 +41,28 @@ STDMETHODIMP COpenUrlService::OnShutdown()
 STDMETHODIMP COpenUrlService::OnActivate(IControl *pControl)
 {
 	{
+		CComQIPtr<ITwitViewControl> pTwitViewControl = pControl;
+		CComQIPtr<ITimelineControlSupport> p = pTwitViewControl;
+		if (pTwitViewControl && p)
+		{
+			ATLASSERT(!m_dwAdviceTimelineControlInTwitViewControl);
+			CComPtr<ITimelineControl> pTimelineControl;
+			RETURN_IF_FAILED(p->GetTimelineControl(&pTimelineControl));
+			CComPtr<IUnknown> pUnk;
+			RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+			RETURN_IF_FAILED(AtlAdvise(pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControlInTwitViewControl));
+		}
+	}
+	{
 		CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
 		if (pUserInfoControl)
 		{
-			ATLASSERT(!m_dwAdviceTimelineControl2);
+			ATLASSERT(!m_dwAdviceTimelineControlInUserInfoControl);
 			CComPtr<ITimelineControl> pTimelineControl;
 			RETURN_IF_FAILED(pUserInfoControl->GetTimelineControl(&pTimelineControl));
 			CComPtr<IUnknown> pUnk;
 			RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-			RETURN_IF_FAILED(AtlAdvise(pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl2));
+			RETURN_IF_FAILED(AtlAdvise(pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControlInUserInfoControl));
 		}
 	}
 	return S_OK;
@@ -58,8 +71,15 @@ STDMETHODIMP COpenUrlService::OnActivate(IControl *pControl)
 STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 {
 	CComQIPtr<ITwitViewControl> pTwitViewControl = pControl;
-	if (pTwitViewControl)
+	CComQIPtr<ITimelineControlSupport> p = pTwitViewControl;
+	if (pTwitViewControl && p)
 	{
+		ATLASSERT(m_dwAdviceTimelineControlInTwitViewControl);
+		CComPtr<ITimelineControl> pTimelineControl;
+		RETURN_IF_FAILED(p->GetTimelineControl(&pTimelineControl));
+		RETURN_IF_FAILED(AtlUnadvise(pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControlInTwitViewControl));
+		m_dwAdviceTimelineControlInTwitViewControl = 0;
+
 		CComQIPtr<IPluginSupportNotifications> pPluginSupportNotifications = pTwitViewControl;
 		if (pPluginSupportNotifications)
 		{
@@ -72,11 +92,11 @@ STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 	CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
 	if (pUserInfoControl)
 	{
-		ATLASSERT(m_dwAdviceTimelineControl2);
+		ATLASSERT(m_dwAdviceTimelineControlInUserInfoControl);
 		CComPtr<ITimelineControl> pTimelineControl;
 		RETURN_IF_FAILED(pUserInfoControl->GetTimelineControl(&pTimelineControl));
-		RETURN_IF_FAILED(AtlUnadvise(pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl2));
-		m_dwAdviceTimelineControl2 = 0;
+		RETURN_IF_FAILED(AtlUnadvise(pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControlInUserInfoControl));
+		m_dwAdviceTimelineControlInUserInfoControl = 0;
 
 		CComQIPtr<IPluginSupportNotifications> pPluginSupportNotifications = pUserInfoControl;
 		if (pPluginSupportNotifications)

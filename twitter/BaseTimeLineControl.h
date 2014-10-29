@@ -130,6 +130,17 @@ public:
 		return S_OK;
 	}
 
+	LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		if (m_pTimelineControl)
+		{
+			HWND hWnd = 0;
+			m_pTimelineControl->GetHWND(&hWnd);
+			::SetFocus(hWnd);
+		}
+		return 0;
+	}
+
 	STDMETHOD(GetTimelineControl)(ITimelineControl** ppTimelineControl)
 	{
 		CHECK_E_POINTER(ppTimelineControl);
