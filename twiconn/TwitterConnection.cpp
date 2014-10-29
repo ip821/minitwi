@@ -153,6 +153,73 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::Search(BSTR bstrQuery, BSTR bstrMaxId, UINT uiCount, IObjArray** ppObjectArray)
+{
+	CHECK_E_POINTER(bstrQuery);
+	CHECK_E_POINTER(ppObjectArray);
+
+	USES_CONVERSION;
+
+	string strQuery = W2A(bstrQuery);
+	string strAppToken = W2A(m_strAppToken.c_str());
+	string strMaxId = bstrMaxId == nullptr ? "" : W2A(bstrMaxId);
+	if (!m_pTwitObj->searchWithAppAuth(strAppToken, strQuery, strMaxId, boost::lexical_cast<string>(uiCount)))
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	CComPtr<IObjCollection> pObjectCollection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjectCollection));
+	auto val = value.get()->AsObject();
+	auto items = val[L"statuses"];
+	RETURN_IF_FAILED(ParseTweets(items, pObjectCollection));
+	RETURN_IF_FAILED(pObjectCollection->QueryInterface(ppObjectArray));
+	return S_OK;
+}
+
+STDMETHODIMP CTwitterConnection::GetTwit(BSTR bstrId, IVariantObject** ppVariantObject)
+{
+	CHECK_E_POINTER(ppVariantObject);
+	if (!bstrId)
+		return E_POINTER;
+
+	if (bstrId == CComBSTR(""))
+		return E_INVALIDARG;
+
+	USES_CONVERSION;
+
+	string strId;
+	strId = W2A(bstrId);
+
+	string strAppToken = W2A(m_strAppToken.c_str());
+	if (!m_pTwitObj->statusShowByIdWithAppAuth(strAppToken, strId))
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, ppVariantObject));
+	auto itemObject = value.get()->AsObject();
+	RETURN_IF_FAILED(ParseTweet(itemObject, *ppVariantObject));
+
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray)
 {
 	USES_CONVERSION;
@@ -249,6 +316,134 @@ STDMETHODIMP CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pV
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* pVariantObject)
+{
+	wstring retweetedUserDisplayName;
+	wstring retweetedUserScreenName;
+	auto id = itemObject[L"id_str"]->AsString();
+
+	if (itemObject.find(L"in_reply_to_status_id_str") != itemObject.end() && itemObject.find(L"in_reply_to_status_id_str")->second->IsString())
+	{
+		auto inReplyToStatusId = itemObject[L"in_reply_to_status_id_str"]->AsString();
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &CComVariant(inReplyToStatusId.c_str())));
+	}
+
+	if (itemObject.find(L"retweeted_status") != itemObject.end())
+	{
+		auto retweetStatusObject = itemObject[L"retweeted_status"]->AsObject();
+		auto retweetedUserObj = itemObject[L"user"]->AsObject();
+		retweetedUserDisplayName = retweetedUserObj[L"name"]->AsString();
+		retweetedUserScreenName = retweetedUserObj[L"screen_name"]->AsString();
+		auto idOriginal = retweetStatusObject[L"id_str"]->AsString();
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_ORIGINAL_ID, &CComVariant(idOriginal.c_str())));
+		itemObject = retweetStatusObject;
+	}
+
+	auto createdAt = itemObject[L"created_at"]->AsString();
+	auto userObj = itemObject[L"user"]->AsObject();
+
+	CComPtr<IVariantObject> pUserVariantObject;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));
+	RETURN_IF_FAILED(ParseUser(userObj, pUserVariantObject));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_OBJECT, &CComVariant(pUserVariantObject)));
+
+	auto userDisplayName = userObj[L"name"]->AsString();
+	auto userScreenName = userObj[L"screen_name"]->AsString();
+	auto userImageUrl = userObj[L"profile_image_url_https"]->AsString();
+	auto text = itemObject[L"text"]->AsString();
+	auto entities = itemObject[L"entities"]->AsObject();
+	auto urls = entities[L"urls"]->AsArray();
+
+	CString strText = text.c_str();
+	hash_set<wstring> urlsHashSet;
+
+	if (urls.size())
+	{
+		for (size_t i = 0; i < urls.size(); i++)
+		{
+			auto urlObject = urls[i]->AsObject();
+			urlsHashSet.insert(urlObject[L"url"]->AsString().c_str());
+		}
+	}
+
+	CComPtr<IObjCollection> pMediaObjectCollection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pMediaObjectCollection));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURLS, &CComVariant(pMediaObjectCollection)));
+
+	hash_set<wstring> processedMediaUrls;
+
+	{
+		auto entitiesObj = itemObject[L"entities"]->AsObject();
+		if (entitiesObj.find(L"media") != entitiesObj.end())
+		{
+			auto mediaArray = entitiesObj[L"media"]->AsArray();
+			ParseMedias(mediaArray, pMediaObjectCollection, processedMediaUrls);
+		}
+	}
+
+	if (itemObject.find(L"extended_entities") != itemObject.end())
+	{
+		auto entitiesObj = itemObject[L"extended_entities"]->AsObject();
+		if (entitiesObj.find(L"media") != entitiesObj.end())
+		{
+			auto mediaArray = entitiesObj[L"media"]->AsArray();
+			ParseMedias(mediaArray, pMediaObjectCollection, processedMediaUrls);
+		}
+	}
+
+	auto urlsVector = vector<wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
+	for (size_t i = 0; i < urlsVector.size(); i++)
+	{
+		strText.Replace(urlsVector[i].c_str(), L"");
+	}
+
+	wstring stdStr(strText);
+
+#ifndef DEBUG
+	static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)*)");
+	static boost::regex_constants::match_flag_type fl = boost::regex_constants::match_default;
+
+	boost::regex_iterator<wstring::iterator> regexIterator(stdStr.begin(), stdStr.end(), regex);
+	boost::regex_iterator<wstring::iterator> regexIteratorEnd;
+	while (regexIterator != regexIteratorEnd)
+	{
+		auto strUrl1 = regexIterator->str();
+		urlsHashSet.insert(strUrl1);
+		regexIterator++;
+	}
+#endif
+
+	urlsVector = vector<wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
+	AppendUrls(pVariantObject, urlsVector);
+
+	for (size_t i = 0; i < urlsVector.size(); i++)
+	{
+		strText.Replace(urlsVector[i].c_str(), L"");
+	}
+
+	for (auto it = NormalizeTable.begin(); it != NormalizeTable.end(); it++)
+	{
+		strText.Replace(it->first, it->second);
+	}
+	strText = strText.Trim();
+
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(id.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_IMAGE, &CComVariant(userImageUrl.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_NORMALIZED_TEXT, &CComVariant(strText)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_TEXT, &CComVariant(text.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_CREATED_AT, &CComVariant(createdAt.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_TWITTER_OBJECT)));
+
+	if (!retweetedUserDisplayName.empty())
+	{
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, &CComVariant(retweetedUserDisplayName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RETWEETED_USER_NAME, &CComVariant(retweetedUserScreenName.c_str())));
+	}
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* pObjectCollection)
 {
 	auto valueArray = value->AsArray();
@@ -261,121 +456,7 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
 		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
 
-		wstring retweetedUserDisplayName;
-		wstring retweetedUserScreenName;
-		auto id = itemObject[L"id_str"]->AsString();
-
-		if (itemObject.find(L"retweeted_status") != itemObject.end())
-		{
-			auto retweetStatusObject = itemObject[L"retweeted_status"]->AsObject();
-			auto retweetedUserObj = itemObject[L"user"]->AsObject();
-			retweetedUserDisplayName = retweetedUserObj[L"name"]->AsString();
-			retweetedUserScreenName = retweetedUserObj[L"screen_name"]->AsString();
-			itemObject = retweetStatusObject;
-		}
-
-		auto createdAt = itemObject[L"created_at"]->AsString();
-		auto userObj = itemObject[L"user"]->AsObject();
-
-		CComPtr<IVariantObject> pUserVariantObject;
-		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));
-		RETURN_IF_FAILED(ParseUser(userObj, pUserVariantObject));
-		pVariantObject->SetVariantValue(VAR_TWITTER_USER_OBJECT, &CComVariant(pUserVariantObject));
-
-		auto userDisplayName = userObj[L"name"]->AsString();
-		auto userScreenName = userObj[L"screen_name"]->AsString();
-		auto userImageUrl = userObj[L"profile_image_url_https"]->AsString();
-		auto text = itemObject[L"text"]->AsString();
-		auto entities = itemObject[L"entities"]->AsObject();
-		auto urls = entities[L"urls"]->AsArray();
-
-		CString strText = text.c_str();
-		hash_set<wstring> urlsHashSet;
-
-		if (urls.size())
-		{
-			for (size_t i = 0; i < urls.size(); i++)
-			{
-				auto urlObject = urls[i]->AsObject();
-				urlsHashSet.insert(urlObject[L"url"]->AsString().c_str());
-			}
-		}
-
-		CComPtr<IObjCollection> pMediaObjectCollection;
-		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pMediaObjectCollection));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURLS, &CComVariant(pMediaObjectCollection)));
-
-		hash_set<wstring> processedMediaUrls;
-
-		{
-			auto entitiesObj = itemObject[L"entities"]->AsObject();
-			if (entitiesObj.find(L"media") != entitiesObj.end())
-			{
-				auto mediaArray = entitiesObj[L"media"]->AsArray();
-				ParseMedias(mediaArray, pMediaObjectCollection, processedMediaUrls);
-			}
-		}
-
-		if (itemObject.find(L"extended_entities") != itemObject.end())
-		{
-			auto entitiesObj = itemObject[L"extended_entities"]->AsObject();
-			if (entitiesObj.find(L"media") != entitiesObj.end())
-			{
-				auto mediaArray = entitiesObj[L"media"]->AsArray();
-				ParseMedias(mediaArray, pMediaObjectCollection, processedMediaUrls);
-			}
-		}
-
-		auto urlsVector = vector<wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
-		for (size_t i = 0; i < urlsVector.size(); i++)
-		{
-			strText.Replace(urlsVector[i].c_str(), L"");
-		}
-
-		wstring stdStr(strText);
-
-#ifndef DEBUG
-		static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)*)");
-		static boost::regex_constants::match_flag_type fl = boost::regex_constants::match_default;
-
-		boost::regex_iterator<wstring::iterator> regexIterator(stdStr.begin(), stdStr.end(), regex);
-		boost::regex_iterator<wstring::iterator> regexIteratorEnd;
-		while (regexIterator != regexIteratorEnd)
-		{
-			auto strUrl1 = regexIterator->str();
-			urlsHashSet.insert(strUrl1);
-			regexIterator++;
-		}
-#endif
-
-		urlsVector = vector<wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
-		AppendUrls(pVariantObject, urlsVector);
-
-		for (size_t i = 0; i < urlsVector.size(); i++)
-		{
-			strText.Replace(urlsVector[i].c_str(), L"");
-		}
-
-		for (auto it = NormalizeTable.begin(); it != NormalizeTable.end(); it++)
-		{
-			strText.Replace(it->first, it->second);
-		}
-		strText = strText.Trim();
-
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(id.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_IMAGE, &CComVariant(userImageUrl.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_NORMALIZED_TEXT, &CComVariant(strText)));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_TEXT, &CComVariant(text.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_CREATED_AT, &CComVariant(createdAt.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_TWITTER_OBJECT)));
-
-		if (!retweetedUserDisplayName.empty())
-		{
-			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, &CComVariant(retweetedUserDisplayName.c_str())));
-			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RETWEETED_USER_NAME, &CComVariant(retweetedUserScreenName.c_str())));
-		}
+		RETURN_IF_FAILED(ParseTweet(itemObject, pVariantObject));
 	}
 	return S_OK;
 }

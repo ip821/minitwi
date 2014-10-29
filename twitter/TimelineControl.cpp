@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "TimelineControl.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 
 // CTimelineControl
 

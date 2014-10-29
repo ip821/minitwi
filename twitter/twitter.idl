@@ -478,16 +478,6 @@ interface ITwitViewControl : IUnknown
 
 [
 	object,
-	uuid(12CC5889-9DE2-4AC0-89F9-21641B9E4BB0),
-	pointer_default(unique)
-]
-interface ITwitViewParentTwitService : IUnknown
-{
-	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
-};
-
-[
-	object,
 	uuid(F233594D-4C7B-4214-95BD-65DC61CB7E4A),
 	pointer_default(unique)
 ]
@@ -719,13 +709,6 @@ library twitterLib
 	coclass TwitViewControl
 	{
 		[default] interface ITwitViewControl;
-	};
-	[
-		uuid(9CEAABEB-FCAA-4A7C-BA8A-3D638EDFB713)
-	]
-	coclass TwitViewParentTwitService
-	{
-		[default] interface ITwitViewParentTwitService;
 	};
 	[
 		uuid(8EA62966-384D-4768-96F9-C8A61B4CDF12)

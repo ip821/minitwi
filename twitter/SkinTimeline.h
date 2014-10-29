@@ -7,6 +7,7 @@
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 
 using namespace ATL;
 using namespace std;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CustomListBox.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 
 #define TARGET_RESOLUTION 1
 

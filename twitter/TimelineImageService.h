@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 #include "asyncsvc_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
+#include "..\twiconn\Plugins.h"
 
 using namespace ATL;
 using namespace std;

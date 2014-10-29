@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SkinUserAccountControl.h"
+#include "..\twiconn\Plugins.h"
 
 #define DISTANCE_DISPLAY_NAME 20 / 200
 #define DISTANCE_DESCRIPTION_Y 20

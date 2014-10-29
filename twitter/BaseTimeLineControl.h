@@ -35,6 +35,11 @@ protected:
 		return S_OK;
 	}
 
+	virtual HRESULT ShuttingDown()
+	{
+		return S_OK;
+	}
+
 public:
 	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
 	METHOD_EMPTY(STDMETHOD(OnClose)());
@@ -96,6 +101,7 @@ public:
 
 	STDMETHOD(OnShutdown)()
 	{
+		RETURN_IF_FAILED(ShuttingDown());
 		{
 			CComQIPtr <IPluginSupportNotifications> pPluginSupportNotifications = m_pTimelineControl;
 			if (pPluginSupportNotifications)

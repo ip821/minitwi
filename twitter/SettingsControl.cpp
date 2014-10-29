@@ -5,6 +5,7 @@
 #include "Plugins.h"
 #include "..\model-libs\asyncsvc\Plugins.h"
 #include "UpdateService.h"
+#include "..\twiconn\Plugins.h"
 
 // CSettingsControl
 

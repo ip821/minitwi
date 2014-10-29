@@ -191,7 +191,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ColumnRects.cpp" />
-    <ClCompile Include="TwitViewParentTwitService.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="HomeTimeLineControl.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
@@ -307,7 +306,6 @@
     <ClInclude Include="TimelineService.h" />
     <ClInclude Include="twitconn_contract_i.h" />
     <ClInclude Include="twitter_i.h" />
-    <ClInclude Include="TwitViewParentTwitService.h" />
     <ClInclude Include="TwitViewRepliesService.h" />
     <ClInclude Include="UpdateScope.h" />
     <ClInclude Include="UpdateService.h" />

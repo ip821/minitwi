@@ -60,6 +60,8 @@ public:
 protected:
 	virtual HRESULT Initializing();
 	virtual HRESULT Initialized();
+	virtual HRESULT ShuttingDown();
+
 private:
 
 public:

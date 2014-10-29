@@ -57,6 +57,18 @@ STDMETHODIMP COpenUrlService::OnActivate(IControl *pControl)
 
 STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 {
+	CComQIPtr<ITwitViewControl> pTwitViewControl = pControl;
+	if (pTwitViewControl)
+	{
+		CComQIPtr<IPluginSupportNotifications> pPluginSupportNotifications = pTwitViewControl;
+		if (pPluginSupportNotifications)
+		{
+			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
+			RETURN_IF_FAILED(m_pTabbedControl->RemovePage(pControl));
+		}
+		return S_OK;
+	}
+
 	CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
 	if (pUserInfoControl)
 	{
@@ -72,6 +84,7 @@ STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
 			RETURN_IF_FAILED(m_pTabbedControl->RemovePage(pControl));
 		}
+		return S_OK;
 	}
 	return S_OK;
 }

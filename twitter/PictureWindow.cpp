@@ -4,6 +4,7 @@
 #include "PictureWindow.h"
 #include "Plugins.h"
 #include "SkinUserAccountControl.h"
+#include "..\twiconn\Plugins.h"
 
 // CPictureWindow
 

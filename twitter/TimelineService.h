@@ -54,9 +54,11 @@ private:
 	BOOL m_bShowMoreRunning = 0;
 	CComBSTR m_bstrUser;
 
-	STDMETHOD(UpdateRelativeTime)(IObjArray* pObjectArray);
 
 public:
+	static HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject, TIME_ZONE_INFORMATION tz);
+	static HRESULT UpdateRelativeTime(IObjArray* pObjectArray, TIME_ZONE_INFORMATION tz);
+	
 	STDMETHOD(Load)(ISettings *pSettings);
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);

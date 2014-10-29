@@ -19,13 +19,7 @@ STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 
 	CComPtr<IThreadService> pTimelineThread;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThread));
-	ATLASSERT(pTimelineThread);
 	RETURN_IF_FAILED(pTimelineThread->Run());
-
-	CComPtr<IThreadService> pParentTwitThread;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TWITVIEWPARENTTWITSERVICE_THREAD, &pParentTwitThread));
-	ATLASSERT(pParentTwitThread);
-	RETURN_IF_FAILED(pParentTwitThread->Run());
 
 	return S_OK;
 }
@@ -40,9 +34,11 @@ HRESULT CTwitViewControl::Initializing()
 HRESULT CTwitViewControl::Initialized()
 {
 	RETURN_IF_FAILED(__super::Initialized());
-	CComPtr<ITwitViewParentTwitService> pTwitViewParentTwitService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TwitViewParentTwitService, &pTwitViewParentTwitService));
-	ATLASSERT(pTwitViewParentTwitService);
-	RETURN_IF_FAILED(pTwitViewParentTwitService->SetTimelineControl(m_pTimelineControl));
+	return S_OK;
+}
+
+HRESULT CTwitViewControl::ShuttingDown()
+{
+	RETURN_IF_FAILED(__super::ShuttingDown());
 	return S_OK;
 }

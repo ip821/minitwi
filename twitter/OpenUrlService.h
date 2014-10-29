@@ -2,6 +2,7 @@
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
+#include "..\twiconn\Plugins.h"
 
 using namespace ATL;
 
