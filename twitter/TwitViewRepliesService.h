@@ -49,11 +49,7 @@ private:
 	DWORD m_dwAdvice = 0;
 	mutex m_mutex;
 
-	bool m_bUpdating = false;
-	int m_cAttemptCount = 0;
-	const int MAX_ATTEMPT_COUNT = 10;
-	CComBSTR m_bstrMaxId;
-	bool m_bParentRetroived = false;
+	bool m_bParentRetrieved = false;
 
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);

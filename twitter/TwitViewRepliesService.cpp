@@ -23,13 +23,6 @@ STDMETHODIMP CTwitViewRepliesService::OnInitialized(IServiceProvider* pServicePr
 
 STDMETHODIMP CTwitViewRepliesService::OnShutdown()
 {
-	m_cAttemptCount = MAX_ATTEMPT_COUNT;
-	if (m_bUpdating)
-	{
-		CComPtr<IViewControllerService> pViewControllerService;
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pViewControllerService));
-		RETURN_IF_FAILED(pViewControllerService->StopAnimation());
-	}
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	{
 		lock_guard<mutex> lock(m_mutex);
@@ -68,14 +61,6 @@ STDMETHODIMP CTwitViewRepliesService::Load(ISettings* pSettings)
 STDMETHODIMP CTwitViewRepliesService::OnStart(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
-	m_bUpdating = true;
-	if (!m_cAttemptCount)
-	{
-		CComPtr<IViewControllerService> pViewControllerService;
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pViewControllerService));
-		RETURN_IF_FAILED(pViewControllerService->StartAnimation());
-	}
-	++m_cAttemptCount;
 	return S_OK;
 }
 
@@ -104,12 +89,12 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	CComVariant vParentTwitId;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vParentTwitId));
 
-	if (!m_bParentRetroived && vParentTwitId.vt == VT_BSTR)
+	if (!m_bParentRetrieved && vParentTwitId.vt == VT_BSTR)
 	{
 		CComPtr<IVariantObject> pParentItem;
 		RETURN_IF_FAILED(pConnection->GetTwit(vParentTwitId.bstrVal, &pParentItem));
 		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
-		m_bParentRetroived = true;
+		m_bParentRetrieved = true;
 	}
 
 	CComVariant vId;
@@ -124,7 +109,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	ATLASSERT(vUserName.vt == VT_BSTR);
 
 	CComPtr<IObjArray> pObjectArray;
-	RETURN_IF_FAILED(pConnection->Search(CComBSTR(CString(L"@") + vUserName.bstrVal), m_bstrMaxId, 100, &pObjectArray));
+	RETURN_IF_FAILED(pConnection->Search(CComBSTR(CString(L"@") + vUserName.bstrVal), vOriginalId.vt == VT_BSTR ? vOriginalId.bstrVal : vId.bstrVal, 100, &pObjectArray));
 
 	CComPtr<IObjCollection> pObjectCollectionResult;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjectCollectionResult));
@@ -135,14 +120,6 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	{
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-
-		if (i == uiCollectionCount - 1)
-		{
-			CComVariant vTwitId;
-			RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vTwitId));
-			ATLASSERT(vTwitId.vt == VT_BSTR);
-			m_bstrMaxId = vTwitId.bstrVal;
-		}
 
 		CComVariant vInReplyToStatusId;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vInReplyToStatusId));
@@ -165,13 +142,6 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
-
-	if (m_cAttemptCount >= MAX_ATTEMPT_COUNT)
-	{
-		CComPtr<IViewControllerService> pViewControllerService;
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pViewControllerService));
-		RETURN_IF_FAILED(pViewControllerService->StopAnimation());
-	}
 
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
@@ -241,23 +211,10 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 		}
 	}
 
-	if (m_cAttemptCount < MAX_ATTEMPT_COUNT)
-	{
-		PostMessage(m_hControlWnd, WM_START_NEXT_REPLY_ITERATION, NULL, NULL);
-	}
-	
-	++m_cAttemptCount;
-
-	m_bUpdating = false;
-
 	return S_OK;
 }
 
 STDMETHODIMP CTwitViewRepliesService::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *plResult, BOOL *bResult)
 {
-	if (m_hControlWnd && hWnd == m_hControlWnd && uMsg == WM_START_NEXT_REPLY_ITERATION)
-	{
-		RETURN_IF_FAILED(m_pThreadService->Run());
-	}
 	return S_OK;
 }

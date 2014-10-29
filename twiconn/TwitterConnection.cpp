@@ -153,7 +153,7 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::Search(BSTR bstrQuery, BSTR bstrMaxId, UINT uiCount, IObjArray** ppObjectArray)
+STDMETHODIMP CTwitterConnection::Search(BSTR bstrQuery, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray)
 {
 	CHECK_E_POINTER(bstrQuery);
 	CHECK_E_POINTER(ppObjectArray);
@@ -162,8 +162,8 @@ STDMETHODIMP CTwitterConnection::Search(BSTR bstrQuery, BSTR bstrMaxId, UINT uiC
 
 	string strQuery = W2A(bstrQuery);
 	string strAppToken = W2A(m_strAppToken.c_str());
-	string strMaxId = bstrMaxId == nullptr ? "" : W2A(bstrMaxId);
-	if (!m_pTwitObj->searchWithAppAuth(strAppToken, strQuery, strMaxId, boost::lexical_cast<string>(uiCount)))
+	string strSinceId = bstrSinceId == nullptr ? "" : W2A(bstrSinceId);
+	if (!m_pTwitObj->searchWithAppAuth(strAppToken, strQuery, strSinceId, boost::lexical_cast<string>(uiCount)))
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}

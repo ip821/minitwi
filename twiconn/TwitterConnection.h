@@ -59,7 +59,7 @@ public:
 	STDMETHOD(OpenConnectionWithAppAuth)();
 	STDMETHOD(GetTimeline)(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
 	STDMETHOD(GetTwit)(BSTR bstrId, IVariantObject** ppVariantObject);
-	STDMETHOD(Search)(BSTR bstrQuery, BSTR bstrMaxId, UINT uiCount, IObjArray** ppObjectArray);
+	STDMETHOD(Search)(BSTR bstrQuery, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterConnection), CTwitterConnection)

@@ -401,7 +401,7 @@ bool twitCurl::statusUpdate(std::string& newStatus, std::string inReplyToStatusI
 		newStatusMsg);
 }
 
-bool twitCurl::searchWithAppAuth(std::string strAppToken, std::string& searchQuery, std::string& strMaxId, std::string resultCount)
+bool twitCurl::searchWithAppAuth(std::string strAppToken, std::string& searchQuery, std::string& strSinceId, std::string resultCount)
 {
 	/* Prepare URL */
 	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
@@ -417,10 +417,10 @@ bool twitCurl::searchWithAppAuth(std::string strAppToken, std::string& searchQue
 			twitCurlDefaults::TWITCURL_COUNT + urlencode(resultCount);
 	}
 
-	if (strMaxId.size())
+	if (strSinceId.size())
 	{
 		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
-			twitCurlDefaults::TWITCURL_MAXID + urlencode(strMaxId);
+			twitCurlDefaults::TWITCURL_SINCEID + urlencode(strSinceId);
 	}
 
 	/* Perform GET */
