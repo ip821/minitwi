@@ -273,7 +273,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 
 		if (lpdis->iHoveredItem == static_cast<int>(lpdis->lpdi->itemID) && lpdis->iHoveredColumn == static_cast<int>(i) && bIsUrl)
 		{
-			RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrColumnName + VAR_SELECTED_POSTFIX, &font));
+			RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrFontName + VAR_SELECTED_POSTFIX, &font));
 		}
 
 		if (!bIsImage)
@@ -660,6 +660,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
 					continue;
 
+				auto bDoubleSize = vDoubleSize.vt == VT_BOOL && vDoubleSize.boolVal;
 				auto size = AddColumn(
 					hdc,
 					pColumnRects,
@@ -668,7 +669,13 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 					CString(bstrUrl),
 					x,
 					lastY,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255)
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, 255),
+					TRUE,
+					FALSE,
+					0,
+					Justify::None,
+					FALSE,
+					bDoubleSize
 					);
 
 				lastY += size.cy;
