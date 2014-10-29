@@ -16,14 +16,14 @@ STDMETHODIMP CTwitViewRepliesService::OnInitialized(IServiceProvider* pServicePr
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
-	RETURN_IF_FAILED(m_pThreadService->AdviseTo(pUnk, &m_dwAdvice));
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 
 	return S_OK;
 }
 
 STDMETHODIMP CTwitViewRepliesService::OnShutdown()
 {
-	RETURN_IF_FAILED(m_pThreadService->UnadviseFrom(m_dwAdvice));
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	{
 		lock_guard<mutex> lock(m_mutex);
 		m_pSettings.Release();
