@@ -16,21 +16,26 @@ STDMETHODIMP CTwitViewRepliesService::OnInitialized(IServiceProvider* pServicePr
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
+	RETURN_IF_FAILED(m_pThreadService->AdviseTo(pUnk, &m_dwAdvice));
 
 	return S_OK;
 }
 
 STDMETHODIMP CTwitViewRepliesService::OnShutdown()
 {
-	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
+	RETURN_IF_FAILED(m_pThreadService->UnadviseFrom(m_dwAdvice));
 	{
 		lock_guard<mutex> lock(m_mutex);
 		m_pSettings.Release();
 	}
+
 	m_pTimelineControl.Release();
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
+	m_pSettings.Release();
+	m_pVariantObject.Release();
+	IInitializeWithControlImpl::OnShutdown();
+
 	return S_OK;
 }
 
@@ -66,6 +71,8 @@ STDMETHODIMP CTwitViewRepliesService::OnStart(IVariantObject *pResult)
 
 STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 {
+	CComPtr<ITwitViewRepliesService> guard = this;
+	CComPtr<IVariantObject> pVariantObjectMember = m_pVariantObject;
 	CHECK_E_POINTER(pResult);
 	CComPtr<ISettings> pSettings;
 	{
@@ -87,7 +94,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
 
 	CComVariant vParentTwitId;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vParentTwitId));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vParentTwitId));
 
 	if (!m_bParentRetrieved && vParentTwitId.vt == VT_BSTR)
 	{
@@ -98,14 +105,14 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	}
 
 	CComVariant vId;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_ID, &vId));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_ID, &vId));
 	ATLASSERT(vId.vt == VT_BSTR);
 
 	CComVariant vOriginalId;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_ORIGINAL_ID, &vOriginalId));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_ORIGINAL_ID, &vOriginalId));
 
 	CComVariant vUserName;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
 	ATLASSERT(vUserName.vt == VT_BSTR);
 
 	CComPtr<IObjArray> pObjectArray;
@@ -155,7 +162,7 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 	auto insertIndex = 1;
 
 	CComVariant vParentTwit;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_PARENT_RESULT, &CComVariant(vParentTwit)));
+	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_PARENT_RESULT, &vParentTwit));
 
 	if (vParentTwit.vt == VT_UNKNOWN)
 	{
@@ -163,6 +170,7 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 		RETURN_IF_FAILED(CTimelineService::UpdateRelativeTimeForTwit(pResult, m_tz));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pParentItem, 0));
 		RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(0));
+		++insertIndex;
 	}
 
 	CComVariant vResult;

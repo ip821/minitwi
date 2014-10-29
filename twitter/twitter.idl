@@ -67,6 +67,7 @@ interface IImageManagerService : IUnknown
 	HRESULT ContainsImageKey(BSTR bstrKey, BOOL* pbContains);
 	HRESULT RemoveImage(BSTR bstrKey);
 	HRESULT CopyImageTo(BSTR bstrKey, IImageManagerService* pDest);
+	HRESULT CopyTo(IImageManagerService* pDest);
 
 };
 

@@ -34,6 +34,9 @@ STDMETHODIMP CTimelineControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pCommandSupport, __uuidof(ICommandSupportEventSink), m_dwAdviceCommandSupport));
 	m_pServiceProvider.Release();
+	m_pCommandSupport.Release();
+	m_pPluginSupport.Release();
+	m_pSettings.Release();
 	//exit(0); //skip OnShutdown calls, thread joins etc.
 	return S_OK;
 }
@@ -256,6 +259,8 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 
 LRESULT CTimelineControl::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if (!m_pCommandSupport)
+		return 0;
 	BOOL bResult = FALSE;
 	LRESULT lResult = 0;
 	ASSERT_IF_FAILED(m_pCommandSupport->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lResult, &bResult));

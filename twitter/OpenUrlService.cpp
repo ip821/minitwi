@@ -111,9 +111,34 @@ STDMETHODIMP COpenUrlService::OpenTwitView(IVariantObject* pVariantObject)
 	}
 
 	RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
+	RETURN_IF_FAILED(CopyImages(pControl));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pVariantObject));
 
 	RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
+
+	return S_OK;
+}
+
+STDMETHODIMP COpenUrlService::CopyImages(IControl* pControl)
+{
+	CComPtr<IControl> pCurrentControl;
+	RETURN_IF_FAILED(m_pTabbedControl->GetCurrentPage(&pCurrentControl));
+	ATLASSERT(pCurrentControl);
+	CComQIPtr<IServiceProviderSupport> pCurrentControlServiceProviderSupport = pCurrentControl;
+	ATLASSERT(pCurrentControlServiceProviderSupport);
+	CComPtr<IServiceProvider> pCurrentControlServiceProvider;
+	RETURN_IF_FAILED(pCurrentControlServiceProviderSupport->GetServiceProvider(&pCurrentControlServiceProvider));
+	CComPtr<IImageManagerService> pCurrentControlImageService;
+	RETURN_IF_FAILED(pCurrentControlServiceProvider->QueryService(CLSID_ImageManagerService, &pCurrentControlImageService));
+
+	CComQIPtr<IServiceProviderSupport> pUserInfoServiceProviderSupport = pControl;
+	ATLASSERT(pUserInfoServiceProviderSupport);
+	CComPtr<IServiceProvider> pUserInfoServiceProvider;
+	RETURN_IF_FAILED(pUserInfoServiceProviderSupport->GetServiceProvider(&pUserInfoServiceProvider));
+	CComPtr<IImageManagerService> pUserInfoImageManagerService;
+	RETURN_IF_FAILED(pUserInfoServiceProvider->QueryService(CLSID_ImageManagerService, &pUserInfoImageManagerService));
+
+	RETURN_IF_FAILED(pCurrentControlImageService->CopyTo(pUserInfoImageManagerService));
 
 	return S_OK;
 }
@@ -135,37 +160,7 @@ STDMETHODIMP COpenUrlService::OpenUserInfo(IVariantObject* pVariantObject)
 	}
 
 	RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
-
-	{
-		CComPtr<IControl> pCurrentControl;
-		RETURN_IF_FAILED(m_pTabbedControl->GetCurrentPage(&pCurrentControl));
-		ATLASSERT(pCurrentControl);
-		CComQIPtr<IServiceProviderSupport> pCurrentControlServiceProviderSupport = pCurrentControl;
-		ATLASSERT(pCurrentControlServiceProviderSupport);
-		CComPtr<IServiceProvider> pCurrentControlServiceProvider;
-		RETURN_IF_FAILED(pCurrentControlServiceProviderSupport->GetServiceProvider(&pCurrentControlServiceProvider));
-		CComPtr<IImageManagerService> pCurrentControlImageService;
-		RETURN_IF_FAILED(pCurrentControlServiceProvider->QueryService(CLSID_ImageManagerService, &pCurrentControlImageService));
-
-		CComQIPtr<IServiceProviderSupport> pUserInfoServiceProviderSupport = pControl;
-		ATLASSERT(pUserInfoServiceProviderSupport);
-		CComPtr<IServiceProvider> pUserInfoServiceProvider;
-		RETURN_IF_FAILED(pUserInfoServiceProviderSupport->GetServiceProvider(&pUserInfoServiceProvider));
-		CComPtr<IImageManagerService> pUserInfoImageManagerService;
-		RETURN_IF_FAILED(pUserInfoServiceProvider->QueryService(CLSID_ImageManagerService, &pUserInfoImageManagerService));
-
-		CComVariant vUserImage;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
-		if (vUserImage.vt == VT_BSTR)
-		{
-			BOOL bContains = FALSE;
-			RETURN_IF_FAILED(pCurrentControlImageService->ContainsImageKey(vUserImage.bstrVal, &bContains));
-			if (bContains)
-			{
-				RETURN_IF_FAILED(pCurrentControlImageService->CopyImageTo(vUserImage.bstrVal, pUserInfoImageManagerService));
-			}
-		}
-	}
+	RETURN_IF_FAILED(CopyImages(pControl));
 
 	CComVariant vUserObject;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_OBJECT, &vUserObject));

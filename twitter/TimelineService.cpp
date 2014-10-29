@@ -65,6 +65,10 @@ STDMETHODIMP CTimelineService::OnShutdown()
 
 	m_pThreadServiceUpdateService.Release();
 	m_pTimelineControl.Release();
+	m_pSettings.Release();
+	m_pThreadServiceShowMoreService.Release();;
+	m_pServiceProvider.Release();
+
 	return S_OK;
 }
 

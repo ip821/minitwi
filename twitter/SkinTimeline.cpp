@@ -38,6 +38,8 @@ STDMETHODIMP CSkinTimeline::GetImageManagerService(IImageManagerService** ppImag
 
 STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageManagerService)
 {
+	if (m_pImageManagerService)
+		m_pImageManagerService.Release();
 	m_pImageManagerService = pImageManagerService;
 	return S_OK;
 }

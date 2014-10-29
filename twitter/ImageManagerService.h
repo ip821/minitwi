@@ -25,6 +25,18 @@ public:
 		COM_INTERFACE_ENTRY(IImageManagerService)
 	END_COM_MAP()
 
+	DECLARE_PROTECT_FINAL_CONSTRUCT()
+
+	HRESULT FinalConstruct()
+	{
+		return S_OK;
+	}
+
+	void FinalRelease()
+	{
+
+	}
+
 private:
 	std::map<CComBSTR, std::shared_ptr<Gdiplus::Bitmap>> m_bitmaps;
 	mutex m_mutex;
@@ -36,6 +48,7 @@ public:
 	STDMETHOD(ContainsImageKey)(BSTR bstrKey, BOOL* pbContains);
 	STDMETHOD(RemoveImage)(BSTR bstrKey);
 	STDMETHOD(CopyImageTo)(BSTR bstrKey, IImageManagerService* pDest);
+	STDMETHOD(CopyTo)(IImageManagerService* pDest);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ImageManagerService), CImageManagerService)

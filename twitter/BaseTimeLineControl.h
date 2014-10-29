@@ -22,7 +22,8 @@ protected:
 	CComPtr<ITimelineService> m_pTimelineService;
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ITimerService> m_pTimerService;
-
+	CComPtr<ISkinTimeline> m_pSkinTimeline;
+	
 	HWND m_hWndTimelineControl = 0;
 
 	virtual HRESULT Initializing()
@@ -117,10 +118,14 @@ public:
 		m_pSettings.Release();
 		m_pTimelineService.Release();
 		m_pTimelineControl.Release();
-		m_pTheme.Release();
+		m_pServiceProvider.Release();
 		m_pServiceProvider.Release();
 		m_pServiceProviderParent.Release();
 		m_pPluginSupport.Release();
+
+		RETURN_IF_FAILED(m_pSkinTimeline->SetImageManagerService(NULL));
+		m_pSkinTimeline.Release();
+		m_pTheme.Release();
 
 		return S_OK;
 	}
@@ -186,10 +191,9 @@ public:
 
 		CComPtr<IImageManagerService> pImageManagerService;
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
-		CComPtr<ISkinTimeline> pSkinTimeline;
-		RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&pSkinTimeline));
-		RETURN_IF_FAILED(pSkinTimeline->SetImageManagerService(pImageManagerService));
-		RETURN_IF_FAILED(m_pTimelineControl->SetSkinTimeline(pSkinTimeline));
+		RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&m_pSkinTimeline));
+		RETURN_IF_FAILED(m_pSkinTimeline->SetImageManagerService(pImageManagerService));
+		RETURN_IF_FAILED(m_pTimelineControl->SetSkinTimeline(m_pSkinTimeline));
 		return S_OK;
 	}
 
