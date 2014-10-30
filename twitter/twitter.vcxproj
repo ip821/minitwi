@@ -201,6 +201,7 @@
     <ClCompile Include="SkinUserAccountControl.cpp" />
     <ClCompile Include="TabbedControlStatusService.cpp" />
     <ClCompile Include="TimelineCleanupService.cpp" />
+    <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp" />
     <ClCompile Include="TimelineImageService.cpp" />
     <ClCompile Include="PictureWindow.cpp" />
     <ClCompile Include="PictureWindowCopyCommand.cpp" />
@@ -271,6 +272,7 @@
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="BaseTimeLineControl.h" />
     <ClInclude Include="ColumnRects.h" />
+    <ClInclude Include="TimelineControlOpenInBrowserCommand.h" />
     <ClInclude Include="TwitViewControl.h" />
     <ClInclude Include="DownloadService.h" />
     <ClInclude Include="HomeTimeLineControl.h" />

@@ -718,6 +718,13 @@ library twitterLib
 	{
 		[default] interface ITwitViewRepliesService;
 	};
+	[
+		uuid(03598148-FEBB-406A-BA6A-1092C957B600)
+	]
+	coclass TimelineControlOpenInBrowserCommand
+	{
+		[default] interface ICommand;
+	};
 };
 
 import "shobjidl.idl";

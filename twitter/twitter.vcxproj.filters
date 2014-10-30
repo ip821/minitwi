@@ -232,6 +232,9 @@
     <ClCompile Include="TwitViewRepliesService.cpp">
       <Filter>Services\TwitViewRepliesService</Filter>
     </ClCompile>
+    <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp">
+      <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -377,6 +380,9 @@
     </ClInclude>
     <ClInclude Include="TwitViewRepliesService.h">
       <Filter>Services\TwitViewRepliesService</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineControlOpenInBrowserCommand.h">
+      <Filter>Controls\TimelineControl\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
