@@ -217,8 +217,14 @@ STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
 {
 	CoInitialize(NULL);
 
+	CComQIPtr<ITabbedControl> pTabControl = m_pControl;
+	CComPtr<IControl> pTimelineControl;
+	RETURN_IF_FAILED(pTabControl->GetPage(0, &pTimelineControl));
+	CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pTimelineControl;
+	CComPtr<IServiceProvider> pServiceProvider;
+	RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
 	CComPtr<IThreadService> pTimelineThreadService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThreadService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThreadService));
 	RETURN_IF_FAILED(pTimelineThreadService->Join());
 
 	RETURN_IF_FAILED(m_pHomeTimeLineControl->StopTimers());
