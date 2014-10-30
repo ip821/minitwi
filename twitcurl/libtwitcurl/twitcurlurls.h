@@ -65,6 +65,7 @@ namespace twitterDefaults
     const std::string TWITCURL_FEATURED_USERS_URL = TWITCURL_BASE_URL + "statuses/featured";
     const std::string TWITCURL_FRIENDS_TIMELINE_URL = TWITCURL_BASE_URL + "statuses/friends_timeline";
     const std::string TWITCURL_MENTIONS_URL = TWITCURL_BASE_URL + "statuses/mentions";
+	const std::string TWITCURL_MENTIONSTIMELINE_URL = TWITCURL_BASE_URL + "statuses/mentions_timeline";
     const std::string TWITCURL_USERTIMELINE_URL = TWITCURL_BASE_URL + "statuses/user_timeline";
 
     /* Users URLs */

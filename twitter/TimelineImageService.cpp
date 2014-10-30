@@ -19,8 +19,12 @@ STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProv
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceUpdateService));
+
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreService));
-	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceShowMoreService));
+	if (m_pThreadServiceShowMoreService)
+	{
+		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceShowMoreService));
+	}
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_DownloadService, &m_pDownloadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &m_dwAdviceDownloadService));
@@ -38,7 +42,10 @@ STDMETHODIMP CTimelineImageService::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimerServiceUpdate, __uuidof(ITimerServiceEventSink), m_dwAdviceTimerServiceUpdate));
-	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
+	if (m_dwAdviceThreadServiceShowMoreService)
+	{
+		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
+	}
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	m_pThreadServiceShowMoreService.Release();
@@ -53,10 +60,10 @@ STDMETHODIMP CTimelineImageService::OnShutdown()
 STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 {
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
-	std::hash_set<IVariantObject*> ids;
+	hash_set<IVariantObject*> ids;
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
-		ids = std::hash_set<IVariantObject*>(m_idsToUpdate);
+		lock_guard<mutex> lock(m_mutex);
+		ids = hash_set<IVariantObject*>(m_idsToUpdate);
 		m_idsToUpdate.clear();
 	}
 
@@ -71,12 +78,12 @@ STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 
 STDMETHODIMP CTimelineImageService::OnItemRemoved(IVariantObject *pItemObject)
 {
-	std::vector<std::wstring> urls;
+	vector<wstring> urls;
 	RETURN_IF_FAILED(GetUrls(pItemObject, urls));
 	for (auto& url : urls)
 	{
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
+			lock_guard<mutex> lock(m_mutex);
 			ATLASSERT(m_imageRefs.find(url) != m_imageRefs.end());
 			m_imageRefs[url].erase(pItemObject);
 			if (m_imageRefs[url].size() == 0)
@@ -126,7 +133,7 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ITEM_INDEX, &vItemIndex));
 
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		lock_guard<mutex> lock(m_mutex);
 
 		auto it = m_imageRefs.find(vUrl.bstrVal);
 		if (it != m_imageRefs.end())
@@ -150,7 +157,7 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 		lock_guard<mutex> lock(m_mutex);
 		m_imageRefs.clear();
 
-		hash_set<std::wstring> urls;
+		hash_set<wstring> urls;
 
 		UINT uiCount = 0;
 		RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
@@ -162,7 +169,7 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 			CComVariant vId;
 			RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
 
-			std::vector<std::wstring> itemUrls;
+			vector<wstring> itemUrls;
 			RETURN_IF_FAILED(GetUrls(pVariantObject, itemUrls));
 
 			for (auto& url : itemUrls)
@@ -198,7 +205,7 @@ STDMETHODIMP CTimelineImageService::SetTimelineControl(ITimelineControl* pTimeli
 	return S_OK;
 }
 
-HRESULT CTimelineImageService::GetUrls(IVariantObject* pVariantObject, std::vector<std::wstring>& urls)
+HRESULT CTimelineImageService::GetUrls(IVariantObject* pVariantObject, vector<wstring>& urls)
 {
 	CComVariant vUserImage;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));

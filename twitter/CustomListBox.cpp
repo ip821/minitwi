@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CustomListBox.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 
 #define TARGET_RESOLUTION 1
 
@@ -323,25 +324,36 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		auto curSel = GetCurSel();
 		if (curSel >= 0)
 		{
-			CComPtr<IColumnRects> pColumnRects = m_columnRects[curSel];
-			UINT uiCount = 0;
-			pColumnRects->GetCount(&uiCount);
-			for (size_t i = 0; i < uiCount; i++)
+			auto keyControlState = GetKeyState(VK_CONTROL) & 0x8000;
+			if (keyControlState == 0)
 			{
-				CComBSTR bstrColumnName;
-				pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName);
-				CComBSTR bstrMediaUrl;
-				pColumnRects->GetRectStringProp(i, VAR_TWITTER_MEDIAURL, &bstrMediaUrl);
-				if (bstrColumnName == CComBSTR(VAR_TWITTER_IMAGE) && bstrMediaUrl != CComBSTR(L""))
+				CComPtr<IColumnRects> pColumnRects = m_columnRects[curSel];
+				UINT uiCount = 0;
+				pColumnRects->GetCount(&uiCount);
+				for (size_t i = 0; i < uiCount; i++)
 				{
-					CRect itemRect;
-					GetItemRect(curSel, &itemRect);
-					CRect columnRect;
-					pColumnRects->GetRect(i, columnRect);
-					HandleCLick(MAKELONG(itemRect.left + columnRect.left + 1, itemRect.top + columnRect.top + 1), NM_LISTBOX_LCLICK);
-					bHandled = TRUE;
-					break;
+					CComBSTR bstrColumnName;
+					pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName);
+					CComBSTR bstrMediaUrl;
+					pColumnRects->GetRectStringProp(i, VAR_TWITTER_MEDIAURL, &bstrMediaUrl);
+					if (bstrColumnName == CComBSTR(VAR_TWITTER_IMAGE) && bstrMediaUrl != CComBSTR(L""))
+					{
+						CRect itemRect;
+						GetItemRect(curSel, &itemRect);
+						CRect columnRect;
+						pColumnRects->GetRect(i, columnRect);
+						HandleCLick(MAKELONG(itemRect.left + columnRect.left + 1, itemRect.top + columnRect.top + 1), NM_LISTBOX_LCLICK);
+						bHandled = TRUE;
+						break;
+					}
 				}
+			}
+			else if (keyControlState > 0)
+			{
+				CRect itemRect;
+				GetItemRect(curSel, &itemRect);
+				HandleCLick(MAKELONG(itemRect.left + 1, itemRect.top + 1), NM_LISTBOX_LDOUBLECLICK);
+				bHandled = TRUE;
 			}
 		}
 	}
@@ -402,6 +414,12 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	}
 	::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 	return 0;
+}
+
+LRESULT CCustomListBox::OnLMouseDoubleClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = FALSE;
+	return HandleCLick(lParam, NM_LISTBOX_LDOUBLECLICK);
 }
 
 LRESULT CCustomListBox::OnLMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

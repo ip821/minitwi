@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "TimelineControlCopyCommand.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 
 STDMETHODIMP CTimelineControlCopyCommand::OnInitialized(IServiceProvider* pServiceProvider)
 {

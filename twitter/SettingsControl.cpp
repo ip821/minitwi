@@ -5,6 +5,7 @@
 #include "Plugins.h"
 #include "..\model-libs\asyncsvc\Plugins.h"
 #include "UpdateService.h"
+#include "..\twiconn\Plugins.h"
 
 // CSettingsControl
 
@@ -15,15 +16,19 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_AUTH_THREAD, &m_pThreadService));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_AUTH_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &m_pFormManager));
 
 	m_pCustomTabControl = m_pControl;
 
 	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_TimelineControl, &pControl));
-	m_pTimelineControl = pControl;
+	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
+	m_pHomeTimeLineControl = pControl;
+	ATLASSERT(m_pHomeTimeLineControl);
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pHomeTimeLineControl;
+	ATLASSERT(pTimelineControlSupport);
+	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
 
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
@@ -52,6 +57,7 @@ STDMETHODIMP CSettingsControl::OnShutdown()
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
 	m_pTimelineControl.Release();
+	m_pHomeTimeLineControl.Release();
 	return S_OK;
 }
 
@@ -174,6 +180,8 @@ STDMETHODIMP CSettingsControl::Reset(ISettings *pSettings)
 
 HRESULT CSettingsControl::SaveEditBoxText(int id, BSTR bstrKey, ISettings* pSettings)
 {
+	if (!IsWindow())
+		return S_OK;
 	CEdit wndTextBox = GetDlgItem(id);
 	CComBSTR bstr;
 	wndTextBox.GetWindowText(&bstr);
@@ -213,9 +221,7 @@ STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThreadService));
 	RETURN_IF_FAILED(pTimelineThreadService->Join());
 
-	CComPtr<IViewControllerService> pTimelineService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pTimelineService));
-	RETURN_IF_FAILED(pTimelineService->StopTimers());
+	RETURN_IF_FAILED(m_pHomeTimeLineControl->StopTimers());
 
 	CComBSTR bstrUser;
 	m_editUser.GetWindowText(&bstrUser);
@@ -265,10 +271,8 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 	Save(pSettingsTwitter);
 	SwitchToLogoutMode();
 
-	CComPtr<IViewControllerService> pTimelineService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pTimelineService));
-	RETURN_IF_FAILED(pTimelineService->StartTimers());
-	RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_TimelineControl));
+	RETURN_IF_FAILED(m_pHomeTimeLineControl->StartTimers());
+	RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_HomeTimeLineControl));
 	return S_OK;
 }
 

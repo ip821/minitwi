@@ -67,6 +67,7 @@ interface IImageManagerService : IUnknown
 	HRESULT ContainsImageKey(BSTR bstrKey, BOOL* pbContains);
 	HRESULT RemoveImage(BSTR bstrKey);
 	HRESULT CopyImageTo(BSTR bstrKey, IImageManagerService* pDest);
+	HRESULT CopyTo(IImageManagerService* pDest);
 
 };
 
@@ -142,6 +143,7 @@ interface ISkinTimeline : IUnknown
 interface ITimelineControlEventSink : IUnknown
 {
 	HRESULT OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	HRESULT OnItemDoubleClick(IVariantObject* pVariantObject);
 	HRESULT OnItemRemoved(IVariantObject* pItemObject);
 };
 
@@ -153,6 +155,7 @@ interface ITimelineControlEventSink : IUnknown
 interface ITimelineControl : IControl2
 {
 	HRESULT GetItems(IObjArray** ppObjectArray);
+	HRESULT InsertItem(IVariantObject* pVariantObject, UINT uiIndex);
 	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
 	HRESULT RefreshItem(UINT uiIndex);
 	HRESULT IsEmpty(BOOL* pbIsEmpty);
@@ -174,7 +177,6 @@ interface ITimelineControl : IControl2
 ]
 interface ITimelineService : IUnknown
 {
-	HRESULT SetUserId(BSTR bstrUser);
 	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 
@@ -273,9 +275,21 @@ interface ISettingsControl : IControl2
 ]
 interface IViewControllerService : IUnknown
 {
-	HRESULT StartTimers();
-	HRESULT StopTimers();
 	HRESULT SetTheme(ITheme* pTheme);
+	HRESULT StartAnimation();
+	HRESULT StopAnimation();
+	HRESULT ShowInfo(HRESULT hr, BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
+	HRESULT HideInfo();
+};
+
+[
+	object,
+	uuid(E0DCCDDB-E725-4F6D-B490-220F23977CEB),
+	pointer_default(unique)
+]
+interface IServiceProviderSupport : IUnknown
+{
+	HRESULT GetServiceProvider(IServiceProvider** ppServiceProvider);
 };
 
 [
@@ -426,12 +440,50 @@ interface ICustomTabControl : ITabbedControl
 
 [
 	object,
+	uuid(C20DBDD1-9959-4352-9EC7-7CD4F6B57938),
+	pointer_default(unique)
+]
+interface ITimelineControlSupport : IUnknown
+{
+	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
+};
+
+[
+	object,
 	uuid(970095A2-7854-42C9-BCF7-FCFD07BA5E65),
 	pointer_default(unique)
 ]
-interface IUserInfoControl : IControl2
+interface IUserInfoControl : ITimelineControlSupport
 {
-	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
+};
+
+[
+	object,
+	uuid(CDDDE357-19CA-441E-9F3B-7828A900A4DC),
+	pointer_default(unique)
+]
+interface IHomeTimeLineControl : IUnknown
+{
+	HRESULT StartTimers();
+	HRESULT StopTimers();
+};
+
+[
+	object,
+	uuid(F09D2C6D-3AF5-4178-B4FD-5D4976EFFC1C),
+	pointer_default(unique)
+]
+interface ITwitViewControl : IUnknown
+{
+};
+
+[
+	object,
+	uuid(F233594D-4C7B-4214-95BD-65DC61CB7E4A),
+	pointer_default(unique)
+]
+interface ITwitViewRepliesService : ITimelineService
+{
 };
 
 [
@@ -644,6 +696,34 @@ library twitterLib
 	coclass TabbedControlStatusService
 	{
 		[default] interface IUnknown;
+	};
+	[
+		uuid(80F4CF87-03B7-4929-8ABB-11DC7D57B99E)
+	]
+	coclass HomeTimeLineControl
+	{
+		[default] interface IHomeTimeLineControl;
+	};
+	[
+		uuid(7C7062D1-A7B6-499B-B6FC-78B2458515DC)
+	]
+	coclass TwitViewControl
+	{
+		[default] interface ITwitViewControl;
+	};
+	[
+		uuid(8EA62966-384D-4768-96F9-C8A61B4CDF12)
+	]
+	coclass TwitViewRepliesService
+	{
+		[default] interface ITwitViewRepliesService;
+	};
+	[
+		uuid(03598148-FEBB-406A-BA6A-1092C957B600)
+	]
+	coclass TimelineControlOpenInBrowserCommand
+	{
+		[default] interface ICommand;
 	};
 };
 

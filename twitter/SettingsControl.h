@@ -89,6 +89,7 @@ private:
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IFormManager> m_pFormManager;
+	CComQIPtr<IHomeTimeLineControl> m_pHomeTimeLineControl;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<ITheme> m_pTheme;
 	CComQIPtr<ICustomTabControl> m_pCustomTabControl;

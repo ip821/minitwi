@@ -12,8 +12,7 @@ class ATL_NO_VTABLE CTabbedControlStatusService :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CTabbedControlStatusService, &CLSID_ViewControllerService>,
 	public IPluginSupportNotifications,
-	public IThreadServiceEventSink,
-	public IInitializeWithControlImpl
+	public IThreadServiceEventSink
 {
 public:
 	CTabbedControlStatusService()
@@ -25,11 +24,10 @@ public:
 	BEGIN_COM_MAP(CTabbedControlStatusService)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
-		COM_INTERFACE_ENTRY(IInitializeWithControl)
 	END_COM_MAP()
 
 private:
-	CComQIPtr<ICustomTabControl> m_pTabbedControl;
+	CComQIPtr<IViewControllerService> m_pViewControllerService;
 	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
 	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
 

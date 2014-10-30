@@ -59,6 +59,7 @@ public:
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_LCLICK, OnColumnClick)
+		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_LDOUBLECLICK, OnItemDoubleClick)
 		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_RCLICK, OnColumnRClick)
 		NOTIFY_HANDLER(IDC_LIST1, NM_ITEM_REMOVED, OnItemRemove)
 		REFLECT_NOTIFICATIONS()
@@ -84,11 +85,13 @@ private:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnColumnClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnColumnRClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT OnItemDoubleClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnItemRemove(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	HRESULT Fire_OnItemRemoved(IVariantObject *pItemObject);
 	HRESULT Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	HRESULT Fire_OnItemDoubleClick(IVariantObject* pVariantObject);
 public:
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -106,6 +109,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnClose)());
 
 	STDMETHOD(GetItems)(IObjArray** ppObjectArray);
+	STDMETHOD(InsertItem)(IVariantObject* pVariantObject, UINT uiIndex);
 	STDMETHOD(InsertItems)(IObjArray* pObjectArray, UINT uiStartIndex);
 	STDMETHOD(IsEmpty)(BOOL* pbIsEmpty);
 	STDMETHOD(InvalidateItems)(IVariantObject** pItemArray, UINT uiCountArray);

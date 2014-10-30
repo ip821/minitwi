@@ -18,7 +18,6 @@ STDMETHODIMP CTimelineCleanupService::OnInitialized(IServiceProvider *pServicePr
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_CLENUP_TIMER, &m_pTimerServiceCleanup));
 	RETURN_IF_FAILED(AtlAdvise(m_pTimerServiceCleanup, pUnk, __uuidof(ITimerServiceEventSink), &m_dwAdviceTimerServiceCleanup));
 
-	RETURN_IF_FAILED(m_pTimerServiceCleanup->StartTimer(1000 * 60)); //1 minute
 	return S_OK;
 }
 
@@ -61,5 +60,6 @@ STDMETHODIMP CTimelineCleanupService::SetTimelineControl(ITimelineControl* pTime
 {
 	CHECK_E_POINTER(pTimelineControl);
 	m_pTimelineControl = pTimelineControl;
+	RETURN_IF_FAILED(m_pTimerServiceCleanup->StartTimer(1000 * 60)); //1 minute
 	return S_OK;
 }

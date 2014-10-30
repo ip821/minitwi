@@ -31,7 +31,8 @@ class ATL_NO_VTABLE CTimelineService :
 	public IInitializeWithSettings,
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
-	public ITimelineControlEventSink
+	public ITimelineControlEventSink,
+	public IInitializeWithVariantObject
 {
 public:
 	CTimelineService()
@@ -47,6 +48,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
 private:
@@ -63,9 +65,11 @@ private:
 	BOOL m_bShowMoreRunning = 0;
 	CComBSTR m_bstrUser;
 
-	STDMETHOD(UpdateRelativeTime)(IObjArray* pObjectArray);
 
 public:
+	static HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject, TIME_ZONE_INFORMATION tz);
+	static HRESULT UpdateRelativeTime(IObjArray* pObjectArray, TIME_ZONE_INFORMATION tz);
+	
 	STDMETHOD(Load)(ISettings *pSettings);
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
@@ -77,8 +81,11 @@ public:
 
 	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
+	METHOD_EMPTY(STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject));
+
 	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
-	STDMETHOD(SetUserId)(BSTR bstrUser);
+	
+	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)

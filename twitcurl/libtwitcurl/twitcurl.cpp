@@ -401,6 +401,48 @@ bool twitCurl::statusUpdate(std::string& newStatus, std::string inReplyToStatusI
 		newStatusMsg);
 }
 
+bool twitCurl::searchWithAppAuth(std::string strAppToken, std::string& searchQuery, std::string& strSinceId, std::string resultCount)
+{
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SEARCH_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] +
+		twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_SEARCHQUERYSTRING +
+		searchQuery;
+
+	/* Add number of results count if provided */
+	if (resultCount.size())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
+			twitCurlDefaults::TWITCURL_COUNT + urlencode(resultCount);
+	}
+
+	if (strSinceId.size())
+	{
+		buildUrl += twitCurlDefaults::TWITCURL_URL_SEP_AMP +
+			twitCurlDefaults::TWITCURL_SINCEID + urlencode(strSinceId);
+	}
+
+	/* Perform GET */
+	return performGetAppAuth(buildUrl, strAppToken);
+}
+
+bool twitCurl::statusShowByIdWithAppAuth(std::string strAppToken, std::string& statusId)
+{
+	if (statusId.empty())
+	{
+		return false;
+	}
+
+	/* Prepare URL */
+	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_STATUSSHOW_URL + statusId +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+
+	/* Perform GET */
+	return performGetAppAuth(buildUrl, strAppToken);
+}
+
 /*++
 * @method: twitCurl::statusShowById
 *
@@ -583,6 +625,8 @@ bool twitCurl::timelineFriendsGet()
 		twitterDefaults::TWITCURL_FRIENDS_TIMELINE_URL +
 		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
+
+//TWITCURL_MENTIONSTIMELINE_URL
 
 /*++
 * @method: twitCurl::mentionsGet
@@ -1823,6 +1867,11 @@ bool twitCurl::timelineUserGetWithAppAuth(std::string strAppToken, std::string u
 		bFirstParam = FALSE;
 	}
 
+	return performGetAppAuth(buildUrl, strAppToken);
+}
+
+bool twitCurl::performGetAppAuth(const std::string& getUrl, const std::string& appToken)
+{
 	if (!isCurlInit())
 	{
 		return false;
@@ -1830,7 +1879,7 @@ bool twitCurl::timelineUserGetWithAppAuth(std::string strAppToken, std::string u
 
 	prepareStandardParams(false);
 
-	std::string strBearerTokenHeader = std::string("Authorization: Bearer ") + std::string(strAppToken);
+	std::string strBearerTokenHeader = std::string("Authorization: Bearer ") + std::string(appToken);
 
 	struct curl_slist* pHeaderList = NULL;
 	pHeaderList = curl_slist_append(pHeaderList, "Host: api.twitter.com");
@@ -1839,7 +1888,7 @@ bool twitCurl::timelineUserGetWithAppAuth(std::string strAppToken, std::string u
 
 	curl_easy_setopt(m_curlHandle, CURLOPT_HTTPGET, 1);
 	curl_easy_setopt(m_curlHandle, CURLOPT_HTTPHEADER, pHeaderList);
-	curl_easy_setopt(m_curlHandle, CURLOPT_URL, buildUrl.c_str());
+	curl_easy_setopt(m_curlHandle, CURLOPT_URL, getUrl.c_str());
 
 	if (CURLE_OK == curl_easy_perform(m_curlHandle))
 	{

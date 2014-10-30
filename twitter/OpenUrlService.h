@@ -2,6 +2,7 @@
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
+#include "..\twiconn\Plugins.h"
 
 using namespace ATL;
 
@@ -37,10 +38,13 @@ private:
 	CComQIPtr<ITabbedControl> m_pTabbedControl;
 	DWORD m_dwAdviceTimelineControl = 0;
 	DWORD m_dwAdviceTabbedControl = 0;
-	DWORD m_dwAdviceTimelineControl2 = 0;
+	DWORD m_dwAdviceTimelineControlInUserInfoControl = 0;
+	DWORD m_dwAdviceTimelineControlInTwitViewControl = 0;
 
 private:
 	STDMETHOD(OpenUserInfo)(IVariantObject* pVariantObject);
+	STDMETHOD(OpenTwitView)(IVariantObject* pVariantObject);
+	STDMETHOD(CopyImages)(IControl* pControl);
 
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
@@ -48,6 +52,7 @@ public:
 
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
 	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject);
 
 	STDMETHOD(OnActivate)(IControl *pControl);
 	STDMETHOD(OnDeactivate)(IControl *pControl);

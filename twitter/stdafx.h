@@ -57,6 +57,12 @@
 #include <mutex>
 #include <boost/lexical_cast.hpp>
 
+#pragma warning(push)
+#pragma warning(disable:4245)
+#include <boost\date_time.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
+#pragma warning(pop)
+
 #include <initguid.h>
 #include "..\ObjMdl\Macros.h"
 #include "..\ObjMdl\ManualComObjectLoader.h"
@@ -65,8 +71,6 @@
 
 #include "..\ViewMdl\Plugins.h"
 #include "..\ViewMdl\Functions.h"
-
-#include "..\twiconn\Plugins.h"
 
 #include "..\model-libs\asyncsvc\Plugins.h"
 

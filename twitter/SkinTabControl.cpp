@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "SkinTabControl.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 
 // CSkinTabControl
 

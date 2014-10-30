@@ -36,7 +36,6 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
-#include <twitcurl.h>
 
 #include <regex>
 

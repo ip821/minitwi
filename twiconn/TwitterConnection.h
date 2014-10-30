@@ -5,6 +5,9 @@
 #include "twiconn_i.h"
 
 #include <hash_set>
+#include <boost\lexical_cast.hpp>
+
+#include <twitcurl.h>
 
 using namespace ATL;
 using namespace std;
@@ -38,6 +41,7 @@ private:
 	wstring m_strAppToken;
 	STDMETHOD(HandleError)(JSONValue* value);
 	STDMETHOD(AppendUrls)(IVariantObject* pVariantObject, vector<wstring>& urlsVector);
+	STDMETHOD(ParseTweet)(JSONObject& itemObject, IVariantObject* pVariantObject);
 	STDMETHOD(ParseTweets)(JSONValue* value, IObjCollection* pObjectCollection);
 	STDMETHOD(ParseUser(JSONObject& value, IVariantObject* pVariantObject));
 	STDMETHOD(ParseMedias)(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, hash_set<wstring>& processedMediaUrls);
@@ -54,6 +58,8 @@ public:
 	STDMETHOD(OpenConnection)(BSTR bstrKey, BSTR bstrSecret);
 	STDMETHOD(OpenConnectionWithAppAuth)();
 	STDMETHOD(GetTimeline)(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
+	STDMETHOD(GetTwit)(BSTR bstrId, IVariantObject** ppVariantObject);
+	STDMETHOD(Search)(BSTR bstrQuery, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterConnection), CTwitterConnection)

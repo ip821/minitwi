@@ -138,6 +138,8 @@ public:
 	/* App auth only*/
 	bool authAppOnly(std::string& key, std::string& secret);
 	bool timelineUserGetWithAppAuth(std::string strAppToken, std::string user, std::string maxId, std::string sinceId, std::string maxCount);
+	bool statusShowByIdWithAppAuth(std::string strAppToken, std::string& statusId);
+	bool searchWithAppAuth(std::string strAppToken, std::string& searchQuery, std::string& strSinceId, std::string resultCount);
 
 private:
     /* cURL data */
@@ -173,6 +175,7 @@ private:
     void prepareCurlCallback();
     void prepareCurlUserPass();
     void prepareStandardParams(bool bSetAuthData = true);
+	bool performGetAppAuth(const std::string& getUrl, const std::string& appToken);
     bool performGet( const std::string& getUrl );
     bool performGetInternal( const std::string& getUrl,
                              const std::string& oAuthHttpHeader );

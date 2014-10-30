@@ -57,9 +57,18 @@ STDMETHODIMP CTimelineService::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
+
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
 	m_pSettings.Release();
+	}
+
 	m_pThreadServiceUpdateService.Release();
 	m_pTimelineControl.Release();
+	m_pSettings.Release();
+	m_pThreadServiceShowMoreService.Release();;
+	m_pServiceProvider.Release();
+
 	return S_OK;
 }
 
@@ -157,10 +166,14 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::SetUserId(BSTR bstrUser)
+STDMETHODIMP CTimelineService::SetVariantObject(IVariantObject* pVariantObject)
 {
-	CHECK_E_POINTER(bstrUser);
-	m_bstrUser = bstrUser;
+	CHECK_E_POINTER(pVariantObject);
+
+	CComVariant vUserScreenName;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserScreenName));
+	ATLASSERT(vUserScreenName.vt == VT_BSTR);
+	m_bstrUser = vUserScreenName.bstrVal;
 	return S_OK;
 }
 
@@ -174,6 +187,11 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
 	{
+		if (vHr.intVal == COMADMIN_E_USERPASSWDNOTVALID)
+		{
+			RETURN_IF_FAILED(pResult->SetVariantValue(KEY_RESTART_TIMER, &CComVariant(FALSE)));
+		}
+
 		CComVariant vId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vId));
 		if (vId.vt == VT_BSTR)
@@ -226,30 +244,23 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(false)));
 			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
 		}
-		RETURN_IF_FAILED(UpdateRelativeTime(pObjectArray));
+		RETURN_IF_FAILED(UpdateRelativeTime(pObjectArray, m_tz));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
 		CComPtr<IObjArray> pAllItemsObjectArray;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
-		RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
+		RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray, m_tz));
 	}
 
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
+HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject, TIME_ZONE_INFORMATION tz)
 {
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
-	for (size_t i = 0; i < uiCount; i++)
-	{
-		CComPtr<IVariantObject> pVariantObject;
-		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-
 		CComVariant v;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_CREATED_AT, &v));
 
 		if (v.vt != VT_BSTR)
-			continue;
+		return S_OK;
 
 		local_time::wlocal_time_input_facet* inputFacet = new local_time::wlocal_time_input_facet();
 		inputFacet->format(L"%a %b %d %H:%M:%S +0000 %Y");
@@ -300,6 +311,18 @@ STDMETHODIMP CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 		}
 
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_RELATIVE_TIME, &CComVariant(strRelTime)));
+	return S_OK;
+	}
+
+HRESULT CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray, TIME_ZONE_INFORMATION tz)
+{
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pVariantObject;
+		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+		RETURN_IF_FAILED(UpdateRelativeTimeForTwit(pVariantObject, tz));
 	}
 	return S_OK;
 }

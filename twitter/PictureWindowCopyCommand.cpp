@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "PictureWindowCopyCommand.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 
 // CPictureWindowCopyCommand
 

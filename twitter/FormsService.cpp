@@ -55,7 +55,7 @@ STDMETHODIMP CFormsService::OnInitialized(IServiceProvider* pServiceProvider)
 		RETURN_IF_FAILED(pFormManager->OpenForm(gId, &pControl));
 	}
 
-	RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_TimelineControl));
+	RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_HomeTimeLineControl));
 
 	return S_OK;
 }

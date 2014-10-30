@@ -192,6 +192,7 @@
     </ClCompile>
     <ClCompile Include="ColumnRects.cpp" />
     <ClCompile Include="DownloadService.cpp" />
+    <ClCompile Include="HomeTimeLineControl.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="CustomTabControl.cpp" />
     <ClCompile Include="ScrollControl.cpp" />
@@ -200,6 +201,7 @@
     <ClCompile Include="SkinUserAccountControl.cpp" />
     <ClCompile Include="TabbedControlStatusService.cpp" />
     <ClCompile Include="TimelineCleanupService.cpp" />
+    <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp" />
     <ClCompile Include="TimelineImageService.cpp" />
     <ClCompile Include="PictureWindow.cpp" />
     <ClCompile Include="PictureWindowCopyCommand.cpp" />
@@ -252,6 +254,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TwitViewControl.cpp" />
+    <ClCompile Include="TwitViewRepliesService.cpp" />
     <ClCompile Include="UpdateService.cpp" />
     <ClCompile Include="UserAccountControl.cpp" />
     <ClCompile Include="UserInfoControl.cpp" />
@@ -266,8 +270,12 @@
   <ItemGroup>
     <ClInclude Include="AnimationTimerSupport.h" />
     <ClInclude Include="asyncsvc_contract_i.h" />
+    <ClInclude Include="BaseTimeLineControl.h" />
     <ClInclude Include="ColumnRects.h" />
+    <ClInclude Include="TimelineControlOpenInBrowserCommand.h" />
+    <ClInclude Include="TwitViewControl.h" />
     <ClInclude Include="DownloadService.h" />
+    <ClInclude Include="HomeTimeLineControl.h" />
     <ClInclude Include="ImageManagerService.h" />
     <ClInclude Include="CustomTabControl.h" />
     <ClInclude Include="ScrollControl.h" />
@@ -300,6 +308,7 @@
     <ClInclude Include="TimelineService.h" />
     <ClInclude Include="twitconn_contract_i.h" />
     <ClInclude Include="twitter_i.h" />
+    <ClInclude Include="TwitViewRepliesService.h" />
     <ClInclude Include="UpdateScope.h" />
     <ClInclude Include="UpdateService.h" />
     <ClInclude Include="UserAccountControl.h" />

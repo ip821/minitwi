@@ -7,6 +7,7 @@
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 #include "Plugins.h"
+#include "..\twiconn\Plugins.h"
 
 using namespace ATL;
 using namespace std;
@@ -52,14 +53,14 @@ private:
 	const BYTE STEP_ALPHA = MAX_ALPHA / STEPS;
 	map<UINT, AnimationItemData> m_steps;
 
-	enum Justify
+	enum class Justify
 	{
 		None = 0,
 		Center,
 		Right
 	};
 
-	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap, LONG ulCustomFixedWidth, Justify justify, BOOL bDisabledSelection);
+	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnRects* pColumnRects, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap, LONG ulCustomFixedWidth, Justify justify, BOOL bDisabledSelection, BOOL bDoubleSize);
 	void GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue);
 	STDMETHOD(DrawTextColumns)(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis);
 	STDMETHOD(DrawImageColumns)(IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis);

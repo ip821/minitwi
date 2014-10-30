@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 #include "asyncsvc_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
+#include "..\twiconn\Plugins.h"
 
 using namespace ATL;
 using namespace std;
@@ -54,12 +55,12 @@ private:
 	DWORD m_dwAdviceTimerServiceUpdate = 0;
 	DWORD m_dwAdviceTimelineControl = 0;
 
-	std::hash_set<IVariantObject*> m_idsToUpdate;
-	std::mutex m_mutex;
+	hash_set<IVariantObject*> m_idsToUpdate;
+	mutex m_mutex;
 	map<wstring, hash_set<IVariantObject*>> m_imageRefs;
 
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
-	static HRESULT GetUrls(IVariantObject* pItemObject, std::vector<std::wstring>& urls);
+	static HRESULT GetUrls(IVariantObject* pItemObject, vector<wstring>& urls);
 
 public:
 
@@ -76,6 +77,8 @@ public:
 
 	STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject);
 	METHOD_EMPTY(STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject));
+	METHOD_EMPTY(STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject));
+
 	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
 };
 
