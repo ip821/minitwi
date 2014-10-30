@@ -301,7 +301,7 @@ HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObje
 		}
 		else
 		{
-			posix_time::ptime ptNow(pt.date(), pt.time_of_day() - posix_time::minutes(m_tz.Bias) - posix_time::minutes(m_tz.DaylightBias));
+			posix_time::ptime ptNow(pt.date(), pt.time_of_day() - posix_time::minutes(tz.Bias) - posix_time::minutes(tz.DaylightBias));
 			posix_time::wtime_facet* outputFacet = new posix_time::wtime_facet();
 			outputFacet->format(L"%d %b %Y");
 			wostringstream outputStream;

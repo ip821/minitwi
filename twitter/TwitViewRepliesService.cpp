@@ -183,46 +183,5 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
 	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pAllItemsObjectArray, m_tz));
 
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
-
-	if (uiCount)
-	{
-		CComPtr<IVariantObject> pLastObject;
-		RETURN_IF_FAILED(pObjectArray->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pLastObject));
-
-		CComVariant vOriginalTwitTime;
-		RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_CREATED_AT, &vOriginalTwitTime));
-		ATLASSERT(vOriginalTwitTime.vt == VT_BSTR);
-
-		boost::posix_time::ptime ptOriginal;
-		{
-			boost::local_time::wlocal_time_input_facet* inputFacet = new boost::local_time::wlocal_time_input_facet();
-			inputFacet->format(L"%a %b %d %H:%M:%S +0000 %Y");
-			std::wistringstream inputStream;
-			inputStream.imbue(std::locale(inputStream.getloc(), inputFacet));
-			inputStream.str(std::wstring(vOriginalTwitTime.bstrVal));
-			inputStream >> ptOriginal;
-		}
-
-		CComVariant vLastTwitTime;
-		RETURN_IF_FAILED(pLastObject->GetVariantValue(VAR_TWITTER_CREATED_AT, &vLastTwitTime));
-
-		boost::posix_time::ptime ptLast;
-		{
-			boost::local_time::wlocal_time_input_facet* inputFacet = new boost::local_time::wlocal_time_input_facet();
-			inputFacet->format(L"%a %b %d %H:%M:%S +0000 %Y");
-			std::wistringstream inputStream;
-			inputStream.imbue(std::locale(inputStream.getloc(), inputFacet));
-			inputStream.str(std::wstring(vLastTwitTime.bstrVal));
-			inputStream >> ptLast;
-		}
-	}
-
-	return S_OK;
-}
-
-STDMETHODIMP CTwitViewRepliesService::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *plResult, BOOL *bResult)
-{
 	return S_OK;
 }

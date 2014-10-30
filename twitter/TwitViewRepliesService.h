@@ -16,7 +16,6 @@ class ATL_NO_VTABLE CTwitViewRepliesService :
 	public IInitializeWithSettings,
 	public ITwitViewRepliesService,
 	public IInitializeWithVariantObject,
-	public IMsgHandler,
 	public IInitializeWithControlImpl
 {
 public:
@@ -34,7 +33,6 @@ public:
 		COM_INTERFACE_ENTRY(ITwitViewRepliesService)
 		COM_INTERFACE_ENTRY(ITimelineService)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
-		COM_INTERFACE_ENTRY(IMsgHandler)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 	END_COM_MAP()
 
@@ -64,8 +62,6 @@ public:
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
-
-	STDMETHOD(ProcessWindowMessage)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *plResult, BOOL *bResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitViewRepliesService), CTwitViewRepliesService)
