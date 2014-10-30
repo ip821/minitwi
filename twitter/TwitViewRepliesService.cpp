@@ -96,20 +96,37 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	CComVariant vParentTwitId;
 	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vParentTwitId));
 
-	if (!m_bParentRetrieved && vParentTwitId.vt == VT_BSTR)
-	{
-		CComPtr<IVariantObject> pParentItem;
-		RETURN_IF_FAILED(pConnection->GetTwit(vParentTwitId.bstrVal, &pParentItem));
-		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
-		m_bParentRetrieved = true;
-	}
-
 	CComVariant vId;
 	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_ID, &vId));
 	ATLASSERT(vId.vt == VT_BSTR);
 
 	CComVariant vOriginalId;
 	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_ORIGINAL_ID, &vOriginalId));
+
+	if (!m_bParentRetrieved)
+	{
+		if (vParentTwitId.vt == VT_BSTR)
+		{
+			CComPtr<IVariantObject> pParentItem;
+			RETURN_IF_FAILED(pConnection->GetTwit(vParentTwitId.bstrVal, &pParentItem));
+			RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
+			m_bParentRetrieved = true;
+		}
+		else if (vOriginalId.vt == VT_BSTR)
+		{
+			CComPtr<IVariantObject> pOriginalItem;
+			RETURN_IF_FAILED(pConnection->GetTwit(vOriginalId.bstrVal, &pOriginalItem));
+			CComVariant vOriginalParentTwitId;
+			RETURN_IF_FAILED(pOriginalItem->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vOriginalParentTwitId));
+			if (vOriginalParentTwitId.vt == VT_BSTR)
+			{
+				CComPtr<IVariantObject> pParentItem;
+				RETURN_IF_FAILED(pConnection->GetTwit(vOriginalParentTwitId.bstrVal, &pParentItem));
+				RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
+				m_bParentRetrieved = true;
+			}
+		}
+	}
 
 	CComVariant vUserName;
 	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
