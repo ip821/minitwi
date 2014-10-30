@@ -8,9 +8,13 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	m_pServiceProvider = pServiceProvider;
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_WindowService, &m_pWindowService));
 
-	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
+	m_pMainWindow = m_pControl;
+	ATLASSERT(m_pMainWindow);
+	RETURN_IF_FAILED(m_pMainWindow->GetMessageLoop(&m_pMessageLoop));
+	RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
+
 	CComPtr<IContainerControl> pContainerControl;
-	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
+	RETURN_IF_FAILED(m_pMainWindow->GetContainerControl(&pContainerControl));
 	m_pTabbedControl = pContainerControl;
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
@@ -31,6 +35,7 @@ STDMETHODIMP COpenUrlService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ITabbedControlEventSink), m_dwAdviceTabbedControl));
+	RETURN_IF_FAILED(m_pMessageLoop->RemoveMessageFilter(this));
 	m_pWindowService.Release();
 	m_pServiceProvider.Release();
 	m_pTimelineControl.Release();
@@ -274,4 +279,24 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 		ShellExecute(NULL, L"open", strUrl, NULL, NULL, SW_SHOW);
 
 	return S_OK;
+}
+
+STDMETHODIMP COpenUrlService::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
+{
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		if (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_BACK)
+		{
+			CComPtr<IControl> pControl;
+			RETURN_IF_FAILED(m_pTabbedControl->GetCurrentPage(&pControl));
+			CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
+			if (!pHomeTimeLineControl)
+			{
+				CComPtr<IControl> pControlHome;
+				RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControlHome));
+				RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControlHome));
+			}
+		}
+	}
+	return 0;
 }

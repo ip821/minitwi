@@ -13,7 +13,8 @@ class ATL_NO_VTABLE COpenUrlService :
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
 	public ITimelineControlEventSink,
-	public ITabbedControlEventSink
+	public ITabbedControlEventSink,
+	public IMsgFilter
 {
 public:
 
@@ -29,9 +30,12 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
 		COM_INTERFACE_ENTRY(ITabbedControlEventSink)
+		COM_INTERFACE_ENTRY(IMsgFilter)
 	END_COM_MAP()
 
 private:
+	CComQIPtr<IMainWindow> m_pMainWindow;
+	CComPtr<IMessageLoop> m_pMessageLoop;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IWindowService> m_pWindowService;
 	CComPtr<ITimelineControl> m_pTimelineControl;
@@ -57,6 +61,8 @@ public:
 	STDMETHOD(OnActivate)(IControl *pControl);
 	STDMETHOD(OnDeactivate)(IControl *pControl);
 	STDMETHOD(OnClose)(IControl *pControl);
+
+	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *bResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(OpenUrlService), COpenUrlService)
