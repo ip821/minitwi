@@ -17,14 +17,6 @@ STDMETHODIMP CFormsService::OnInitializing(IServiceProvider* pServiceProvider)
 	CHECK_E_POINTER(pServiceProvider);
 	CComQIPtr<IMainWindow> pWindow = m_pControl;
 	RETURN_IF_FAILED(pWindow->SetFlags(MainWindowFlags::MainWindowNone));
-	return S_OK;
-}
-
-STDMETHODIMP CFormsService::OnInitialized(IServiceProvider* pServiceProvider)
-{
-	CHECK_E_POINTER(pServiceProvider);
-	m_pServiceProvider = pServiceProvider;
-	CComQIPtr<IMainWindow> pWindow = m_pControl;
 
 	CComPtr<IUnknown> pUnk2;
 	RETURN_IF_FAILED(GetPluginManager()->CreatePluginInstance(PNAMESP_HOSTFORM, PVIEWTYPE_CONTAINERWINDOW, CONTROL_TABCONTAINER, &pUnk2));
@@ -39,6 +31,18 @@ STDMETHODIMP CFormsService::OnInitialized(IServiceProvider* pServiceProvider)
 	LONG lStyle = GetWindowLong(hwnd, GWL_STYLE);
 	lStyle &= ~(WS_BORDER);
 	SetWindowLong(hwnd, GWL_STYLE, lStyle);
+
+	InvalidateRect(hwnd, NULL, TRUE);
+
+	return S_OK;
+}
+
+STDMETHODIMP CFormsService::OnInitialized(IServiceProvider* pServiceProvider)
+{
+	CHECK_E_POINTER(pServiceProvider);
+	InvalidateRect(m_hControlWnd, NULL, TRUE);
+	m_pServiceProvider = pServiceProvider;
+	CComQIPtr<IMainWindow> pWindow = m_pControl;
 
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &m_pFormManager));
 

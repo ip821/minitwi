@@ -13,7 +13,7 @@ class ATL_NO_VTABLE COpenUrlService :
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
 	public ITimelineControlEventSink,
-	public ITabbedControlEventSink,
+	public IFormManagerEventSink,
 	public IMsgFilter
 {
 public:
@@ -29,7 +29,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
-		COM_INTERFACE_ENTRY(ITabbedControlEventSink)
+		COM_INTERFACE_ENTRY(IFormManagerEventSink)
 		COM_INTERFACE_ENTRY(IMsgFilter)
 	END_COM_MAP()
 
@@ -39,10 +39,10 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IWindowService> m_pWindowService;
 	CComPtr<ITimelineControl> m_pTimelineControl;
-	CComQIPtr<ITabbedControl> m_pTabbedControl;
 	CComPtr<IFormsService> m_pFormsService;
+	CComPtr<IFormManager> m_pFormManager;
 	DWORD m_dwAdviceTimelineControl = 0;
-	DWORD m_dwAdviceTabbedControl = 0;
+	DWORD m_dwAdviceFormManager = 0;
 	DWORD m_dwAdviceTimelineControlInUserInfoControl = 0;
 	DWORD m_dwAdviceTimelineControlInTwitViewControl = 0;
 
@@ -58,7 +58,6 @@ public:
 
 	STDMETHOD(OnActivate)(IControl *pControl);
 	STDMETHOD(OnDeactivate)(IControl *pControl);
-	STDMETHOD(OnClose)(IControl *pControl);
 
 	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *bResult);
 };

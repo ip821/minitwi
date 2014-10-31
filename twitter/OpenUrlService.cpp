@@ -8,17 +8,16 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	m_pServiceProvider = pServiceProvider;
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_WindowService, &m_pWindowService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FORMS_SERVICE, &m_pFormsService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &m_pFormManager));
 
 	m_pMainWindow = m_pControl;
 	ATLASSERT(m_pMainWindow);
 	RETURN_IF_FAILED(m_pMainWindow->GetMessageLoop(&m_pMessageLoop));
 	RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
 
-	CComPtr<IContainerControl> pContainerControl;
-	RETURN_IF_FAILED(m_pMainWindow->GetContainerControl(&pContainerControl));
-	m_pTabbedControl = pContainerControl;
 	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
+	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
+
 	CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
 	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pHomeTimeLineControl;
 	ATLASSERT(pTimelineControlSupport);
@@ -27,7 +26,7 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
-	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ITabbedControlEventSink), &m_dwAdviceTabbedControl));
+	RETURN_IF_FAILED(AtlAdvise(m_pFormManager, pUnk, __uuidof(IFormManagerEventSink), &m_dwAdviceFormManager));
 
 	return S_OK;
 }
@@ -35,12 +34,13 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 STDMETHODIMP COpenUrlService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
-	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ITabbedControlEventSink), m_dwAdviceTabbedControl));
+	RETURN_IF_FAILED(AtlUnadvise(m_pFormManager, __uuidof(IFormManagerEventSink), m_dwAdviceFormManager));
 	RETURN_IF_FAILED(m_pMessageLoop->RemoveMessageFilter(this));
 	m_pWindowService.Release();
 	m_pServiceProvider.Release();
 	m_pTimelineControl.Release();
-	m_pTabbedControl.Release();
+	m_pFormsService.Release();
+	m_pFormManager.Release();
 	return S_OK;
 }
 
@@ -100,11 +100,6 @@ STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 		RETURN_IF_FAILED(m_pFormsService->Close(pControl));
 		return S_OK;
 	}
-	return S_OK;
-}
-
-STDMETHODIMP COpenUrlService::OnClose(IControl *pControl)
-{
 	return S_OK;
 }
 

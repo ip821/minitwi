@@ -100,9 +100,7 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 	RETURN_IF_FAILED(HrInitializeWithSettings(pControl, m_pSettings));
 	RETURN_IF_FAILED(HrNotifyOnInitialized(pControl, m_pServiceProvider));
 
-	UpdateChildControlAreaRect();
-	UpdateSizes();
-
+	AdjustSize();
 	return S_OK;
 }
 
@@ -416,6 +414,7 @@ STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabContr
 {
 	CHECK_E_POINTER(pSkinTabControl);
 	m_pSkinTabControl = pSkinTabControl;
+	AdjustSize();
 	return S_OK;
 }
 
@@ -440,10 +439,15 @@ void CCustomTabControl::UpdateSizes()
 	}
 }
 
-LRESULT CCustomTabControl::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+void CCustomTabControl::AdjustSize()
 {
 	UpdateChildControlAreaRect();
 	UpdateSizes();
+}
+
+LRESULT CCustomTabControl::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	AdjustSize();
 	return 0;
 }
 
