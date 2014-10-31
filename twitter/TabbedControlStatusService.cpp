@@ -76,6 +76,9 @@ STDMETHODIMP CTabbedControlStatusService::OnFinish(IVariantObject *pResult)
 		RETURN_IF_FAILED(m_pViewControllerService->ShowInfo(vHr.intVal, TRUE, FALSE, bstrMsg));
 		return S_OK;
 	}
-
+	else
+	{
+		RETURN_IF_FAILED(m_pViewControllerService->ShowInfo(vHr.intVal, TRUE, FALSE, L""));
+	}
 	return S_OK;
 }

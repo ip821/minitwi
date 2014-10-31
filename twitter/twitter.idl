@@ -433,7 +433,7 @@ interface ICustomTabControl : ITabbedControl
 {
 	HRESULT SetSkinTabControl(ISkinTabControl* pSkinTabControl);
 	HRESULT StartAnimation();
-	HRESULT StopAnimation();
+	HRESULT StopAnimation(UINT* puiRefs);
 	HRESULT ShowInfo(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
 	HRESULT HideInfo();
 };

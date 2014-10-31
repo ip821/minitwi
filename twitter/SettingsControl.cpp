@@ -19,6 +19,7 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_AUTH_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &m_pFormManager));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &m_pViewControllerService));
 
 	m_pCustomTabControl = m_pControl;
 
@@ -54,6 +55,7 @@ STDMETHODIMP CSettingsControl::OnShutdown()
 {
 	RETURN_IF_FAILED(m_pThreadService->Join());
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
+	m_pViewControllerService.Release();
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
 	m_pTimelineControl.Release();
@@ -209,7 +211,7 @@ STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
 	EnableLoginControls(FALSE);
 	RETURN_IF_FAILED(m_pCustomTabControl->HideInfo());
-	RETURN_IF_FAILED(m_pCustomTabControl->StartAnimation());
+	RETURN_IF_FAILED(m_pViewControllerService->StartAnimation());
 	return S_OK;
 }
 
@@ -253,7 +255,7 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
-	RETURN_IF_FAILED(m_pCustomTabControl->StopAnimation());
+	RETURN_IF_FAILED(m_pViewControllerService->StopAnimation());
 	if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;

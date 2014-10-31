@@ -83,7 +83,8 @@ STDMETHODIMP CViewControllerService::StartAnimation()
 
 STDMETHODIMP CViewControllerService::StopAnimation()
 {
-	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation());
+	UINT uiRefs = 0;
+	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation(&uiRefs));
 	return S_OK;
 }
 
@@ -94,6 +95,7 @@ STDMETHODIMP CViewControllerService::ShowInfo(HRESULT hr, BOOL bError, BOOL bInf
 	if (m_bUpdateAvailable)
 	{
 		RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(FALSE, TRUE, L"Update available. Click here to install."));
+		return S_OK;
 	}
 	else if (FAILED(hr))
 	{

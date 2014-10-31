@@ -73,7 +73,7 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<IColumnRects> m_pColumnRects;
-	int m_cAnimationRefs = 0;
+	UINT m_cAnimationRefs = 0;
 
 	CRect m_rectChildControlArea;
 	CRect m_rectInfoImage;
@@ -133,7 +133,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(Reset)(ISettings* /*pSettings*/));
 
 	STDMETHOD(StartAnimation)();
-	STDMETHOD(StopAnimation)();
+	STDMETHOD(StopAnimation)(UINT* puiRefs);
 
 	STDMETHOD(ShowInfo)(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
 	STDMETHOD(HideInfo)();

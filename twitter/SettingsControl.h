@@ -93,6 +93,7 @@ private:
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<ITheme> m_pTheme;
 	CComQIPtr<ICustomTabControl> m_pCustomTabControl;
+	CComPtr<IViewControllerService> m_pViewControllerService;
 
 	DWORD m_dwAdvice = 0;
 	CEdit m_editUser;
