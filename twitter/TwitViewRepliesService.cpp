@@ -105,14 +105,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 
 	if (!m_bParentRetrieved)
 	{
-		if (vParentTwitId.vt == VT_BSTR)
-		{
-			CComPtr<IVariantObject> pParentItem;
-			RETURN_IF_FAILED(pConnection->GetTwit(vParentTwitId.bstrVal, &pParentItem));
-			RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
-			m_bParentRetrieved = true;
-		}
-		else if (vOriginalId.vt == VT_BSTR)
+		if (vOriginalId.vt == VT_BSTR)
 		{
 			CComPtr<IVariantObject> pOriginalItem;
 			RETURN_IF_FAILED(pConnection->GetTwit(vOriginalId.bstrVal, &pOriginalItem));
@@ -125,6 +118,14 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 				RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
 				m_bParentRetrieved = true;
 			}
+		}
+
+		if (!m_bParentRetrieved && vParentTwitId.vt == VT_BSTR)
+		{
+			CComPtr<IVariantObject> pParentItem;
+			RETURN_IF_FAILED(pConnection->GetTwit(vParentTwitId.bstrVal, &pParentItem));
+			RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
+			m_bParentRetrieved = true;
 		}
 	}
 
