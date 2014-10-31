@@ -35,6 +35,10 @@ public:
 
 private:
 	CComPtr<ISettings> m_pSettings;
+	CComPtr<IFormManager> m_pFormManager;
+	CComPtr<IServiceProvider> m_pServiceProvider;
+
+	STDMETHOD(CopyImages)(IControl* pControl);
 
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
@@ -44,6 +48,9 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnInitCompleted()));
 
 	STDMETHOD(Load)(ISettings* pSettings);
+
+	STDMETHOD(OpenForm)(GUID gId, IVariantObject* pVariantObject);
+	STDMETHOD(Close)(IControl *pControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(FormsService), CFormsService)

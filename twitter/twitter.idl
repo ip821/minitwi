@@ -52,6 +52,8 @@ typedef struct TtagBITMAP
 ]
 interface IFormsService : IUnknown
 {
+	HRESULT OpenForm(GUID gId, IVariantObject* pVariantObject);
+	HRESULT Close(IControl *pControl);
 };
 
 [

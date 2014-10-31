@@ -7,6 +7,7 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_WindowService, &m_pWindowService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FORMS_SERVICE, &m_pFormsService));
 
 	m_pMainWindow = m_pControl;
 	ATLASSERT(m_pMainWindow);
@@ -84,13 +85,7 @@ STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 		RETURN_IF_FAILED(p->GetTimelineControl(&pTimelineControl));
 		RETURN_IF_FAILED(AtlUnadvise(pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControlInTwitViewControl));
 		m_dwAdviceTimelineControlInTwitViewControl = 0;
-
-		CComQIPtr<IPluginSupportNotifications> pPluginSupportNotifications = pTwitViewControl;
-		if (pPluginSupportNotifications)
-		{
-			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
-			RETURN_IF_FAILED(m_pTabbedControl->RemovePage(pControl));
-		}
+		RETURN_IF_FAILED(m_pFormsService->Close(pControl));
 		return S_OK;
 	}
 
@@ -102,13 +97,7 @@ STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 		RETURN_IF_FAILED(pUserInfoControl->GetTimelineControl(&pTimelineControl));
 		RETURN_IF_FAILED(AtlUnadvise(pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControlInUserInfoControl));
 		m_dwAdviceTimelineControlInUserInfoControl = 0;
-
-		CComQIPtr<IPluginSupportNotifications> pPluginSupportNotifications = pUserInfoControl;
-		if (pPluginSupportNotifications)
-		{
-			RETURN_IF_FAILED(pPluginSupportNotifications->OnShutdown());
-			RETURN_IF_FAILED(m_pTabbedControl->RemovePage(pControl));
-		}
+		RETURN_IF_FAILED(m_pFormsService->Close(pControl));
 		return S_OK;
 	}
 	return S_OK;
@@ -119,91 +108,9 @@ STDMETHODIMP COpenUrlService::OnClose(IControl *pControl)
 	return S_OK;
 }
 
-STDMETHODIMP COpenUrlService::OpenTwitView(IVariantObject* pVariantObject)
-{
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitViewControl, &pControl));
-	RETURN_IF_FAILED(m_pTabbedControl->AddPage(pControl));
-
-	CComPtr<IThemeService> pThemeService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
-	CComPtr<ITheme> pTheme;
-	RETURN_IF_FAILED(pThemeService->GetCurrentTheme(&pTheme));
-	CComQIPtr<IThemeSupport> pThemeSupport = pControl;
-	if (pThemeSupport)
-	{
-		RETURN_IF_FAILED(pThemeSupport->SetTheme(pTheme));
-	}
-
-	RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
-	RETURN_IF_FAILED(CopyImages(pControl));
-	RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pVariantObject));
-
-	RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
-
-	return S_OK;
-}
-
-STDMETHODIMP COpenUrlService::CopyImages(IControl* pControl)
-{
-	CComPtr<IControl> pCurrentControl;
-	RETURN_IF_FAILED(m_pTabbedControl->GetCurrentPage(&pCurrentControl));
-	ATLASSERT(pCurrentControl);
-	CComQIPtr<IServiceProviderSupport> pCurrentControlServiceProviderSupport = pCurrentControl;
-	ATLASSERT(pCurrentControlServiceProviderSupport);
-	CComPtr<IServiceProvider> pCurrentControlServiceProvider;
-	RETURN_IF_FAILED(pCurrentControlServiceProviderSupport->GetServiceProvider(&pCurrentControlServiceProvider));
-	CComPtr<IImageManagerService> pCurrentControlImageService;
-	RETURN_IF_FAILED(pCurrentControlServiceProvider->QueryService(CLSID_ImageManagerService, &pCurrentControlImageService));
-
-	CComQIPtr<IServiceProviderSupport> pUserInfoServiceProviderSupport = pControl;
-	ATLASSERT(pUserInfoServiceProviderSupport);
-	CComPtr<IServiceProvider> pUserInfoServiceProvider;
-	RETURN_IF_FAILED(pUserInfoServiceProviderSupport->GetServiceProvider(&pUserInfoServiceProvider));
-	CComPtr<IImageManagerService> pUserInfoImageManagerService;
-	RETURN_IF_FAILED(pUserInfoServiceProvider->QueryService(CLSID_ImageManagerService, &pUserInfoImageManagerService));
-
-	RETURN_IF_FAILED(pCurrentControlImageService->CopyTo(pUserInfoImageManagerService));
-
-	return S_OK;
-}
-
-STDMETHODIMP COpenUrlService::OpenUserInfo(IVariantObject* pVariantObject)
-{
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_UserInfoControl, &pControl));
-	RETURN_IF_FAILED(m_pTabbedControl->AddPage(pControl));
-
-	CComPtr<IThemeService> pThemeService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
-	CComPtr<ITheme> pTheme;
-	RETURN_IF_FAILED(pThemeService->GetCurrentTheme(&pTheme));
-	CComQIPtr<IThemeSupport> pThemeSupport = pControl;
-	if (pThemeSupport)
-	{
-		RETURN_IF_FAILED(pThemeSupport->SetTheme(pTheme));
-	}
-
-	RETURN_IF_FAILED(HrInitializeWithControl(pControl, m_pControl));
-	RETURN_IF_FAILED(CopyImages(pControl));
-
-	CComVariant vUserObject;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_OBJECT, &vUserObject));
-	if (vUserObject.vt == VT_UNKNOWN)
-	{
-		CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
-		ATLASSERT(pObj);
-		RETURN_IF_FAILED(HrInitializeWithVariantObject(pControl, pObj));
-	}
-
-	RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
-
-	return S_OK;
-}
-
 STDMETHODIMP COpenUrlService::OnItemDoubleClick(IVariantObject* pVariantObject)
 {
-	RETURN_IF_FAILED(OpenTwitView(pVariantObject));
+	RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_TwitViewControl, pVariantObject));
 	return S_OK;
 }
 
@@ -216,7 +123,14 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME) ||
 		CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_NAME))
 	{
-		RETURN_IF_FAILED(OpenUserInfo(pVariantObject));
+		CComVariant vUserObject;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_OBJECT, &vUserObject));
+		if (vUserObject.vt == VT_UNKNOWN)
+		{
+			CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
+			ATLASSERT(pObj);
+			RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_UserInfoControl, pObj));
+		}
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME))
@@ -231,7 +145,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
 	{
-		RETURN_IF_FAILED(OpenTwitView(pVariantObject));
+		RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_TwitViewControl, pVariantObject));
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_URL))
@@ -283,19 +197,16 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 
 STDMETHODIMP COpenUrlService::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 {
-	if (pMsg->message == WM_KEYDOWN)
+	HWND hWnd = 0;
+	RETURN_IF_FAILED(m_pControl->GetHWND(&hWnd));
+	if (pMsg->message == WM_KEYDOWN && GetActiveWindow() == hWnd)
 	{
 		if (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_BACK)
 		{
-			CComPtr<IControl> pControl;
-			RETURN_IF_FAILED(m_pTabbedControl->GetCurrentPage(&pControl));
-			CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
-			if (!pHomeTimeLineControl)
-			{
-				CComPtr<IControl> pControlHome;
-				RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControlHome));
-				RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControlHome));
-			}
+			CComPtr<IControl> pControlHome;
+			CComPtr<IFormManager> pFormManager;
+			RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
+			RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_HomeTimeLineControl));
 		}
 	}
 	return 0;

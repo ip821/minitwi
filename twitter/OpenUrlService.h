@@ -40,15 +40,13 @@ private:
 	CComPtr<IWindowService> m_pWindowService;
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	CComQIPtr<ITabbedControl> m_pTabbedControl;
+	CComPtr<IFormsService> m_pFormsService;
 	DWORD m_dwAdviceTimelineControl = 0;
 	DWORD m_dwAdviceTabbedControl = 0;
 	DWORD m_dwAdviceTimelineControlInUserInfoControl = 0;
 	DWORD m_dwAdviceTimelineControlInTwitViewControl = 0;
 
 private:
-	STDMETHOD(OpenUserInfo)(IVariantObject* pVariantObject);
-	STDMETHOD(OpenTwitView)(IVariantObject* pVariantObject);
-	STDMETHOD(CopyImages)(IControl* pControl);
 
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
