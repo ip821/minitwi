@@ -108,7 +108,6 @@ STDMETHODIMP CViewControllerService::ShowInfo(HRESULT hr, BOOL bError, BOOL bInf
 		return S_OK;
 	}
 
-	RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(bError, bInfoImageEnableClick, bstrMessage));
 	return S_OK;
 }
 
