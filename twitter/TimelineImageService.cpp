@@ -139,11 +139,10 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 		if (it != m_imageRefs.end())
 		{
 			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
-		}
-
-		for (auto& item : it->second)
-		{
-			m_idsToUpdate.insert(item);
+			for (auto& item : it->second)
+			{
+				m_idsToUpdate.insert(item);
+			}
 		}
 	}
 

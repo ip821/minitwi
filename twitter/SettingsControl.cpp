@@ -219,9 +219,10 @@ STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
 {
 	CoInitialize(NULL);
 
-	CComQIPtr<ITabbedControl> pTabControl = m_pControl;
+	CComPtr<IFormManager> pFormManager;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
 	CComPtr<IControl> pTimelineControl;
-	RETURN_IF_FAILED(pTabControl->GetPage(0, &pTimelineControl));
+	RETURN_IF_FAILED(pFormManager->FindForm(CLSID_HomeTimeLineControl, &pTimelineControl));
 	CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pTimelineControl;
 	CComPtr<IServiceProvider> pServiceProvider;
 	RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
