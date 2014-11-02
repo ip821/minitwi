@@ -362,6 +362,8 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 {
+	if (!m_columnRects.size())
+		return 0;
 	auto x = GET_X_LPARAM(lParam);
 	auto y = GET_Y_LPARAM(lParam);
 

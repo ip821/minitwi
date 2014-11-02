@@ -37,7 +37,6 @@ STDMETHODIMP CTimelineControl::OnShutdown()
 	m_pCommandSupport.Release();
 	m_pPluginSupport.Release();
 	m_pSettings.Release();
-	//exit(0); //skip OnShutdown calls, thread joins etc.
 	return S_OK;
 }
 

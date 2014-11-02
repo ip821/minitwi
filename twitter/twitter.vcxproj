@@ -196,6 +196,9 @@
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="CustomTabControl.cpp" />
     <ClCompile Include="ScrollControl.cpp" />
+    <ClCompile Include="SearchControl.cpp" />
+    <ClCompile Include="SearchTimelineControl.cpp" />
+    <ClCompile Include="SearchTimelineService.cpp" />
     <ClCompile Include="SkinCommonControl.cpp" />
     <ClCompile Include="SkinTabControl.cpp" />
     <ClCompile Include="SkinUserAccountControl.cpp" />
@@ -272,6 +275,9 @@
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="BaseTimeLineControl.h" />
     <ClInclude Include="ColumnRects.h" />
+    <ClInclude Include="SearchControl.h" />
+    <ClInclude Include="SearchTimelineControl.h" />
+    <ClInclude Include="SearchTimelineService.h" />
     <ClInclude Include="TimelineControlOpenInBrowserCommand.h" />
     <ClInclude Include="TwitViewControl.h" />
     <ClInclude Include="DownloadService.h" />

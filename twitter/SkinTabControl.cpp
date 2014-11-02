@@ -39,6 +39,7 @@ STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, sha
 CSkinTabControl::CSkinTabControl()
 {
 	InitImageFromResource(IDR_PICTUREHOME, L"PNG", m_pBitmapHome);
+	InitImageFromResource(IDR_PICTURESEARCH, L"PNG", m_pBitmapSearch);
 	InitImageFromResource(IDR_PICTURESETTINGS, L"PNG", m_pBitmapSettings);
 	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
 	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
@@ -107,14 +108,35 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		RETURN_IF_FAILED(pColumnRects->SetRectBoolProp(0, VAR_TAB_HEADER_SELECTED, FALSE));
 	}
 
+	CRect rectSearchColumn;
 	{
 		UINT uiIndex = 0;
 		auto x = rectHomeColumn.right + PADDING_X;
 		auto y = PADDING_Y;
-		CRect rect = { x, y, x + (int)m_pBitmapSettings->GetWidth(), y + (int)m_pBitmapSettings->GetHeight() };
+		rectSearchColumn = CRect(x, y, x + (int)m_pBitmapSettings->GetWidth(), y + (int)m_pBitmapSettings->GetHeight());
 
 		CComPtr<IControl2> pControl2;
 		RETURN_IF_FAILED(pObjArray->GetAt(1, __uuidof(IControl2), (LPVOID*)&pControl2));
+		CComBSTR bstr;
+		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+
+		CSize sz;
+		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
+		rectSearchColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+
+		RETURN_IF_FAILED(pColumnRects->AddRect(rectSearchColumn, &uiIndex));
+		RETURN_IF_FAILED(pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnRects->SetRectBoolProp(1, VAR_TAB_HEADER_SELECTED, FALSE));
+	}
+
+	{
+		UINT uiIndex = 0;
+		auto x = rectSearchColumn.right + PADDING_X;
+		auto y = PADDING_Y;
+		CRect rect = { x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight() };
+
+		CComPtr<IControl2> pControl2;
+		RETURN_IF_FAILED(pObjArray->GetAt(2, __uuidof(IControl2), (LPVOID*)&pControl2));
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pControl2->GetText(&bstr));
 
@@ -195,6 +217,12 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnRects* pColumnRects, CDCHandle& cd
 			imageHeight = m_pBitmapHome->GetHeight();
 		}
 		else if (i == 1)
+		{
+			m_pBitmapSearch->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
+			imageWidth = m_pBitmapSettings->GetWidth();
+			imageHeight = m_pBitmapSettings->GetHeight();
+		}
+		else if (i == 2)
 		{
 			m_pBitmapSettings->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
 			imageWidth = m_pBitmapSettings->GetWidth();

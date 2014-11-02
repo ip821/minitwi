@@ -104,6 +104,15 @@
     <Filter Include="Services\TwitViewRepliesService">
       <UniqueIdentifier>{c1539b39-8000-46b4-915e-f3f82d6bba61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\SearchControl">
+      <UniqueIdentifier>{049790fd-bd6f-45f2-bdf3-e3f393e51338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\SearchTimelineControl">
+      <UniqueIdentifier>{050aeaeb-6676-4cdd-8e6d-ef27816d7ba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\SearchTimelineService">
+      <UniqueIdentifier>{ed1255e1-2502-4500-aecc-e3d8dc019d19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -234,6 +243,15 @@
     </ClCompile>
     <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp">
       <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchControl.cpp">
+      <Filter>Controls\SearchControl</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchTimelineControl.cpp">
+      <Filter>Controls\SearchTimelineControl</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchTimelineService.cpp">
+      <Filter>Services\SearchTimelineService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -383,6 +401,15 @@
     </ClInclude>
     <ClInclude Include="TimelineControlOpenInBrowserCommand.h">
       <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchControl.h">
+      <Filter>Controls\SearchControl</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchTimelineControl.h">
+      <Filter>Controls\SearchTimelineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchTimelineService.h">
+      <Filter>Services\SearchTimelineService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

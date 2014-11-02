@@ -267,7 +267,6 @@ interface ITheme : IUnknown
 ]
 interface ISettingsControl : IControl2
 {
-	HRESULT SetTheme(ITheme* pTheme);
 };
 
 [
@@ -486,6 +485,36 @@ interface ITwitViewControl : IUnknown
 ]
 interface ITwitViewRepliesService : ITimelineService
 {
+};
+
+[
+	object,
+	uuid(660627C9-4575-49A8-A00B-2B1F7E2ED872),
+	pointer_default(unique)
+]
+interface ISearchControl : IControl2
+{
+
+};
+
+[
+	object,
+	uuid(A79E2871-02D3-4015-AB01-CE5B7E795B2C),
+	pointer_default(unique)
+]
+interface ISearchTimelineControl : IUnknown
+{
+
+};
+
+[
+	object,
+	uuid(03F4B0C5-EB2A-4550-B160-25804D4FF41B),
+	pointer_default(unique)
+]
+interface ISearchTimelineService : ITimelineService
+{
+
 };
 
 [
@@ -726,6 +755,27 @@ library twitterLib
 	coclass TimelineControlOpenInBrowserCommand
 	{
 		[default] interface ICommand;
+	};
+	[
+		uuid(31699CC6-E397-45CB-BBD6-ECF80D9C343C)
+	]
+	coclass SearchControl
+	{
+		[default] interface ISearchControl;
+	}; 
+	[
+		uuid(DB25B344-8870-45CE-8C9E-CF6F26C32EBE)
+	]
+	coclass SearchTimelineControl
+	{
+		[default] interface ISearchTimelineControl;
+	};
+	[
+		uuid(68590141-7E8A-4993-BF22-77F31E8B888D)
+	]
+	coclass SearchTimelineService
+	{
+		[default] interface ISearchTimelineService;
 	};
 };
 

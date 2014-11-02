@@ -36,17 +36,6 @@ STDMETHODIMP CThemeService::GetThemes(IObjArray** ppObjectArray)
 
 STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 {
-	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
-	CComPtr<IContainerControl> pContainerControl;
-	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
-	CComQIPtr<ICustomTabControl> pTabbedControl = pContainerControl;
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(pTabbedControl->GetPage(0, &pControl));
-	CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
-	pControl.Release();
-	RETURN_IF_FAILED(pTabbedControl->GetPage(1, &pControl));
-	CComQIPtr<ISettingsControl> pSettingsControl = pControl;;
-
 	GUID gThemeId = GUID_NULL;
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(m_pObjectArray->GetCount(&uiCount));
@@ -76,17 +65,53 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 		RETURN_IF_FAILED(pThemeUnk->QueryInterface(&m_pCurrentTheme));
 	}
 
-	CComQIPtr<IThemeSupport> pThemeSupport = pHomeTimeLineControl;
-	if (pThemeSupport)
+	CComPtr<IFormManager> pFormManager;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
+
 	{
-		RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pCurrentTheme));
+		CComPtr<IControl> pControlHome;
+		RETURN_IF_FAILED(pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControlHome));
+		CComQIPtr<IThemeSupport> pThemeSupport = pControlHome;
+		ATLASSERT(pThemeSupport);
+		if (pThemeSupport)
+		{
+			RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pCurrentTheme));
+		}
 	}
+
+	{
+		CComPtr<IControl> pControlSearch;
+		RETURN_IF_FAILED(pFormManager->FindForm(CLSID_SearchControl, &pControlSearch));
+		CComQIPtr<IThemeSupport> pThemeSupport = pControlSearch;
+		ATLASSERT(pThemeSupport);
+		if (pThemeSupport)
+		{
+			RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pCurrentTheme));
+		}
+	}
+
+	{
+		CComPtr<IControl> pControlSettings;
+		RETURN_IF_FAILED(pFormManager->FindForm(CLSID_SettingsControl, &pControlSettings));
+		CComQIPtr<IThemeSupport> pThemeSupport = pControlSettings;
+		ATLASSERT(pThemeSupport);
+		if (pThemeSupport)
+		{
+			RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pCurrentTheme));
+		}
+	}
+
+	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
+	ATLASSERT(pMainWindow);
+	CComPtr<IContainerControl> pContainerControl;
+	RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
+	CComQIPtr<ICustomTabControl> pTabbedControl = pContainerControl;
+	ATLASSERT(pTabbedControl);
 
 	CComPtr<ISkinTabControl> pSkinTabControl;
 	RETURN_IF_FAILED(m_pCurrentTheme->GetTabControlSkin(&pSkinTabControl));
 	RETURN_IF_FAILED(pTabbedControl->SetSkinTabControl(pSkinTabControl));
 
-	RETURN_IF_FAILED(pSettingsControl->SetTheme(m_pCurrentTheme));
 
 	CComPtr<IViewControllerService> pViewControllerService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &pViewControllerService));
@@ -102,7 +127,7 @@ STDMETHODIMP CThemeService::ApplyThemeFromSettings()
 	RETURN_IF_FAILED(pSettings->GetVariantValue(VAR_GUID_ID, &vThemeId));
 	if (vThemeId.vt == VT_BSTR)
 	{
-		GUID gId = GUID_NULL; 
+		GUID gId = GUID_NULL;
 		RETURN_IF_FAILED(CLSIDFromString(vThemeId.bstrVal, &gId));
 		RETURN_IF_FAILED(ApplyTheme(gId));
 	}

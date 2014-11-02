@@ -45,8 +45,10 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 
 STDMETHODIMP CViewControllerService::OnInitCompleted()
 {
+	CComPtr<IFormManager> pFormManager;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
 	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
+	RETURN_IF_FAILED(pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
 	CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
 	RETURN_IF_FAILED(pHomeTimeLineControl->StartTimers());
 	return S_OK;
@@ -105,6 +107,7 @@ STDMETHODIMP CViewControllerService::ShowInfo(HRESULT hr, BOOL bError, BOOL bInf
 			RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
 			RETURN_IF_FAILED(pFormManager->ActivateForm(CLSID_SettingsControl));
 		}
+		RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(bError, bInfoImageEnableClick, bstrMessage));
 		return S_OK;
 	}
 

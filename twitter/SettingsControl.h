@@ -21,7 +21,8 @@ class ATL_NO_VTABLE CSettingsControl :
 	public IMsgHandler,
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public IThemeSupport
 {
 public:
 	CSettingsControl()
@@ -37,6 +38,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPersistSettings)
 		COM_INTERFACE_ENTRY(IMsgHandler)
+		COM_INTERFACE_ENTRY(IThemeSupport)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
