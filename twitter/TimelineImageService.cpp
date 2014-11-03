@@ -132,22 +132,19 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vItemIndex;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ITEM_INDEX, &vItemIndex));
 
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pTimelineControl->GetItemsCount(&uiCount));
+
+	if (uiCount)
 	{
 		lock_guard<mutex> lock(m_mutex);
-
-		UINT uiCount = 0;
-		RETURN_IF_FAILED(m_pTimelineControl->GetItemsCount(&uiCount));
-
-		if (uiCount)
+		auto it = m_imageRefs.find(vUrl.bstrVal);
+		if (it != m_imageRefs.end())
 		{
-			auto it = m_imageRefs.find(vUrl.bstrVal);
-			if (it != m_imageRefs.end())
+			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
+			for (auto& item : it->second)
 			{
-				RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
-				for (auto& item : it->second)
-				{
-					m_idsToUpdate.insert(item);
-				}
+				m_idsToUpdate.insert(item);
 			}
 		}
 	}
