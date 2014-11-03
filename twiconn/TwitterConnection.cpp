@@ -23,7 +23,7 @@ STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 			auto errorArray = valueObject[L"errors"]->AsArray();
 			auto errObject = errorArray[0]->AsObject();
 			m_errMsg = errObject[L"message"]->AsString().c_str();
-			SetErrorInfo(0, this);
+			ASSERT_IF_FAILED(SetErrorInfo(0, this));
 			return E_FAIL;
 		}
 	}
@@ -160,7 +160,7 @@ STDMETHODIMP CTwitterConnection::Search(BSTR bstrQuery, BSTR bstrSinceId, UINT u
 
 	USES_CONVERSION;
 
-	string strQuery = W2A(bstrQuery);
+	string strQuery = W2A_CP(bstrQuery, CP_UTF8);
 	string strAppToken = W2A(m_strAppToken.c_str());
 	string strSinceId = bstrSinceId == nullptr ? "" : W2A(bstrSinceId);
 	if (!m_pTwitObj->searchWithAppAuth(strAppToken, strQuery, strSinceId, boost::lexical_cast<string>(uiCount)))

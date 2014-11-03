@@ -49,6 +49,7 @@ STDMETHODIMP CSearchControl::OnShutdown()
 
 STDMETHODIMP CSearchControl::OnActivate()
 {
+	m_editText.SetFocus();
 	return S_OK;
 }
 

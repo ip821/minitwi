@@ -5,6 +5,12 @@
 #include "TimelineService.h"
 #include "UpdateScope.h"
 
+#ifdef DEBUG
+#define COUNT_ITEMS 10
+#else
+#define COUNT_ITEMS 100
+#endif
+
 STDMETHODIMP CSearchTimelineService::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
@@ -99,7 +105,7 @@ STDMETHODIMP CSearchTimelineService::OnRun(IVariantObject *pResult)
 	ATLASSERT(vText.vt == VT_BSTR);
 
 	CComPtr<IObjArray> pObjectArray;
-	RETURN_IF_FAILED(pConnection->Search(vText.bstrVal, NULL, 100, &pObjectArray));
+	RETURN_IF_FAILED(pConnection->Search(vText.bstrVal, NULL, COUNT_ITEMS, &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 
 	return S_OK;

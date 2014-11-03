@@ -260,6 +260,10 @@ LRESULT CTimelineControl::OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 {
 	if (!m_pCommandSupport)
 		return 0;
+
+	auto hWndFocused = GetFocus();
+	if (hWndFocused != m_hWnd && !IsChild(hWndFocused))
+		return 0;
 	BOOL bResult = FALSE;
 	LRESULT lResult = 0;
 	ASSERT_IF_FAILED(m_pCommandSupport->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lResult, &bResult));

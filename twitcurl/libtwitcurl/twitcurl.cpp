@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include <memory.h>
 #include <algorithm>
+#include <codecvt>
 #include "twitcurlurls.h"
 #include "twitcurl.h"
 #include "urlencode.h"
@@ -401,14 +402,14 @@ bool twitCurl::statusUpdate(std::string& newStatus, std::string inReplyToStatusI
 		newStatusMsg);
 }
 
-bool twitCurl::searchWithAppAuth(std::string strAppToken, std::string& searchQuery, std::string& strSinceId, std::string resultCount)
+bool twitCurl::searchWithAppAuth(std::string strAppToken, std::string& searchQueryUtf8, std::string& strSinceId, std::string resultCount)
 {
 	/* Prepare URL */
 	std::string buildUrl = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
 		twitterDefaults::TWITCURL_SEARCH_URL +
 		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType] +
 		twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_SEARCHQUERYSTRING +
-		searchQuery;
+		urlencode(searchQueryUtf8);
 
 	/* Add number of results count if provided */
 	if (resultCount.size())
