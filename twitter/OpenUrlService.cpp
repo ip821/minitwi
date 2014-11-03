@@ -119,9 +119,56 @@ STDMETHODIMP COpenUrlService::OnDeactivate(IControl *pControl)
 	return S_OK;
 }
 
+STDMETHODIMP COpenUrlService::OpenUserInfoForm(IVariantObject* pVariantObject)
+{
+	CComPtr<IControl> pControl;
+	HRESULT hr = m_pFormManager->FindForm(CLSID_UserInfoControl, &pControl);
+	if (SUCCEEDED(hr))
+	{
+		CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
+		ATLASSERT(pUserInfoControl);
+		CComPtr<IVariantObject> pVariantObjectOpened;
+		RETURN_IF_FAILED(pUserInfoControl->GetVariantObject(&pVariantObjectOpened));
+		CComVariant vUserNameOpened;
+		RETURN_IF_FAILED(pVariantObjectOpened->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserNameOpened));
+		CComVariant vUserName;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
+		if (vUserName.vt == VT_BSTR && vUserNameOpened.vt == VT_BSTR && CComBSTR(vUserName.bstrVal) == CComBSTR(vUserNameOpened.bstrVal))
+		{
+			return S_OK;
+		}
+	}
+
+	RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_UserInfoControl, pVariantObject));
+	return S_OK;
+}
+
+STDMETHODIMP COpenUrlService::OpenTwitViewForm(IVariantObject* pVariantObject)
+{
+	CComPtr<IControl> pControl;
+	HRESULT hr = m_pFormManager->FindForm(CLSID_TwitViewControl, &pControl);
+	if (SUCCEEDED(hr))
+	{
+		CComQIPtr<ITwitViewControl> pTwitViewControl = pControl;
+		ATLASSERT(pTwitViewControl);
+		CComPtr<IVariantObject> pVariantObjectOpened;
+		RETURN_IF_FAILED(pTwitViewControl->GetVariantObject(&pVariantObjectOpened));
+		CComVariant vIdOpened;
+		RETURN_IF_FAILED(pVariantObjectOpened->GetVariantValue(VAR_ID, &vIdOpened));
+		CComVariant vId;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+		if (vId.vt == VT_BSTR && vIdOpened.vt == VT_BSTR && CComBSTR(vId.bstrVal) == CComBSTR(vIdOpened.bstrVal))
+		{
+			return S_OK;
+		}
+	}
+	RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_TwitViewControl, pVariantObject));
+	return S_OK;
+}
+
 STDMETHODIMP COpenUrlService::OnItemDoubleClick(IVariantObject* pVariantObject)
 {
-	RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_TwitViewControl, pVariantObject));
+	RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
 	return S_OK;
 }
 
@@ -140,7 +187,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 		{
 			CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
 			ATLASSERT(pObj);
-			RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_UserInfoControl, pObj));
+			RETURN_IF_FAILED(OpenUserInfoForm(pObj));
 		}
 	}
 
@@ -156,7 +203,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
 	{
-		RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_TwitViewControl, pVariantObject));
+		RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_URL))

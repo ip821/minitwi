@@ -64,10 +64,11 @@ protected:
 	virtual HRESULT ShuttingDown();
 
 private:
-
+	CComPtr<IVariantObject> m_pVariantObject;
 public:
 	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
+	STDMETHOD(GetVariantObject)(IVariantObject** ppVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitViewControl), CTwitViewControl)

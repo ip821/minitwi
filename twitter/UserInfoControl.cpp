@@ -173,6 +173,13 @@ STDMETHODIMP CUserInfoControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 	return S_OK;
 }
 
+STDMETHODIMP CUserInfoControl::GetVariantObject(IVariantObject** ppVariantObject)
+{
+	CHECK_E_POINTER(ppVariantObject);
+	RETURN_IF_FAILED(m_pVariantObject->QueryInterface(ppVariantObject));
+	return S_OK;
+}
+
 STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);

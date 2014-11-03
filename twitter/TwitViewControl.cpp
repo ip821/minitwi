@@ -3,6 +3,13 @@
 #include "Plugins.h"
 #include "UpdateScope.h"
 
+STDMETHODIMP CTwitViewControl::GetVariantObject(IVariantObject** ppVariantObject)
+{
+	CHECK_E_POINTER(ppVariantObject);
+	RETURN_IF_FAILED(m_pVariantObject->QueryInterface(ppVariantObject));
+	return S_OK;
+}
+
 STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
@@ -10,6 +17,7 @@ STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 	ATLASSERT(pInit);
 	CComPtr<IVariantObject> pVariantObjectCopy;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObjectCopy));
+	m_pVariantObject = pVariantObjectCopy;
 	RETURN_IF_FAILED(pVariantObject->CopyTo(pVariantObjectCopy));
 	RETURN_IF_FAILED(pVariantObjectCopy->SetVariantValue(VAR_ITEM_DOUBLE_SIZE, &CComVariant(true)));
 	RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObjectCopy));
@@ -40,5 +48,6 @@ HRESULT CTwitViewControl::Initialized()
 HRESULT CTwitViewControl::ShuttingDown()
 {
 	RETURN_IF_FAILED(__super::ShuttingDown());
+	m_pVariantObject.Release();
 	return S_OK;
 }

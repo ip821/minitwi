@@ -456,6 +456,7 @@ interface ITimelineControlSupport : IUnknown
 ]
 interface IUserInfoControl : ITimelineControlSupport
 {
+	HRESULT GetVariantObject(IVariantObject**ppVariantObject);
 };
 
 [
@@ -476,6 +477,7 @@ interface IHomeTimeLineControl : IUnknown
 ]
 interface ITwitViewControl : IUnknown
 {
+	HRESULT GetVariantObject(IVariantObject**ppVariantObject);
 };
 
 [

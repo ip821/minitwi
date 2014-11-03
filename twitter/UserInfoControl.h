@@ -102,6 +102,8 @@ public:
 
 	STDMETHOD(GetTimelineControl)(ITimelineControl** ppTimelineControl);
 	STDMETHOD(GetServiceProvider)(IServiceProvider** ppServiceProvider);
+
+	STDMETHOD(GetVariantObject)(IVariantObject** ppVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserInfoControl), CUserInfoControl)

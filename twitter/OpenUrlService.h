@@ -48,6 +48,9 @@ private:
 	DWORD m_dwAdviceTimelineControlInUserInfoControl = 0;
 	DWORD m_dwAdviceTimelineControlInTwitViewControl = 0;
 
+	STDMETHOD(OpenTwitViewForm)(IVariantObject* pVariantObject);
+	STDMETHOD(OpenUserInfoForm)(IVariantObject* pVariantObject);
+
 private:
 
 public:
