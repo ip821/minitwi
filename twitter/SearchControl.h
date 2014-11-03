@@ -73,6 +73,7 @@ private:
 
 	void EnableControls(BOOL bEnable);
 	void AdjustSizes();
+	STDMETHOD(DoSearch)();
 
 public:
 	enum { IDD = IDD_SEARCHCONTROL };

@@ -73,6 +73,18 @@ STDMETHODIMP CSearchControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 {
 	if (!m_pTimelineControl)
 		return S_OK;
+
+	if (
+		(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
+		&&
+		(pMsg->hwnd == m_editText || pMsg->hwnd == m_buttonGo)
+		&&
+		(::GetWindowLong(pMsg->hwnd, GWL_STYLE) & WS_DISABLED) == 0
+		)
+	{
+		RETURN_IF_FAILED(DoSearch());
+	}
+
 	CComQIPtr<IControl> pControl = m_pTimelineControl;
 	ATLASSERT(pControl);
 	RETURN_IF_FAILED(pControl->PreTranslateMessage(pMsg, pbResult));
@@ -120,7 +132,7 @@ STDMETHODIMP CSearchControl::SetTheme(ITheme* pTheme)
 	return S_OK;
 }
 
-LRESULT CSearchControl::OnClickedGo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+STDMETHODIMP CSearchControl::DoSearch()
 {
 	CString strText;
 	m_editText.GetWindowText(strText);
@@ -146,6 +158,12 @@ LRESULT CSearchControl::OnClickedGo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 		RETURN_IF_FAILED(pServiceProviderTimelineControl->QueryService(SERVICE_TIMELINE_THREAD, &pThreadService));
 		RETURN_IF_FAILED(pThreadService->Run());
 	}
+	return S_OK;
+}
+
+LRESULT CSearchControl::OnClickedGo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	ASSERT_IF_FAILED(DoSearch());
 	return 0;
 }
 

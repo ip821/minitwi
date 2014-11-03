@@ -196,7 +196,7 @@ STDMETHODIMP COpenUrlService::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 	RETURN_IF_FAILED(m_pControl->GetHWND(&hWnd));
 	if (pMsg->message == WM_KEYDOWN && GetActiveWindow() == hWnd)
 	{
-		if (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_BACK)
+		if (pMsg->wParam == VK_ESCAPE)
 		{
 			CComPtr<IControl> pControlHome;
 			CComPtr<IFormManager> pFormManager;
