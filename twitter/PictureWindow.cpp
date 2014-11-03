@@ -5,6 +5,7 @@
 #include "Plugins.h"
 #include "SkinUserAccountControl.h"
 #include "..\twiconn\Plugins.h"
+#include "GdilPlusUtils.h"
 
 // CPictureWindow
 
@@ -261,7 +262,20 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	{
 		lock_guard<mutex> lock(m_mutex);
 		m_currentBitmapIndex = vIndex.intVal;
-		m_bitmaps[m_currentBitmapIndex].pBitmap = make_shared<Bitmap>(vFilePath.bstrVal);
+		auto pBitmap = make_shared<Bitmap>(vFilePath.bstrVal);
+
+		auto hMonitor = MonitorFromWindow(m_hWndParent, MONITOR_DEFAULTTONULL);
+
+		if (hMonitor)
+		{
+			MONITORINFO mi = { 0 };
+			mi.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(hMonitor, &mi);
+			CRect rectMonitor(mi.rcWork);
+			ResizeDownImage(pBitmap, rectMonitor.Height() - 100);
+		}
+
+		m_bitmaps[m_currentBitmapIndex].pBitmap = pBitmap;
 
 		RETURN_IF_FAILED(ResetAnimation());
 		ResizeToCurrentBitmap();

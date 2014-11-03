@@ -411,6 +411,9 @@
     <ClInclude Include="SearchTimelineService.h">
       <Filter>Services\SearchTimelineService</Filter>
     </ClInclude>
+    <ClInclude Include="GdilPlusUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
