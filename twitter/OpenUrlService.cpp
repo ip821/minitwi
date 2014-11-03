@@ -15,30 +15,46 @@ STDMETHODIMP COpenUrlService::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(m_pMainWindow->GetMessageLoop(&m_pMessageLoop));
 	RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
 
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
-
-	CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
-	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pHomeTimeLineControl;
-	ATLASSERT(pTimelineControlSupport);
-	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
-
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
+
 	RETURN_IF_FAILED(AtlAdvise(m_pFormManager, pUnk, __uuidof(IFormManagerEventSink), &m_dwAdviceFormManager));
 
+	{
+		CComPtr<IControl> pControl;
+		RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
+
+		CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pControl;
+		ATLASSERT(pTimelineControlSupport);
+		RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pHomeTimelineControl));
+
+		RETURN_IF_FAILED(AtlAdvise(m_pHomeTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceHomeTimelineControl));
+	}
+
+	{
+		{
+			CComPtr<IControl> pControl;
+			RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_SearchControl, &pControl));
+
+			CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pControl;
+			ATLASSERT(pTimelineControlSupport);
+			RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pSearchTimelineControl));
+
+			RETURN_IF_FAILED(AtlAdvise(m_pSearchTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceSearchTimelineControl));
+		}
+	}
 	return S_OK;
 }
 
 STDMETHODIMP COpenUrlService::OnShutdown()
 {
-	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
+	RETURN_IF_FAILED(AtlUnadvise(m_pSearchTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceSearchTimelineControl));
+	RETURN_IF_FAILED(AtlUnadvise(m_pHomeTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceHomeTimelineControl));
 	RETURN_IF_FAILED(AtlUnadvise(m_pFormManager, __uuidof(IFormManagerEventSink), m_dwAdviceFormManager));
 	RETURN_IF_FAILED(m_pMessageLoop->RemoveMessageFilter(this));
 	m_pWindowService.Release();
 	m_pServiceProvider.Release();
-	m_pTimelineControl.Release();
+	m_pHomeTimelineControl.Release();
 	m_pFormsService.Release();
 	m_pFormManager.Release();
 	return S_OK;

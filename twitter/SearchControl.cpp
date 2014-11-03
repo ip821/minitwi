@@ -49,12 +49,19 @@ STDMETHODIMP CSearchControl::OnShutdown()
 
 STDMETHODIMP CSearchControl::OnActivate()
 {
+	m_bActive = TRUE;
 	m_editText.SetFocus();
 	return S_OK;
 }
 
 STDMETHODIMP CSearchControl::OnDeactivate()
 {
+	m_bActive = FALSE;
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pTimelineControl;
+	ATLASSERT(pTimelineControlSupport);
+	CComPtr<ITimelineControl> pControl;
+	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&pControl));
+	RETURN_IF_FAILED(pControl->Clear());
 	return S_OK;
 }
 
@@ -114,6 +121,8 @@ STDMETHODIMP CSearchControl::OnStart(IVariantObject *pResult)
 STDMETHODIMP CSearchControl::OnFinish(IVariantObject *pResult)
 {
 	EnableControls(TRUE);
+	if (m_bActive)
+		::SetFocus(m_hWndTimelineControl);
 	return S_OK;
 }
 

@@ -40,6 +40,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
+		COM_INTERFACE_ENTRY_AGGREGATE(__uuidof(ITimelineControlSupport), m_pTimelineControl)
 	END_COM_MAP()
 
 	BEGIN_DLGRESIZE_MAP(CSearchControl)
@@ -70,6 +71,7 @@ private:
 	HWND m_hWndTimelineControl = 0;
 	CEdit m_editText;
 	CButton m_buttonGo;
+	BOOL m_bActive = FALSE;
 
 	void EnableControls(BOOL bEnable);
 	void AdjustSizes();

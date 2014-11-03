@@ -135,13 +135,19 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	{
 		lock_guard<mutex> lock(m_mutex);
 
-		auto it = m_imageRefs.find(vUrl.bstrVal);
-		if (it != m_imageRefs.end())
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(m_pTimelineControl->GetItemsCount(&uiCount));
+
+		if (uiCount)
 		{
-			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
-			for (auto& item : it->second)
+			auto it = m_imageRefs.find(vUrl.bstrVal);
+			if (it != m_imageRefs.end())
 			{
-				m_idsToUpdate.insert(item);
+				RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
+				for (auto& item : it->second)
+				{
+					m_idsToUpdate.insert(item);
+				}
 			}
 		}
 	}

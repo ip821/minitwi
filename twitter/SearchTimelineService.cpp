@@ -115,6 +115,12 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 
+	HWND hWnd = 0;
+	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hWnd));
+
+	if (!IsWindowVisible(hWnd))
+		return S_OK;
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))

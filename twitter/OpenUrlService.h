@@ -38,10 +38,12 @@ private:
 	CComPtr<IMessageLoop> m_pMessageLoop;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IWindowService> m_pWindowService;
-	CComPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<ITimelineControl> m_pHomeTimelineControl;
+	CComPtr<ITimelineControl> m_pSearchTimelineControl;
 	CComPtr<IFormsService> m_pFormsService;
 	CComPtr<IFormManager> m_pFormManager;
-	DWORD m_dwAdviceTimelineControl = 0;
+	DWORD m_dwAdviceHomeTimelineControl = 0;
+	DWORD m_dwAdviceSearchTimelineControl = 0;
 	DWORD m_dwAdviceFormManager = 0;
 	DWORD m_dwAdviceTimelineControlInUserInfoControl = 0;
 	DWORD m_dwAdviceTimelineControlInTwitViewControl = 0;
