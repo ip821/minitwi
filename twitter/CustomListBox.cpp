@@ -75,6 +75,7 @@ void CCustomListBox::RefreshItem(UINT uiIndex)
 	MEASUREITEMSTRUCT s = { 0 };
 	s.itemID = uiIndex;
 	MeasureItem(&s);
+	SetItemHeight(uiIndex, s.itemHeight);
 }
 
 LRESULT CCustomListBox::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -85,10 +86,7 @@ LRESULT CCustomListBox::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 	auto itemCount = GetCount();
 	for (int i = 0; i < itemCount; i++)
 	{
-		MEASUREITEMSTRUCT s = { 0 };
-		s.itemID = i;
-		MeasureItem(&s);
-		SetItemHeight(i, s.itemHeight);
+		RefreshItem(i);
 	}
 	return 0;
 }

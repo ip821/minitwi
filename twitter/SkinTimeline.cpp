@@ -386,7 +386,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 	CDC hdc(GetDC(hwndControl));
 
-	RECT clientRect = { 0 };
+	CRect clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
 
 	CString strObjectType;
@@ -607,14 +607,8 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						CComPtr<IVariantObject> pMediaObject;
 						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-						CComVariant vMediaUrl;
-						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl);
-
 						CComVariant vMediaUrlThumb;
 						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrlThumb);
-
-						CComVariant vMediaUrlShort;
-						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_SHORT, &vMediaUrlShort);
 
 						TBITMAP tBitmap = { 0 };
 						m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
@@ -623,9 +617,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 					totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
 
-					auto xOffset = ((clientRect.right - clientRect.left) - (totalImageWidth)) / 2;
-
 					const UINT oneImageWidthMax = (totalImageWidth / processCount);
+					auto xOffset = (clientRect.Width() - totalImageWidth) / 2;
+
+					UINT lastHeight = 0;
 					for (size_t i = 0; i < processCount; i++)
 					{
 						CComPtr<IVariantObject> pMediaObject;
@@ -647,10 +642,13 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 						const int oneImageWidth = min(oneImageWidthMax, tBitmap.Width);
 
-						auto x = i * oneImageWidth + xOffset;
+						auto x = xOffset;
 						auto y = lastY;
 						auto width = oneImageWidth - 4;
-						auto height = TIMELINE_IMAGE_HEIGHT;
+						auto height = min(TIMELINE_IMAGE_HEIGHT, tBitmap.Height);
+						lastHeight = max(height, lastHeight);
+
+						xOffset += width;
 
 						UINT uiIndex = 0;
 						pColumnRects->AddRect(CRect(x, y, x + width, y + height), &uiIndex);
@@ -662,7 +660,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
 					}
 
-					lastY += TIMELINE_IMAGE_HEIGHT;
+					lastY += lastHeight;
 				}
 			}
 		}
