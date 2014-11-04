@@ -44,7 +44,8 @@ public:
 
 	STDMETHOD(GetImageInfo)(BSTR bstrKey, TBITMAP* phBitmap);
 	STDMETHOD(CreateImageBitmap)(BSTR bstrKey, HBITMAP* ptBitmap);
-	STDMETHOD(AddImage)(BSTR bstrKey, BSTR bstrFileName);
+	STDMETHOD(AddImageFromFile)(BSTR bstrKey, BSTR bstrFileName);
+	STDMETHOD(AddImageFromHBITMAP)(BSTR bstrKey, HBITMAP hBitmap);
 	STDMETHOD(ContainsImageKey)(BSTR bstrKey, BOOL* pbContains);
 	STDMETHOD(RemoveImage)(BSTR bstrKey);
 	STDMETHOD(CopyImageTo)(BSTR bstrKey, IImageManagerService* pDest);

@@ -492,6 +492,17 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 	return 0;
 }
 
+void CCustomListBox::RefreshItems(IVariantObject** pItemArray, UINT uiCountArray)
+{
+	for (size_t i = 0; i < uiCountArray; i++)
+	{
+		auto it = m_itemsToIndex.find(pItemArray[i]);
+		if (it == m_itemsToIndex.end())
+			continue;
+		RefreshItem(it->second);
+	}
+}
+
 void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray)
 {
 	CRect rect;

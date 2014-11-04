@@ -91,6 +91,7 @@ public:
 	void BeginUpdate();
 	void EndUpdate();
 	void InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
+	void RefreshItems(IVariantObject** pItemArray, UINT uiCountArray);
 	void EnableAnimation(BOOL bEnable);
 };
 

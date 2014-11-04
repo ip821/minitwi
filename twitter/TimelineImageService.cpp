@@ -5,6 +5,7 @@
 #include "Plugins.h"
 #include "TimelineService.h"
 #include "UpdateScope.h"
+#include "GdilPlusUtils.h"
 
 // CTimelineImageService
 
@@ -70,6 +71,7 @@ STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 	if (ids.size())
 	{
 		vector<IVariantObject*> v(ids.begin(), ids.end());
+		RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&v[0], v.size()));
 		RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&v[0], v.size()));
 	}
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->ResumeTimer());
@@ -141,7 +143,19 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 		auto it = m_imageRefs.find(vUrl.bstrVal);
 		if (it != m_imageRefs.end())
 		{
-			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
+			auto pBitmap = std::make_shared<Gdiplus::Bitmap>(vFilePath.bstrVal);
+			auto height = pBitmap->GetHeight();
+			if (height > TIMELINE_IMAGE_HEIGHT)
+			{
+				ResizeDownImage(pBitmap, TIMELINE_IMAGE_HEIGHT);
+				HBITMAP hBitmap = 0;
+				ATLASSERT(pBitmap->GetHBITMAP(Color::Transparent, &hBitmap) == Status::Ok);
+				RETURN_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(vUrl.bstrVal, hBitmap));
+			}
+			else
+			{
+				RETURN_IF_FAILED(m_pImageManagerService->AddImageFromFile(vUrl.bstrVal, vFilePath.bstrVal));
+			}
 			for (auto& item : it->second)
 			{
 				m_idsToUpdate.insert(item);

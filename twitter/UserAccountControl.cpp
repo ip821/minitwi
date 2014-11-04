@@ -164,7 +164,7 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
 		if (!bContains)
 		{
-			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
+			RETURN_IF_FAILED(m_pImageManagerService->AddImageFromFile(vUrl.bstrVal, vFilePath.bstrVal));
 		}
 		Invalidate();
 	}
@@ -176,7 +176,7 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
 		if (!bContains)
 		{
-			RETURN_IF_FAILED(m_pImageManagerService->AddImage(vUrl.bstrVal, vFilePath.bstrVal));
+			RETURN_IF_FAILED(m_pImageManagerService->AddImageFromFile(vUrl.bstrVal, vFilePath.bstrVal));
 		}
 		StartAnimation();
 	}

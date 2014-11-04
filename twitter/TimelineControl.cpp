@@ -174,6 +174,12 @@ STDMETHODIMP CTimelineControl::InsertItems(IObjArray* pObjectArray, UINT uiStart
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControl::RefreshItems(IVariantObject** pItemArray, UINT uiCountArray)
+{
+	m_listBox.RefreshItems(pItemArray, uiCountArray);
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray)
 {
 	m_listBox.InvalidateItems(pItemArray, uiCountArray);

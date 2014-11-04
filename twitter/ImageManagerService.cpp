@@ -69,7 +69,18 @@ STDMETHODIMP CImageManagerService::CopyImageTo(BSTR bstrKey, IImageManagerServic
 	return S_OK;
 }
 
-STDMETHODIMP CImageManagerService::AddImage(BSTR bstrKey, BSTR bstrFileName)
+STDMETHODIMP CImageManagerService::AddImageFromHBITMAP(BSTR bstrKey, HBITMAP hBitmap)
+{
+	CHECK_E_POINTER(bstrKey);
+	CHECK_E_POINTER(hBitmap);
+	{
+		lock_guard<mutex> mutex(m_mutex); 
+		m_bitmaps[bstrKey] = std::shared_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromHBITMAP(hBitmap, 0));
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CImageManagerService::AddImageFromFile(BSTR bstrKey, BSTR bstrFileName)
 {
 	CHECK_E_POINTER(bstrKey);
 	CHECK_E_POINTER(bstrFileName);

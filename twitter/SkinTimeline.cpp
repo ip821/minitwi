@@ -127,7 +127,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnRects* pColumnRects, TDRAWIT
 	RETURN_IF_FAILED(pColumnRects->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
-		RECT rect = { 0 };
+		CRect rect;
 		RETURN_IF_FAILED(pColumnRects->GetRect(i, &rect));
 		CComBSTR bstrColumnName;
 		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
@@ -153,8 +153,8 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnRects* pColumnRects, TDRAWIT
 
 		auto x = lpdis->lpdi->rcItem.left;
 		auto y = lpdis->lpdi->rcItem.top;
-		auto width = min(rect.right - rect.left, (int)tBitmap.Width);
-		auto height = min(rect.bottom - rect.top, (int)tBitmap.Height);
+		auto width = rect.Width();
+		auto height = rect.Height();
 
 		BLENDFUNCTION bf = { 0 };
 		bf.BlendOp = AC_SRC_OVER;
@@ -599,12 +599,33 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 				if (uiCount)
 				{
-					const int IMAGE_HEIGHT = 100;
-					const int IMAGE_WIDTH = 275;
-					auto xOffset = ((clientRect.right - clientRect.left) - (IMAGE_WIDTH)) / 2;
-
+					const int IMAGE_WIDTH_MAX = 275;
+					auto totalImageWidth = 0;
 					const size_t processCount = uiCount;
-					const int oneImageWidth = (IMAGE_WIDTH / processCount);
+					for (size_t i = 0; i < processCount; i++)
+					{
+						CComPtr<IVariantObject> pMediaObject;
+						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+						CComVariant vMediaUrl;
+						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl);
+
+						CComVariant vMediaUrlThumb;
+						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrlThumb);
+
+						CComVariant vMediaUrlShort;
+						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_SHORT, &vMediaUrlShort);
+
+						TBITMAP tBitmap = { 0 };
+						m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
+						totalImageWidth += tBitmap.Width;
+					}
+
+					totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
+
+					auto xOffset = ((clientRect.right - clientRect.left) - (totalImageWidth)) / 2;
+
+					const UINT oneImageWidthMax = (totalImageWidth / processCount);
 					for (size_t i = 0; i < processCount; i++)
 					{
 						CComPtr<IVariantObject> pMediaObject;
@@ -624,10 +645,12 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						TBITMAP tBitmap = { 0 };
 						m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
 
+						const int oneImageWidth = min(oneImageWidthMax, tBitmap.Width);
+
 						auto x = i * oneImageWidth + xOffset;
 						auto y = lastY;
 						auto width = oneImageWidth - 4;
-						auto height = IMAGE_HEIGHT;
+						auto height = TIMELINE_IMAGE_HEIGHT;
 
 						UINT uiIndex = 0;
 						pColumnRects->AddRect(CRect(x, y, x + width, y + height), &uiIndex);
@@ -639,7 +662,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
 					}
 
-					lastY += IMAGE_HEIGHT;
+					lastY += TIMELINE_IMAGE_HEIGHT;
 				}
 			}
 		}
