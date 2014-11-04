@@ -60,33 +60,37 @@ STDMETHODIMP CPictureWindow::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 	return S_OK;
 }
 
-LRESULT CPictureWindow::OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+void CPictureWindow::MoveToNextPicture()
 {
 	lock_guard<mutex> lock(m_mutex);
 
 	if (m_currentBitmapIndex == -1)
-		return 0;
+		return;
 	if (m_bitmaps.size() == 1)
-		return 0;
+		return;
 
 	++m_currentBitmapIndex;
 
 	if ((size_t)m_currentBitmapIndex == m_bitmaps.size())
 		m_currentBitmapIndex = 0;
 
-	RETURN_IF_FAILED(InitCommandSupport(m_currentBitmapIndex));
+	ASSERT_IF_FAILED(InitCommandSupport(m_currentBitmapIndex));
 
 	if (m_bitmaps[m_currentBitmapIndex].pBitmap != nullptr)
 	{
 		ResizeToCurrentBitmap();
 		Invalidate();
-		return 0;
+		return;
 	}
 
 	ASSERT_IF_FAILED(ResetAnimation());
 	ASSERT_IF_FAILED(StartNextDownload(m_currentBitmapIndex));
 	m_currentBitmapIndex = -1;
 	Invalidate();
+}
+
+LRESULT CPictureWindow::OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
 	return 0;
 }
 
@@ -454,6 +458,8 @@ LRESULT CPictureWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
 	if (wParam == VK_ESCAPE)
 		PostMessage(WM_CLOSE, 0, 0);
+	else if (wParam == VK_RETURN)
+		MoveToNextPicture();
 	return 0;
 }
 

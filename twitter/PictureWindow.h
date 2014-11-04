@@ -102,6 +102,7 @@ private:
 	STDMETHOD(ResetAnimation)();
 	void ResizeToCurrentBitmap();
 	STDMETHOD(InitCommandSupport)(int index);
+	void MoveToNextPicture();
 
 public:
 	void OnMMTimer();
