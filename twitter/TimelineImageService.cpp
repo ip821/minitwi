@@ -148,9 +148,9 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 			if (height > TIMELINE_IMAGE_HEIGHT)
 			{
 				ResizeDownImage(pBitmap, TIMELINE_IMAGE_HEIGHT);
-				HBITMAP hBitmap = 0;
-				ATLASSERT(pBitmap->GetHBITMAP(Color::Transparent, &hBitmap) == Status::Ok);
-				RETURN_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(vUrl.bstrVal, hBitmap));
+				CBitmap bitmap;
+				pBitmap->GetHBITMAP(Color::Transparent, &bitmap.m_hBitmap);
+				RETURN_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(vUrl.bstrVal, bitmap));
 			}
 			else
 			{
