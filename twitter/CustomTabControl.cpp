@@ -453,6 +453,9 @@ LRESULT CCustomTabControl::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	if (!m_pSkinTabControl)
+		return 0;
+
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
 	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint, m_selectedPageIndex);

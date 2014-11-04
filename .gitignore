@@ -335,3 +335,7 @@
 /twiconn/twiconn_i.h
 /twitter/twitter_i.c
 /twitter/twitter_i.h
+/Debug_XP
+/Host/Debug_XP/Host.log
+/twiconn/Debug_XP/twiconn.log
+/twitter/Debug_XP/twitter.log
