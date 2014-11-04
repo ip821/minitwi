@@ -9,7 +9,6 @@ using namespace Gdiplus;
 void ResizeDownImage(shared_ptr<Bitmap>& bmp, UINT height)
 {
 	shared_ptr<Bitmap> originalBitmap = bmp;
-	bmp.reset();
 	UINT bmpHeight = originalBitmap->GetHeight();
 	UINT bmpWidth = originalBitmap->GetWidth();
 	double ratio = ((double)bmpWidth) / ((double)bmpHeight);
@@ -18,6 +17,7 @@ void ResizeDownImage(shared_ptr<Bitmap>& bmp, UINT height)
 		return;
 	}
 
+	bmp.reset();
 	auto width = static_cast<INT>(height * ratio);
 	bmp = make_shared<Bitmap>(width, height, originalBitmap->GetPixelFormat());
 	Graphics graphics(bmp.get());
