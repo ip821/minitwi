@@ -648,7 +648,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						auto height = min(TIMELINE_IMAGE_HEIGHT, tBitmap.Height);
 						lastHeight = max(height, lastHeight);
 
-						xOffset += width;
+						xOffset += oneImageWidth;
 
 						UINT uiIndex = 0;
 						pColumnRects->AddRect(CRect(x, y, x + width, y + height), &uiIndex);
