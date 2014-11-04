@@ -91,6 +91,7 @@ void CPictureWindow::MoveToNextPicture()
 
 LRESULT CPictureWindow::OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	MoveToNextPicture();
 	return 0;
 }
 
