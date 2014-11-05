@@ -98,6 +98,9 @@ LRESULT CUserAccountControl::OnPrintClient(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if (!m_pSkinUserAccountControl)
+		return 0;
+
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
 
