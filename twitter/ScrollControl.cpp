@@ -5,7 +5,7 @@
 #pragma comment(lib, "Winmm.lib")
 
 #define TARGET_RESOLUTION 1
-#define TARGET_INTERVAL 5
+#define TARGET_INTERVAL 10
 
 CScrollControl::CScrollControl()
 {
@@ -15,12 +15,14 @@ void CScrollControl::SetBitmap(HBITMAP hBitmap)
 {
 	m_bitmap = hBitmap;
 	Invalidate();
+	RedrawWindow(0, 0, RDW_UPDATENOW);
 }
 
 void CScrollControl::Scroll(BOOL bFromRightToLeft)
 {
 	CRect rect;
 	GetClientRect(&rect);
+
 	m_scrollAmount = rect.Width() / STEPS;
 	m_step = 0;
 
@@ -48,7 +50,22 @@ LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam
 	m_dx += m_scrollAmount;
 	m_step++;
 	CRect rectUpdate;
-	ScrollWindowEx(m_scrollAmount, 0, SW_INVALIDATE, 0, 0, 0, &rectUpdate);
+	ScrollWindowEx(-m_scrollAmount, 0, 0, 0, 0, 0, &rectUpdate);
+#ifdef _DEBUG
+	using namespace boost;
+	CString str;
+	str.Format(
+		L"CScrollControl::OnAnimationTimer - rectUpdate = (%s, %s - %s, %s)\n",
+		lexical_cast<wstring>(rectUpdate.left).c_str(),
+		lexical_cast<wstring>(rectUpdate.top).c_str(),
+		lexical_cast<wstring>(rectUpdate.right).c_str(),
+		lexical_cast<wstring>(rectUpdate.bottom).c_str()
+		);
+	OutputDebugString(str);
+#endif
+
+	RedrawWindow(rectUpdate, 0, RDW_UPDATENOW | RDW_NOERASE);
+
 	if (m_step == STEPS)
 	{
 		m_pCustomTabControl->OnEndScroll();
@@ -58,25 +75,33 @@ LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam
 	return 0;
 }
 
-LRESULT CScrollControl::OnScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	return 0;
-}
-
 LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	if (m_bitmap.IsNull())
-	return 0;
+		return 0;
+
 	PAINTSTRUCT ps = { 0 };
 	CDCHandle cdc(BeginPaint(&ps));
 
 	CRect rect = ps.rcPaint;
+#ifdef _DEBUG
+	using namespace boost;
+	CString str;
+	str.Format(
+		L"CScrollControl::OnPaint - ps.rcPaint = (%s, %s - %s, %s)\n",
+		lexical_cast<wstring>(rect.left).c_str(),
+		lexical_cast<wstring>(rect.top).c_str(),
+		lexical_cast<wstring>(rect.right).c_str(),
+		lexical_cast<wstring>(rect.bottom).c_str()
+		);
+	OutputDebugString(str);
+#endif
 
 	CDC cdcBitmap;
 	cdcBitmap.CreateCompatibleDC(cdc);
 	cdcBitmap.SelectBitmap(m_bitmap);
 
-	BitBlt(cdc, rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, m_dx, 0, SRCCOPY);
+	cdc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, m_dx + rect.left, 0, SRCCOPY);
 
 	EndPaint(&ps);
 	return 0;

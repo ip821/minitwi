@@ -14,7 +14,6 @@ public:
 
 	BEGIN_MSG_MAP(CScrollControl)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
-		MESSAGE_HANDLER(WM_HSCROLL, OnScroll)
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 	END_MSG_MAP()
@@ -26,7 +25,7 @@ private:
 	int m_dx = 0;
 	int m_step = 0;
 	int m_scrollAmount = 0;
-	const int STEPS = 25;
+	const int STEPS = 10;
 	BOOL m_bFromRightToLeft = FALSE;
 
 public:
