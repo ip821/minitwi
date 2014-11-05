@@ -5,7 +5,7 @@
 #pragma comment(lib, "Winmm.lib")
 
 #define TARGET_RESOLUTION 1
-#define TARGET_INTERVAL 10
+#define TARGET_INTERVAL 12
 
 CScrollControl::CScrollControl()
 {
@@ -50,7 +50,8 @@ LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam
 	m_dx += m_scrollAmount;
 	m_step++;
 	CRect rectUpdate;
-	ScrollWindowEx(-m_scrollAmount, 0, 0, 0, 0, 0, &rectUpdate);
+	Invalidate();
+	RedrawWindow(0, 0, RDW_UPDATENOW);
 #ifdef _DEBUG
 	using namespace boost;
 	CString str;
