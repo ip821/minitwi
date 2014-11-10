@@ -20,6 +20,11 @@ public:
 		timeBeginPeriod(m_wTimerRes);
 	}
 
+	~CAnimationTimerSupport()
+	{
+		timeEndPeriod(m_wTimerRes);
+	}
+
 	static void CALLBACK TimerCallback(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
 	{
 		auto p = (T*)(dwUser);
