@@ -121,9 +121,11 @@ public:
 		m_pServiceProvider.Release();
 		m_pServiceProvider.Release();
 		m_pServiceProviderParent.Release();
-		m_pPluginSupport.Release();
 
 		RETURN_IF_FAILED(m_pSkinTimeline->SetImageManagerService(NULL));
+
+		m_pPluginSupport.Release();
+
 		m_pSkinTimeline.Release();
 		m_pTheme.Release();
 

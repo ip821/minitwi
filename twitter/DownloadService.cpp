@@ -40,15 +40,23 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	if (!curl)
 		return E_FAIL;
 
+	HRESULT hr = S_OK;
 	CComVariant vUrl;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
-	if (vUrl.vt != VT_BSTR)
+	if (FAILED(hr = pResult->GetVariantValue(VAR_URL, &vUrl)) || vUrl.vt != VT_BSTR)
+	{
+		curl_easy_cleanup(curl);
 		return E_INVALIDARG;
+	}
 
 	CString strTempFolder;
 	StrGetTempPath(strTempFolder);
 	GUID guid = { 0 };
-	RETURN_IF_FAILED(CoCreateGuid(&guid));
+	if (FAILED(hr = CoCreateGuid(&guid)))
+	{
+		curl_easy_cleanup(curl);
+		return hr;
+	}
+
 	CString strGuid;
 	StrGuidToString(guid, strGuid);
 	StrPathAppend(strTempFolder, strGuid);
