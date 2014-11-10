@@ -4,6 +4,7 @@
 #include "ViewControllerService.h"
 #include "Plugins.h"
 #include "twitter_i.h"
+#include <curl/curl.h>
 
 // CViewControllerService
 
@@ -17,6 +18,8 @@ STDMETHODIMP CViewControllerService::Load(ISettings* pSettings)
 STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
+
+	curl_global_init(CURL_GLOBAL_DEFAULT); //it's not thread safe, that's why it is called here
 
 	m_pServiceProvider = pServiceProvider;
 
