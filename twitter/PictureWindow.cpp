@@ -57,6 +57,8 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 	m_pCommandSupport.Release();
 	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
 	m_pPluginSupport.Release();
+	m_pImageManagerService.Release();
+	m_pServiceProvider.Release();
 	return S_OK;
 }
 
@@ -75,33 +77,44 @@ STDMETHODIMP CPictureWindow::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 
 void CPictureWindow::MoveToNextPicture()
 {
-	lock_guard<mutex> lock(m_mutex);
-
-	if (m_currentBitmapIndex == -1)
-		return;
-	if (m_bitmapsUrls.size() == 1)
-		return;
-
-	++m_currentBitmapIndex;
-
-	if ((size_t)m_currentBitmapIndex == m_bitmapsUrls.size())
-		m_currentBitmapIndex = 0;
-
-	ASSERT_IF_FAILED(InitCommandSupport(m_currentBitmapIndex));
-
-	BOOL bContains = FALSE;
-	ASSERT_IF_FAILED(m_pImageManagerService->ContainsImageKey(m_bitmapsUrls[m_currentBitmapIndex], &bContains));
-
-	if (bContains)
+	int currentBitmapIndex = 0;
 	{
-		ResizeToCurrentBitmap();
-		Invalidate();
-		return;
+		lock_guard<mutex> lock(m_mutex);
+
+		if (m_currentBitmapIndex == -1)
+			return;
+		if (m_bitmapsUrls.size() == 1)
+			return;
+
+		++m_currentBitmapIndex;
+
+		if ((size_t)m_currentBitmapIndex == m_bitmapsUrls.size())
+			m_currentBitmapIndex = 0;
+
+		ASSERT_IF_FAILED(InitCommandSupport(m_currentBitmapIndex));
+
+		currentBitmapIndex = m_currentBitmapIndex;
 	}
 
-	ASSERT_IF_FAILED(ResetAnimation());
-	ASSERT_IF_FAILED(StartNextDownload(m_currentBitmapIndex));
-	m_currentBitmapIndex = -1;
+	BOOL bContains = FALSE;
+	ASSERT_IF_FAILED(m_pImageManagerService->ContainsImageKey(m_bitmapsUrls[currentBitmapIndex], &bContains));
+
+	{
+		lock_guard<mutex> lock(m_mutex);
+
+		if (bContains)
+		{
+			ResizeToCurrentBitmap();
+			Invalidate();
+			return;
+		}
+
+		ASSERT_IF_FAILED(ResetAnimation());
+
+		ASSERT_IF_FAILED(StartNextDownload(m_currentBitmapIndex));
+		m_currentBitmapIndex = -1;
+	}
+
 	Invalidate();
 }
 
@@ -208,7 +221,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 		m_bitmapsUrls.push_back(vMediaUrl.bstrVal);
 		currentBitmapIndex = 0;
 	}
-	
+
 	RETURN_IF_FAILED(InitCommandSupport(currentBitmapIndex));
 	RETURN_IF_FAILED(StartNextDownload(currentBitmapIndex));
 	return S_OK;
@@ -230,6 +243,7 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 
 LRESULT CPictureWindow::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	lock_guard<mutex> lock(m_mutex);
 	m_alpha += m_alphaAmount;
 	m_step++;
 	Invalidate();
@@ -273,26 +287,31 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 
+	int currentBitmapIndex = 0;
 	{
 		lock_guard<mutex> lock(m_mutex);
 		m_currentBitmapIndex = vIndex.intVal;
-		auto pBitmap = make_shared<Bitmap>(vFilePath.bstrVal);
+		currentBitmapIndex = m_currentBitmapIndex;
+	}
 
-		auto hMonitor = MonitorFromWindow(m_hWndParent, MONITOR_DEFAULTTONULL);
+	auto pBitmap = make_shared<Bitmap>(vFilePath.bstrVal);
+	auto hMonitor = MonitorFromWindow(m_hWndParent, MONITOR_DEFAULTTONULL);
 
-		if (hMonitor)
-		{
-			MONITORINFO mi = { 0 };
-			mi.cbSize = sizeof(MONITORINFO);
-			GetMonitorInfo(hMonitor, &mi);
-			CRect rectMonitor(mi.rcWork);
-			ResizeDownImage(pBitmap, rectMonitor.Height() - 100);
-		}
+	if (hMonitor)
+	{
+		MONITORINFO mi = { 0 };
+		mi.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(hMonitor, &mi);
+		CRect rectMonitor(mi.rcWork);
+		ResizeDownImage(pBitmap, rectMonitor.Height() - 100);
+	}
 
-		CBitmap bmp;
-		pBitmap->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
-		ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[m_currentBitmapIndex], bmp));
+	CBitmap bmp;
+	pBitmap->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
+	ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[currentBitmapIndex], bmp));
 
+	{
+		lock_guard<mutex> lock(m_mutex);
 		RETURN_IF_FAILED(ResetAnimation());
 		ResizeToCurrentBitmap();
 	}
@@ -362,80 +381,83 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	cdc.CreateCompatibleDC(cdcReal);
 	cdc.SelectBitmap(bufferBitmap);
 
+	int currentBitmapIndex = 0;
+	BYTE alpha = m_alpha;
 	{
 		lock_guard<mutex> lock(m_mutex);
+		currentBitmapIndex = m_currentBitmapIndex;
+	}
 
-		static DWORD dwBrushColor = 0;
-		static DWORD dwTextColor = 0;
-		if (!dwBrushColor)
-		{
-			CComPtr<IThemeColorMap> pThemeColorMap;
-			ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
-			ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwBrushColor));
-			ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_PICTURE_WINDOW_TEXT, &dwTextColor));
-		}
+	static DWORD dwBrushColor = 0;
+	static DWORD dwTextColor = 0;
+	if (!dwBrushColor)
+	{
+		CComPtr<IThemeColorMap> pThemeColorMap;
+		ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
+		ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwBrushColor));
+		ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_PICTURE_WINDOW_TEXT, &dwTextColor));
+	}
 
-		static HFONT font = 0;
-		if (!font)
-		{
-			CComPtr<IThemeFontMap> pThemeFontMap;
-			ASSERT_IF_FAILED(m_pTheme->GetFontMap(&pThemeFontMap));
-			ASSERT_IF_FAILED(pThemeFontMap->GetFont(VAR_PICTURE_WINDOW_TEXT, &font));
-		}
-		cdc.SelectFont(font);
+	static HFONT font = 0;
+	if (!font)
+	{
+		CComPtr<IThemeFontMap> pThemeFontMap;
+		ASSERT_IF_FAILED(m_pTheme->GetFontMap(&pThemeFontMap));
+		ASSERT_IF_FAILED(pThemeFontMap->GetFont(VAR_PICTURE_WINDOW_TEXT, &font));
+	}
+	cdc.SelectFont(font);
 
-		cdc.SetBkMode(TRANSPARENT);
-		cdc.SetTextColor(dwTextColor);
+	cdc.SetBkMode(TRANSPARENT);
+	cdc.SetTextColor(dwTextColor);
 
-		cdc.FillSolidRect(&rect, dwBrushColor);
+	cdc.FillSolidRect(&rect, dwBrushColor);
 
-		if (m_currentBitmapIndex == -1)
-		{
-			CString str = L"Downloading...";
-			CSize size;
-			cdc.GetTextExtent(str, str.GetLength(), &size);
+	if (currentBitmapIndex == -1)
+	{
+		CString str = L"Downloading...";
+		CSize size;
+		cdc.GetTextExtent(str, str.GetLength(), &size);
 
-			auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
-			auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
+		auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
+		auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
 
-			CRect rectText(x, y, x + size.cx, y + size.cy);
-			CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
-			cdc.DrawText(str, str.GetLength(), rectText, 0);
-		}
-		else
-		{
-			TBITMAP tBitmap = { 0 };
-			ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bitmapsUrls[m_currentBitmapIndex], &tBitmap));
-			auto width = tBitmap.Width;
-			auto height = tBitmap.Height;
-			auto x = (rect.right - rect.left) / 2 - (width / 2);
-			auto y = (rect.bottom - rect.top) / 2 - (height / 2);
+		CRect rectText(x, y, x + size.cx, y + size.cy);
+		CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
+		cdc.DrawText(str, str.GetLength(), rectText, 0);
+	}
+	else
+	{
+		TBITMAP tBitmap = { 0 };
+		ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bitmapsUrls[currentBitmapIndex], &tBitmap));
+		auto width = tBitmap.Width;
+		auto height = tBitmap.Height;
+		auto x = (rect.right - rect.left) / 2 - (width / 2);
+		auto y = (rect.bottom - rect.top) / 2 - (height / 2);
 
-			CBitmap bitmap;
-			ASSERT_IF_FAILED(m_pImageManagerService->CreateImageBitmap(m_bitmapsUrls[m_currentBitmapIndex], &bitmap.m_hBitmap));
-			CDC cdcBitmap;
-			cdcBitmap.CreateCompatibleDC(cdc);
-			cdcBitmap.SelectBitmap(bitmap);
-			BLENDFUNCTION bf = { 0 };
-			bf.BlendOp = AC_SRC_OVER;
-			bf.SourceConstantAlpha = m_alpha;
-			cdc.AlphaBlend(x, y, width, height, cdcBitmap, 0, 0, width, height, bf);
-		}
+		CBitmap bitmap;
+		ASSERT_IF_FAILED(m_pImageManagerService->CreateImageBitmap(m_bitmapsUrls[currentBitmapIndex], &bitmap.m_hBitmap));
+		CDC cdcBitmap;
+		cdcBitmap.CreateCompatibleDC(cdc);
+		cdcBitmap.SelectBitmap(bitmap);
+		BLENDFUNCTION bf = { 0 };
+		bf.BlendOp = AC_SRC_OVER;
+		bf.SourceConstantAlpha = alpha;
+		cdc.AlphaBlend(x, y, width, height, cdcBitmap, 0, 0, width, height, bf);
+	}
 
-		if (m_bitmapsUrls.size() > 1 && m_currentBitmapIndex >= 0)
-		{
-			CString str;
-			str.Format(L"%u / %u", m_currentBitmapIndex + 1, m_bitmapsUrls.size());
-			CSize sz;
-			cdc.GetTextExtent(str, str.GetLength(), &sz);
+	if (m_bitmapsUrls.size() > 1 && m_currentBitmapIndex >= 0)
+	{
+		CString str;
+		str.Format(L"%u / %u", currentBitmapIndex + 1, m_bitmapsUrls.size());
+		CSize sz;
+		cdc.GetTextExtent(str, str.GetLength(), &sz);
 
-			auto x = rect.Width() / 2;
-			auto y = rect.bottom - sz.cy - IMAGE_PADDING * 2;
+		auto x = rect.Width() / 2;
+		auto y = rect.bottom - sz.cy - IMAGE_PADDING * 2;
 
-			CRect rectText(x, y, x + sz.cx, y + sz.cy);
-			CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
-			cdc.DrawText(str, str.GetLength(), rectText, 0);
-		}
+		CRect rectText(x, y, x + sz.cx, y + sz.cy);
+		CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
+		cdc.DrawText(str, str.GetLength(), rectText, 0);
 	}
 
 	cdcReal.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, SRCCOPY);
