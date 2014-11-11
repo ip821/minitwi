@@ -71,6 +71,7 @@ interface IImageManagerService : IUnknown
 	HRESULT RemoveImage(BSTR bstrKey);
 	HRESULT CopyImageTo(BSTR bstrKey, IImageManagerService* pDest);
 	HRESULT CopyTo(IImageManagerService* pDest);
+	HRESULT SaveImage(BSTR bstrKey, BSTR bstrFilePath);
 
 };
 
@@ -780,6 +781,13 @@ library twitterLib
 	coclass SearchTimelineService
 	{
 		[default] interface ISearchTimelineService;
+	};
+	[
+		uuid(3D06F6F5-9BDC-47DA-BEE4-A8EEB57C3E57)
+	]
+	coclass PictureWindowSaveCommand
+	{
+		[default] interface ICommand2;
 	};
 };
 

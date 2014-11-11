@@ -27,10 +27,23 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_DownloadService, &m_pDownloadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &m_dwAdviceDownloadService));
 
+	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
+	m_pPluginSupport->InitializePlugins(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_WINDOW_SERVICE);
+	m_pPluginSupport->InitializePlugins(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_COMMAND);
+	m_pPluginSupport->OnInitialized();
+
+	m_popupMenu.CreatePopupMenu();
+	HrCoCreateInstance(CLSID_CommandSupport, &m_pCommandSupport);
+	m_pCommandSupport->SetMenu(m_popupMenu);
+	m_pCommandSupport->InstallCommands(m_pPluginSupport);
+
 	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
 	ATLENSURE(pMainWindow);
 	RETURN_IF_FAILED(pMainWindow->GetMessageLoop(&m_pMessageLoop));
 	RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
+
+	m_pServiceProvider = m_pPluginSupport;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
 
 	return S_OK;
 }
@@ -66,17 +79,20 @@ void CPictureWindow::MoveToNextPicture()
 
 	if (m_currentBitmapIndex == -1)
 		return;
-	if (m_bitmaps.size() == 1)
+	if (m_bitmapsUrls.size() == 1)
 		return;
 
 	++m_currentBitmapIndex;
 
-	if ((size_t)m_currentBitmapIndex == m_bitmaps.size())
+	if ((size_t)m_currentBitmapIndex == m_bitmapsUrls.size())
 		m_currentBitmapIndex = 0;
 
 	ASSERT_IF_FAILED(InitCommandSupport(m_currentBitmapIndex));
 
-	if (m_bitmaps[m_currentBitmapIndex].pBitmap != nullptr)
+	BOOL bContains = FALSE;
+	ASSERT_IF_FAILED(m_pImageManagerService->ContainsImageKey(m_bitmapsUrls[m_currentBitmapIndex], &bContains));
+
+	if (bContains)
 	{
 		ResizeToCurrentBitmap();
 		Invalidate();
@@ -101,6 +117,12 @@ LRESULT CPictureWindow::OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	auto y = GET_Y_LPARAM(lParam);
 	CPoint pt(x, y);
 	ClientToScreen(&pt);
+
+	CComQIPtr<IIdleHandler> pIdleHandler = m_pCommandSupport;
+	if (pIdleHandler)
+	{
+		ASSERT_IF_FAILED(pIdleHandler->OnIdle(NULL));
+	}
 	m_popupMenu.TrackPopupMenu(0, pt.x, pt.y, m_hWnd);
 	return 0;
 }
@@ -120,15 +142,6 @@ LRESULT CPictureWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	SetClassLong(m_hWnd, GCL_HICONSM, (LONG)m_icon.m_hIcon);
 	SetClassLong(m_hWnd, GCL_HICON, (LONG)m_icon.m_hIcon);
-
-	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
-	m_pPluginSupport->InitializePlugins(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_COMMAND);
-	m_pPluginSupport->OnInitialized();
-
-	m_popupMenu.CreatePopupMenu();
-	HrCoCreateInstance(CLSID_CommandSupport, &m_pCommandSupport);
-	m_pCommandSupport->SetMenu(m_popupMenu);
-	m_pCommandSupport->InstallCommands(m_pPluginSupport);
 
 	return 0;
 }
@@ -155,7 +168,7 @@ STDMETHODIMP CPictureWindow::InitCommandSupport(int index)
 
 	CComPtr<IVariantObject> pVariantObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(m_bitmaps[index].strUrl)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(m_bitmapsUrls[index])));
 
 	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
 	ATLASSERT(pInitializeWithVariantObject);
@@ -177,16 +190,14 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 		CComQIPtr<IObjArray> pMediaUrls = vMediaUrls.punkVal;
 		UINT uiCount = 0;
 		RETURN_IF_FAILED(pMediaUrls->GetCount(&uiCount));
-		m_bitmaps.resize(uiCount);
+		m_bitmapsUrls.resize(uiCount);
 		for (size_t i = 0; i < uiCount; ++i)
 		{
 			CComPtr<IVariantObject> pMediaUrlObject;
 			RETURN_IF_FAILED(pMediaUrls->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaUrlObject));
 			CComVariant vMediaUrlForObject;
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrlForObject));
-			UrlInfo ui = { 0 };
-			ui.strUrl = vMediaUrlForObject.bstrVal;
-			m_bitmaps[i] = ui;
+			m_bitmapsUrls[i] = vMediaUrlForObject.bstrVal;
 
 			if (CComBSTR(vMediaUrlForObject.bstrVal) == CComBSTR(vMediaUrl.bstrVal))
 				currentBitmapIndex = i;
@@ -194,9 +205,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 	}
 	else
 	{
-		UrlInfo ui = { 0 };
-		ui.strUrl = vMediaUrl.bstrVal;
-		m_bitmaps.push_back(ui);
+		m_bitmapsUrls.push_back(vMediaUrl.bstrVal);
 		currentBitmapIndex = 0;
 	}
 	
@@ -209,7 +218,7 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 {
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-	CString str = m_bitmaps[index].strUrl;
+	auto str = m_bitmapsUrls[index];
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(str)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &CComVariant((INT64)m_hWnd)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ITEM_INDEX, &CComVariant(index)));
@@ -280,7 +289,9 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 			ResizeDownImage(pBitmap, rectMonitor.Height() - 100);
 		}
 
-		m_bitmaps[m_currentBitmapIndex].pBitmap = pBitmap;
+		CBitmap bmp;
+		pBitmap->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
+		ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[m_currentBitmapIndex], bmp));
 
 		RETURN_IF_FAILED(ResetAnimation());
 		ResizeToCurrentBitmap();
@@ -292,9 +303,10 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 
 void CPictureWindow::ResizeToCurrentBitmap()
 {
-	shared_ptr<Bitmap>& pBitmap = m_bitmaps[m_currentBitmapIndex].pBitmap;
-	auto width = (int)pBitmap->GetWidth();
-	auto height = (int)pBitmap->GetHeight();
+	TBITMAP tBitmap = { 0 };
+	ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bitmapsUrls[m_currentBitmapIndex], &tBitmap));
+	auto width = tBitmap.Width;
+	auto height = tBitmap.Height;
 
 	CRect rect;
 	GetWindowRect(&rect);
@@ -392,14 +404,15 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		}
 		else
 		{
-			shared_ptr<Bitmap>& pBitmap = m_bitmaps[m_currentBitmapIndex].pBitmap;
-			auto width = pBitmap->GetWidth();
-			auto height = pBitmap->GetHeight();
+			TBITMAP tBitmap = { 0 };
+			ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bitmapsUrls[m_currentBitmapIndex], &tBitmap));
+			auto width = tBitmap.Width;
+			auto height = tBitmap.Height;
 			auto x = (rect.right - rect.left) / 2 - (width / 2);
 			auto y = (rect.bottom - rect.top) / 2 - (height / 2);
 
 			CBitmap bitmap;
-			ASSERT_IF_FAILED(pBitmap->GetHBITMAP(static_cast<ARGB>(Color::White), &bitmap.m_hBitmap));
+			ASSERT_IF_FAILED(m_pImageManagerService->CreateImageBitmap(m_bitmapsUrls[m_currentBitmapIndex], &bitmap.m_hBitmap));
 			CDC cdcBitmap;
 			cdcBitmap.CreateCompatibleDC(cdc);
 			cdcBitmap.SelectBitmap(bitmap);
@@ -409,10 +422,10 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 			cdc.AlphaBlend(x, y, width, height, cdcBitmap, 0, 0, width, height, bf);
 		}
 
-		if (m_bitmaps.size() > 1 && m_currentBitmapIndex >= 0)
+		if (m_bitmapsUrls.size() > 1 && m_currentBitmapIndex >= 0)
 		{
 			CString str;
-			str.Format(L"%u / %u", m_currentBitmapIndex + 1, m_bitmaps.size());
+			str.Format(L"%u / %u", m_currentBitmapIndex + 1, m_bitmapsUrls.size());
 			CSize sz;
 			cdc.GetTextExtent(str, str.GetLength(), &sz);
 

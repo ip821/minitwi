@@ -253,6 +253,7 @@
     <ClCompile Include="HomeTimeLineControl.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="CustomTabControl.cpp" />
+    <ClCompile Include="PictureWindowSaveCommand.cpp" />
     <ClCompile Include="ScrollControl.cpp" />
     <ClCompile Include="SearchControl.cpp" />
     <ClCompile Include="SearchTimelineControl.cpp" />
@@ -344,6 +345,7 @@
     <ClInclude Include="BaseTimeLineControl.h" />
     <ClInclude Include="ColumnRects.h" />
     <ClInclude Include="GdilPlusUtils.h" />
+    <ClInclude Include="PictureWindowSaveCommand.h" />
     <ClInclude Include="SearchControl.h" />
     <ClInclude Include="SearchTimelineControl.h" />
     <ClInclude Include="SearchTimelineService.h" />

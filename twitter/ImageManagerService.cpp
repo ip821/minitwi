@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "ImageManagerService.h"
-
+#include "GdilPlusUtils.h"
 
 // CImageManagerService
 
@@ -108,6 +108,28 @@ STDMETHODIMP CImageManagerService::RemoveImage(BSTR bstrKey)
 	{
 		lock_guard<mutex> mutex(m_mutex);
 		m_bitmaps.erase(bstrKey);
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CImageManagerService::SaveImage(BSTR bstrKey, BSTR bstrFilePath)
+{
+	CHECK_E_POINTER(bstrKey);
+	CHECK_E_POINTER(bstrFilePath);
+	{
+		lock_guard<mutex> mutex(m_mutex);
+		auto it = m_bitmaps.find(CComBSTR(bstrKey));
+		if (it == m_bitmaps.end())
+			return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+		CString strExt = PathFindExtension(bstrFilePath);
+		strExt.Replace(L".", L"");
+		strExt.Replace(L"jpg", L"jpeg");
+		auto strMimeType = CString(L"image/") + strExt;
+		CLSID clsid = GUID_NULL;
+		RETURN_IF_FAILED(GetEncoderClsid(strMimeType, &clsid));
+		auto status = it->second->Save(bstrFilePath, &clsid, NULL);
+		if (status != Ok)
+			return E_FAIL;
 	}
 	return S_OK;
 }

@@ -253,6 +253,9 @@
     <ClCompile Include="SearchTimelineService.cpp">
       <Filter>Services\SearchTimelineService</Filter>
     </ClCompile>
+    <ClCompile Include="PictureWindowSaveCommand.cpp">
+      <Filter>Controls\PictureWindow\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -413,6 +416,9 @@
     </ClInclude>
     <ClInclude Include="GdilPlusUtils.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="PictureWindowSaveCommand.h">
+      <Filter>Controls\PictureWindow\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

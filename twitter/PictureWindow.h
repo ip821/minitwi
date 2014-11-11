@@ -61,12 +61,8 @@ public:
 	END_MSG_MAP()
 
 private:
-	struct UrlInfo
-	{
-		CString strUrl;
-		shared_ptr<Gdiplus::Bitmap> pBitmap;
-	};
-
+	CComQIPtr<IServiceProvider> m_pServiceProvider;
+	CComPtr<IImageManagerService> m_pImageManagerService;
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
@@ -75,7 +71,7 @@ private:
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
 	int m_currentBitmapIndex = -1;
-	vector<UrlInfo> m_bitmaps;
+	vector<CComBSTR> m_bitmapsUrls;
 	mutex m_mutex;
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
