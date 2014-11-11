@@ -25,6 +25,7 @@ public:
 	{
 		auto p = (T*)(dwUser);
 		timeKillEvent(p->m_uiTimerId);
+		timeEndPeriod(p->m_wTimerRes);
 		::SendMessage(p->m_hWnd, WM_ANIMATION_TIMER, 0, 0);
 	}
 

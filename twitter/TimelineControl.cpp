@@ -34,6 +34,7 @@ STDMETHODIMP CTimelineControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pCommandSupport, __uuidof(ICommandSupportEventSink), m_dwAdviceCommandSupport));
 	m_pServiceProvider.Release();
+	RETURN_IF_FAILED(m_pCommandSupport->UninstallAll());
 	m_pCommandSupport.Release();
 	m_pPluginSupport.Release();
 	m_pSettings.Release();

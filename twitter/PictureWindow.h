@@ -31,6 +31,7 @@ class ATL_NO_VTABLE CPictureWindow :
 public:
 	DECLARE_WND_CLASS(L"PictureWindow")
 	CPictureWindow();
+	virtual ~CPictureWindow();
 
 	DECLARE_REGISTRY_RESOURCEID(IDR_PICTUREWINDOW)
 

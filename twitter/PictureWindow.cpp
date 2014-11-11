@@ -18,6 +18,12 @@ CPictureWindow::CPictureWindow()
 {
 }
 
+CPictureWindow::~CPictureWindow()
+{
+	if (IsWindow())
+		DestroyWindow();
+}
+
 STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
@@ -54,11 +60,14 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 	m_pMessageLoop.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	m_pDownloadService.Release();
+	RETURN_IF_FAILED(m_pCommandSupport->UninstallAll());
 	m_pCommandSupport.Release();
 	RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	m_pPluginSupport.Release();
 	m_pImageManagerService.Release();
 	m_pServiceProvider.Release();
+	m_pTheme.Release();
 	return S_OK;
 }
 
