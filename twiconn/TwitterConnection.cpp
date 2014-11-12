@@ -17,6 +17,7 @@ STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 {
 	if (value == nullptr)
 	{
+		m_errMsg.Empty();
 		return E_FAIL;
 	}
 	else if (value->IsObject())
