@@ -26,6 +26,8 @@
 #define ATL_NO_ASSERT_ON_DESTROY_NONEXISTENT_WINDOW
 #define __TWITCONN__
 
+#define BOOST_LIB_DIAGNOSTIC 1
+
 #include "resource.h"
 #include <atlbase.h>
 #include <atlcom.h>

@@ -18,11 +18,7 @@
 #define _RICHEDIT_VER	0x0200
 #endif
 
-#ifdef _DEBUG
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#endif
+#define BOOST_LIB_DIAGNOSTIC 1
 
 #include <atlbase.h>
 #include <atlapp.h>

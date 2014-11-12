@@ -27,8 +27,8 @@
 #define _WTL_NO_CSTRING
 #define __TWITTER__
 
-#define _CRT_SECURE_NO_WARNINGS
 #define BOOST_LIB_DIAGNOSTIC 1
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "resource.h"
 #include <atlstr.h>
