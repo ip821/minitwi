@@ -15,7 +15,11 @@
 
 STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 {
-	if (value->IsObject())
+	if (value == nullptr)
+	{
+		return E_FAIL;
+	}
+	else if (value->IsObject())
 	{
 		auto valueObject = value->AsObject();
 		if (valueObject.find(L"errors") != valueObject.end())
