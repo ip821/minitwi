@@ -15,6 +15,7 @@ private:
 public:
 	CAnimationTimerSupport()
 	{
+		m_tc = { 0 };
 	}
 
 	~CAnimationTimerSupport()
