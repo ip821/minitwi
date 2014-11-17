@@ -54,3 +54,55 @@ static HRESULT GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 	free(pImageCodecInfo);
 	return E_FAIL;
 }
+
+class CDCSelectBitmapManualScope
+{
+private:
+	CDCHandle m_cdc;
+	CBitmapHandle m_newBitmap;
+	CBitmapHandle m_oldBitmap;
+public:
+	CDCSelectBitmapManualScope()
+	{
+	}
+
+	void SelectBitmap(HDC hdc, HBITMAP hBitmap)
+	{
+		m_cdc = hdc;
+		m_newBitmap = hBitmap;
+		m_oldBitmap = m_cdc.SelectBitmap(m_newBitmap);
+	}
+
+	virtual ~CDCSelectBitmapManualScope()
+	{
+		if (!m_oldBitmap.IsNull())
+			m_cdc.SelectBitmap(m_oldBitmap);
+	}
+};
+
+class CDCSelectBitmapScope : CDCSelectBitmapManualScope
+{
+public:
+	CDCSelectBitmapScope(HDC hdc, HBITMAP hBitmap)
+	{
+		SelectBitmap(hdc, hBitmap);
+	}
+};
+
+class CDCSelectFontScope
+{
+private:
+	CDCHandle m_cdc;
+	CFontHandle m_oldFont;
+public:
+	CDCSelectFontScope(HDC hdc, HFONT hFont)
+	{
+		m_cdc = hdc;
+		m_oldFont = m_cdc.SelectFont(hFont);
+	}
+
+	virtual ~CDCSelectFontScope()
+	{
+		m_cdc.SelectFont(m_oldFont);
+	}
+};

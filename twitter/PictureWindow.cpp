@@ -388,7 +388,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 	CDC cdc;
 	cdc.CreateCompatibleDC(cdcReal);
-	cdc.SelectBitmap(bufferBitmap);
+	CDCSelectBitmapScope cdcSelectBitmapScope(cdc, bufferBitmap);
 
 	int currentBitmapIndex = 0;
 	BYTE alpha = m_alpha;
@@ -414,7 +414,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		ASSERT_IF_FAILED(m_pTheme->GetFontMap(&pThemeFontMap));
 		ASSERT_IF_FAILED(pThemeFontMap->GetFont(VAR_PICTURE_WINDOW_TEXT, &font));
 	}
-	cdc.SelectFont(font);
+	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	cdc.SetBkMode(TRANSPARENT);
 	cdc.SetTextColor(dwTextColor);
@@ -447,7 +447,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		ASSERT_IF_FAILED(m_pImageManagerService->CreateImageBitmap(m_bitmapsUrls[currentBitmapIndex], &bitmap.m_hBitmap));
 		CDC cdcBitmap;
 		cdcBitmap.CreateCompatibleDC(cdc);
-		cdcBitmap.SelectBitmap(bitmap);
+		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
 		BLENDFUNCTION bf = { 0 };
 		bf.BlendOp = AC_SRC_OVER;
 		bf.SourceConstantAlpha = alpha;

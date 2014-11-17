@@ -4,6 +4,7 @@
 #include "SkinTabControl.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
+#include "GdilPlusUtils.h"
 
 // CSkinTabControl
 
@@ -75,13 +76,13 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	m_hWnd = hWnd;
 
 	CRect clientRect2 = clientRect;
-	CDC hdc(GetDC(hWnd));
+	CClientDC hdc(hWnd);
 	CDC cdc;
 	cdc.CreateCompatibleDC(hdc);
 
 	HFONT font = 0;
 	m_pThemeFontMap->GetFont(CComBSTR(VAR_TAB_HEADER), &font);
-	cdc.SelectFont(font);
+	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	UINT uiHeight = max(m_pBitmapHome->GetHeight(), m_pBitmapSettings->GetHeight()) + PADDING_Y * 2;
 
@@ -231,7 +232,8 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnRects* pColumnRects, CDCHandle& cd
 
 		CDC cdcBitmap;
 		cdcBitmap.CreateCompatibleDC(cdc);
-		cdcBitmap.SelectBitmap(bitmap);
+		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
+		
 		auto x = rect.left;
 		auto y = rect.top;
 		auto width = imageWidth;
@@ -244,7 +246,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnRects* pColumnRects, CDCHandle& cd
 
 		HFONT font = 0;
 		m_pThemeFontMap->GetFont(CComBSTR(VAR_TAB_HEADER), &font);
-		cdc.SelectFont(font);
+		CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 		CRect rectText = rect;
 		rectText.left += imageWidth + PADDING_X + IMAGE_TO_TEXT_DISTANCE;
@@ -326,7 +328,8 @@ STDMETHODIMP CSkinTabControl::DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessa
 
 	CDC cdcBitmap;
 	cdcBitmap.CreateCompatibleDC(hdc);
-	cdcBitmap.SelectBitmap(bitmap);
+	CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
+	
 	auto x = m_rectInfoImage.left;
 	auto y = m_rectInfoImage.top;
 	auto width = imageWidth;

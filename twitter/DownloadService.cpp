@@ -87,20 +87,28 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	res = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 	res = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
 
-	WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxyConfig = { 0 };
-	if (WinHttpGetIEProxyConfigForCurrentUser(&proxyConfig))
 	{
-		std::vector<CString> proxies;
-		StrSplit(proxyConfig.lpszProxy, L";", proxies);
-		for (auto it = proxies.begin(); it != proxies.end(); it++)
+		WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxyConfig = { 0 };
+		if (WinHttpGetIEProxyConfigForCurrentUser(&proxyConfig))
 		{
-			std::vector<CString> values;
-			StrSplit(*it, L"=", values);
-			if (values.size() == 2 && values[0] == L"http")
+			std::vector<CString> proxies;
+			StrSplit(proxyConfig.lpszProxy, L";", proxies);
+			for (auto it = proxies.begin(); it != proxies.end(); it++)
 			{
-				res = curl_easy_setopt(curl, CURLOPT_PROXY, W2A(values[1]));
-				break;
+				std::vector<CString> values;
+				StrSplit(*it, L"=", values);
+				if (values.size() == 2 && values[0] == L"http")
+				{
+					res = curl_easy_setopt(curl, CURLOPT_PROXY, W2A(values[1]));
+					break;
+				}
 			}
+			if (proxyConfig.lpszAutoConfigUrl)
+				GlobalFree(proxyConfig.lpszAutoConfigUrl);
+			if (proxyConfig.lpszProxy)
+				GlobalFree(proxyConfig.lpszProxy); 
+			if (proxyConfig.lpszProxyBypass)
+				GlobalFree(proxyConfig.lpszProxyBypass);
 		}
 	}
 

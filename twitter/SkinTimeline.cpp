@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "SkinTimeline.h"
 #include "Plugins.h"
+#include "GdilPlusUtils.h"
 #include <boost\date_time.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 #include <boost/thread/xtime.hpp>
@@ -75,12 +76,13 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 
 	CDC cdc;
 	cdc.CreateCompatibleDC(cdcReal);
+	CDCSelectBitmapManualScope cdcSelectBitmapManualScope;
 
 	if (m_cacheBitmaps.find(lpdis->lpdi->itemID) == m_cacheBitmaps.end())
 	{
 		shared_ptr<CBitmap> pbitmap = make_shared<CBitmap>();
 		pbitmap->CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
-		cdc.SelectBitmap(pbitmap.get()->m_hBitmap);
+		cdcSelectBitmapManualScope.SelectBitmap(cdc, pbitmap.get()->m_hBitmap);
 
 		m_cacheBitmaps[lpdis->lpdi->itemID] = pbitmap;
 
@@ -95,7 +97,7 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 	}
 	else
 	{
-		cdc.SelectBitmap(m_cacheBitmaps[lpdis->lpdi->itemID].get()->m_hBitmap);
+		cdcSelectBitmapManualScope.SelectBitmap(cdc, m_cacheBitmaps[lpdis->lpdi->itemID].get()->m_hBitmap);
 	}
 
 	BLENDFUNCTION bf = { 0 };
@@ -151,7 +153,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnRects* pColumnRects, TDRAWIT
 
 		CDC cdcBitmap;
 		cdcBitmap.CreateCompatibleDC(lpdis->lpdi->hDC);
-		cdcBitmap.SelectBitmap(bitmap);
+		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
 
 		auto x = lpdis->lpdi->rcItem.left;
 		auto y = lpdis->lpdi->rcItem.top;
@@ -290,7 +292,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 			auto y = lpdis->lpdi->rcItem.top;
 
 			CString str(bstrText);
-			cdc.SelectFont(font);
+			CDCSelectFontScope cdcSelectFontScope(cdc, font);
 			RECT rectText = { x + rect.left, y + rect.top, x + rect.right, y + rect.bottom };
 			cdc.DrawText(str, str.GetLength(), &rectText, bIsWordWrap ? DT_WORDBREAK : 0);
 		}
@@ -323,7 +325,7 @@ SIZE CSkinTimeline::AddColumn(
 	if (bDoubleSize)
 		bstrFontName += VAR_DOUBLE_SIZE_POSTFIX;
 	m_pThemeFontMap->GetFont(bstrFontName, &font);
-	cdc.SelectFont(font);
+	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	SIZE sz = { 0 };
 	if (bWordWrap)

@@ -2,6 +2,7 @@
 #include "ScrollControl.h"
 #include "CustomTabControl.h"
 #include "Mmsystem.h"
+#include "GdilPlusUtils.h"
 #pragma comment(lib, "Winmm.lib")
 
 #define TARGET_RESOLUTION 1
@@ -100,7 +101,7 @@ LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 	CDC cdcBitmap;
 	cdcBitmap.CreateCompatibleDC(cdc);
-	cdcBitmap.SelectBitmap(m_bitmap);
+	CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, m_bitmap);
 
 	cdc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, m_dx + rect.left, 0, SRCCOPY);
 

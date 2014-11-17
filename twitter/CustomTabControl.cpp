@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CustomTabControl.h"
 #include "Plugins.h"
+#include "GdilPlusUtils.h"
 
 STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 {
@@ -111,8 +112,10 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 
 	CBitmap bitmap1;
 	CDC cdcBitmap1;
+	CDCSelectBitmapManualScope cdcSelectBitmapManualScope1;
 	CBitmap bitmap2;
 	CDC cdcBitmap2;
+	CDCSelectBitmapManualScope cdcSelectBitmapManualScope2;
 
 	UINT uiCount = 0;
 	m_pControls->GetCount(&uiCount);
@@ -129,12 +132,12 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 
 		if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 		{
-			CDC cdc(::GetDC(hWnd));
+			CClientDC cdc(hWnd);
 			bitmap1.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width(), m_rectChildControlArea.Height());
 			cdcBitmap1.CreateCompatibleDC(cdc);
-			cdcBitmap1.SelectBitmap(bitmap1);
+			cdcSelectBitmapManualScope1.SelectBitmap(cdcBitmap1, bitmap1);
+			::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap1.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
 		}
-		::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap1.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
 	}
 
 	{
@@ -145,13 +148,12 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 
 		if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 		{
-			CDC cdc(::GetDC(hWnd));
+			CClientDC cdc(hWnd);
 			bitmap2.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width(), m_rectChildControlArea.Height());
 			cdcBitmap2.CreateCompatibleDC(cdc);
-			cdcBitmap2.SelectBitmap(bitmap2);
+			cdcSelectBitmapManualScope2.SelectBitmap(cdcBitmap2, bitmap2);
+			::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap2.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
 		}
-
-		::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap2.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
 	}
 
 	if (m_selectedPageIndex != INVALID_PAGE_INDEX)
@@ -159,12 +161,12 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		if (!m_scrollBitmap.IsNull())
 			m_scrollBitmap.DeleteObject();
 
-		CDC cdc(GetDC());
+		CClientDC cdc(m_hWnd);
 		m_scrollBitmap.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width() * 2, m_rectChildControlArea.Height());
 
 		CDC cdcBitmap;
 		cdcBitmap.CreateCompatibleDC(cdc);
-		cdcBitmap.SelectBitmap(m_scrollBitmap);
+		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, m_scrollBitmap);
 
 		BOOL bRightToLeft = (int)dwIndex > m_selectedPageIndex;
 		BitBlt(cdcBitmap, 0, 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap1 : cdcBitmap2, 0, 0, SRCCOPY);
@@ -213,6 +215,10 @@ void CCustomTabControl::OnEndScroll()
 	{
 		ASSERT_IF_FAILED(pControl2->OnActivate());
 	}
+
+	if (!m_scrollBitmap.IsNull())
+		m_scrollBitmap.DeleteObject();
+
 	Invalidate(TRUE);
 }
 

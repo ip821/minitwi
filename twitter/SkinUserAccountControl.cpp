@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SkinUserAccountControl.h"
 #include "..\twiconn\Plugins.h"
+#include "GdilPlusUtils.h"
 
 #define DISTANCE_DISPLAY_NAME 20 / 200
 #define DISTANCE_DESCRIPTION_Y 20
@@ -58,7 +59,7 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 	{
 		CDC cdcBitmap;
 		cdcBitmap.CreateCompatibleDC(cdc);
-		cdcBitmap.SelectBitmap(bitmap);
+		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
 
 		auto x = 0;
 		auto y = 0;
@@ -118,7 +119,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 
 	HFONT font = 0;
 	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, &font));
-	cdc.SelectFont(font);
+	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	CComBSTR bstrDisplayName(vDisplayName.bstrVal);
 	CSize szDisplayName;
@@ -167,7 +168,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 
 		CDC cdcBitmap;
 		cdcBitmap.CreateCompatibleDC(cdc);
-		cdcBitmap.SelectBitmap(bitmapUserImage);
+		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmapUserImage);
 
 		auto diff_x = (boxWidth / 2) - (tBitmap.Width / 2);
 		auto diff_y = (boxHeight / 2) - (tBitmap.Height / 2);
@@ -181,7 +182,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	}
 
 	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_NORMALIZED_TEXT, &font));
-	cdc.SelectFont(font);
+	CDCSelectFontScope cdcSelectFontScope2(cdc, font);
 
 	CComVariant vDescription;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DESCRIPTION, &vDescription));
