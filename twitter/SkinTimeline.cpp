@@ -386,7 +386,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	pColumnRects->Clear();
 	CListBox wndListBox(hwndControl);
 
-	CDC hdc(GetDC(hwndControl));
+	CClientDC hdc(hwndControl);
 
 	CRect clientRect = { 0 };
 	wndListBox.GetClientRect(&clientRect);
