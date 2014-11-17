@@ -37,9 +37,6 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
 
-	m_tz = { 0 };
-	GetTimeZoneInformation(&m_tz);
-
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateService));
@@ -243,17 +240,17 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(false)));
 			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
 		}
-		RETURN_IF_FAILED(UpdateRelativeTime(pObjectArray, m_tz));
+		RETURN_IF_FAILED(UpdateRelativeTime(pObjectArray));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
 		CComPtr<IObjArray> pAllItemsObjectArray;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
-		RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray, m_tz));
+		RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
 	}
 
 	return S_OK;
 }
 
-HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject, TIME_ZONE_INFORMATION tz)
+HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject)
 {
 		CComVariant v;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_CREATED_AT, &v));
@@ -299,7 +296,7 @@ HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObje
 		}
 		else
 		{
-			posix_time::ptime ptNow(pt.date(), pt.time_of_day() - posix_time::minutes(tz.Bias) - posix_time::minutes(tz.DaylightBias));
+			posix_time::ptime ptNow(pt.date(), pt.time_of_day());
 			posix_time::wtime_facet* outputFacet = new posix_time::wtime_facet();
 			outputFacet->format(L"%d %b %Y");
 			wostringstream outputStream;
@@ -312,7 +309,7 @@ HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObje
 	return S_OK;
 	}
 
-HRESULT CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray, TIME_ZONE_INFORMATION tz)
+HRESULT CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray)
 {
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
@@ -320,7 +317,7 @@ HRESULT CTimelineService::UpdateRelativeTime(IObjArray* pObjectArray, TIME_ZONE_
 	{
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-		RETURN_IF_FAILED(UpdateRelativeTimeForTwit(pVariantObject, tz));
+		RETURN_IF_FAILED(UpdateRelativeTimeForTwit(pVariantObject));
 	}
 	return S_OK;
 }

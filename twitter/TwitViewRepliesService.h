@@ -43,7 +43,6 @@ private:
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<IVariantObject> m_pVariantObject;
 
-	TIME_ZONE_INFORMATION m_tz;
 	DWORD m_dwAdvice = 0;
 	mutex m_mutex;
 

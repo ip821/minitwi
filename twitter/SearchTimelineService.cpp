@@ -16,9 +16,6 @@ STDMETHODIMP CSearchTimelineService::OnInitialized(IServiceProvider* pServicePro
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
 
-	m_tz = { 0 };
-	GetTimeZoneInformation(&m_tz);
-
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
@@ -134,11 +131,11 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
-	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pObjectArray, m_tz));
+	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pObjectArray));
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
 	CComPtr<IObjArray> pAllItemsObjectArray;
 	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
-	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pAllItemsObjectArray, m_tz));
+	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pAllItemsObjectArray));
 
 	return S_OK;
 }

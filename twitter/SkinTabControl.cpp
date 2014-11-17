@@ -32,7 +32,8 @@ STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, sha
 	
 	auto dwSizeInBytes = SizeofResource(hModule, hRsrc);
 	LPVOID pvResourceData = LockResource(hGlobal);
-	CComPtr<IStream> pImageStream = SHCreateMemStream((LPBYTE)pvResourceData, dwSizeInBytes);
+	CComPtr<IStream> pImageStream;
+	pImageStream.Attach(SHCreateMemStream((LPBYTE)pvResourceData, dwSizeInBytes));
 	pBitmap = shared_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromStream(pImageStream));
 	return S_OK;
 }

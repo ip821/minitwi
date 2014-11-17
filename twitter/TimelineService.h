@@ -61,14 +61,13 @@ private:
 	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
 	DWORD m_dwAdviceTimelineControl = 0;
 	mutex m_mutex;
-	TIME_ZONE_INFORMATION m_tz;
 	BOOL m_bShowMoreRunning = 0;
 	CComBSTR m_bstrUser;
 
 
 public:
-	static HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject, TIME_ZONE_INFORMATION tz);
-	static HRESULT UpdateRelativeTime(IObjArray* pObjectArray, TIME_ZONE_INFORMATION tz);
+	static HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject);
+	static HRESULT UpdateRelativeTime(IObjArray* pObjectArray);
 	
 	STDMETHOD(Load)(ISettings *pSettings);
 
