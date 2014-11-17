@@ -133,10 +133,12 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 		{
 			CClientDC cdc(hWnd);
+			auto currentBitmap = cdc.GetCurrentBitmap();
 			bitmap1.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width(), m_rectChildControlArea.Height());
 			cdcBitmap1.CreateCompatibleDC(cdc);
 			cdcSelectBitmapManualScope1.SelectBitmap(cdcBitmap1, bitmap1);
 			::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap1.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
+			cdc.SelectBitmap(currentBitmap);
 		}
 	}
 
@@ -149,10 +151,12 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 		{
 			CClientDC cdc(hWnd);
+			auto currentBitmap = cdc.GetCurrentBitmap();
 			bitmap2.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width(), m_rectChildControlArea.Height());
 			cdcBitmap2.CreateCompatibleDC(cdc);
 			cdcSelectBitmapManualScope2.SelectBitmap(cdcBitmap2, bitmap2);
 			::SendMessage(hWnd, WM_PRINT, (WPARAM)cdcBitmap2.m_hDC, PRF_CHILDREN | PRF_CLIENT | PRF_NONCLIENT | PRF_ERASEBKGND);
+			cdc.SelectBitmap(currentBitmap);
 		}
 	}
 
@@ -162,16 +166,20 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 			m_scrollBitmap.DeleteObject();
 
 		CClientDC cdc(m_hWnd);
+		auto currentBitmap = cdc.GetCurrentBitmap();
 		m_scrollBitmap.CreateCompatibleBitmap(cdc, m_rectChildControlArea.Width() * 2, m_rectChildControlArea.Height());
+
+		BOOL bRightToLeft = (int)dwIndex > m_selectedPageIndex;
 
 		CDC cdcBitmap;
 		cdcBitmap.CreateCompatibleDC(cdc);
-		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, m_scrollBitmap);
-
-		BOOL bRightToLeft = (int)dwIndex > m_selectedPageIndex;
-		BitBlt(cdcBitmap, 0, 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap1 : cdcBitmap2, 0, 0, SRCCOPY);
-		BitBlt(cdcBitmap, m_rectChildControlArea.Width(), 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap2 : cdcBitmap1, 0, 0, SRCCOPY);
-
+		{
+			CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, m_scrollBitmap);
+			BitBlt(cdcBitmap, 0, 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap1 : cdcBitmap2, 0, 0, SRCCOPY);
+			BitBlt(cdcBitmap, m_rectChildControlArea.Width(), 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap2 : cdcBitmap1, 0, 0, SRCCOPY);
+		}
+		
+		cdc.SelectBitmap(currentBitmap);
 		m_wndScroll.SetWindowPos(NULL, &m_rectChildControlArea, SWP_SHOWWINDOW);
 		m_wndScroll.SetBitmap(m_scrollBitmap.m_hBitmap);
 		m_wndScroll.Scroll(bRightToLeft);
