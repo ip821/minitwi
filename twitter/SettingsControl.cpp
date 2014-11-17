@@ -60,6 +60,11 @@ STDMETHODIMP CSettingsControl::OnShutdown()
 	m_pServiceProvider.Release();
 	m_pTimelineControl.Release();
 	m_pHomeTimeLineControl.Release();
+	m_pTheme.Release();
+	m_pSettings.Release();
+	m_pFormManager.Release();
+	m_pCustomTabControl.Release();
+
 	return S_OK;
 }
 

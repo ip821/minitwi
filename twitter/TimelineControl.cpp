@@ -38,6 +38,7 @@ STDMETHODIMP CTimelineControl::OnShutdown()
 	m_pCommandSupport.Release();
 	m_pPluginSupport.Release();
 	m_pSettings.Release();
+	m_listBox.SetSkinTimeline(NULL);
 	return S_OK;
 }
 

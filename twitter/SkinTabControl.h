@@ -23,6 +23,9 @@ public:
 		COM_INTERFACE_ENTRY(ISkinTabControl)
 	END_COM_MAP()
 
+	DECLARE_PROTECT_FINAL_CONSTRUCT()
+	void FinalRelease();
+	HRESULT FinalConstruct();
 private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;

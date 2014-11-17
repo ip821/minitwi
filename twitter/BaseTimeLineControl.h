@@ -123,6 +123,8 @@ public:
 		m_pServiceProviderParent.Release();
 
 		RETURN_IF_FAILED(m_pSkinTimeline->SetImageManagerService(NULL));
+		RETURN_IF_FAILED(m_pSkinTimeline->SetColorMap(NULL));
+		RETURN_IF_FAILED(m_pSkinTimeline->SetFontMap(NULL));
 
 		m_pPluginSupport.Release();
 

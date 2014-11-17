@@ -65,6 +65,7 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	m_pServiceProvider.Release();
 	m_pUpdateService.Release();
 	m_pTabbedControl.Release();
+	m_pSettings.Release();
 	return S_OK;
 }
 

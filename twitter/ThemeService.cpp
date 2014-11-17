@@ -23,8 +23,11 @@ STDMETHODIMP CThemeService::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CThemeService::OnShutdown()
 {
+	m_colorMaps.clear();
 	m_pObjectArray.Release();
 	m_pServiceProvider.Release();
+	m_pCurrentTheme.Release();
+	m_pSettings.Release();
 	return S_OK;
 }
 

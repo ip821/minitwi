@@ -29,21 +29,31 @@ STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, sha
 
 	if (!hGlobal)
 		return HRESULT_FROM_WIN32(GetLastError());
-
+	
 	auto dwSizeInBytes = SizeofResource(hModule, hRsrc);
 	LPVOID pvResourceData = LockResource(hGlobal);
 	CComPtr<IStream> pImageStream = SHCreateMemStream((LPBYTE)pvResourceData, dwSizeInBytes);
-	pBitmap = make_shared<Gdiplus::Bitmap>(pImageStream);
+	pBitmap = shared_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromStream(pImageStream));
 	return S_OK;
 }
 
-CSkinTabControl::CSkinTabControl()
+void CSkinTabControl::FinalRelease()
+{
+
+}
+
+HRESULT CSkinTabControl::FinalConstruct()
 {
 	InitImageFromResource(IDR_PICTUREHOME, L"PNG", m_pBitmapHome);
 	InitImageFromResource(IDR_PICTURESEARCH, L"PNG", m_pBitmapSearch);
 	InitImageFromResource(IDR_PICTURESETTINGS, L"PNG", m_pBitmapSettings);
 	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
 	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
+	return S_OK;
+}
+
+CSkinTabControl::CSkinTabControl()
+{
 }
 
 STDMETHODIMP CSkinTabControl::SetColorMap(IThemeColorMap* pThemeColorMap)

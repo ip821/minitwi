@@ -60,7 +60,7 @@ STDMETHODIMP CTimelineService::OnShutdown()
 
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
-	m_pSettings.Release();
+		m_pSettings.Release();
 	}
 
 	m_pThreadServiceUpdateService.Release();

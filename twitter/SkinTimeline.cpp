@@ -49,7 +49,6 @@ STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageM
 
 STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
 {
-	CHECK_E_POINTER(pThemeColorMap);
 	m_pThemeColorMap = pThemeColorMap;
 	return S_OK;
 }
@@ -57,7 +56,6 @@ STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
 
 STDMETHODIMP CSkinTimeline::SetFontMap(IThemeFontMap* pThemeFontMap)
 {
-	CHECK_E_POINTER(pThemeFontMap);
 	m_pThemeFontMap = pThemeFontMap;
 	return S_OK;
 }

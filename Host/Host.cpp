@@ -91,12 +91,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 		nRet = theLoop.Run();
 
-		if (pPersistSettings)
-		{
-			RETURN_IF_FAILED(pPersistSettings->Save(pMainWindowSettings));
-		}
-
 		_Module.RemoveMessageLoop();
+		pPluginManager->Shutdown();
 	}
 
 	Gdiplus::GdiplusShutdown(g_gdiPlusToken);

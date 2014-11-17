@@ -20,6 +20,11 @@ public:
 		COM_INTERFACE_ENTRY(IThemeFontMap)
 	END_COM_MAP()
 
+	DECLARE_PROTECT_FINAL_CONSTRUCT()
+
+	HRESULT FinalConstruct(){ return S_OK; };
+	void FinalRelease(){};
+
 private:
 	std::map<CString, CFont> m_fonts;
 

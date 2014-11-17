@@ -358,6 +358,9 @@ STDMETHODIMP CCustomTabControl::OnShutdown()
 	}
 	m_pServiceProvider.Release();
 	m_pSettings.Release();
+	m_pSkinTabControl.Release();
+	m_pColumnRects.Release();
+	m_pControls.Release();
 	return S_OK;
 }
 
