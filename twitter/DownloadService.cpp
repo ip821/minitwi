@@ -35,7 +35,6 @@ STDMETHODIMP CDownloadService::OnStart(IVariantObject *pResult)
 
 STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 {
-	CoInitialize(NULL);
 	CURL* curl = curl_easy_init();
 	if (!curl)
 		return E_FAIL;

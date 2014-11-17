@@ -217,8 +217,6 @@ STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 
 STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
 {
-	CoInitialize(NULL);
-
 	CComPtr<IFormManager> pFormManager;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
 	CComPtr<IControl> pTimelineControl;

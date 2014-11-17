@@ -114,7 +114,6 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 {
 	CHECK_E_POINTER(pResultObj);
-	CoInitialize(NULL);
 
 	CComPtr<IVariantObject> pResult = pResultObj;
 	CComPtr<ISettings> pSettings;
@@ -270,8 +269,7 @@ HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObje
 		posix_time::ptime pt;
 		inputStream >> pt;
 
-		static time_duration utcDiff;
-		if (utcDiff.ticks() == 0)
+		time_duration utcDiff;
 		{
 			ptime someUtcTime(date(2008, Jan, 1), time_duration(0, 0, 0, 0));
 			ptime someLocalTime = date_time::c_local_adjustor<ptime>::utc_to_local(someUtcTime);

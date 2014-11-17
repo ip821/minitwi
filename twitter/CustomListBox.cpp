@@ -446,6 +446,7 @@ void CALLBACK TimerCallback3(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, D
 
 void CCustomListBox::EndUpdate()
 {
+	SetRedraw();
 	if (m_bAnimationNeeded)
 	{
 		if (m_bEnableAnimation)
@@ -454,7 +455,6 @@ void CCustomListBox::EndUpdate()
 			Invalidate(TRUE);
 	}
 	m_bAnimationNeeded = FALSE;
-	SetRedraw();
 }
 
 void CCustomListBox::StartAnimation()
