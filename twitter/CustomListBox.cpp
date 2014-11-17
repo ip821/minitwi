@@ -479,11 +479,12 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 		std::vector<UINT> vIndexes(uiCount);
 		m_pSkinTimeline->AnimationGetIndexes(&vIndexes[0], &uiCount);
 
+		StartAnimation();
+		SetRedraw();
+
 		if (vIndexes.size())
 			Invalidate();
 
-		StartAnimation();
-		SetRedraw();
 		return 0;
 	}
 	m_bAnimating = FALSE;
