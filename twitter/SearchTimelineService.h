@@ -7,6 +7,7 @@ using namespace std;
 #include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"
+#include <boost/thread/condition_variable.hpp>
 
 class ATL_NO_VTABLE CSearchTimelineService :
 	public CComObjectRootEx<CComSingleThreadModel>,
@@ -44,7 +45,7 @@ private:
 	CComPtr<IVariantObject> m_pVariantObject;
 
 	DWORD m_dwAdvice = 0;
-	mutex m_mutex;
+	boost::mutex m_mutex;
 
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);

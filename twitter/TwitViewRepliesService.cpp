@@ -22,7 +22,7 @@ STDMETHODIMP CTwitViewRepliesService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings.Release();
 	}
 
@@ -54,7 +54,7 @@ STDMETHODIMP CTwitViewRepliesService::Load(ISettings* pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings = pSettings;
 	}
 	return S_OK;
@@ -73,7 +73,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	CHECK_E_POINTER(pResult);
 	CComPtr<ISettings> pSettings;
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		pSettings = m_pSettings;
 	}
 

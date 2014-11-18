@@ -88,7 +88,7 @@ void CPictureWindow::MoveToNextPicture()
 {
 	int currentBitmapIndex = 0;
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 
 		if (m_currentBitmapIndex == -1)
 			return;
@@ -109,7 +109,7 @@ void CPictureWindow::MoveToNextPicture()
 	ASSERT_IF_FAILED(m_pImageManagerService->ContainsImageKey(m_bitmapsUrls[currentBitmapIndex], &bContains));
 
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 
 		if (bContains)
 		{
@@ -252,7 +252,7 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 
 LRESULT CPictureWindow::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	lock_guard<mutex> lock(m_mutex);
+	boost::lock_guard<boost::mutex> lock(m_mutex);
 	m_alpha += m_alphaAmount;
 	m_step++;
 	Invalidate();
@@ -298,7 +298,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 
 	int currentBitmapIndex = 0;
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_currentBitmapIndex = vIndex.intVal;
 		currentBitmapIndex = m_currentBitmapIndex;
 	}
@@ -320,7 +320,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[currentBitmapIndex], bmp));
 
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		RETURN_IF_FAILED(ResetAnimation());
 		ResizeToCurrentBitmap();
 	}
@@ -393,7 +393,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	int currentBitmapIndex = 0;
 	BYTE alpha = m_alpha;
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		currentBitmapIndex = m_currentBitmapIndex;
 	}
 

@@ -12,7 +12,7 @@ STDMETHODIMP CImageManagerService::CreateImageBitmap(BSTR bstrKey, HBITMAP* phBi
 	CHECK_E_POINTER(phBitmap);
 
 	{
-		lock_guard<mutex> mutex(m_mutex);
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		auto it = m_bitmaps.find(CComBSTR(bstrKey));
 		if (it == m_bitmaps.end())
 			return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
@@ -30,7 +30,7 @@ STDMETHODIMP CImageManagerService::GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap)
 	CHECK_E_POINTER(ptBitmap);
 
 	{
-		lock_guard<mutex> mutex(m_mutex);
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		auto it = m_bitmaps.find(CComBSTR(bstrKey));
 		if (it == m_bitmaps.end())
 			return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
@@ -45,9 +45,9 @@ STDMETHODIMP CImageManagerService::CopyTo(IImageManagerService* pDest)
 {
 	CHECK_E_POINTER(pDest);
 	{
-		lock_guard<mutex> mutexSource(m_mutex);
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		CImageManagerService* pDestClass = static_cast<CImageManagerService*>(pDest);
-		lock_guard<mutex> mutexDest(pDestClass->m_mutex);
+		boost::lock_guard<boost::mutex> mutexDest(pDestClass->m_mutex);
 		for (auto& it : m_bitmaps)
 		{
 			pDestClass->m_bitmaps[it.first] = it.second;
@@ -61,9 +61,9 @@ STDMETHODIMP CImageManagerService::CopyImageTo(BSTR bstrKey, IImageManagerServic
 	CHECK_E_POINTER(bstrKey);
 	CHECK_E_POINTER(pDest);
 	{
-		lock_guard<mutex> mutexSource(m_mutex);
+		boost::lock_guard<boost::mutex> mutexSource(m_mutex);
 		CImageManagerService* pDestClass = static_cast<CImageManagerService*>(pDest);
-		lock_guard<mutex> mutexDest(pDestClass->m_mutex);
+		boost::lock_guard<boost::mutex> mutexDest(pDestClass->m_mutex);
 		pDestClass->m_bitmaps[bstrKey] = m_bitmaps[bstrKey];
 	}
 	return S_OK;
@@ -74,7 +74,7 @@ STDMETHODIMP CImageManagerService::AddImageFromHBITMAP(BSTR bstrKey, HBITMAP hBi
 	CHECK_E_POINTER(bstrKey);
 	CHECK_E_POINTER(hBitmap);
 	{
-		lock_guard<mutex> mutex(m_mutex);
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		m_bitmaps[bstrKey] = std::make_shared<Gdiplus::Bitmap>(hBitmap, (HPALETTE)0);
 	}
 	return S_OK;
@@ -85,7 +85,7 @@ STDMETHODIMP CImageManagerService::AddImageFromFile(BSTR bstrKey, BSTR bstrFileN
 	CHECK_E_POINTER(bstrKey);
 	CHECK_E_POINTER(bstrFileName);
 	{
-		lock_guard<mutex> mutex(m_mutex);
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		m_bitmaps[bstrKey] = std::make_shared<Gdiplus::Bitmap>(bstrFileName);
 	}
 	return S_OK;
@@ -96,7 +96,7 @@ STDMETHODIMP CImageManagerService::ContainsImageKey(BSTR bstrKey, BOOL* pbContai
 	CHECK_E_POINTER(bstrKey);
 	CHECK_E_POINTER(pbContains);
 	{
-		lock_guard<mutex> mutex(m_mutex);
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		*pbContains = m_bitmaps.find(CComBSTR(bstrKey)) != m_bitmaps.end();
 	}
 	return S_OK;
@@ -106,7 +106,7 @@ STDMETHODIMP CImageManagerService::RemoveImage(BSTR bstrKey)
 {
 	CHECK_E_POINTER(bstrKey);
 	{
-		lock_guard<mutex> mutex(m_mutex);
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		m_bitmaps.erase(bstrKey);
 	}
 	return S_OK;
@@ -117,7 +117,7 @@ STDMETHODIMP CImageManagerService::SaveImage(BSTR bstrKey, BSTR bstrFilePath)
 	CHECK_E_POINTER(bstrKey);
 	CHECK_E_POINTER(bstrFilePath);
 	{
-		lock_guard<mutex> mutex(m_mutex);
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		auto it = m_bitmaps.find(CComBSTR(bstrKey));
 		if (it == m_bitmaps.end())
 			return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);

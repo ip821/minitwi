@@ -19,7 +19,7 @@ STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings = pSettings;
 	}
 	return S_OK;
@@ -56,7 +56,7 @@ STDMETHODIMP CTimelineService::OnShutdown()
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 
 	{
-		std::lock_guard<std::mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings.Release();
 	}
 
@@ -115,7 +115,7 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 	CComPtr<IVariantObject> pResult = pResultObj;
 	CComPtr<ISettings> pSettings;
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		pSettings = m_pSettings;
 	}
 
@@ -256,7 +256,7 @@ HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObje
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_CREATED_AT, &v));
 
 		if (v.vt != VT_BSTR)
-		return S_OK;
+			return S_OK;
 
 		local_time::wlocal_time_input_facet* inputFacet = new local_time::wlocal_time_input_facet();
 		inputFacet->format(L"%a %b %d %H:%M:%S +0000 %Y");
@@ -266,7 +266,8 @@ HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObje
 		posix_time::ptime pt;
 		inputStream >> pt;
 
-		time_duration utcDiff;
+		static time_duration utcDiff;
+		if (utcDiff.ticks() == 0)
 		{
 			ptime someUtcTime(date(2008, Jan, 1), time_duration(0, 0, 0, 0));
 			ptime someLocalTime = date_time::c_local_adjustor<ptime>::utc_to_local(someUtcTime);

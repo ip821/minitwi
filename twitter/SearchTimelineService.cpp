@@ -28,7 +28,7 @@ STDMETHODIMP CSearchTimelineService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings.Release();
 	}
 
@@ -60,7 +60,7 @@ STDMETHODIMP CSearchTimelineService::Load(ISettings* pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings = pSettings;
 	}
 	return S_OK;
@@ -80,7 +80,7 @@ STDMETHODIMP CSearchTimelineService::OnRun(IVariantObject *pResult)
 	CHECK_E_POINTER(pResult);
 	CComPtr<ISettings> pSettings;
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		pSettings = m_pSettings;
 	}
 

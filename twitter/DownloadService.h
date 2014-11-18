@@ -4,6 +4,7 @@
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
 #include "asyncsvc_contract_i.h"
+#include <boost/thread/condition_variable.hpp>
 
 using namespace ATL;
 using namespace std;
@@ -41,7 +42,7 @@ private:
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	DWORD m_dwAdvice = 0;
 	hash_set<wstring> m_urls;
-	mutex m_mutex;
+	boost::mutex m_mutex;
 
 	HRESULT Fire_OnDownloadComplete(IVariantObject *pResult);
 

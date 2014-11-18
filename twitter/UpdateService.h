@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 #include "asyncsvc_contract_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
+#include <boost/thread/condition_variable.hpp>
 
 using namespace ATL;
 using namespace std;
@@ -44,7 +45,7 @@ private:
 	DWORD m_dwAdviceDownloadService = 0;
 	BOOL m_bUpdateAvailable = FALSE;
 	CString m_strUpdatePath;
-	mutex m_mutex;
+	boost::mutex m_mutex;
 
 public:
 	static CString GetInstalledVersion();

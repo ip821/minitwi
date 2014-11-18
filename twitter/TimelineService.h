@@ -6,7 +6,7 @@
 #include "asyncsvc_contract_i.h"
 #include "twitconn_contract_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
-#include <mutex>
+#include <boost/thread/condition_variable.hpp>
 
 #pragma warning(push)
 #pragma warning(disable:4245)
@@ -60,7 +60,7 @@ private:
 	DWORD m_dwAdviceThreadServiceUpdateService = 0;
 	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
 	DWORD m_dwAdviceTimelineControl = 0;
-	mutex m_mutex;
+	boost::mutex m_mutex;
 	BOOL m_bShowMoreRunning = 0;
 	CComBSTR m_bstrUser;
 

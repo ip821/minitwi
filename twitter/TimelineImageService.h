@@ -6,6 +6,7 @@
 #include "asyncsvc_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"
+#include <boost/thread/condition_variable.hpp>
 
 using namespace ATL;
 using namespace std;
@@ -56,7 +57,7 @@ private:
 	DWORD m_dwAdviceTimelineControl = 0;
 
 	hash_set<IVariantObject*> m_idsToUpdate;
-	mutex m_mutex;
+	boost::mutex m_mutex;
 	map<wstring, hash_set<IVariantObject*>> m_imageRefs;
 
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);

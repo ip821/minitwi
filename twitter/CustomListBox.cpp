@@ -487,6 +487,10 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 
 		return 0;
 	}
+	else if (m_bAnimating)
+	{
+		Invalidate();
+	}
 	m_bAnimating = FALSE;
 	return 0;
 }

@@ -63,7 +63,7 @@ STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
 	hash_set<IVariantObject*> ids;
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		ids = hash_set<IVariantObject*>(m_idsToUpdate);
 		m_idsToUpdate.clear();
 	}
@@ -85,7 +85,7 @@ STDMETHODIMP CTimelineImageService::OnItemRemoved(IVariantObject *pItemObject)
 	for (auto& url : urls)
 	{
 		{
-			lock_guard<mutex> lock(m_mutex);
+			boost::lock_guard<boost::mutex> lock(m_mutex);
 			ATLASSERT(m_imageRefs.find(url) != m_imageRefs.end());
 			m_imageRefs[url].erase(pItemObject);
 			if (m_imageRefs[url].size() == 0)
@@ -139,7 +139,7 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 
 	if (uiCount)
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		auto it = m_imageRefs.find(vUrl.bstrVal);
 		if (it != m_imageRefs.end())
 		{
@@ -170,7 +170,7 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 {
 	CDownloadSuspendScope downloadSuspendScope(m_pDownloadService);
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_imageRefs.clear();
 
 		hash_set<wstring> urls;

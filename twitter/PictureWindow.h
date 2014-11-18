@@ -6,6 +6,7 @@
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "AnimationTimerSupport.h"
 #include "Plugins.h"
+#include <boost/thread/condition_variable.hpp>
 
 using namespace ATL;
 using namespace std;
@@ -73,7 +74,7 @@ private:
 	DWORD m_dwAdviceDownloadService = 0;
 	int m_currentBitmapIndex = -1;
 	vector<CComBSTR> m_bitmapsUrls;
-	mutex m_mutex;
+	boost::mutex m_mutex;
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
 

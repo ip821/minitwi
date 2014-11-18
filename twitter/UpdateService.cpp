@@ -69,7 +69,7 @@ STDMETHODIMP CUpdateService::OnStart(IVariantObject *pResult)
 STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
 {
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		if (m_bUpdateAvailable)
 			return S_OK;
 	}
@@ -145,7 +145,7 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 
 		{
-			lock_guard<mutex> lock(m_mutex);
+			boost::lock_guard<boost::mutex> lock(m_mutex);
 			m_bUpdateAvailable = TRUE;
 			if (vFilePath.vt == VT_BSTR)
 			{
@@ -163,7 +163,7 @@ STDMETHODIMP CUpdateService::IsUpdateAvailable(BOOL* pbUpdateAvailable)
 	CHECK_E_POINTER(pbUpdateAvailable);
 
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		*pbUpdateAvailable = m_bUpdateAvailable;
 	}
 
@@ -174,7 +174,7 @@ STDMETHODIMP CUpdateService::RunUpdate()
 {
 	CString strUpdatePath;
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		if (!m_bUpdateAvailable)
 			return E_PENDING;
 		strUpdatePath = m_strUpdatePath;

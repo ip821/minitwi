@@ -3,7 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
-
+#include <boost/thread/condition_variable.hpp>
 using namespace ATL;
 using namespace std;
 
@@ -39,7 +39,7 @@ public:
 
 private:
 	std::map<CComBSTR, std::shared_ptr<Gdiplus::Bitmap>> m_bitmaps;
-	mutex m_mutex;
+	boost::mutex m_mutex;
 public:
 
 	STDMETHOD(GetImageInfo)(BSTR bstrKey, TBITMAP* phBitmap);

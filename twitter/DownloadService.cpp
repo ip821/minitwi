@@ -137,7 +137,7 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_urls.erase(vUrl.bstrVal);
 	}
 
@@ -163,7 +163,7 @@ STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 	CComVariant vUrl;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_URL, &vUrl));
 	{
-		lock_guard<mutex> lock(m_mutex);
+		boost::lock_guard<boost::mutex> lock(m_mutex);
 		if (vUrl.vt == VT_BSTR && m_urls.find(vUrl.bstrVal) != m_urls.end())
 			return S_OK;
 		m_urls.insert(vUrl.bstrVal);
