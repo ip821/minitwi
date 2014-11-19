@@ -213,6 +213,12 @@ STDMETHODIMP CUserInfoControl::SetTheme(ITheme* pTheme)
 	return S_OK;
 }
 
+LRESULT CUserInfoControl::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	::SetFocus(m_hWndTimelineControl);
+	return 0;
+}
+
 STDMETHODIMP CUserInfoControl::OnActivate()
 {
 	RETURN_IF_FAILED(m_pTimelineControl->OnActivate());
