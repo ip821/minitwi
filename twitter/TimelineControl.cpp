@@ -42,6 +42,12 @@ STDMETHODIMP CTimelineControl::OnShutdown()
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControl::ScrollToItem(UINT uiIndex)
+{
+	m_listBox.SetTopIndex(uiIndex);
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControl::GetText(BSTR* pbstr)
 {
 	*pbstr = CComBSTR(L"Home").Detach();

@@ -512,6 +512,9 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 			m_pColumnRects->GetRect(i, &rect);
 			if (rect.PtInRect(CPoint(x, y)))
 			{
+				CComPtr<IControl> pControl;
+				m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pControl);
+				Fire_OnTabHeaderClick(pControl);
 				SelectPage(i);
 				break;
 			}
@@ -633,6 +636,30 @@ HRESULT CCustomTabControl::Fire_OnDeactivate(IControl* pControl)
 		if (pConnection)
 		{
 			hr = pConnection->OnDeactivate(pControl);
+		}
+	}
+	return hr;
+}
+
+HRESULT CCustomTabControl::Fire_OnTabHeaderClick(IControl* pControl)
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CCustomTabControl* pThis = static_cast<CCustomTabControl*>(this);
+	int cConnections = IConnectionPointImpl_ITabbedControlEventSink::m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = IConnectionPointImpl_ITabbedControlEventSink::m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		ITabbedControlEventSink* pConnection = static_cast<ITabbedControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnTabHeaderClick(pControl);
 		}
 	}
 	return hr;

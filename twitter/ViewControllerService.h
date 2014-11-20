@@ -18,7 +18,8 @@ class ATL_NO_VTABLE CViewControllerService :
 	public IPluginSupportNotifications2,
 	public IInitializeWithControlImpl,
 	public IInitializeWithSettings,
-	public IInfoControlEventSink
+	public IInfoControlEventSink,
+	public ITabbedControlEventSink
 {
 public:
 	CViewControllerService()
@@ -34,6 +35,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IInfoControlEventSink)
+		COM_INTERFACE_ENTRY(ITabbedControlEventSink)
 	END_COM_MAP()
 
 private:
@@ -45,6 +47,7 @@ private:
 
 	BOOL m_bUpdateAvailable = FALSE;
 	DWORD m_dwAdviceTabbedControl = 0;
+	DWORD m_dwAdviceTabbedControl2 = 0;
 
 public:
 
@@ -62,6 +65,11 @@ public:
 	STDMETHOD(HideInfo)();
 
 	STDMETHOD(OnLinkClick)(HWND hWnd);
+
+	METHOD_EMPTY(STDMETHOD(OnClose)(IControl* pControl));
+	METHOD_EMPTY(STDMETHOD(OnActivate)(IControl* pControl));
+	METHOD_EMPTY(STDMETHOD(OnDeactivate)(IControl* pControl));
+	STDMETHOD(OnTabHeaderClick)(IControl* pControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ViewControllerService), CViewControllerService)

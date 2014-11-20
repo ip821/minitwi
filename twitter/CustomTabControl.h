@@ -106,7 +106,8 @@ private:
 	HRESULT Fire_OnActivate(IControl* pControl);
 	HRESULT Fire_OnDeactivate(IControl* pControl);
 	HRESULT Fire_OnClose(IControl* pControl);
-	
+	HRESULT Fire_OnTabHeaderClick(IControl* pControl);
+
 public:
 	void OnEndScroll();
 

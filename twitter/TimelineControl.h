@@ -126,6 +126,7 @@ public:
 	STDMETHOD(GetItemsCount)(UINT* puiCount);
 	STDMETHOD(RemoveItemByIndex)(UINT uiIndex);
 	STDMETHOD(RefreshItem)(UINT uiIndex);
+	STDMETHOD(ScrollToItem)(UINT uiIndex);
 
 	STDMETHOD(OnBeforeCommandInvoke)(REFGUID guidCommand, ICommand* pCommand);
 	METHOD_EMPTY(STDMETHOD(OnCommandInvoke)(REFGUID guidCommand));

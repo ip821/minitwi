@@ -173,6 +173,7 @@ interface ITimelineControl : IControl2
 	HRESULT GetTopVisibleItemIndex(UINT* puiIndex);
 	HRESULT GetItemsCount(UINT* puiCount);
 	HRESULT RemoveItemByIndex(UINT uiIndex);
+	HRESULT ScrollToItem(UINT uiIndex);
 };
 
 [

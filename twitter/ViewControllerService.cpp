@@ -32,7 +32,9 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
+	
 	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(IInfoControlEventSink), &m_dwAdviceTabbedControl));
+	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ITabbedControlEventSink), &m_dwAdviceTabbedControl2));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_UpdateService, &m_pUpdateService));
 
 	CComPtr<IThemeService> pThemeService;
@@ -59,6 +61,7 @@ STDMETHODIMP CViewControllerService::OnInitCompleted()
 
 STDMETHODIMP CViewControllerService::OnShutdown()
 {
+	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ITabbedControlEventSink), m_dwAdviceTabbedControl2));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	m_pThreadPoolService.Release();
@@ -66,6 +69,21 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	m_pUpdateService.Release();
 	m_pTabbedControl.Release();
 	m_pSettings.Release();
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::OnTabHeaderClick(IControl* pControl)
+{
+	CComPtr<IControl> pCurrentControl;
+	RETURN_IF_FAILED(m_pTabbedControl->GetCurrentPage(&pCurrentControl));
+	if (pControl == pCurrentControl)
+	{
+		CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pControl;
+		ATLASSERT(pTimelineControlSupport);
+		CComPtr<ITimelineControl> pTimelineControl;
+		RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&pTimelineControl));
+		RETURN_IF_FAILED(pTimelineControl->ScrollToItem(0));
+	}
 	return S_OK;
 }
 
