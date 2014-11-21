@@ -52,7 +52,6 @@ public:
 
 private:
 	CComPtr<IObjCollection> m_pItems;
-	map<IVariantObject*, int> m_itemsToIndex;
 	vector<CAdapt<CComPtr<IColumnRects>>> m_columnRects;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	int m_prevX = 0;
