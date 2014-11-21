@@ -47,7 +47,7 @@ public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
-	STDMETHOD(OnStart)(IVariantObject *pResult);
+	METHOD_EMPTY(STDMETHOD(OnStart)(IVariantObject *pResult));
 	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 };

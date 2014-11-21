@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "TimelineRelativeTimeService.h"
 #include "Plugins.h"
+#include "UpdateScope.h"
 
 STDMETHODIMP CTimelineRelativeTimeService::OnInitialized(IServiceProvider *pServiceProvider)
 {
@@ -25,14 +26,9 @@ STDMETHODIMP CTimelineRelativeTimeService::OnShutdown()
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineRelativeTimeService::OnStart(IVariantObject *pResult)
-{
-	RETURN_IF_FAILED(m_pTimelineControl->BeginUpdate());
-	return S_OK;
-}
-
 STDMETHODIMP CTimelineRelativeTimeService::OnFinish(IVariantObject *pResult)
 {
+	CUpdateScope updateScope(m_pTimelineControl);
 	CComPtr<IObjArray> pAllItemsObjectArray;
 	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
 	RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
@@ -49,7 +45,6 @@ STDMETHODIMP CTimelineRelativeTimeService::OnFinish(IVariantObject *pResult)
 	}
 
 	RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&vObjects[0], vObjects.size()));
-	RETURN_IF_FAILED(m_pTimelineControl->EndUpdate());
 	return S_OK;
 }
 
