@@ -4,17 +4,7 @@
 #include "SkinTimeline.h"
 #include "Plugins.h"
 #include "GdilPlusUtils.h"
-#include <boost\date_time.hpp>
-#include <boost/date_time/posix_time/posix_time_io.hpp>
-#include <boost/thread/xtime.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/local_time_adjustor.hpp>
-#include <boost/date_time/c_local_time_adjustor.hpp>
-#include <boost/date_time/date_facet.hpp>
-#include <boost/date_time/time_facet.hpp>
-#include <clocale>
-#include <iosfwd>
-#include <ctime>
+#include "CustomListBox.h"
 
 // CSkinTimeline
 
@@ -26,7 +16,6 @@
 #define ITEM_DELIMITER_HEIGHT 1
 #define MAX_ITEM_HEIGHT 255
 #define IMAGE_WIDTH_MAX 275
-#include "CustomListBox.h"
 
 CSkinTimeline::CSkinTimeline()
 {

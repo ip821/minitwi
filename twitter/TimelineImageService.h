@@ -6,7 +6,6 @@
 #include "asyncsvc_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"
-#include <boost/thread/condition_variable.hpp>
 
 using namespace ATL;
 using namespace std;

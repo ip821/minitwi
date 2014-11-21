@@ -5,7 +5,6 @@
 #include "twitter_i.h"
 #include "asyncsvc_contract_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
-#include <boost/thread/condition_variable.hpp>
 
 using namespace ATL;
 using namespace std;

@@ -38,6 +38,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IServiceProviderSupport)
+		COM_INTERFACE_ENTRY(ITimelineControlSupport)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserInfoControl)

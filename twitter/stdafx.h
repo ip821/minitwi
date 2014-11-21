@@ -56,10 +56,12 @@
 #include <hash_set>
 #include <mutex>
 #include <boost/lexical_cast.hpp>
+#include <boost/thread/condition_variable.hpp>
 
 #pragma warning(push)
 #pragma warning(disable:4245)
 #include <boost\date_time.hpp>
+#include <boost\date_time\c_local_time_adjustor.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 #pragma warning(pop)
 

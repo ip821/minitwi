@@ -3,7 +3,7 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
-#include <boost/thread/condition_variable.hpp>
+
 using namespace ATL;
 using namespace std;
 

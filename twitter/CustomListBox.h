@@ -3,6 +3,9 @@
 #include "atlctrls.h"
 #include "twitter_i.h"
 #include "AnimationTimerSupport.h"
+#include <atomic>
+
+using namespace std;
 
 struct NMCOLUMNCLICK
 {
@@ -49,8 +52,8 @@ public:
 
 private:
 	CComPtr<IObjCollection> m_pItems;
-	std::map<IVariantObject*, int> m_itemsToIndex;
-	std::vector<CAdapt<CComPtr<IColumnRects>>> m_columnRects;
+	map<IVariantObject*, int> m_itemsToIndex;
+	vector<CAdapt<CComPtr<IColumnRects>>> m_columnRects;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	int m_prevX = 0;
 	int m_prevY = 0;
@@ -61,8 +64,9 @@ private:
 	BOOL m_bAnimationNeeded = FALSE;
 	BOOL m_bAnimating = FALSE;
 	BOOL m_bEnableAnimation;
+	atomic<int> m_updateTefCount = 0;
 
-	std::map<IVariantObject*, std::hash_set<int>> m_animatedColumns;
+	map<IVariantObject*, hash_set<int>> m_animatedColumns;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
 	void UpdateAnimatedColumns(IColumnRects* pColumnRects, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);

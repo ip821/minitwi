@@ -104,7 +104,7 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 	CComPtr<IVariantObject> pVariantObject;
 	m_pItems->GetAt(lpdi->itemID, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
 	auto& columns = m_animatedColumns[pVariantObject.p];
-	std::vector<UINT> vIndexes(columns.begin(), columns.end());
+	vector<UINT> vIndexes(columns.begin(), columns.end());
 	UINT* pui = nullptr;
 	if (vIndexes.size())
 		pui = &vIndexes[0];
@@ -436,7 +436,9 @@ LRESULT CCustomListBox::OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 
 void CCustomListBox::BeginUpdate()
 {
-	SetRedraw(FALSE);
+	if (!m_updateTefCount)
+		SetRedraw(FALSE);
+	++m_updateTefCount;
 }
 
 void CALLBACK TimerCallback3(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
@@ -446,6 +448,11 @@ void CALLBACK TimerCallback3(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, D
 
 void CCustomListBox::EndUpdate()
 {
+	--m_updateTefCount;
+	
+	if (m_updateTefCount)
+		return;
+
 	SetRedraw();
 	if (m_bAnimationNeeded)
 	{
@@ -476,7 +483,7 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 
 		UINT uiCount = 0;
 		m_pSkinTimeline->AnimationGetIndexes(NULL, &uiCount);
-		std::vector<UINT> vIndexes(uiCount);
+		vector<UINT> vIndexes(uiCount);
 		m_pSkinTimeline->AnimationGetIndexes(&vIndexes[0], &uiCount);
 
 		StartAnimation();
@@ -527,7 +534,7 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 		BOOL bIntersects = rectIntersect.IntersectRect(rectItem, rect);
 		UpdateAnimatedColumns(m_columnRects[it->second].m_T, it->second, pVariantObject, bIntersects);
 		if (bIntersects)
-			OutputDebugString(CString(L"Schedule update due to item index: ") + boost::lexical_cast<std::wstring>(i).c_str() + CString(L"\n"));
+			OutputDebugString(CString(L"Schedule update due to item index: ") + boost::lexical_cast<wstring>(i).c_str() + CString(L"\n"));
 	
 		if (bIntersects)
 			bNeedInvalidate = TRUE;

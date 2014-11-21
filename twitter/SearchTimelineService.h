@@ -7,7 +7,6 @@ using namespace std;
 #include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"
-#include <boost/thread/condition_variable.hpp>
 
 class ATL_NO_VTABLE CSearchTimelineService :
 	public CComObjectRootEx<CComSingleThreadModel>,

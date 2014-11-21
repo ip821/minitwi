@@ -52,6 +52,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineCleanupService, CLSID_TimelineCleanupService, L"Timeline control clenup service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND, CLSID_TimelineControlCopyCommand, CLSID_TimelineControlCopyCommand, L"Copy commands for timeline control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND, CLSID_TimelineControlOpenInBrowserCommand, CLSID_TimelineControlOpenInBrowserCommand, L"Open in browser command for timeline control"));
 
@@ -68,6 +69,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE, CLSID_TimelineService, L"Timeline service for user info control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for user info control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for user info control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service for user control"));
 
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_TWITVIEW_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ThreadPoolService, CLSID_ThreadPoolService, L"Thread pool service for twit view control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TWITVIEW_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_DownloadService, CLSID_DownloadService, L"Download service user for twit view control"));
@@ -77,6 +79,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TWITVIEW_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE, CLSID_TwitViewRepliesService, L"Timeline service for twit view control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TWITVIEW_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for twit view control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TWITVIEW_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for twit view control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TWITVIEW_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service for twit view control"));
 
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_TIMELINE_SEARCH_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ThreadPoolService, CLSID_ThreadPoolService, L"Thread pool service for search control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_SEARCH_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_DownloadService, CLSID_DownloadService, L"Download service user for search control"));
@@ -86,6 +89,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_SEARCH_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE, CLSID_SearchTimelineService, L"Timeline service for search control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_SEARCH_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for search control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_SEARCH_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for search control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TIMELINE_SEARCH_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service for search control"));
 
 	return S_OK;
 }

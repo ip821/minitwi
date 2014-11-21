@@ -21,9 +21,12 @@ STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 	RETURN_IF_FAILED(pVariantObject->CopyTo(pVariantObjectCopy));
 	RETURN_IF_FAILED(pVariantObjectCopy->SetVariantValue(VAR_ITEM_DOUBLE_SIZE, &CComVariant(true)));
 	RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObjectCopy));
-	CUpdateScope scope(m_pTimelineControl);
-	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pVariantObjectCopy, 0));
-	RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(0));
+	
+	{
+		CUpdateScope scope(m_pTimelineControl);
+		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pVariantObjectCopy, 0));
+		RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(0));
+	}
 
 	CComPtr<IThreadService> pTimelineThread;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThread));

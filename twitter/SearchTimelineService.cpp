@@ -131,11 +131,6 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
-	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pObjectArray));
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
-	CComPtr<IObjArray> pAllItemsObjectArray;
-	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
-	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pAllItemsObjectArray));
-
 	return S_OK;
 }

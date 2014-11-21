@@ -6,7 +6,6 @@
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "AnimationTimerSupport.h"
 #include "Plugins.h"
-#include <boost/thread/condition_variable.hpp>
 
 using namespace ATL;
 using namespace std;

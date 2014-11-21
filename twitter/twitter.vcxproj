@@ -98,6 +98,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4238;4100;4239</DisableSpecificWarnings>
+      <AdditionalOptions>-Zm111 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -305,6 +306,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TimelineControl.cpp" />
+    <ClCompile Include="TimelineRelativeTimeService.cpp" />
     <ClCompile Include="TimelineService.cpp" />
     <ClCompile Include="twitconn_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -350,6 +352,7 @@
     <ClInclude Include="SearchTimelineControl.h" />
     <ClInclude Include="SearchTimelineService.h" />
     <ClInclude Include="TimelineControlOpenInBrowserCommand.h" />
+    <ClInclude Include="TimelineRelativeTimeService.h" />
     <ClInclude Include="TwitViewControl.h" />
     <ClInclude Include="DownloadService.h" />
     <ClInclude Include="HomeTimeLineControl.h" />

@@ -182,7 +182,6 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 	if (vParentTwit.vt == VT_UNKNOWN)
 	{
 		CComQIPtr<IVariantObject> pParentItem = vParentTwit.punkVal;
-		RETURN_IF_FAILED(CTimelineService::UpdateRelativeTimeForTwit(pResult));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pParentItem, 0));
 		RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(0));
 		++insertIndex;
@@ -192,11 +191,6 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
-	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pObjectArray));
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
-	CComPtr<IObjArray> pAllItemsObjectArray;
-	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
-	RETURN_IF_FAILED(CTimelineService::UpdateRelativeTime(pAllItemsObjectArray));
-
 	return S_OK;
 }

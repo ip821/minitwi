@@ -6,20 +6,9 @@
 #include "asyncsvc_contract_i.h"
 #include "twitconn_contract_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
-#include <boost/thread/condition_variable.hpp>
-
-#pragma warning(push)
-#pragma warning(disable:4245)
-#include <boost\date_time.hpp>
-#include <boost\date_time\c_local_time_adjustor.hpp>
-#include <boost/date_time/posix_time/posix_time_io.hpp>
-#pragma warning(pop)
 
 using namespace ATL;
 using namespace std;
-using namespace boost;
-using namespace boost::posix_time;
-using namespace boost::gregorian;
 
 // CTimelineService
 
@@ -66,9 +55,6 @@ private:
 
 
 public:
-	static HRESULT CTimelineService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject);
-	static HRESULT UpdateRelativeTime(IObjArray* pObjectArray);
-	
 	STDMETHOD(Load)(ISettings *pSettings);
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);

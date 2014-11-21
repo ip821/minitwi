@@ -524,6 +524,16 @@ interface ISearchTimelineService : ITimelineService
 };
 
 [
+	object,
+	uuid(C6578CE9-9A13-4D3C-841B-8FFB55847642),
+	pointer_default(unique)
+]
+interface ITimelineRelativeTimeService : IUnknown
+{
+
+};
+
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -789,6 +799,13 @@ library twitterLib
 	coclass PictureWindowSaveCommand
 	{
 		[default] interface ICommand2;
+	};
+	[
+		uuid(29B8920F-970F-4049-AC6C-5DD7ABD9527B)
+	]
+	coclass TimelineRelativeTimeService
+	{
+		[default] interface ITimelineRelativeTimeService;
 	};
 };
 
