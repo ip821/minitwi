@@ -76,10 +76,9 @@ STDMETHODIMP CViewControllerService::OnTabHeaderClick(IControl* pControl)
 {
 	CComPtr<IControl> pCurrentControl;
 	RETURN_IF_FAILED(m_pTabbedControl->GetCurrentPage(&pCurrentControl));
-	if (pControl == pCurrentControl)
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pControl;
+	if (pControl == pCurrentControl && pTimelineControlSupport)
 	{
-		CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pControl;
-		ATLASSERT(pTimelineControlSupport);
 		CComPtr<ITimelineControl> pTimelineControl;
 		RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&pTimelineControl));
 		RETURN_IF_FAILED(pTimelineControl->ScrollToItem(0));
