@@ -185,8 +185,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		m_wndScroll.Scroll(bRightToLeft);
 	}
 
-	m_prevSelectedPageIndex = m_selectedPageIndex;
-	m_selectedPageIndex = dwIndex;
+	m_nextSelectedPageIndex = dwIndex;
 
 	if (m_selectedPageIndex == INVALID_PAGE_INDEX)
 	{
@@ -196,10 +195,10 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 
 void CCustomTabControl::OnEndScroll()
 {
-	if (m_prevSelectedPageIndex != INVALID_PAGE_INDEX)
+	if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 	{
 		CComPtr<IControl> pControl;
-		ASSERT_IF_FAILED(GetPage(m_prevSelectedPageIndex, &pControl));
+		ASSERT_IF_FAILED(GetPage(m_selectedPageIndex, &pControl));
 
 		CComQIPtr<IControl2> pControl2 = pControl;
 		if (pControl2)
@@ -212,7 +211,7 @@ void CCustomTabControl::OnEndScroll()
 
 	m_wndScroll.ShowWindow(SW_HIDE);
 	CComPtr<IControl> pControl;
-	m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
+	m_pControls->GetAt(m_nextSelectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
 	HWND hWnd = 0;
 	pControl->GetHWND(&hWnd);
 	::ShowWindow(hWnd, SW_SHOW);
@@ -226,6 +225,9 @@ void CCustomTabControl::OnEndScroll()
 
 	if (!m_scrollBitmap.IsNull())
 		m_scrollBitmap.DeleteObject();
+
+	m_selectedPageIndex = m_nextSelectedPageIndex;
+	m_nextSelectedPageIndex = INVALID_PAGE_INDEX;
 
 	Invalidate(TRUE);
 }
@@ -497,6 +499,9 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 {
 	auto x = GET_X_LPARAM(lParam);
 	auto y = GET_Y_LPARAM(lParam);
+
+	if (m_nextSelectedPageIndex != INVALID_PAGE_INDEX)
+		return 0;
 
 	if (m_bShowInfoImage && m_bInfoImageEnableClick && m_rectInfoImage.PtInRect(CPoint(x, y)))
 	{

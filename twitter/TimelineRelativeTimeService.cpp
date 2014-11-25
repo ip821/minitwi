@@ -21,6 +21,7 @@ STDMETHODIMP CTimelineRelativeTimeService::OnInitialized(IServiceProvider *pServ
 STDMETHODIMP CTimelineRelativeTimeService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadService));
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	m_pThreadService.Release();
 	m_pTimelineControl.Release();
 	return S_OK;
