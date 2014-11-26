@@ -195,6 +195,9 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 
 void CCustomTabControl::OnEndScroll()
 {
+	CComPtr<IControl> pNextControl;
+	ASSERT_IF_FAILED(m_pControls->GetAt(m_nextSelectedPageIndex, __uuidof(IControl), (LPVOID*)&pNextControl));
+
 	if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 	{
 		CComPtr<IControl> pControl;
@@ -210,14 +213,12 @@ void CCustomTabControl::OnEndScroll()
 	}
 
 	m_wndScroll.ShowWindow(SW_HIDE);
-	CComPtr<IControl> pControl;
-	m_pControls->GetAt(m_nextSelectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl);
 	HWND hWnd = 0;
-	pControl->GetHWND(&hWnd);
+	ASSERT_IF_FAILED(pNextControl->GetHWND(&hWnd));
 	::ShowWindow(hWnd, SW_SHOW);
 
-	ASSERT_IF_FAILED(Fire_OnActivate(pControl));
-	CComQIPtr<IControl2> pControl2 = pControl;
+	ASSERT_IF_FAILED(Fire_OnActivate(pNextControl));
+	CComQIPtr<IControl2> pControl2 = pNextControl;
 	if (pControl2)
 	{
 		ASSERT_IF_FAILED(pControl2->OnActivate());
@@ -237,6 +238,12 @@ STDMETHODIMP CCustomTabControl::GetCurrentPage(IControl **ppControl)
 	CHECK_E_POINTER(ppControl);
 	if (m_selectedPageIndex == INVALID_PAGE_INDEX)
 		return E_PENDING;
+
+#ifdef DEBUG
+	UINT uiCount = 0;
+	ASSERT_IF_FAILED(m_pControls->GetCount(&uiCount));
+	ATLASSERT(m_selectedPageIndex <= (int)uiCount);
+#endif
 
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(m_pControls->GetAt(m_selectedPageIndex, __uuidof(IControl), (LPVOID*)&pControl));
@@ -276,8 +283,11 @@ STDMETHODIMP CCustomTabControl::RemovePage(IControl *pControl)
 
 	RETURN_IF_FAILED(m_pControls->RemoveObjectAt(index));
 
-	if (m_selectedPageIndex > index)
+	if (m_selectedPageIndex >= index)
 		m_selectedPageIndex--;
+
+	if (m_nextSelectedPageIndex >= index)
+		m_nextSelectedPageIndex--;
 
 	Fire_OnClose(pControl);
 
