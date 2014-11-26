@@ -2,8 +2,8 @@
 #include "SkinCommonControl.h"
 #include "Plugins.h"
 
-static CBrush m_bkColor;
-map<HWND, LONG_PTR> m_procs;
+CBrush CSkinCommonControl::m_bkColor;
+map<HWND, LONG_PTR> CSkinCommonControl::m_procs;
 
 CSkinCommonControl::CSkinCommonControl()
 {
@@ -27,7 +27,7 @@ STDMETHODIMP CSkinCommonControl::SetFontMap(IThemeFontMap* pThemeFontMap)
 	return S_OK;
 }
 
-LRESULT WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+LRESULT CSkinCommonControl::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	if (Msg == WM_ERASEBKGND && m_procs.find(hWnd) != m_procs.end())
 	{

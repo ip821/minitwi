@@ -32,6 +32,11 @@ private:
 
 	map<HWND, int> m_refs;
 
+	static CBrush m_bkColor;
+	static map<HWND, LONG_PTR> m_procs;
+
+	static LRESULT WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+
 public:
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
