@@ -179,15 +179,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 
 	m_bShowMoreRunning = FALSE;
 
-	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
-	if (FAILED(vHr.intVal))
 	{
-		if (vHr.intVal == COMADMIN_E_USERPASSWDNOTVALID)
-		{
-			RETURN_IF_FAILED(pResult->SetVariantValue(KEY_RESTART_TIMER, &CComVariant(FALSE)));
-		}
-
 		CComVariant vId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_MAX_ID, &vId));
 		if (vId.vt == VT_BSTR)
@@ -196,10 +188,23 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
 			UINT uiCount = 0;
 			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
-			CComPtr<IVariantObject> pVariantObject;
-			RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(false)));
-			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
+			if (uiCount)
+			{
+				CComPtr<IVariantObject> pVariantObject;
+				RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+				RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(false)));
+				RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
+			}
+		}
+	}
+
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	if (FAILED(vHr.intVal))
+	{
+		if (vHr.intVal == COMADMIN_E_USERPASSWDNOTVALID)
+		{
+			RETURN_IF_FAILED(pResult->SetVariantValue(KEY_RESTART_TIMER, &CComVariant(FALSE)));
 		}
 		return S_OK;
 	}
@@ -231,16 +236,25 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
 			UINT uiCount = 0;
 			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
-			if (uiCount > 1)
-				insertIndex = uiCount - 2;
+			if (uiCount)
+				insertIndex = uiCount - 1;
 
-			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
-			CComPtr<IVariantObject> pVariantObject;
-			RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(false)));
-			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
+			{ //Remove first element because it has MAX_ID identifier and exists in the timeline control as last element
+				CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
+				ATLASSERT(pObjCollection);
+				UINT uiCount = 0;
+				RETURN_IF_FAILED(pObjCollection->GetCount(&uiCount));
+				if (uiCount)
+				{
+					RETURN_IF_FAILED(pObjCollection->RemoveObjectAt(0));
+				}
+			}
 		}
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
+		if (insertIndex)
+		{
+			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(insertIndex));
+		}
 	}
 
 	return S_OK;

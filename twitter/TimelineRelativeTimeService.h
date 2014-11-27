@@ -37,8 +37,10 @@ public:
 private:
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<IThreadService> m_pThreadService;
+	CComPtr<IThreadService> m_pThreadServiceShowMoreService;
 
 	DWORD m_dwAdviceThreadService = 0;
+	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
 
 	HRESULT UpdateRelativeTimeForTwit(IVariantObject* pVariantObject);
 	HRESULT UpdateRelativeTime(IObjArray* pObjectArray);

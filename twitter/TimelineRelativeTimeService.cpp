@@ -15,13 +15,23 @@ STDMETHODIMP CTimelineRelativeTimeService::OnInitialized(IServiceProvider *pServ
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadService));
 
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreService));
+	if (m_pThreadServiceShowMoreService)
+	{
+		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceShowMoreService));
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CTimelineRelativeTimeService::OnShutdown()
 {
+	if (m_dwAdviceThreadServiceShowMoreService)
+	{
+		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
+	}
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadService));
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
+	m_pThreadServiceShowMoreService.Release();
 	m_pThreadService.Release();
 	m_pTimelineControl.Release();
 	return S_OK;
