@@ -1,0 +1,21 @@
+// This file will be processed by the MIDL tool to
+// produce the type library (twiconn.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+import "objmdl_contract_i.idl";
+
+[
+	object,
+	uuid(68F938F0-575F-448A-A735-1F7A6EF0D8F3),
+	pointer_default(unique)
+]
+interface ITwitterConnection : IUnknown
+{
+	HRESULT GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrKey, BSTR* pbstrSecret);
+	HRESULT OpenConnection(BSTR bstrKey, BSTR bstrSecret);
+	HRESULT OpenConnectionWithAppAuth();
+	HRESULT GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
+	HRESULT GetTwit(BSTR bstrId, IVariantObject** ppVariantObject);
+	HRESULT Search(BSTR bstrQuery, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray);
+};
