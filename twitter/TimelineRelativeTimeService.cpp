@@ -46,16 +46,19 @@ STDMETHODIMP CTimelineRelativeTimeService::OnFinish(IVariantObject *pResult)
 
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pAllItemsObjectArray->GetCount(&uiCount));
-	vector<IVariantObject*> vObjects(uiCount);
-
-	for (size_t i = 0; i < uiCount; i++)
+	if (uiCount)
 	{
-		CComPtr<IVariantObject> p;
-		RETURN_IF_FAILED(pAllItemsObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&p));
-		vObjects[i] = p.p;
-	}
+		vector<IVariantObject*> vObjects(uiCount);
 
-	RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&vObjects[0], vObjects.size()));
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IVariantObject> p;
+			RETURN_IF_FAILED(pAllItemsObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&p));
+			vObjects[i] = p.p;
+		}
+
+		RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&vObjects[0], vObjects.size()));
+	}
 	return S_OK;
 }
 
