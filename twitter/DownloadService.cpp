@@ -106,14 +106,14 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 			if (proxyConfig.lpszAutoConfigUrl)
 				GlobalFree(proxyConfig.lpszAutoConfigUrl);
 			if (proxyConfig.lpszProxy)
-				GlobalFree(proxyConfig.lpszProxy); 
+				GlobalFree(proxyConfig.lpszProxy);
 			if (proxyConfig.lpszProxyBypass)
 				GlobalFree(proxyConfig.lpszProxyBypass);
 		}
 	}
 
 	res = curl_easy_perform(curl);
-	
+
 	if (res != CURLcode::CURLE_OK)
 	{
 		curl_easy_cleanup(curl);
@@ -133,26 +133,25 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 {
 	CComVariant vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
-	if (vUrl.vt != VT_BSTR)
-		return S_OK;
-
+	if (vUrl.vt == VT_BSTR)
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
-		m_urls.erase(vUrl.bstrVal);
+		wstring strUrl(vUrl.bstrVal);
+		ATLASSERT(m_urls.size());
+		m_urls.erase(strUrl);
 	}
 
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
-	if (vFilePath.vt != VT_BSTR)
-		return S_OK;
-
-	RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
-
-	CComVariant vKeepFile;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_KEEP_FILE, &vKeepFile));
-	if (vKeepFile.vt != VT_BOOL || !vKeepFile.boolVal)
+	if (vFilePath.vt == VT_BSTR)
 	{
-		DeleteFile(vFilePath.bstrVal);
+		RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
+		CComVariant vKeepFile;
+		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_KEEP_FILE, &vKeepFile));
+		if (vKeepFile.vt != VT_BOOL || !vKeepFile.boolVal)
+		{
+			DeleteFile(vFilePath.bstrVal);
+		}
 	}
 	return S_OK;
 }
@@ -164,9 +163,13 @@ STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_URL, &vUrl));
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
-		if (vUrl.vt == VT_BSTR && m_urls.find(vUrl.bstrVal) != m_urls.end())
-			return S_OK;
-		m_urls.insert(vUrl.bstrVal);
+		if (vUrl.vt == VT_BSTR)
+		{
+			wstring strUrl(vUrl.bstrVal);
+			if (m_urls.find(strUrl) != m_urls.end())
+				return S_OK;
+			m_urls.insert(strUrl);
+		}
 	}
 	RETURN_IF_FAILED(m_pThreadPoolService->AddTask(pVariantObject));
 	return S_OK;
