@@ -547,9 +547,7 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 		CRect rectIntersect;
 		BOOL bIntersects = rectIntersect.IntersectRect(rectItem, rect);
 		UpdateAnimatedColumns(m_columnRects[uiIndex].m_T, uiIndex, pVariantObject, bIntersects);
-		if (bIntersects)
-			OutputDebugString(CString(L"Schedule update due to item index: ") + boost::lexical_cast<wstring>(i).c_str() + CString(L"\n"));
-	
+
 		if (bIntersects)
 			bNeedInvalidate = TRUE;
 	}

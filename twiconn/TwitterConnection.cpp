@@ -56,9 +56,9 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 
 	USES_CONVERSION;
 
-	auto strUser = string(W2A(bstrUser));
+	auto strUser = string(CW2A(bstrUser));
 	twitterObj.setTwitterUsername(strUser);
-	auto strPass = string(W2A(bstrPass));
+	auto strPass = string(CW2A(bstrPass));
 	twitterObj.setTwitterPassword(strPass);
 
 	twitterObj.getOAuth().setConsumerKey(string(APP_KEY));
@@ -76,8 +76,8 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 	twitterObj.getOAuth().getOAuthTokenKey(myOAuthAccessTokenKey);
 	twitterObj.getOAuth().getOAuthTokenSecret(myOAuthAccessTokenSecret);
 
-	*pbstrKey = CComBSTR(A2W(myOAuthAccessTokenKey.c_str())).Detach();
-	*pbstrSecret = CComBSTR(A2W(myOAuthAccessTokenSecret.c_str())).Detach();
+	*pbstrKey = CComBSTR(CA2W(myOAuthAccessTokenKey.c_str())).Detach();
+	*pbstrSecret = CComBSTR(CA2W(myOAuthAccessTokenSecret.c_str())).Detach();
 
 	auto bRes = twitterObj.accountVerifyCredGet();
 	if (!bRes)
@@ -101,8 +101,8 @@ STDMETHODIMP CTwitterConnection::OpenConnectionWithAppAuth()
 	USES_CONVERSION;
 
 	m_pTwitObj = make_shared<twitCurl>();
-	auto strAppKey = string(W2A(CString(APP_KEY)));
-	auto strAppSecret = string(W2A(CString(APP_SECRET)));
+	auto strAppKey = string(CW2A(CString(APP_KEY)));
+	auto strAppSecret = string(CW2A(CString(APP_SECRET)));
 	auto bRes = m_pTwitObj->authAppOnly(strAppKey, strAppSecret);
 
 	if (!bRes)
@@ -139,8 +139,8 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	m_pTwitObj->getOAuth().setConsumerKey(string(APP_KEY));
 	m_pTwitObj->getOAuth().setConsumerSecret(string(APP_SECRET));
 
-	m_pTwitObj->getOAuth().setOAuthTokenKey(string(W2A(bstrKey)));
-	m_pTwitObj->getOAuth().setOAuthTokenSecret(string(W2A(bstrSecret)));
+	m_pTwitObj->getOAuth().setOAuthTokenKey(string(CW2A(bstrKey)));
+	m_pTwitObj->getOAuth().setOAuthTokenSecret(string(CW2A(bstrSecret)));
 
 	auto bRes = m_pTwitObj->accountVerifyCredGet();
 	if (!bRes)
@@ -166,8 +166,13 @@ STDMETHODIMP CTwitterConnection::Search(BSTR bstrQuery, BSTR bstrSinceId, UINT u
 	USES_CONVERSION;
 
 	string strQuery = W2A_CP(bstrQuery, CP_UTF8);
-	string strAppToken = W2A(m_strAppToken.c_str());
-	string strSinceId = bstrSinceId == nullptr ? "" : W2A(bstrSinceId);
+	string strAppToken = CW2A(m_strAppToken.c_str());
+	string strSinceId;
+	if (bstrSinceId != nullptr)
+	{
+		strSinceId = CW2A(bstrSinceId);
+	}
+
 	if (!m_pTwitObj->searchWithAppAuth(strAppToken, strQuery, strSinceId, boost::lexical_cast<string>(uiCount)))
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
@@ -201,10 +206,9 @@ STDMETHODIMP CTwitterConnection::GetTwit(BSTR bstrId, IVariantObject** ppVariant
 
 	USES_CONVERSION;
 
-	string strId;
-	strId = W2A(bstrId);
+	string strId = CW2A(bstrId);
 
-	string strAppToken = W2A(m_strAppToken.c_str());
+	string strAppToken = CW2A(m_strAppToken.c_str());
 	if (!m_pTwitObj->statusShowByIdWithAppAuth(strAppToken, strId))
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
@@ -232,7 +236,7 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 	string strId;
 	if (bstrMaxId)
 	{
-		strId = W2A(bstrMaxId);
+		strId = CW2A(bstrMaxId);
 	}
 
 	string strMaxCount;
@@ -244,13 +248,13 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 	string strSinceId;
 	if (bstrSinceId)
 	{
-		strSinceId = W2A(bstrSinceId);
+		strSinceId = CW2A(bstrSinceId);
 	}
 
 	string strUserId;
 	if (bstrUserId)
 	{
-		strUserId = W2A(bstrUserId);
+		strUserId = CW2A(bstrUserId);
 	}
 
 	bool bRes = false;
@@ -266,7 +270,7 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 		}
 		else
 		{
-			string strAppToken = W2A(m_strAppToken.c_str());
+			string strAppToken = CW2A(m_strAppToken.c_str());
 			bRes = m_pTwitObj->timelineUserGetWithAppAuth(strAppToken, strUserId, strId, strSinceId, strMaxCount);
 		}
 	}

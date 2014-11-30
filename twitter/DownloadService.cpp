@@ -73,11 +73,13 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 
 	USES_CONVERSION;
 
-	auto file = fopen(W2A(strTempFolder), "wb");
+	string strTempFolderA = CW2A(strTempFolder);
+	auto file = fopen(strTempFolderA.c_str(), "wb");
 
 	char errorBuffer[1024] = { 0 };
 
-	auto res = curl_easy_setopt(curl, CURLOPT_URL, W2A(vUrl.bstrVal));
+	string strUrl(CW2A(vUrl.bstrVal));
+	auto res = curl_easy_setopt(curl, CURLOPT_URL, strUrl.c_str());
 	res = curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 	res = curl_easy_setopt(curl, CURLOPT_HTTPPROXYTUNNEL, 1);
 	res = curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, NULL);
@@ -99,7 +101,8 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 				StrSplit(*it, L"=", values);
 				if (values.size() == 2 && values[0] == L"http")
 				{
-					res = curl_easy_setopt(curl, CURLOPT_PROXY, W2A(values[1]));
+					string strValue = (CW2A(values[1]));
+					res = curl_easy_setopt(curl, CURLOPT_PROXY, strValue.c_str());
 					break;
 				}
 			}

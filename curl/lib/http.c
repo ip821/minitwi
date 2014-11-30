@@ -1126,7 +1126,7 @@ CURLcode Curl_add_buffer_send(Curl_send_buffer *in,
                    ptr+headlen, bodylen, conn);
       }
     }
-    if(bodylen)
+    if(bodylen && http)
       /* since we sent a piece of the body here, up the byte counter for it
          accordingly */
       http->writebytecount += bodylen;
