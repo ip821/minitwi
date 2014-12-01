@@ -165,7 +165,7 @@ STDMETHODIMP CTwitterConnection::Search(BSTR bstrQuery, BSTR bstrSinceId, UINT u
 
 	USES_CONVERSION;
 
-	string strQuery = W2A_CP(bstrQuery, CP_UTF8);
+	string strQuery = CW2A(bstrQuery, CP_UTF8);
 	string strAppToken = CW2A(m_strAppToken.c_str());
 	string strSinceId;
 	if (bstrSinceId != nullptr)

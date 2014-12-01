@@ -307,7 +307,8 @@ static void remove_expired(struct CookieInfo *cookies)
         cookies->cookies = co->next;
       }
       else {
-        pv->next = co->next;
+		  if (pv)
+			pv->next = co->next;
       }
       cookies->numcookies--;
       freecookie(co);
