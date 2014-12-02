@@ -53,8 +53,13 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 STDMETHODIMP CSettingsControl::OnShutdown()
 {
+	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterButtonControl(m_buttonLogin.m_hWnd));
+	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterButtonControl(m_buttonLogout.m_hWnd));
+	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterStaticControl(m_hWnd));
 	RETURN_IF_FAILED(m_pThreadService->Join());
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
+
+	m_pSkinCommonControl.Release();
 	m_pViewControllerService.Release();
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
@@ -102,6 +107,8 @@ LRESULT CSettingsControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	m_editPass = GetDlgItem(IDC_EDITPASSWORD);
 	m_labelLoggedUser = GetDlgItem(IDC_LABEL_LOGGED_USER);
 	m_labelVersion = GetDlgItem(IDC_LABEL_VERSION);
+	m_buttonLogin = GetDlgItem(IDC_BUTTON_LOGIN);
+	m_buttonLogout = GetDlgItem(IDC_BUTTON_LOGOUT);
 	m_labelHomePage.SubclassWindow(GetDlgItem(IDC_LABEL_HOMEPAGE));
 
 	m_labelVersion.SetWindowText(CUpdateService::GetInstalledVersion());
@@ -389,9 +396,10 @@ STDMETHODIMP CSettingsControl::SetTheme(ITheme* pTheme)
 {
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
-	CComPtr<ISkinCommonControl> pSkinCommonControl;
-	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&pSkinCommonControl));
-	RETURN_IF_FAILED(pSkinCommonControl->RegisterControl(m_hWnd));
+	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
+	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterStaticControl(m_hWnd));
+	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterButtonControl(m_buttonLogin.m_hWnd));
+	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterButtonControl(m_buttonLogout.m_hWnd));
 	return S_OK;
 }
 

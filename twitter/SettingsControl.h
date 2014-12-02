@@ -96,10 +96,13 @@ private:
 	CComPtr<ITheme> m_pTheme;
 	CComQIPtr<ICustomTabControl> m_pCustomTabControl;
 	CComPtr<IViewControllerService> m_pViewControllerService;
+	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 
 	DWORD m_dwAdvice = 0;
 	CEdit m_editUser;
 	CEdit m_editPass;
+	CButton m_buttonLogin;
+	CButton m_buttonLogout;
 
 	CStatic m_labelLoggedUser;
 	CStatic m_labelVersion;

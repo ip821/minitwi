@@ -245,8 +245,10 @@ interface ISkinCommonControl : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
-	HRESULT RegisterControl(HWND hWnd);
-	HRESULT UnregisterControl(HWND hWnd);
+	HRESULT RegisterStaticControl(HWND hWnd);
+	HRESULT UnregisterStaticControl(HWND hWnd);
+	HRESULT RegisterButtonControl(HWND hWnd);
+	HRESULT UnregisterButtonControl(HWND hWnd);
 };
 
 [

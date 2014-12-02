@@ -2,6 +2,9 @@
 #include "UserAccountControl.h"
 #include "Plugins.h"
 
+#define OFFSET_X 10
+#define OFFSET_Y 20
+
 HRESULT CUserAccountControl::FinalConstruct()
 {
 	return S_OK;
@@ -56,7 +59,26 @@ STDMETHODIMP CUserAccountControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
 	CHECK_E_POINTER(hWnd);
 	*hWnd = Create(hWndParent);
+	m_buttonFollow.Create(m_hWnd, 0, 0, WS_CHILD | BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_VISIBLE);
+	m_buttonFollow.SetWindowText(L"Follow");
+	m_buttonFollow.BringWindowToTop();
+	m_buttonFollow.SetFont(static_cast<HFONT>(GetStockObject(DEFAULT_GUI_FONT)));
+	AdjustSizes();
 	return S_OK;
+}
+
+void CUserAccountControl::AdjustSizes()
+{
+	CRect clientRect;
+	GetClientRect(&clientRect);
+	CRect rect(CPoint(clientRect.right - m_buttonSize.cx - OFFSET_X, clientRect.bottom - m_buttonSize.cy - OFFSET_Y), m_buttonSize);
+	::SetWindowPos(m_buttonFollow, 0, rect.left, rect.top, rect.Width(), rect.Height(), SWP_SHOWWINDOW);
+}
+
+LRESULT CUserAccountControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	AdjustSizes();
+	return 0;
 }
 
 STDMETHODIMP CUserAccountControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
