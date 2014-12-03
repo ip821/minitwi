@@ -36,7 +36,10 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 STDMETHODIMP CUserAccountControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), dw_mAdviceDownloadService));
+	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterButtonControl(m_buttonFollow.m_hWnd));
 
+	m_pTheme.Release();
+	m_pSkinCommonControl.Release();
 	m_pSkinUserAccountControl.Release();
 	m_pVariantObject.Release();
 	m_pImageManagerService.Release();
@@ -93,10 +96,14 @@ STDMETHODIMP CUserAccountControl::SetVariantObject(IVariantObject *pVariantObjec
 	return S_OK;
 }
 
-STDMETHODIMP CUserAccountControl::SetSkinUserAccountControl(ISkinUserAccountControl* pSkinUserAccountControl)
+STDMETHODIMP CUserAccountControl::SetTheme(ITheme* pTheme)
 {
-	CHECK_E_POINTER(pSkinUserAccountControl);
-	m_pSkinUserAccountControl = pSkinUserAccountControl;
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
+	RETURN_IF_FAILED(m_pTheme->GetSkinUserAccountControl(&m_pSkinUserAccountControl));
+	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
+	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterButtonControl(m_buttonFollow.m_hWnd));
 	return S_OK;
 }
 

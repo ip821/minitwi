@@ -201,10 +201,9 @@ STDMETHODIMP CUserInfoControl::SetTheme(ITheme* pTheme)
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
 
-	CComPtr<ISkinUserAccountControl> pSkinUserAccountControl;
-	RETURN_IF_FAILED(pTheme->GetSkinUserAccountControl(&pSkinUserAccountControl));
-	RETURN_IF_FAILED(pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
-	RETURN_IF_FAILED(m_pUserAccountControl->SetSkinUserAccountControl(pSkinUserAccountControl));
+	CComQIPtr<IThemeSupport> pThemeSupport = m_pUserAccountControl;
+	ATLASSERT(pThemeSupport);
+	RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pTheme));
 
 	CComPtr<ISkinTimeline> pSkinTimeline;
 	RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&pSkinTimeline));

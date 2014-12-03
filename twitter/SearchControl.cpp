@@ -33,6 +33,8 @@ STDMETHODIMP CSearchControl::OnInitialized(IServiceProvider* pServiceProvider)
 STDMETHODIMP CSearchControl::OnShutdown()
 {
 	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterStaticControl(m_hWnd));
+	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterButtonControl(m_buttonGo));
+
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	CComQIPtr<IPluginSupportNotifications> p = m_pTimelineControl;
 	ATLASSERT(p);
@@ -135,6 +137,7 @@ STDMETHODIMP CSearchControl::SetTheme(ITheme* pTheme)
 
 	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
 	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterStaticControl(m_hWnd));
+	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterButtonControl(m_buttonGo));
 
 	CComQIPtr<IThemeSupport> pThemeSupport = m_pTimelineControl;
 	ATLASSERT(pThemeSupport);

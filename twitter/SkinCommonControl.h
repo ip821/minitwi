@@ -46,13 +46,14 @@ private:
 		HWND hWnd;
 		LONG_PTR pWndProc;
 		ControlType controlType;
+		bool isParent;
 	};
 
 	static CBrush m_bkColor;
 	static map<HWND, WindowDescriptor> m_procs;
 
 	static LRESULT WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-	static void DrawButton(HWND hWnd);
+	static void DrawButton(HWND hWndParent, LPDRAWITEMSTRUCT lpdis);
 public:
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);

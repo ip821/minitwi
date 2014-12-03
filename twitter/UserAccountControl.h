@@ -19,6 +19,7 @@ class CUserAccountControl :
 	public IInitializeWithVariantObject,
 	public IPluginSupportNotifications,
 	public IDownloadServiceEventSink,
+	public IThemeSupport,
 	public CAnimationTimerSupport<CUserAccountControl>
 {
 public:
@@ -38,6 +39,7 @@ public:
 		COM_INTERFACE_ENTRY(IControl2)
 		COM_INTERFACE_ENTRY(IUserAccountControl)
 		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
+		COM_INTERFACE_ENTRY(IThemeSupport)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserAccountControl)
@@ -63,6 +65,8 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IWindowService> m_pWindowService;
+	CComPtr<ITheme> m_pTheme;
+	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 
 	DWORD dw_mAdviceDownloadService = 0;
 	CComBSTR m_bstrBannerUrl;
@@ -99,9 +103,9 @@ public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
-	STDMETHOD(SetSkinUserAccountControl)(ISkinUserAccountControl* pSkinUserAccountControl);
-
 	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
+
+	STDMETHOD(SetTheme)(ITheme* pTheme);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserAccountControl), CUserAccountControl)

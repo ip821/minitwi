@@ -211,7 +211,6 @@ interface ISkinUserAccountControl : IUnknown
 ]
 interface IUserAccountControl : IControl2
 {
-	HRESULT SetSkinUserAccountControl(ISkinUserAccountControl* pSkinUserAccountControl);
 };
 
 [
