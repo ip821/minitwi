@@ -226,7 +226,7 @@ static const char *ContentTypeForFilename(const char *filename,
 static char *memdup(const char *src, size_t buffer_length)
 {
   size_t length;
-  bool add = FALSE;
+  BOOL add = FALSE;
   char *buffer;
 
   if(buffer_length)

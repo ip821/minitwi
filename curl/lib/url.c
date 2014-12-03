@@ -960,6 +960,7 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
        */
 
       if((data->set.postfieldsize < 0) ||
+#pragma warning(suppress: 6239)
          ((sizeof(curl_off_t) != sizeof(size_t)) &&
           (data->set.postfieldsize > (curl_off_t)((size_t)-1))))
         result = CURLE_OUT_OF_MEMORY;

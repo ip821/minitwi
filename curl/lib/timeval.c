@@ -32,6 +32,7 @@ struct timeval curlx_tvnow(void)
   ** increases monotonically and wraps once 49.7 days have elapsed.
   */
   struct timeval now;
+#pragma warning(suppress: 28159)
   DWORD milliseconds = GetTickCount();
   now.tv_sec = milliseconds / 1000;
   now.tv_usec = (milliseconds % 1000) * 1000;

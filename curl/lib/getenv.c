@@ -39,6 +39,7 @@ char *GetEnv(const char *variable)
   env[0] = '\0';
   if(temp != NULL)
     ExpandEnvironmentStringsA(temp, env, sizeof(env));
+#pragma warning(suppress: 6102)
   return (env[0] != '\0')?strdup(env):NULL;
 #else
   char *env = getenv(variable);
