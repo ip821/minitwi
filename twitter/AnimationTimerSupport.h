@@ -32,17 +32,22 @@ public:
 
 	void StopAnimationTimer()
 	{
-		timeKillEvent(m_uiTimerId);
-		timeEndPeriod(m_wTimerRes);
+		auto res = timeKillEvent(m_uiTimerId);
+		ATLASSERT(res == MMSYSERR_NOERROR);
+		res = timeEndPeriod(m_wTimerRes);
+		ATLASSERT(res == MMSYSERR_NOERROR); CMenuItemInfo; MENUITEMINFO
 	}
 
 	void StartAnimationTimer(/*HWND hWnd, */UINT uiInterval)
 	{
-		timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
+		auto res = timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
+		ATLASSERT(res == MMSYSERR_NOERROR);
 		m_wTimerRes = min(max(m_tc.wPeriodMin, TARGET_RESOLUTION), m_tc.wPeriodMax);
-		timeBeginPeriod(m_wTimerRes);
+		res = timeBeginPeriod(m_wTimerRes);
+		ATLASSERT(res == MMSYSERR_NOERROR);
 
 		auto p = static_cast<T*>(this);
 		m_uiTimerId = timeSetEvent(uiInterval, m_wTimerRes, TimerCallback, (DWORD_PTR)p, TIME_ONESHOT);
+		ATLASSERT(m_uiTimerId != 0);
 	}
 };

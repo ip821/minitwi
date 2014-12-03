@@ -388,7 +388,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 	CDC cdc;
 	cdc.CreateCompatibleDC(cdcReal);
-	CDCSelectBitmapScope cdcSelectBitmapScope(cdc, bufferBitmap);
+	CDCSelectBitmapScope cdcSelectBitmapScopeBufferBitmap(cdc, bufferBitmap);
 
 	int currentBitmapIndex = 0;
 	BYTE alpha = m_alpha;
@@ -457,7 +457,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	if (m_bitmapsUrls.size() > 1 && m_currentBitmapIndex >= 0)
 	{
 		CString str;
-		str.Format(L"%u / %u", currentBitmapIndex + 1, m_bitmapsUrls.size());
+		str.Format(L"%u / %u", (UINT)currentBitmapIndex + 1, m_bitmapsUrls.size());
 		CSize sz;
 		cdc.GetTextExtent(str, str.GetLength(), &sz);
 

@@ -217,12 +217,12 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 	{
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(dwColumnIndex, VAR_VALUE, &bstr));
-		CString strUrl(bstr);
-		strUrl.Replace(L"_normal", L"");
+		CString strUrlValue(bstr);
+		strUrlValue.Replace(L"_normal", L"");
 
 		CComPtr<IVariantObject> pUrlObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
-		RETURN_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(strUrl)));
+		RETURN_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(strUrlValue)));
 
 		RETURN_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
 		return S_OK;

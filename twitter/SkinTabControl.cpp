@@ -209,13 +209,15 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnRects* pColumnRects, CDCHandle& cd
 		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TWITTER_DELIMITER, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
-		RECT rect = m_rectHeader;
+#pragma warning(suppress: 6246)
+		CRect rect = m_rectHeader;
 		rect.top = rect.bottom - ITEM_DELIMITER_HEIGHT;
 		cdc.FillRect(&rect, brush);
 	}
 
 	for (size_t i = 0; i < uiCount; i++)
 	{
+#pragma warning(suppress: 6246)
 		CRect rect;
 		RETURN_IF_FAILED(pColumnRects->GetRect(i, &rect));
 

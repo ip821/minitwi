@@ -68,6 +68,7 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\model-libs\objmdl;..\model-libs\boost</IncludePath>
+    <CodeAnalysisRuleSet>C:\_dev\minitwi\MiniTwi.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>

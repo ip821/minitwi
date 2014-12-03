@@ -31,7 +31,9 @@ static HRESULT GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 
 	ImageCodecInfo* pImageCodecInfo = NULL;
 
-	GetImageEncodersSize(&num, &size);
+	if (GetImageEncodersSize(&num, &size) != Status::Ok)
+		return E_FAIL;
+
 	if (size == 0)
 		return E_FAIL;
 
@@ -39,10 +41,12 @@ static HRESULT GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 	if (pImageCodecInfo == NULL)
 		return E_FAIL;
 
-	GetImageEncoders(num, size, pImageCodecInfo);
+	if (GetImageEncoders(num, size, pImageCodecInfo) != Status::Ok)
+		return E_FAIL;
 
 	for (UINT j = 0; j < num; ++j)
 	{
+#pragma warning(suppress: 6385)
 		if (wcscmp(pImageCodecInfo[j].MimeType, format) == 0)
 		{
 			*pClsid = pImageCodecInfo[j].Clsid;

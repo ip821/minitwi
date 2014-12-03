@@ -242,9 +242,9 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			{ //Remove first element because it has MAX_ID identifier and exists in the timeline control as last element
 				CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
 				ATLASSERT(pObjCollection);
-				UINT uiCount = 0;
-				RETURN_IF_FAILED(pObjCollection->GetCount(&uiCount));
-				if (uiCount)
+				UINT uiObjectCount = 0;
+				RETURN_IF_FAILED(pObjCollection->GetCount(&uiObjectCount));
+				if (uiObjectCount)
 				{
 					RETURN_IF_FAILED(pObjCollection->RemoveObjectAt(0));
 				}
@@ -270,10 +270,10 @@ STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 		RETURN_IF_FAILED(pObjArray->GetCount(&uiCount));
 		if (uiCount > 1)
 		{
-			CComPtr<IVariantObject> pVariantObject;
-			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 2, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+			CComPtr<IVariantObject> pVariantObjectItem;
+			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 2, __uuidof(IVariantObject), (LPVOID*)&pVariantObjectItem));
 			CComVariant vId;
-			RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+			RETURN_IF_FAILED(pVariantObjectItem->GetVariantValue(VAR_ID, &vId));
 
 			CComPtr<IVariantObject> pThreadContext;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pThreadContext));

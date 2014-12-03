@@ -358,18 +358,18 @@ bool CSettingsControl::DlgResize_PositionControl(int in_nWidth, int in_nHeight, 
 			}
 
 			int l_nGroupWidth = in_sGroupRect.right - in_sGroupRect.left;
-			int l_nGroupStart = (in_nWidth / 2) - (l_nGroupWidth / 2);
+			int nGroupStart = (in_nWidth / 2) - (l_nGroupWidth / 2);
 
-			l_cArea.MoveToX(l_nGroupStart + offsetX/*(l_nSegment * l_nItem)*/);
+			l_cArea.MoveToX(nGroupStart + offsetX/*(l_nSegment * l_nItem)*/);
 		}
 
 		if (in_sData.m_dwResizeFlags & DLSZ_CENTER_Y)
 		{
 			int l_nGroupHeight = in_sGroupRect.bottom - in_sGroupRect.top;
-			int l_nGroupStart = (in_nHeight / 2) - (l_nGroupHeight / 2);
+			int nGroupStart = (in_nHeight / 2) - (l_nGroupHeight / 2);
 
 			int l_nSegment = l_nGroupHeight / l_nItems;
-			l_cArea.MoveToY(l_nGroupStart + (l_nSegment * l_nItem));
+			l_cArea.MoveToY(nGroupStart + (l_nSegment * l_nItem));
 		}
 
 		// Honour repaint

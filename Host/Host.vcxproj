@@ -121,7 +121,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <CodeAnalysisRuleSet>C:\_dev\WinDbgTool\AnalyzeRuleSet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>C:\_dev\minitwi\MiniTwi.ruleset</CodeAnalysisRuleSet>
     <TargetName>$(SolutionName)</TargetName>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\model-libs\objmdl;..\model-libs\viewmdl;..\model-libs\WTL90_4140_Final\Include</IncludePath>
   </PropertyGroup>

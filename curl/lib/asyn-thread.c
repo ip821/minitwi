@@ -221,6 +221,7 @@ int init_thread_sync_data(struct thread_sync_data * tsd,
   if(tsd->mtx == NULL)
     goto err_exit;
 
+#pragma warning(suppress: 28125)
   Curl_mutex_init(tsd->mtx);
 
   tsd->sock_error = CURL_ASYNC_SUCCESS;

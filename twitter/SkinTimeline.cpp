@@ -703,14 +703,14 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 						xOffset += oneImageWidth;
 
-						UINT uiIndex = 0;
-						pColumnRects->AddRect(CRect(x, y, x + width, y + height), &uiIndex);
-						pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_IMAGE));
-						pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, L"");
-						pColumnRects->SetRectStringProp(uiIndex, VAR_VALUE, vMediaUrlThumb.bstrVal);
-						pColumnRects->SetRectStringProp(uiIndex, VAR_TWITTER_MEDIAURL, vMediaUrl.bstrVal);
-						pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_IMAGE, TRUE);
-						pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
+						UINT uiIndexRect = 0;
+						pColumnRects->AddRect(CRect(x, y, x + width, y + height), &uiIndexRect);
+						pColumnRects->SetRectStringProp(uiIndexRect, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_IMAGE));
+						pColumnRects->SetRectStringProp(uiIndexRect, VAR_TEXT, L"");
+						pColumnRects->SetRectStringProp(uiIndexRect, VAR_VALUE, vMediaUrlThumb.bstrVal);
+						pColumnRects->SetRectStringProp(uiIndexRect, VAR_TWITTER_MEDIAURL, vMediaUrl.bstrVal);
+						pColumnRects->SetRectBoolProp(uiIndexRect, VAR_IS_IMAGE, TRUE);
+						pColumnRects->SetRectBoolProp(uiIndexRect, VAR_IS_URL, TRUE);
 					}
 
 					lastY += lastHeight;
