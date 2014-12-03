@@ -46,7 +46,6 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_PRINTCLIENT, OnPrintClient)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
-		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
@@ -73,8 +72,6 @@ private:
 	CRect m_rectUserImage;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
-	CButton m_buttonFollow;
-	const CSize m_buttonSize = { 75, 25 };
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -83,10 +80,9 @@ private:
 	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void StartAnimation();
-	void AdjustSizes();
+
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);
 	STDMETHOD(CreateEx)(HWND hWndParent, HWND *hWnd);

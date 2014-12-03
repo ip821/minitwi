@@ -34,12 +34,9 @@ LRESULT CSkinCommonControl::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
 {
 	if (Msg == WM_ERASEBKGND && m_procs.find(hWnd) != m_procs.end() && !m_procs[hWnd].isParent)
 	{
-		if (m_procs[hWnd].controlType != ControlType::Button)
-		{
-			CRect rect;
-			GetClientRect(hWnd, &rect);
-			::FillRect((HDC)wParam, &rect, m_bkColor);
-		}
+		CRect rect;
+		GetClientRect(hWnd, &rect);
+		::FillRect((HDC)wParam, &rect, m_bkColor);
 		return 0;
 	}
 
@@ -55,13 +52,6 @@ LRESULT CSkinCommonControl::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM l
 		HDC hDC = (HDC)wParam;
 		SetBkMode(hDC, TRANSPARENT);
 		return (LRESULT)m_bkColor.m_hBrush;
-	}
-
-	if (Msg == WM_DRAWITEM && m_procs.find(hWnd) != m_procs.end())
-	{
-		auto lpdis = (LPDRAWITEMSTRUCT)lParam;
-		if (m_procs.find(lpdis->hwndItem) != m_procs.end() && m_procs[lpdis->hwndItem].controlType == ControlType::Button)
-			DrawButton(hWnd, lpdis);
 	}
 
 	return CallWindowProc((WNDPROC)m_procs[hWnd].pWndProc, hWnd, Msg, wParam, lParam);
@@ -126,9 +116,6 @@ STDMETHODIMP CSkinCommonControl::UnregisterStaticControl(HWND hWnd)
 
 STDMETHODIMP CSkinCommonControl::RegisterButtonControl(HWND hWnd)
 {
-	auto style = GetWindowLongPtr(hWnd, GWL_STYLE);
-	style |= BS_OWNERDRAW;
-	SetWindowLongPtr(hWnd, GWL_STYLE, style);
 	RegisterStaticControl(hWnd);
 	m_procs[hWnd].controlType = ControlType::Button;
 	return S_OK;
@@ -136,40 +123,7 @@ STDMETHODIMP CSkinCommonControl::RegisterButtonControl(HWND hWnd)
 
 STDMETHODIMP CSkinCommonControl::UnregisterButtonControl(HWND hWnd)
 {
-	auto style = GetWindowLongPtr(hWnd, GWL_STYLE);
-	style &= ~BS_OWNERDRAW;
-	SetWindowLongPtr(hWnd, GWL_STYLE, style);
 	UnregisterStaticControl(hWnd);
 	return S_OK;
 }
 
-void CSkinCommonControl::DrawButton(HWND hWndParent, LPDRAWITEMSTRUCT lpdis)
-{
-	ATLASSERT(lpdis->CtlType == ODT_BUTTON);
-	CDCHandle cdc(lpdis->hDC);
-	cdc.SetBkMode(TRANSPARENT);
-
-	auto colorRect = Color(ARGB(0x00569DE5)).ToCOLORREF();
-	auto colorText = GetSysColor(COLOR_BTNTEXT);
-
-	CPen penRect;
-	penRect.CreatePen(PS_COSMETIC | PS_SOLID, 1, colorRect);
-	cdc.SelectPen(penRect);
-	cdc.Rectangle(&lpdis->rcItem);
-
-	CBrush brushRect;
-	if ((lpdis->itemState & ODS_SELECTED) || (lpdis->itemState & ODS_CHECKED))
-	{
-		colorRect = Color(ARGB(0x00D4E8FC)).ToCOLORREF();
-		brushRect.CreateSolidBrush(colorRect);
-		cdc.SelectBrush(brushRect);
-		cdc.Rectangle(&lpdis->rcItem);
-	}
-
-	CWindow wndButton(lpdis->hwndItem);
-	CString strText;
-	wndButton.GetWindowText(strText);
-
-	cdc.SetTextColor(colorText);
-	cdc.DrawText(strText, strText.GetLength(), &lpdis->rcItem, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-}

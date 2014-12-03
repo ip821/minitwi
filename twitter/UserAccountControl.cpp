@@ -36,7 +36,6 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 STDMETHODIMP CUserAccountControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), dw_mAdviceDownloadService));
-	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterButtonControl(m_buttonFollow.m_hWnd));
 
 	m_pTheme.Release();
 	m_pSkinCommonControl.Release();
@@ -62,26 +61,7 @@ STDMETHODIMP CUserAccountControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
 	CHECK_E_POINTER(hWnd);
 	*hWnd = Create(hWndParent);
-	m_buttonFollow.Create(m_hWnd, 0, 0, WS_CHILD | BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_VISIBLE);
-	m_buttonFollow.SetWindowText(L"Follow");
-	m_buttonFollow.BringWindowToTop();
-	m_buttonFollow.SetFont(static_cast<HFONT>(GetStockObject(DEFAULT_GUI_FONT)));
-	AdjustSizes();
 	return S_OK;
-}
-
-void CUserAccountControl::AdjustSizes()
-{
-	CRect clientRect;
-	GetClientRect(&clientRect);
-	CRect rect(CPoint(clientRect.right - m_buttonSize.cx - OFFSET_X, clientRect.bottom - m_buttonSize.cy - OFFSET_Y), m_buttonSize);
-	::SetWindowPos(m_buttonFollow, 0, rect.left, rect.top, rect.Width(), rect.Height(), SWP_SHOWWINDOW);
-}
-
-LRESULT CUserAccountControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	AdjustSizes();
-	return 0;
 }
 
 STDMETHODIMP CUserAccountControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
@@ -103,7 +83,6 @@ STDMETHODIMP CUserAccountControl::SetTheme(ITheme* pTheme)
 	RETURN_IF_FAILED(m_pTheme->GetSkinUserAccountControl(&m_pSkinUserAccountControl));
 	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
 	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
-	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterButtonControl(m_buttonFollow.m_hWnd));
 	return S_OK;
 }
 
