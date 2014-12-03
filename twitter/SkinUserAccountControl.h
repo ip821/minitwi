@@ -49,7 +49,7 @@ public:
 	STDMETHOD(AnimationStart)();
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);
-	STDMETHOD(GetColumnRect)(BSTR bstrColumnName, RECT* pRect);
+	STDMETHOD(Measure)(IColumnRects* pColumnRects);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinUserAccountControl), CSkinUserAccountControl)

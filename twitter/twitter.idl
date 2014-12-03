@@ -107,6 +107,7 @@ interface IColumnRects : IUnknown
 {
 	HRESULT AddRect(RECT rect, UINT* puiIndex);
 	HRESULT GetRect(UINT uiIndex, RECT* rect);
+	HRESULT SetRect(UINT uiIndex, RECT rect);
 	HRESULT GetCount(UINT* puiCount);
 	HRESULT Clear();
 	HRESULT SetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue);
@@ -198,7 +199,7 @@ interface ISkinUserAccountControl : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
 	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
-	HRESULT GetColumnRect(BSTR bstrColumnName, RECT* pRect);
+	HRESULT Measure(IColumnRects* pColumnRects);
 	HRESULT AnimationStart();
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);

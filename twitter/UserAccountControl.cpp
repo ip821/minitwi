@@ -116,7 +116,10 @@ LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	CDC cdc(ps.hdc);
 
 	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Draw(cdc, &rect, m_pVariantObject));
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->GetColumnRect(VAR_TWITTER_USER_IMAGE, &m_rectUserImage));
+	CComPtr<IColumnRects> pColumnRects;
+	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ColumnRects, &pColumnRects));
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(pColumnRects));
+	ASSERT_IF_FAILED(pColumnRects->GetRect(0, &m_rectUserImage));
 
 	EndPaint(&ps);
 	return 0;

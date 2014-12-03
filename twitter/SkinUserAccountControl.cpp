@@ -263,12 +263,11 @@ STDMETHODIMP CSkinUserAccountControl::AnimationNextFrame(BOOL* pbContinueAnimati
 	return 0;
 }
 
-STDMETHODIMP CSkinUserAccountControl::GetColumnRect(BSTR bstrColumnName, RECT* pRect)
+STDMETHODIMP CSkinUserAccountControl::Measure(IColumnRects* pColumnRects)
 {
-	CHECK_E_POINTER(bstrColumnName);
-	CHECK_E_POINTER(pRect);
-	if (CComBSTR(bstrColumnName) != CComBSTR(VAR_TWITTER_USER_IMAGE))
-		return E_INVALIDARG;
-	*pRect = m_rectUserImage;
+	CHECK_E_POINTER(pColumnRects);
+	UINT uiIndex = 0;
+	RETURN_IF_FAILED(pColumnRects->AddRect(m_rectUserImage, &uiIndex));
+	RETURN_IF_FAILED(pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
 	return S_OK;
 }

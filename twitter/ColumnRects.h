@@ -39,6 +39,7 @@ public:
 	STDMETHOD(GetRectBoolProp)(UINT uiIndex, BSTR bstrKey, BOOL* pbValue);
 	STDMETHOD(Clear)();
 	STDMETHOD(GetRect)(UINT uiIndex, RECT* rect);
+	STDMETHOD(SetRect)(UINT uiIndex, RECT rect);
 	STDMETHOD(GetCount)(UINT* puiCount);
 	STDMETHOD(IsDisabledSelection)(BOOL* pbDisabled);
 	STDMETHOD(DisableSelection)(BOOL bDisabled);

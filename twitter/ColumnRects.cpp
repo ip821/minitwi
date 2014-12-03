@@ -21,6 +21,12 @@ STDMETHODIMP CColumnRects::GetRect(UINT uiIndex, RECT* rect)
 	return S_OK;
 }
 
+STDMETHODIMP CColumnRects::SetRect(UINT uiIndex, RECT rect)
+{
+	m_rects[uiIndex] = rect;
+	return S_OK;
+}
+
 STDMETHODIMP CColumnRects::GetCount(UINT* puiCount)
 {
 	*puiCount = m_rects.size();
