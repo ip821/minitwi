@@ -136,11 +136,12 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 {
 	CComVariant vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
+	ATLENSURE(vUrl.vt == VT_BSTR);
 	if (vUrl.vt == VT_BSTR)
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		wstring strUrl(vUrl.bstrVal);
-		ATLASSERT(m_urls.size());
+		ATLENSURE(m_urls.size());
 		m_urls.erase(strUrl);
 	}
 

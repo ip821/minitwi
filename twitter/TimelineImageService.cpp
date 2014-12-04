@@ -196,7 +196,7 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 
 				BOOL bContains = TRUE;
 				CComBSTR bstrImageKey(url.c_str());
-				m_pImageManagerService->ContainsImageKey(bstrImageKey, &bContains);
+				ASSERT_IF_FAILED(m_pImageManagerService->ContainsImageKey(bstrImageKey, &bContains));
 				if (urls.find(url) == urls.end() && !bContains)
 				{
 					CComPtr<IVariantObject> pDownloadTask;
