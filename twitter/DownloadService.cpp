@@ -166,12 +166,14 @@ STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_URL, &vUrl));
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
+		ATLENSURE(vUrl.vt == VT_BSTR);
 		if (vUrl.vt == VT_BSTR)
 		{
 			wstring strUrl(vUrl.bstrVal);
 			if (m_urls.find(strUrl) != m_urls.end())
 				return S_OK;
-			m_urls.insert(strUrl);
+			auto result = m_urls.insert(strUrl);
+			ATLENSURE(result.second);
 		}
 	}
 	RETURN_IF_FAILED(m_pThreadPoolService->AddTask(pVariantObject));
