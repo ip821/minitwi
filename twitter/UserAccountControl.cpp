@@ -7,11 +7,13 @@
 
 HRESULT CUserAccountControl::FinalConstruct()
 {
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnRects, &m_pColumnRects));
 	return S_OK;
 }
 
 void CUserAccountControl::FinalRelease()
 {
+	m_pColumnRects.Release();
 	if (m_hWnd)
 		DestroyWindow();
 }
@@ -73,6 +75,7 @@ STDMETHODIMP CUserAccountControl::SetVariantObject(IVariantObject *pVariantObjec
 {
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
+	UpdateRects();
 	return S_OK;
 }
 
@@ -83,6 +86,7 @@ STDMETHODIMP CUserAccountControl::SetTheme(ITheme* pTheme)
 	RETURN_IF_FAILED(m_pTheme->GetSkinUserAccountControl(&m_pSkinUserAccountControl));
 	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
 	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
+	UpdateRects();
 	return S_OK;
 }
 
@@ -116,13 +120,40 @@ LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	CDC cdc(ps.hdc);
 
 	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Draw(cdc, &rect, m_pVariantObject));
-	CComPtr<IColumnRects> pColumnRects;
-	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ColumnRects, &pColumnRects));
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(pColumnRects));
-	ASSERT_IF_FAILED(pColumnRects->GetRect(0, &m_rectUserImage));
-
 	EndPaint(&ps);
 	return 0;
+}
+
+LRESULT CUserAccountControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	UpdateRects();
+	return 0;
+}
+
+void CUserAccountControl::UpdateRects()
+{
+	m_rectUserImage.SetRectEmpty();
+	m_pColumnRects->Clear();
+
+	if (!m_pSkinUserAccountControl || !m_pVariantObject)
+		return;
+
+	CRect rect;
+	GetClientRect(&rect);
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(m_hWnd, &rect, m_pColumnRects, m_pVariantObject));
+
+	UINT uiCount = 0;
+	ASSERT_IF_FAILED(m_pColumnRects->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComBSTR bstrColumnName;
+		ASSERT_IF_FAILED(m_pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
+		if (bstrColumnName == CComBSTR(VAR_TWITTER_USER_IMAGE))
+		{
+			ASSERT_IF_FAILED(m_pColumnRects->GetRect(i, &m_rectUserImage));
+			break;
+		}
+	}
 }
 
 STDMETHODIMP CUserAccountControl::OnActivate()

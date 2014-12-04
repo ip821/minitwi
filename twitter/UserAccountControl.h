@@ -49,6 +49,7 @@ public:
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
 	END_MSG_MAP()
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -66,6 +67,7 @@ private:
 	CComPtr<IWindowService> m_pWindowService;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
+	CComPtr<IColumnRects> m_pColumnRects;
 
 	DWORD dw_mAdviceDownloadService = 0;
 	CComBSTR m_bstrBannerUrl;
@@ -80,8 +82,10 @@ private:
 	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void StartAnimation();
+	void UpdateRects();
 
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);
