@@ -250,10 +250,23 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 				}
 			}
 		}
+
+		UINT uiCurrentTopIndex = 0;
+		RETURN_IF_FAILED(m_pTimelineControl->GetTopVisibleItemIndex(&uiCurrentTopIndex));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
 		if (insertIndex)
 		{
 			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(insertIndex));
+		}
+		else
+		{
+			UINT uiCount = 0;
+			RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+			if (uiCurrentTopIndex)
+			{
+				uiCurrentTopIndex += uiCount;
+			}
+			RETURN_IF_FAILED(m_pTimelineControl->ScrollToItem(uiCurrentTopIndex));
 		}
 	}
 
