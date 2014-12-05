@@ -264,9 +264,10 @@ STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumns
 	CRect rectUserImage;
 	RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, nullptr, nullptr, &rectUserImage));
 
-	UINT uiIndex = 0;
-	RETURN_IF_FAILED(pColumnsInfo->AddRect(rectUserImage, &uiIndex));
-	RETURN_IF_FAILED(pColumnsInfo->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectUserImage));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
 	return S_OK;
 }
 

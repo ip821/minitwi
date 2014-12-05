@@ -101,7 +101,6 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 
 	CRect rectHomeColumn;
 	{
-		UINT uiIndex = 0;
 		auto x = PADDING_X;
 		auto y = PADDING_Y;
 		rectHomeColumn = CRect(x, y, x + (int)m_pBitmapHome->GetWidth(), y + (int)m_pBitmapHome->GetHeight());
@@ -115,14 +114,15 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
 		rectHomeColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
 
-		RETURN_IF_FAILED(pColumnsInfo->AddRect(rectHomeColumn, &uiIndex));
-		RETURN_IF_FAILED(pColumnsInfo->SetRectStringProp(uiIndex, VAR_TEXT, bstr));
-		RETURN_IF_FAILED(pColumnsInfo->SetRectBoolProp(0, VAR_TAB_HEADER_SELECTED, FALSE));
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectHomeColumn));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
 	}
 
 	CRect rectSearchColumn;
 	{
-		UINT uiIndex = 0;
 		auto x = rectHomeColumn.right + PADDING_X;
 		auto y = PADDING_Y;
 		rectSearchColumn = CRect(x, y, x + (int)m_pBitmapSettings->GetWidth(), y + (int)m_pBitmapSettings->GetHeight());
@@ -136,13 +136,14 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
 		rectSearchColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
 
-		RETURN_IF_FAILED(pColumnsInfo->AddRect(rectSearchColumn, &uiIndex));
-		RETURN_IF_FAILED(pColumnsInfo->SetRectStringProp(uiIndex, VAR_TEXT, bstr));
-		RETURN_IF_FAILED(pColumnsInfo->SetRectBoolProp(1, VAR_TAB_HEADER_SELECTED, FALSE));
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectSearchColumn));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
 	}
 
 	{
-		UINT uiIndex = 0;
 		auto x = rectSearchColumn.right + PADDING_X;
 		auto y = PADDING_Y;
 		CRect rect = { x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight() };
@@ -156,9 +157,11 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
 		rect.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
 
-		RETURN_IF_FAILED(pColumnsInfo->AddRect(rect, &uiIndex));
-		RETURN_IF_FAILED(pColumnsInfo->SetRectStringProp(uiIndex, VAR_TEXT, bstr));
-		RETURN_IF_FAILED(pColumnsInfo->SetRectBoolProp(1, VAR_TAB_HEADER_SELECTED, FALSE));
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rect));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
 	}
 
 	m_rectHeader = clientRect;
@@ -216,8 +219,11 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 
 	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+
 		CRect rect;
-		RETURN_IF_FAILED(pColumnsInfo->GetRect(i, &rect));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
 
 		UINT imageWidth = 0;
 		UINT imageHeight = 0;
@@ -253,7 +259,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 		TransparentBlt(cdc, x, y, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
 
 		CComBSTR bstr;
-		pColumnsInfo->GetRectStringProp(i, VAR_TEXT, &bstr);
+		pColumnsInfoItem->GetRectStringProp(VAR_TEXT, &bstr);
 
 		HFONT font = 0;
 		m_pThemeFontMap->GetFont(CComBSTR(VAR_TAB_HEADER), &font);

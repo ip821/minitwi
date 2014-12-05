@@ -224,13 +224,16 @@ LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 	if (pNm->dwCurrentColumn == CCustomListBox::INVALID_COLUMN_INDEX)
 		return 0;
 
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
+
 	BOOL bIsUrl = FALSE;
-	pNm->pColumnsInfo->GetRectBoolProp(pNm->dwCurrentColumn, VAR_IS_URL, &bIsUrl);
+	ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_URL, &bIsUrl));
 
 	if (bIsUrl)
 	{
 		CComBSTR bstrColumnName;
-		pNm->pColumnsInfo->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 		ASSERT_IF_FAILED(Fire_OnColumnClick(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnsInfo, pNm->pVariantObject));
 	}
 
@@ -252,8 +255,10 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		CComQIPtr<IInitializeWithColumnName> pInitializeWithColumnName = m_pCommandSupport;
 		if (pInitializeWithColumnName)
 		{
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
 			CComBSTR bstrColumnName;
-			pNm->pColumnsInfo->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+			pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName);
 			ASSERT_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
 		}
 	}

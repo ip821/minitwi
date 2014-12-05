@@ -156,12 +156,14 @@ void CCustomListBox::OnItemsUpdated()
 			ASSERT_IF_FAILED(m_columnsInfo[i]->GetCount(&uiColumnCount));
 			for (size_t j = 0; j < uiColumnCount; j++)
 			{
+				CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+				ASSERT_IF_FAILED(m_columnsInfo[i]->GetItem(j, &pColumnsInfoItem));
 				CComBSTR bstrColumnName;
-				ASSERT_IF_FAILED(m_columnsInfo[i]->GetRectStringProp(j, VAR_COLUMN_NAME, &bstrColumnName));
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 				if (bstrColumnName == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
 				{
-					ASSERT_IF_FAILED(m_columnsInfo[i]->SetRectStringProp(j, VAR_TEXT, v.bstrVal));
-					ASSERT_IF_FAILED(m_columnsInfo[i]->SetRectStringProp(j, VAR_VALUE, v.bstrVal));
+					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, v.bstrVal));
+					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, v.bstrVal));
 				}
 			}
 		}
@@ -196,13 +198,16 @@ void CCustomListBox::UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemI
 	ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		ASSERT_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+
 		BOOL bImage = FALSE;
-		ASSERT_IF_FAILED(pColumnsInfo->GetRectBoolProp(i, VAR_IS_IMAGE, &bImage));
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_IMAGE, &bImage));
 		if (!bImage)
 			continue;
 
 		CComBSTR bstrValue;
-		ASSERT_IF_FAILED(pColumnsInfo->GetRectStringProp(i, VAR_VALUE, &bstrValue));
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstrValue));
 
 		BOOL bContains = FALSE;
 		ASSERT_IF_FAILED(pImageManagerService->ContainsImageKey(bstrValue, &bContains));
@@ -250,15 +255,17 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 		for (int i = 0; i < (int)uiCount; i++)
 		{
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 			CRect rect;
-			ASSERT_IF_FAILED(pColumnsInfo->GetRect(i, &rect));
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
 			rect.top += itemRect.top;
 			rect.bottom += itemRect.top;
 
 			if (rect.PtInRect(CPoint(x, y)))
 			{
 				BOOL bIsUrl = FALSE;
-				ASSERT_IF_FAILED(pColumnsInfo->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl));
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_URL, &bIsUrl));
 
 				if (bIsUrl)
 				{
@@ -294,15 +301,19 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 		for (int i = 0; i < (int)uiCount; i++)
 		{
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+
 			CRect rect;
-			ASSERT_IF_FAILED(pColumnsInfo->GetRect(i, &rect));
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
+
 			rect.top += itemRect.top;
 			rect.bottom += itemRect.top;
 
 			if (rect.PtInRect(point) && (i != m_HoveredColumnIndex || uiItem != m_HoveredItemIndex))
 			{
 				BOOL bIsUrl = FALSE;
-				ASSERT_IF_FAILED(pColumnsInfo->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl));
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_URL, &bIsUrl));
 
 				if (bIsUrl)
 				{
@@ -334,16 +345,18 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 				ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 				for (size_t i = 0; i < uiCount; i++)
 				{
+					CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+					RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 					CComBSTR bstrColumnName;
-					ASSERT_IF_FAILED(pColumnsInfo->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
+					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 					CComBSTR bstrMediaUrl;
-					ASSERT_IF_FAILED(pColumnsInfo->GetRectStringProp(i, VAR_TWITTER_MEDIAURL, &bstrMediaUrl));
+					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_TWITTER_MEDIAURL, &bstrMediaUrl));
 					if (bstrColumnName == CComBSTR(VAR_TWITTER_IMAGE) && bstrMediaUrl != CComBSTR(L""))
 					{
 						CRect itemRect;
 						GetItemRect(curSel, &itemRect);
 						CRect columnRect;
-						ASSERT_IF_FAILED(pColumnsInfo->GetRect(i, columnRect));
+						ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(columnRect));
 						HandleCLick(MAKELONG(itemRect.left + columnRect.left + 1, itemRect.top + columnRect.top + 1), NM_LISTBOX_LCLICK);
 						bHandled = TRUE;
 						break;
@@ -405,8 +418,11 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 
 	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		ASSERT_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+
 		CRect rect;
-		ASSERT_IF_FAILED(pColumnsInfo->GetRect(i, &rect));
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
 		rect.top += itemRect.top;
 		rect.bottom += itemRect.top;
 

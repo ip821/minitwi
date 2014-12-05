@@ -146,11 +146,14 @@ void CUserAccountControl::UpdateRects()
 	ASSERT_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+
 		CComBSTR bstrColumnName;
-		ASSERT_IF_FAILED(m_pColumnsInfo->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 		if (bstrColumnName == CComBSTR(VAR_TWITTER_USER_IMAGE))
 		{
-			ASSERT_IF_FAILED(m_pColumnsInfo->GetRect(i, &m_rectUserImage));
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect( &m_rectUserImage));
 			break;
 		}
 	}

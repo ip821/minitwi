@@ -259,6 +259,9 @@
     <ClCompile Include="ColumnsInfo.cpp">
       <Filter>Controls\TimelineControl\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="ColumnsInfoItem.cpp">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -424,6 +427,9 @@
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
     <ClInclude Include="ColumnsInfo.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ColumnsInfoItem.h">
       <Filter>Controls\TimelineControl\Controls</Filter>
     </ClInclude>
   </ItemGroup>

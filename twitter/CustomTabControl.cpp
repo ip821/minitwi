@@ -523,8 +523,10 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 		m_pColumnsInfo->GetCount(&uiCount);
 		for (size_t i = 0; i < uiCount; i++)
 		{
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 			CRect rect;
-			m_pColumnsInfo->GetRect(i, &rect);
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
 			if (rect.PtInRect(CPoint(x, y)))
 			{
 				CComPtr<IControl> pControl;

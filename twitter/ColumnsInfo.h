@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 
 using namespace ATL;
+using namespace std;
 
 // CColumnRects
 
@@ -25,22 +26,14 @@ public:
 	END_COM_MAP()
 
 private:
-	std::vector<CRect> m_rects;
-	std::vector< std::map<CString, CString> > m_rectStringProps;
-	std::vector< std::map<CString, BOOL> > m_rectBoolProps;
+	vector<CAdapt<CComPtr<IColumnsInfoItem>>> m_pItems;
 	BOOL m_bDisabledSelection = FALSE;
 
 public:
-
-	STDMETHOD(AddRect)(RECT rect, UINT* puiIndex);
-	STDMETHOD(SetRectStringProp)(UINT uiIndex, BSTR bstrKey, BSTR bstrValue);
-	STDMETHOD(GetRectStringProp)(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue);
-	STDMETHOD(SetRectBoolProp)(UINT uiIndex, BSTR bstrKey, BOOL bValue);
-	STDMETHOD(GetRectBoolProp)(UINT uiIndex, BSTR bstrKey, BOOL* pbValue);
-	STDMETHOD(Clear)();
-	STDMETHOD(GetRect)(UINT uiIndex, RECT* rect);
-	STDMETHOD(SetRect)(UINT uiIndex, RECT rect);
+	STDMETHOD(AddItem)(IColumnsInfoItem** ppColumnsInfoItem);
+	STDMETHOD(GetItem)(UINT uiIndex, IColumnsInfoItem** ppColumnsInfoItem);
 	STDMETHOD(GetCount)(UINT* puiCount);
+	STDMETHOD(Clear)();
 	STDMETHOD(IsDisabledSelection)(BOOL* pbDisabled);
 	STDMETHOD(DisableSelection)(BOOL bDisabled);
 };

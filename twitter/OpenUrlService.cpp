@@ -177,6 +177,9 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 	CHECK_E_POINTER(bstrColumnName);
 	CHECK_E_POINTER(pVariantObject);
 
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	RETURN_IF_FAILED(pColumnsInfo->GetItem(dwColumnIndex, &pColumnsInfoItem));
+
 	CString strUrl;
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME) ||
 		CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_NAME))
@@ -209,14 +212,14 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_URL))
 	{
 		CComBSTR bstr;
-		RETURN_IF_FAILED(pColumnsInfo->GetRectStringProp(dwColumnIndex, VAR_VALUE, &bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstr));
 		strUrl = bstr;
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_IMAGE))
 	{
 		CComBSTR bstr;
-		RETURN_IF_FAILED(pColumnsInfo->GetRectStringProp(dwColumnIndex, VAR_VALUE, &bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstr));
 		CString strUrl(bstr);
 		strUrl.Replace(L"_normal", L"");
 
@@ -231,7 +234,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnI
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_IMAGE))
 	{
 		CComBSTR bstr;
-		RETURN_IF_FAILED(pColumnsInfo->GetRectStringProp(dwColumnIndex, VAR_TWITTER_MEDIAURL, &bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_TWITTER_MEDIAURL, &bstr));
 
 		CComPtr<IVariantObject> pUrlObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));

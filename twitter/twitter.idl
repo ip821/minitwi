@@ -99,21 +99,33 @@ interface IThemeFontMap : IUnknown
 
 [
 	object,
+	uuid(B204A899-A54F-4F36-A8E4-56A3DDF71E66),
+	pointer_default(unique),
+	local
+]
+interface IColumnsInfoItem : IUnknown
+{
+	HRESULT GetRect(RECT* rect);
+	HRESULT SetRect(RECT rect);
+	HRESULT SetRectStringProp(BSTR bstrKey, BSTR bstrValue);
+	HRESULT GetRectStringProp(BSTR bstrKey, BSTR* bstrValue);
+	HRESULT SetRectBoolProp(BSTR bstrKey, BOOL bValue);
+	HRESULT GetRectBoolProp(BSTR bstrKey, BOOL* pbValue);
+	HRESULT Clear();
+};
+
+[
+	object,
 	uuid(2EC751CC-D4F3-4B3B-B0C7-862916A085FC),
 	pointer_default(unique),
 	local
 ]
 interface IColumnsInfo : IUnknown
 {
-	HRESULT AddRect(RECT rect, UINT* puiIndex);
-	HRESULT GetRect(UINT uiIndex, RECT* rect);
-	HRESULT SetRect(UINT uiIndex, RECT rect);
+	HRESULT AddItem(IColumnsInfoItem** ppColumnsInfoItem);
+	HRESULT GetItem(UINT uiIndex, IColumnsInfoItem** ppColumnsInfoItem);
 	HRESULT GetCount(UINT* puiCount);
 	HRESULT Clear();
-	HRESULT SetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue);
-	HRESULT GetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue);
-	HRESULT SetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL bValue);
-	HRESULT GetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL* pbValue);
 	HRESULT IsDisabledSelection(BOOL* pbDisabled);
 	HRESULT DisableSelection(BOOL bDisabled);
 };
@@ -808,6 +820,13 @@ library twitterLib
 	coclass TimelineRelativeTimeService
 	{
 		[default] interface ITimelineRelativeTimeService;
+	};
+	[
+		uuid(92F9FBB1-0F78-4B66-A783-0A891F3CC9F8)
+	]
+	coclass ColumnsInfoItem
+	{
+		[default] interface IColumnsInfoItem;
 	};
 };
 
