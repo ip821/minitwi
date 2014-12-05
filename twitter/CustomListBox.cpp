@@ -34,12 +34,12 @@ void CCustomListBox::Clear()
 		nm.nmhdr.idFrom = nID;
 		nm.nmhdr.code = NM_ITEM_REMOVED;
 		nm.pVariantObject = pVariantObject.p;
-		nm.pColumnRects = m_columnRects[i].m_T;
+		nm.pColumnsInfo = m_columnsInfo[i].m_T;
 		::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 	}
 	ResetContent();
 	ASSERT_IF_FAILED(m_pItems->Clear());
-	m_columnRects.clear();
+	m_columnsInfo.clear();
 	m_animatedColumns.clear();
 }
 
@@ -57,11 +57,11 @@ void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
 	nm.nmhdr.idFrom = nID;
 	nm.nmhdr.code = NM_ITEM_REMOVED;
 	nm.pVariantObject = pVariantObject.p;
-	nm.pColumnRects = m_columnRects[uiIndex].m_T;
+	nm.pColumnsInfo = m_columnsInfo[uiIndex].m_T;
 	::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 
 	ASSERT_IF_FAILED(m_pItems->RemoveObjectAt(uiIndex));
-	m_columnRects.erase(m_columnRects.begin() + uiIndex);
+	m_columnsInfo.erase(m_columnsInfo.begin() + uiIndex);
 
 	CComVariant vId;
 	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
@@ -116,14 +116,14 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 	distl.iHoveredColumn = m_HoveredColumnIndex;
 	distl.puiNotAnimatedColumnIndexes = pui;
 	distl.uiNotAnimatedColumnIndexesCount = vIndexes.size();
-	ASSERT_IF_FAILED(m_pSkinTimeline->DrawItem(m_hWnd, m_columnRects[lpdi->itemID].m_T, &distl));
+	ASSERT_IF_FAILED(m_pSkinTimeline->DrawItem(m_hWnd, m_columnsInfo[lpdi->itemID].m_T, &distl));
 }
 
 void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	CComPtr<IVariantObject> pVariantObject;
 	ASSERT_IF_FAILED(m_pItems->GetAt(lpMeasureItemStruct->itemID, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-	ASSERT_IF_FAILED(m_pSkinTimeline->MeasureItem(m_hWnd, pVariantObject.p, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnRects[lpMeasureItemStruct->itemID].m_T));
+	ASSERT_IF_FAILED(m_pSkinTimeline->MeasureItem(m_hWnd, pVariantObject.p, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnsInfo[lpMeasureItemStruct->itemID].m_T));
 }
 
 void CCustomListBox::IsEmpty(BOOL* pbEmpty)
@@ -153,15 +153,15 @@ void CCustomListBox::OnItemsUpdated()
 		if (v.vt == VT_BSTR)
 		{
 			UINT uiColumnCount = 0;
-			ASSERT_IF_FAILED(m_columnRects[i]->GetCount(&uiColumnCount));
+			ASSERT_IF_FAILED(m_columnsInfo[i]->GetCount(&uiColumnCount));
 			for (size_t j = 0; j < uiColumnCount; j++)
 			{
 				CComBSTR bstrColumnName;
-				ASSERT_IF_FAILED(m_columnRects[i]->GetRectStringProp(j, VAR_COLUMN_NAME, &bstrColumnName));
+				ASSERT_IF_FAILED(m_columnsInfo[i]->GetRectStringProp(j, VAR_COLUMN_NAME, &bstrColumnName));
 				if (bstrColumnName == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
 				{
-					ASSERT_IF_FAILED(m_columnRects[i]->SetRectStringProp(j, VAR_TEXT, v.bstrVal));
-					ASSERT_IF_FAILED(m_columnRects[i]->SetRectStringProp(j, VAR_VALUE, v.bstrVal));
+					ASSERT_IF_FAILED(m_columnsInfo[i]->SetRectStringProp(j, VAR_TEXT, v.bstrVal));
+					ASSERT_IF_FAILED(m_columnsInfo[i]->SetRectStringProp(j, VAR_VALUE, v.bstrVal));
 				}
 			}
 		}
@@ -174,35 +174,35 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	ASSERT_IF_FAILED(pItemObject->GetVariantValue(VAR_ID, &vId));
 
 	m_pItems->InsertObject(pItemObject, index);
-	CComPtr<IColumnRects> pColumnRects;
-	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ColumnRects, &pColumnRects));
-	m_columnRects.insert(m_columnRects.begin() + index, pColumnRects);
+	CComPtr<IColumnsInfo> pColumnsInfo;
+	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &pColumnsInfo));
+	m_columnsInfo.insert(m_columnsInfo.begin() + index, pColumnsInfo);
 	SendMessage(LB_INSERTSTRING, index, (LPARAM)1);
 	
 	if (m_bEnableAnimation)
 	{
-		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, pColumnRects, INVALID_COLUMN_INDEX));
+		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, pColumnsInfo, INVALID_COLUMN_INDEX));
 	}
-	UpdateAnimatedColumns(pColumnRects, index, pItemObject, TRUE);
+	UpdateAnimatedColumns(pColumnsInfo, index, pItemObject, TRUE);
 	m_bAnimationNeeded = TRUE;
 }
 
-void CCustomListBox::UpdateAnimatedColumns(IColumnRects* pColumnRects, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation)
+void CCustomListBox::UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation)
 {
 	CComPtr<IImageManagerService> pImageManagerService;
 	ASSERT_IF_FAILED(m_pSkinTimeline->GetImageManagerService(&pImageManagerService));
 
 	UINT uiCount = 0;
-	ASSERT_IF_FAILED(pColumnRects->GetCount(&uiCount));
+	ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		BOOL bImage = FALSE;
-		ASSERT_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_IMAGE, &bImage));
+		ASSERT_IF_FAILED(pColumnsInfo->GetRectBoolProp(i, VAR_IS_IMAGE, &bImage));
 		if (!bImage)
 			continue;
 
 		CComBSTR bstrValue;
-		ASSERT_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_VALUE, &bstrValue));
+		ASSERT_IF_FAILED(pColumnsInfo->GetRectStringProp(i, VAR_VALUE, &bstrValue));
 
 		BOOL bContains = FALSE;
 		ASSERT_IF_FAILED(pImageManagerService->ContainsImageKey(bstrValue, &bContains));
@@ -216,7 +216,7 @@ void CCustomListBox::UpdateAnimatedColumns(IColumnRects* pColumnRects, int itemI
 		m_animatedColumns[pVariantObject].insert(i);
 		if (bRegisterForAnimation && m_bEnableAnimation)
 		{
-			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(itemIndex, pColumnRects, i));
+			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(itemIndex, pColumnsInfo, i));
 		}
 	}
 }
@@ -234,7 +234,7 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	m_HoveredItemIndex = INVALID_ITEM_INDEX;
 	m_HoveredColumnIndex = INVALID_COLUMN_INDEX;
 
-	if (m_columnRects.empty())
+	if (m_columnsInfo.empty())
 		goto Exit;
 
 	{ //Current point
@@ -245,20 +245,20 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		if (bOutside || uiItem == INVALID_ITEM_INDEX)
 			goto Exit;
 
-		CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
+		CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[uiItem];
 		UINT uiCount = 0;
-		ASSERT_IF_FAILED(pColumnRects->GetCount(&uiCount));
+		ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 		for (int i = 0; i < (int)uiCount; i++)
 		{
 			CRect rect;
-			ASSERT_IF_FAILED(pColumnRects->GetRect(i, &rect));
+			ASSERT_IF_FAILED(pColumnsInfo->GetRect(i, &rect));
 			rect.top += itemRect.top;
 			rect.bottom += itemRect.top;
 
 			if (rect.PtInRect(CPoint(x, y)))
 			{
 				BOOL bIsUrl = FALSE;
-				ASSERT_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl));
+				ASSERT_IF_FAILED(pColumnsInfo->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl));
 
 				if (bIsUrl)
 				{
@@ -289,20 +289,20 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 		if (bOutside || uiItem == INVALID_ITEM_INDEX)
 			goto Exit;
 
-		CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
+		CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[uiItem];
 		UINT uiCount = 0;
-		ASSERT_IF_FAILED(pColumnRects->GetCount(&uiCount));
+		ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 		for (int i = 0; i < (int)uiCount; i++)
 		{
 			CRect rect;
-			ASSERT_IF_FAILED(pColumnRects->GetRect(i, &rect));
+			ASSERT_IF_FAILED(pColumnsInfo->GetRect(i, &rect));
 			rect.top += itemRect.top;
 			rect.bottom += itemRect.top;
 
 			if (rect.PtInRect(point) && (i != m_HoveredColumnIndex || uiItem != m_HoveredItemIndex))
 			{
 				BOOL bIsUrl = FALSE;
-				ASSERT_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl));
+				ASSERT_IF_FAILED(pColumnsInfo->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl));
 
 				if (bIsUrl)
 				{
@@ -329,21 +329,21 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			auto keyControlState = GetKeyState(VK_CONTROL) & 0x8000;
 			if (keyControlState == 0)
 			{
-				CComPtr<IColumnRects> pColumnRects = m_columnRects[curSel];
+				CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[curSel];
 				UINT uiCount = 0;
-				ASSERT_IF_FAILED(pColumnRects->GetCount(&uiCount));
+				ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 				for (size_t i = 0; i < uiCount; i++)
 				{
 					CComBSTR bstrColumnName;
-					ASSERT_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
+					ASSERT_IF_FAILED(pColumnsInfo->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
 					CComBSTR bstrMediaUrl;
-					ASSERT_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_TWITTER_MEDIAURL, &bstrMediaUrl));
+					ASSERT_IF_FAILED(pColumnsInfo->GetRectStringProp(i, VAR_TWITTER_MEDIAURL, &bstrMediaUrl));
 					if (bstrColumnName == CComBSTR(VAR_TWITTER_IMAGE) && bstrMediaUrl != CComBSTR(L""))
 					{
 						CRect itemRect;
 						GetItemRect(curSel, &itemRect);
 						CRect columnRect;
-						ASSERT_IF_FAILED(pColumnRects->GetRect(i, columnRect));
+						ASSERT_IF_FAILED(pColumnsInfo->GetRect(i, columnRect));
 						HandleCLick(MAKELONG(itemRect.left + columnRect.left + 1, itemRect.top + columnRect.top + 1), NM_LISTBOX_LCLICK);
 						bHandled = TRUE;
 						break;
@@ -364,7 +364,7 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 {
-	if (!m_columnRects.size())
+	if (!m_columnsInfo.size())
 		return 0;
 	auto x = GET_X_LPARAM(lParam);
 	auto y = GET_Y_LPARAM(lParam);
@@ -379,7 +379,7 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	if (uiCode == NM_LISTBOX_RCLICK)
 		SetCurSel(uiItem);
 
-	CComPtr<IColumnRects> pColumnRects = m_columnRects[uiItem];
+	CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[uiItem];
 
 	auto nID = GetDlgCtrlID();
 
@@ -394,19 +394,19 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 	nm.nmhdr.idFrom = nID;
 	nm.nmhdr.code = uiCode;
 	nm.dwCurrentItem = uiItem;
-	nm.pColumnRects = pColumnRects;
+	nm.pColumnsInfo = pColumnsInfo;
 	nm.pVariantObject = pVariantObject.p;
 	nm.dwCurrentColumn = INVALID_COLUMN_INDEX;
 	nm.x = pt.x;
 	nm.y = pt.y;
 
 	UINT uiCount = 0;
-	ASSERT_IF_FAILED(pColumnRects->GetCount(&uiCount));
+	ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CRect rect;
-		ASSERT_IF_FAILED(pColumnRects->GetRect(i, &rect));
+		ASSERT_IF_FAILED(pColumnsInfo->GetRect(i, &rect));
 		rect.top += itemRect.top;
 		rect.bottom += itemRect.top;
 
@@ -546,7 +546,7 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 		GetItemRect(uiIndex, &rectItem);
 		CRect rectIntersect;
 		BOOL bIntersects = rectIntersect.IntersectRect(rectItem, rect);
-		UpdateAnimatedColumns(m_columnRects[uiIndex].m_T, uiIndex, pVariantObject, bIntersects);
+		UpdateAnimatedColumns(m_columnsInfo[uiIndex].m_T, uiIndex, pVariantObject, bIntersects);
 
 		if (bIntersects)
 			bNeedInvalidate = TRUE;

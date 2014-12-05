@@ -254,9 +254,9 @@ STDMETHODIMP CSkinUserAccountControl::AnimationNextFrame(BOOL* pbContinueAnimati
 	return 0;
 }
 
-STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
+STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject)
 {
-	CHECK_E_POINTER(pColumnRects);
+	CHECK_E_POINTER(pColumnsInfo);
 
 	CRect rect = *lpRect;
 	CClientDC cdc(hWnd);
@@ -265,8 +265,8 @@ STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumnR
 	RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, nullptr, nullptr, &rectUserImage));
 
 	UINT uiIndex = 0;
-	RETURN_IF_FAILED(pColumnRects->AddRect(rectUserImage, &uiIndex));
-	RETURN_IF_FAILED(pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
+	RETURN_IF_FAILED(pColumnsInfo->AddRect(rectUserImage, &uiIndex));
+	RETURN_IF_FAILED(pColumnsInfo->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
 	return S_OK;
 }
 

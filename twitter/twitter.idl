@@ -103,7 +103,7 @@ interface IThemeFontMap : IUnknown
 	pointer_default(unique),
 	local
 ]
-interface IColumnRects : IUnknown
+interface IColumnsInfo : IUnknown
 {
 	HRESULT AddRect(RECT rect, UINT* puiIndex);
 	HRESULT GetRect(UINT uiIndex, RECT* rect);
@@ -131,10 +131,10 @@ interface ISkinTimeline : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
 	
-	HRESULT DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdi);
-	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects);
+	HRESULT DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdi);
+	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
 
-	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnRects* pColumnRects, int iColumnIndex);
+	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfo* pColumnsInfo, int iColumnIndex);
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationGetIndexes(UINT* puiIndexArray, UINT* puiCount);
 	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);
@@ -147,7 +147,7 @@ interface ISkinTimeline : IUnknown
 ]
 interface ITimelineControlEventSink : IUnknown
 {
-	HRESULT OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	HRESULT OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
 	HRESULT OnItemDoubleClick(IVariantObject* pVariantObject);
 	HRESULT OnItemRemoved(IVariantObject* pItemObject);
 };
@@ -199,7 +199,7 @@ interface ISkinUserAccountControl : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
 	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
-	HRESULT Measure(HWND hWnd, LPRECT lpRect, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	HRESULT Measure(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
 	HRESULT AnimationStart();
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);
@@ -224,9 +224,9 @@ interface ISkinTabControl : IUnknown
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
-	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
+	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(HDC hdc);
-	HRESULT DrawHeader(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
+	HRESULT DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect, int selectedPageIndex);
 	HRESULT DrawAnimation(HDC hdc);
 	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
 	HRESULT GetInfoRect(RECT* pRect);
@@ -623,9 +623,9 @@ library twitterLib
 	[
 		uuid(89CA168E-8568-4653-9DCF-8DEB3CA21A37)		
 	]
-	coclass ColumnRects
+	coclass ColumnsInfo
 	{
-		[default] interface IColumnRects;
+		[default] interface IColumnsInfo;
 	};
 	[
 		uuid(07E747E2-451F-498F-B460-E46A44C5126C)

@@ -7,13 +7,13 @@
 
 HRESULT CUserAccountControl::FinalConstruct()
 {
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnRects, &m_pColumnRects));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	return S_OK;
 }
 
 void CUserAccountControl::FinalRelease()
 {
-	m_pColumnRects.Release();
+	m_pColumnsInfo.Release();
 	if (m_hWnd)
 		DestroyWindow();
 }
@@ -133,24 +133,24 @@ LRESULT CUserAccountControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 void CUserAccountControl::UpdateRects()
 {
 	m_rectUserImage.SetRectEmpty();
-	m_pColumnRects->Clear();
+	m_pColumnsInfo->Clear();
 
 	if (!m_pSkinUserAccountControl || !m_pVariantObject)
 		return;
 
 	CRect rect;
 	GetClientRect(&rect);
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(m_hWnd, &rect, m_pColumnRects, m_pVariantObject));
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(m_hWnd, &rect, m_pColumnsInfo, m_pVariantObject));
 
 	UINT uiCount = 0;
-	ASSERT_IF_FAILED(m_pColumnRects->GetCount(&uiCount));
+	ASSERT_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComBSTR bstrColumnName;
-		ASSERT_IF_FAILED(m_pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
+		ASSERT_IF_FAILED(m_pColumnsInfo->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
 		if (bstrColumnName == CComBSTR(VAR_TWITTER_USER_IMAGE))
 		{
-			ASSERT_IF_FAILED(m_pColumnRects->GetRect(i, &m_rectUserImage));
+			ASSERT_IF_FAILED(m_pColumnsInfo->GetRect(i, &m_rectUserImage));
 			break;
 		}
 	}

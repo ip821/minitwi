@@ -8,20 +8,20 @@ using namespace ATL;
 
 // CColumnRects
 
-class ATL_NO_VTABLE CColumnRects :
+class ATL_NO_VTABLE CColumnsInfo :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CColumnRects, &CLSID_ColumnRects>,
-	public IColumnRects
+	public CComCoClass<CColumnsInfo, &CLSID_ColumnsInfo>,
+	public IColumnsInfo
 {
 public:
-	CColumnRects()
+	CColumnsInfo()
 	{
 	}
 
 	DECLARE_REGISTRY_RESOURCEID(IDR_COLUMNRECTS)
 	
-	BEGIN_COM_MAP(CColumnRects)
-		COM_INTERFACE_ENTRY(IColumnRects)
+	BEGIN_COM_MAP(CColumnsInfo)
+		COM_INTERFACE_ENTRY(IColumnsInfo)
 	END_COM_MAP()
 
 private:
@@ -45,4 +45,4 @@ public:
 	STDMETHOD(DisableSelection)(BOOL bDisabled);
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(ColumnRects), CColumnRects)
+OBJECT_ENTRY_AUTO(__uuidof(ColumnsInfo), CColumnsInfo)

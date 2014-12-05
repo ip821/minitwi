@@ -58,7 +58,7 @@ public:
 	STDMETHOD(OnShutdown)();
 
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
-	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
 	STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject);
 
 	STDMETHOD(OnActivate)(IControl *pControl);

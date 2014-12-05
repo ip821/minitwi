@@ -67,7 +67,7 @@ private:
 	CComPtr<IWindowService> m_pWindowService;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
-	CComPtr<IColumnRects> m_pColumnRects;
+	CComPtr<IColumnsInfo> m_pColumnsInfo;
 
 	DWORD dw_mAdviceDownloadService = 0;
 	CComBSTR m_bstrBannerUrl;

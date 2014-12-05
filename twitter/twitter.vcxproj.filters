@@ -169,9 +169,6 @@
     <ClCompile Include="ThemeColorMap.cpp">
       <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
-    <ClCompile Include="ColumnRects.cpp">
-      <Filter>Controls\TimelineControl\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="ThemeFontMap.cpp">
       <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
@@ -259,6 +256,9 @@
     <ClCompile Include="TimelineRelativeTimeService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
+    <ClCompile Include="ColumnsInfo.cpp">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -323,9 +323,6 @@
     </ClInclude>
     <ClInclude Include="ThemeColorMap.h">
       <Filter>Services\SkinService\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="ColumnRects.h">
-      <Filter>Controls\TimelineControl\Controls</Filter>
     </ClInclude>
     <ClInclude Include="ThemeFontMap.h">
       <Filter>Services\SkinService\Default</Filter>
@@ -425,6 +422,9 @@
     </ClInclude>
     <ClInclude Include="TimelineRelativeTimeService.h">
       <Filter>Services\TimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="ColumnsInfo.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,12 +1,12 @@
-// ColumnRects.cpp : Implementation of CColumnRects
+// ColumnRects.cpp : Implementation of CColumnsInfo
 
 #include "stdafx.h"
-#include "ColumnRects.h"
+#include "ColumnsInfo.h"
 
 
-// CColumnRects
+// CColumnsInfo
 
-STDMETHODIMP CColumnRects::AddRect(RECT rect, UINT* puiIndex)
+STDMETHODIMP CColumnsInfo::AddRect(RECT rect, UINT* puiIndex)
 {
 	m_rects.push_back(rect);
 	m_rectStringProps.push_back(std::map<CString, CString>());
@@ -15,25 +15,25 @@ STDMETHODIMP CColumnRects::AddRect(RECT rect, UINT* puiIndex)
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::GetRect(UINT uiIndex, RECT* rect)
+STDMETHODIMP CColumnsInfo::GetRect(UINT uiIndex, RECT* rect)
 {
 	*rect = m_rects[uiIndex];
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::SetRect(UINT uiIndex, RECT rect)
+STDMETHODIMP CColumnsInfo::SetRect(UINT uiIndex, RECT rect)
 {
 	m_rects[uiIndex] = rect;
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::GetCount(UINT* puiCount)
+STDMETHODIMP CColumnsInfo::GetCount(UINT* puiCount)
 {
 	*puiCount = m_rects.size();
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::Clear()
+STDMETHODIMP CColumnsInfo::Clear()
 {
 	m_rects.clear();
 	m_rectBoolProps.clear();
@@ -41,37 +41,37 @@ STDMETHODIMP CColumnRects::Clear()
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::SetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue)
+STDMETHODIMP CColumnsInfo::SetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR bstrValue)
 {
 	m_rectStringProps[uiIndex][bstrKey] = bstrValue;
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::GetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue)
+STDMETHODIMP CColumnsInfo::GetRectStringProp(UINT uiIndex, BSTR bstrKey, BSTR* bstrValue)
 {
 	*bstrValue = CComBSTR(m_rectStringProps[uiIndex][bstrKey]).Detach();
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::SetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL bValue)
+STDMETHODIMP CColumnsInfo::SetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL bValue)
 {
 	m_rectBoolProps[uiIndex][bstrKey] = bValue;
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::GetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL* pbValue)
+STDMETHODIMP CColumnsInfo::GetRectBoolProp(UINT uiIndex, BSTR bstrKey, BOOL* pbValue)
 {
 	*pbValue = m_rectBoolProps[uiIndex][bstrKey];
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::IsDisabledSelection(BOOL* pbDisabled)
+STDMETHODIMP CColumnsInfo::IsDisabledSelection(BOOL* pbDisabled)
 {
 	*pbDisabled = m_bDisabledSelection;
 	return S_OK;
 }
 
-STDMETHODIMP CColumnRects::DisableSelection(BOOL bDisabled)
+STDMETHODIMP CColumnsInfo::DisableSelection(BOOL bDisabled)
 {
 	m_bDisabledSelection = bDisabled;
 	return S_OK;

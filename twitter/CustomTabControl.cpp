@@ -11,7 +11,7 @@ STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls);
-	HrCoCreateInstance(CLSID_ColumnRects, &m_pColumnRects);
+	HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo);
 	CRect rect;
 	*hWnd = __super::Create(hWndParent, rect, L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
 	m_wndScroll.Create(m_hWnd, rect, L"", WS_CHILD, WS_EX_COMPOSITED);
@@ -379,7 +379,7 @@ STDMETHODIMP CCustomTabControl::OnShutdown()
 	m_pServiceProvider.Release();
 	m_pSettings.Release();
 	m_pSkinTabControl.Release();
-	m_pColumnRects.Release();
+	m_pColumnsInfo.Release();
 	m_pControls.Release();
 	return S_OK;
 }
@@ -424,14 +424,14 @@ STDMETHODIMP CCustomTabControl::Save(ISettings* pSettings)
 void CCustomTabControl::UpdateChildControlAreaRect()
 {
 	m_rectChildControlArea.SetRectEmpty();
-	m_pColumnRects->Clear();
+	m_pColumnsInfo->Clear();
 	CComQIPtr<IObjArray> pObjArray = m_pControls;
 	UINT uiHeight = 0;
 	CRect clientRect;
 	GetClientRect(&clientRect);
 	if (m_pSkinTabControl)
 	{
-		m_pSkinTabControl->MeasureHeader(m_hWnd, pObjArray, m_pColumnRects, &clientRect, &uiHeight);
+		m_pSkinTabControl->MeasureHeader(m_hWnd, pObjArray, m_pColumnsInfo, &clientRect, &uiHeight);
 		m_pSkinTabControl->GetInfoRect(&m_rectInfoImage);
 	}
 
@@ -487,7 +487,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(m_pColumnRects, ps.hdc, ps.rcPaint, m_selectedPageIndex);
+	m_pSkinTabControl->DrawHeader(m_pColumnsInfo, ps.hdc, ps.rcPaint, m_selectedPageIndex);
 
 	if (m_cAnimationRefs > 0)
 		m_pSkinTabControl->DrawAnimation(ps.hdc);
@@ -520,11 +520,11 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	else
 	{
 		UINT uiCount = 0;
-		m_pColumnRects->GetCount(&uiCount);
+		m_pColumnsInfo->GetCount(&uiCount);
 		for (size_t i = 0; i < uiCount; i++)
 		{
 			CRect rect;
-			m_pColumnRects->GetRect(i, &rect);
+			m_pColumnsInfo->GetRect(i, &rect);
 			if (rect.PtInRect(CPoint(x, y)))
 			{
 				CComPtr<IControl> pControl;

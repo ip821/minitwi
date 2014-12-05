@@ -225,13 +225,13 @@ LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 		return 0;
 
 	BOOL bIsUrl = FALSE;
-	pNm->pColumnRects->GetRectBoolProp(pNm->dwCurrentColumn, VAR_IS_URL, &bIsUrl);
+	pNm->pColumnsInfo->GetRectBoolProp(pNm->dwCurrentColumn, VAR_IS_URL, &bIsUrl);
 
 	if (bIsUrl)
 	{
 		CComBSTR bstrColumnName;
-		pNm->pColumnRects->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
-		ASSERT_IF_FAILED(Fire_OnColumnClick(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnRects, pNm->pVariantObject));
+		pNm->pColumnsInfo->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+		ASSERT_IF_FAILED(Fire_OnColumnClick(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnsInfo, pNm->pVariantObject));
 	}
 
 	return 0;
@@ -253,7 +253,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		if (pInitializeWithColumnName)
 		{
 			CComBSTR bstrColumnName;
-			pNm->pColumnRects->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
+			pNm->pColumnsInfo->GetRectStringProp(pNm->dwCurrentColumn, VAR_COLUMN_NAME, &bstrColumnName);
 			ASSERT_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
 		}
 	}
@@ -336,7 +336,7 @@ HRESULT CTimelineControl::Fire_OnItemRemoved(IVariantObject *pItemObject)
 	return hr;
 }
 
-HRESULT CTimelineControl::Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
+HRESULT CTimelineControl::Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject)
 {
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -354,7 +354,7 @@ HRESULT CTimelineControl::Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 
 		if (pConnection)
 		{
-			hr = pConnection->OnColumnClick(bstrColumnName, dwColumnIndex, pColumnRects, pVariantObject);
+			hr = pConnection->OnColumnClick(bstrColumnName, dwColumnIndex, pColumnsInfo, pVariantObject);
 		}
 	}
 	return hr;

@@ -12,7 +12,7 @@ struct NMCOLUMNCLICK
 	NMHDR nmhdr;
 	int dwCurrentItem;
 	int dwCurrentColumn;
-	IColumnRects* pColumnRects;
+	IColumnsInfo* pColumnsInfo;
 	IVariantObject* pVariantObject;
 	int x;
 	int y;
@@ -21,7 +21,7 @@ struct NMCOLUMNCLICK
 struct NMITEMREMOVED
 {
 	NMHDR nmhdr;
-	IColumnRects* pColumnRects;
+	IColumnsInfo* pColumnsInfo;
 	IVariantObject* pVariantObject;
 };
 
@@ -52,7 +52,7 @@ public:
 
 private:
 	CComPtr<IObjCollection> m_pItems;
-	vector<CAdapt<CComPtr<IColumnRects>>> m_columnRects;
+	vector<CAdapt<CComPtr<IColumnsInfo>>> m_columnsInfo;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	int m_prevX = 0;
 	int m_prevY = 0;
@@ -68,7 +68,7 @@ private:
 	map<IVariantObject*, hash_set<int>> m_animatedColumns;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
-	void UpdateAnimatedColumns(IColumnRects* pColumnRects, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
+	void UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
 	void StartAnimation();
 
 public:

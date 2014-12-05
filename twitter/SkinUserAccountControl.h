@@ -49,7 +49,7 @@ public:
 	STDMETHOD(AnimationStart)();
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);
-	STDMETHOD(Measure)(HWND hWnd, LPRECT lpRect, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	STDMETHOD(Measure)(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinUserAccountControl), CSkinUserAccountControl)

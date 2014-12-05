@@ -9,7 +9,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_SkinTabControl, L"Tab control skin object"));
 	RETURN_IF_FAILED(AddObject(CLSID_SkinCommonControl, L"Common control skin object"));
 	RETURN_IF_FAILED(AddObject(CLSID_SkinUserAccountControl, L"User account control skin object"));
-	RETURN_IF_FAILED(AddObject(CLSID_ColumnRects, L"Column rects object"));
+	RETURN_IF_FAILED(AddObject(CLSID_ColumnsInfo, L"Columns info object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeColorMap, L"Color map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeFontMap, L"Font map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_PictureWindow, L"Picture window object"));
