@@ -172,13 +172,13 @@ STDMETHODIMP COpenUrlService::OnItemDoubleClick(IVariantObject* pVariantObject)
 	return S_OK;
 }
 
-STDMETHODIMP COpenUrlService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject)
+STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject)
 {
-	CHECK_E_POINTER(bstrColumnName);
 	CHECK_E_POINTER(pVariantObject);
+	CHECK_E_POINTER(pColumnsInfoItem);
 
-	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-	RETURN_IF_FAILED(pColumnsInfo->GetItem(dwColumnIndex, &pColumnsInfoItem));
+	CComBSTR bstrColumnName;
+	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 
 	CString strUrl;
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME) ||

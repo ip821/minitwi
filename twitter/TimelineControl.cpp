@@ -232,9 +232,7 @@ LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 
 	if (bIsUrl)
 	{
-		CComBSTR bstrColumnName;
-		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
-		ASSERT_IF_FAILED(Fire_OnColumnClick(bstrColumnName, pNm->dwCurrentColumn, pNm->pColumnsInfo, pNm->pVariantObject));
+		ASSERT_IF_FAILED(Fire_OnColumnClick(pColumnsInfoItem, pNm->pVariantObject));
 	}
 
 	return 0;
@@ -341,7 +339,7 @@ HRESULT CTimelineControl::Fire_OnItemRemoved(IVariantObject *pItemObject)
 	return hr;
 }
 
-HRESULT CTimelineControl::Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject)
+HRESULT CTimelineControl::Fire_OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject)
 {
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -359,7 +357,7 @@ HRESULT CTimelineControl::Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumn
 
 		if (pConnection)
 		{
-			hr = pConnection->OnColumnClick(bstrColumnName, dwColumnIndex, pColumnsInfo, pVariantObject);
+			hr = pConnection->OnColumnClick(pColumnsInfoItem, pVariantObject);
 		}
 	}
 	return hr;

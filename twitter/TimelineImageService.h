@@ -76,7 +76,7 @@ public:
 	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
 
 	STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject);
-	METHOD_EMPTY(STDMETHOD(OnColumnClick)(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject));
+	METHOD_EMPTY(STDMETHOD(OnColumnClick)(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject));
 	METHOD_EMPTY(STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject));
 
 	STDMETHOD(SetTimelineControl)(ITimelineControl* pTimelineControl);
