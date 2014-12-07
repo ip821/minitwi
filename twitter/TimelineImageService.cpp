@@ -39,6 +39,7 @@ STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProv
 
 STDMETHODIMP CTimelineImageService::OnShutdown()
 {
+	boost::lock_guard<boost::mutex> lock(m_mutex);
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
@@ -125,6 +126,16 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(TYPE_IMAGE))
 		return S_OK;
 
+	CComPtr<IImageManagerService> pImageManagerService;
+	CComPtr<ITimelineControl> pTimelineControl;
+	{
+		boost::lock_guard<boost::mutex> lock(m_mutex);
+		if (!m_pImageManagerService)
+			return S_OK;
+		pImageManagerService = m_pImageManagerService;
+		pTimelineControl = m_pTimelineControl;
+	}
+
 	CComVariant vId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
 	CComVariant vUrl;
@@ -135,7 +146,7 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ITEM_INDEX, &vItemIndex));
 
 	UINT uiCount = 0;
-	RETURN_IF_FAILED(m_pTimelineControl->GetItemsCount(&uiCount));
+	RETURN_IF_FAILED(pTimelineControl->GetItemsCount(&uiCount));
 
 	if (uiCount)
 	{
@@ -150,11 +161,11 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 				ResizeDownImage(pBitmap, TIMELINE_IMAGE_HEIGHT);
 				CBitmap bitmap;
 				pBitmap->GetHBITMAP(Color::Transparent, &bitmap.m_hBitmap);
-				RETURN_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(vUrl.bstrVal, bitmap));
+				RETURN_IF_FAILED(pImageManagerService->AddImageFromHBITMAP(vUrl.bstrVal, bitmap));
 			}
 			else
 			{
-				RETURN_IF_FAILED(m_pImageManagerService->AddImageFromFile(vUrl.bstrVal, vFilePath.bstrVal));
+				RETURN_IF_FAILED(pImageManagerService->AddImageFromFile(vUrl.bstrVal, vFilePath.bstrVal));
 			}
 			for (auto& item : it->second)
 			{
