@@ -739,7 +739,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfo* pColumnsInfo, int iColumnIndex)
+STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfoItem* pColumnsInfoItem, int iColumnIndex)
 {
 	map<UINT, AnimationItemData>::iterator it = m_steps.find(uiIndex);
 	if (it == m_steps.end())
@@ -758,8 +758,6 @@ STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnsInf
 	}
 	else
 	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->GetItem(iColumnIndex, &pColumnsInfoItem));
 		CComBSTR bstrValue;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstrValue));
 

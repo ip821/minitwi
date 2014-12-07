@@ -146,7 +146,7 @@ interface ISkinTimeline : IUnknown
 	HRESULT DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdi);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
 
-	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfo* pColumnsInfo, int iColumnIndex);
+	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfoItem* pColumnsInfoItem, int iColumnIndex);
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationGetIndexes(UINT* puiIndexArray, UINT* puiCount);
 	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);

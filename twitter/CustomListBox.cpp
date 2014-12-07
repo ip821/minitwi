@@ -183,7 +183,7 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	
 	if (m_bEnableAnimation)
 	{
-		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, pColumnsInfo, INVALID_COLUMN_INDEX));
+		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, NULL, INVALID_COLUMN_INDEX));
 	}
 	UpdateAnimatedColumns(pColumnsInfo, index, pItemObject, TRUE);
 	m_bAnimationNeeded = TRUE;
@@ -221,7 +221,7 @@ void CCustomListBox::UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemI
 		m_animatedColumns[pVariantObject].insert(i);
 		if (bRegisterForAnimation && m_bEnableAnimation)
 		{
-			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(itemIndex, pColumnsInfo, i));
+			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(itemIndex, pColumnsInfoItem, i));
 		}
 	}
 }

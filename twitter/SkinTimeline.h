@@ -74,7 +74,7 @@ public:
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(GetImageManagerService)(IImageManagerService** ppImageManagerService);
 
-	STDMETHOD(AnimationRegisterItemIndex)(UINT uiIndex, IColumnsInfo* pColumnsInfo, int iColumnIndex);
+	STDMETHOD(AnimationRegisterItemIndex)(UINT uiIndex, IColumnsInfoItem* pColumnsInfoItem, int iColumnIndex);
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationGetIndexes)(UINT* puiIndexArray, UINT* puiCount);
 	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);
