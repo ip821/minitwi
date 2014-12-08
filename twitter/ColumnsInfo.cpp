@@ -43,6 +43,7 @@ STDMETHODIMP CColumnsInfo::Clear()
 
 STDMETHODIMP CColumnsInfo::IsDisabledSelection(BOOL* pbDisabled)
 {
+	CHECK_E_POINTER(pbDisabled);
 	*pbDisabled = m_bDisabledSelection;
 	return S_OK;
 }
