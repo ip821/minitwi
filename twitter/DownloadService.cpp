@@ -136,12 +136,12 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 {
 	CComVariant vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
-	ATLENSURE(vUrl.vt == VT_BSTR);
+	ATLASSERT(vUrl.vt == VT_BSTR);
 	if (vUrl.vt == VT_BSTR)
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		wstring strUrl(vUrl.bstrVal);
-		ATLENSURE(m_urls.size());
+		ATLASSERT(m_urls.size());
 		m_urls.erase(strUrl);
 	}
 
@@ -167,14 +167,14 @@ STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_URL, &vUrl));
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
-		ATLENSURE(vUrl.vt == VT_BSTR);
+		ATLASSERT(vUrl.vt == VT_BSTR);
 		if (vUrl.vt == VT_BSTR)
 		{
 			wstring strUrl(vUrl.bstrVal);
 			if (m_urls.find(strUrl) != m_urls.end())
 				return S_OK;
 			auto result = m_urls.insert(strUrl);
-			ATLENSURE(result.second);
+			ATLASSERT(result.second);
 		}
 	}
 	RETURN_IF_FAILED(m_pThreadPoolService->AddTask(pVariantObject));

@@ -44,7 +44,7 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	m_pCommandSupport->InstallCommands(m_pPluginSupport);
 
 	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
-	ATLENSURE(pMainWindow);
+	ATLASSERT(pMainWindow);
 	RETURN_IF_FAILED(pMainWindow->GetMessageLoop(&m_pMessageLoop));
 	RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
 
