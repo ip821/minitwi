@@ -57,11 +57,11 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	}
 
 	CString strGuid;
-	StrGuidToString(guid, strGuid);
+	ASSERT_IF_FAILED(StrGuidToString(guid, strGuid));
 	StrPathAppend(strTempFolder, strGuid);
 
 	CComVariant vExt;
-	pResult->GetVariantValue(VAR_FILE_EXT, &vExt);
+	ASSERT_IF_FAILED(pResult->GetVariantValue(VAR_FILE_EXT, &vExt));
 	if (vExt.vt == VT_BSTR)
 	{
 		strTempFolder += vExt.bstrVal;
@@ -116,12 +116,19 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	}
 
 	res = curl_easy_perform(curl);
-
+	
 	if (res != CURLcode::CURLE_OK)
 	{
+		HRESULT curlHr = E_FAIL;
+		switch (res)
+		{
+		case CURLE_COULDNT_CONNECT:
+			curlHr = HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+		}
+		RETURN_IF_FAILED(pResult->SetVariantValue(KEY_HRESULT, &CComVariant(curlHr)));
 		curl_easy_cleanup(curl);
 		fclose(file);
-		return E_FAIL;
+		return curlHr;
 	}
 
 	curl_easy_cleanup(curl);
@@ -145,11 +152,12 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 		m_urls.erase(strUrl);
 	}
 
+	RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
+
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 	if (vFilePath.vt == VT_BSTR)
 	{
-		RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
 		CComVariant vKeepFile;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_KEEP_FILE, &vKeepFile));
 		if (vKeepFile.vt != VT_BOOL || !vKeepFile.boolVal)

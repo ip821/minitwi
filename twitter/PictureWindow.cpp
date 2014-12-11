@@ -238,6 +238,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 
 STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 {
+	m_strLastErrorMsg = L"";
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 	auto str = m_bitmapsUrls[index];
@@ -284,6 +285,25 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(TYPE_IMAGE_PICTURE_WINDOW))
 		return S_OK;
 
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	if (FAILED(vHr.intVal))
+	{
+		CComVariant vDesc;
+		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
+		CComBSTR bstrMsg = L"Unknown error";
+		if (vDesc.vt == VT_BSTR)
+			bstrMsg = vDesc.bstrVal;
+
+		m_strLastErrorMsg = bstrMsg;
+		{
+			boost::lock_guard<boost::mutex> lock(m_mutex);
+			ResizeWindow(200, 200);
+		}
+		Invalidate();
+		return S_OK;
+	}
+
 	CComVariant vId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
 
@@ -329,18 +349,22 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	return S_OK;
 }
 
+void CPictureWindow::ResizeWindow(UINT uiWidth, UINT uiHeight)
+{
+	CRect rect;
+	GetWindowRect(&rect);
+
+	CalcRect(uiWidth, uiHeight, rect);
+	SetWindowPos(NULL, &rect, SWP_NOZORDER);
+}
+
 void CPictureWindow::ResizeToCurrentBitmap()
 {
 	TBITMAP tBitmap = { 0 };
 	ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bitmapsUrls[m_currentBitmapIndex], &tBitmap));
 	auto width = tBitmap.Width;
 	auto height = tBitmap.Height;
-
-	CRect rect;
-	GetWindowRect(&rect);
-
-	CalcRect(width, height, rect);
-	SetWindowPos(NULL, &rect, SWP_NOZORDER);
+	ResizeWindow(width, height);
 }
 
 void CPictureWindow::CalcRect(int width, int height, CRect& rect)
@@ -423,16 +447,22 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 	if (currentBitmapIndex == -1)
 	{
-		CString str = L"Downloading...";
+		CComBSTR str = L"Downloading...";
+		if (m_strLastErrorMsg)
+			str = m_strLastErrorMsg;
+
 		CSize size;
-		cdc.GetTextExtent(str, str.GetLength(), &size);
+		CRect rect1 = rect;
+		cdc.DrawTextEx(str, str.Length(), &rect1, DT_WORDBREAK | DT_CENTER | DT_CALCRECT, NULL);
+		size.cx = rect1.Width();
+		size.cy = rect1.Height();
 
 		auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
 		auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
 
 		CRect rectText(x, y, x + size.cx, y + size.cy);
 		CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
-		cdc.DrawText(str, str.GetLength(), rectText, 0);
+		cdc.DrawTextEx(str, str.Length(), &rectText, DT_WORDBREAK | DT_CENTER, NULL);
 	}
 	else
 	{

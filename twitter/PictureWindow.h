@@ -76,6 +76,7 @@ private:
 	boost::mutex m_mutex;
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
+	CString m_strLastErrorMsg;
 
 	BYTE m_alpha = 0;
 	int m_step = 0;
@@ -97,6 +98,7 @@ private:
 	void CalcRect(int width, int height, CRect& rect);
 	STDMETHOD(StartNextDownload)(int index);
 	STDMETHOD(ResetAnimation)();
+	void ResizeWindow(UINT uiWidth, UINT uiHeight);
 	void ResizeToCurrentBitmap();
 	STDMETHOD(InitCommandSupport)(int index);
 	void MoveToNextPicture();

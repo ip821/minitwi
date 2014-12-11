@@ -125,6 +125,13 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(TYPE_IMAGE))
 		return S_OK;
 
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	if (FAILED(vHr.intVal))
+	{
+		return S_OK;
+	}
+
 	CComVariant vId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
 	CComVariant vUrl;

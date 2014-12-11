@@ -112,6 +112,13 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 	if (vType.vt != VT_BSTR)
 		return S_OK;
 
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	if (FAILED(vHr.intVal))
+	{
+		return S_OK;
+	}
+
 	if (CComBSTR(vType.bstrVal) == CComBSTR(TYPE_SOFTWARE_UPDATE_VERSION))
 	{
 		CComVariant vUrl;

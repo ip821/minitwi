@@ -161,6 +161,13 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	if (FAILED(vHr.intVal))
+	{
+		return S_OK;
+	}
+
 	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == CComBSTR(TYPE_IMAGE_USER_IMAGE) && vUrl.vt == VT_BSTR && vFilePath.vt == VT_BSTR)
 	{
 		BOOL bContains = FALSE;
