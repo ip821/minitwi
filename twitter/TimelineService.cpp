@@ -103,6 +103,7 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 			RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
 			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
+			RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&pVariantObject.p, 1));
 		}
 	}
 	return S_OK;
