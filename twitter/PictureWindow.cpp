@@ -448,7 +448,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	if (currentBitmapIndex == -1)
 	{
 		CComBSTR str = L"Downloading...";
-		if (m_strLastErrorMsg)
+		if (!m_strLastErrorMsg.IsEmpty())
 			str = m_strLastErrorMsg;
 
 		CSize size;
