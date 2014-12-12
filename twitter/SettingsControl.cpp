@@ -116,7 +116,6 @@ STDMETHODIMP CSettingsControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 
 void CSettingsControl::SwitchToLoginMode()
 {
-	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGEDIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_HIDE);
 
@@ -136,7 +135,6 @@ void CSettingsControl::SwitchToLogoutMode()
 		m_labelLoggedUser.SetWindowText(strText);
 	}
 
-	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGEDIN), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_SHOW);
 

@@ -484,5 +484,8 @@
     <Image Include="res\info.png">
       <Filter>ZZZMisc\Resource Files</Filter>
     </Image>
+    <Image Include="res\search.png">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
