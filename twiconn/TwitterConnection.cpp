@@ -306,6 +306,7 @@ STDMETHODIMP CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pV
 	auto friendsCount = value[L"friends_count"]->AsNumber();
 	auto statusesCount = value[L"statuses_count"]->AsNumber();
 	auto description = value[L"description"]->AsString();
+	auto following = value[L"following"]->AsBool();
 	
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
@@ -316,6 +317,7 @@ STDMETHODIMP CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pV
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_FRIENDS_COUNT, &CComVariant((int)friendsCount)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_TWEETS_COUNT, &CComVariant((int)statusesCount)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DESCRIPTION, &CComVariant(description.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_ISFOLLOWING, &CComVariant(following)));
 
 	if (value.find(L"profile_banner_url") != value.end())
 	{

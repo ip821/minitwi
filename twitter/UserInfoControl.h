@@ -13,7 +13,6 @@ class CUserInfoControl :
 	public CWindowImpl<CUserInfoControl>,
 	public IUserInfoControl,
 	public IThemeSupport,
-	public IThreadServiceEventSink,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
 	public IPluginSupportNotifications,
@@ -34,7 +33,6 @@ public:
 		COM_INTERFACE_ENTRY(IUserInfoControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
-		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IServiceProviderSupport)
@@ -96,10 +94,6 @@ public:
 	STDMETHOD(OnActivate)();
 	STDMETHOD(OnDeactivate)();
 	METHOD_EMPTY(STDMETHOD(OnClose)());
-
-	METHOD_EMPTY(STDMETHOD(OnStart)(IVariantObject *pResult));
-	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
-	METHOD_EMPTY(STDMETHOD(OnFinish)(IVariantObject *pResult));
 
 	STDMETHOD(Load)(ISettings* pSettings);
 
