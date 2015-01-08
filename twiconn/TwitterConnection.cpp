@@ -229,6 +229,60 @@ STDMETHODIMP CTwitterConnection::GetTwit(BSTR bstrId, IVariantObject** ppVariant
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::UnfollowUser(BSTR bstrUserName)
+{
+	CHECK_E_POINTER(bstrUserName);
+
+	USES_CONVERSION;
+
+	string strUserName = CW2A(bstrUserName);
+
+	bool bRes = false;
+	bRes = m_pTwitObj->friendshipDestroy(strUserName);
+
+	if (!bRes)
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	return S_OK;
+}
+
+STDMETHODIMP CTwitterConnection::FollowUser(BSTR bstrUserName)
+{
+	CHECK_E_POINTER(bstrUserName);
+	
+	USES_CONVERSION;
+	
+	string strUserName = CW2A(bstrUserName);
+
+	bool bRes = false;
+	bRes = m_pTwitObj->friendshipCreate(strUserName);
+
+	if (!bRes)
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray)
 {
 	USES_CONVERSION;

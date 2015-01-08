@@ -60,6 +60,8 @@ public:
 	STDMETHOD(GetTimeline)(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
 	STDMETHOD(GetTwit)(BSTR bstrId, IVariantObject** ppVariantObject);
 	STDMETHOD(Search)(BSTR bstrQuery, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray);
+	STDMETHOD(FollowUser)(BSTR bstrUserName);
+	STDMETHOD(UnfollowUser)(BSTR bstrUserName);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterConnection), CTwitterConnection)

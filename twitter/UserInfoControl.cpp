@@ -187,10 +187,7 @@ STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pUserAccountControl, m_pVariantObject));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pTimelineControl, m_pVariantObject));
-
-	CComQIPtr<IInitializeWithVariantObject> pInit = m_pTimelineService;
-	ATLASSERT(pInit);
-	RETURN_IF_FAILED(pInit->SetVariantObject(m_pVariantObject));
+	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pPluginSupport, m_pVariantObject));
 	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->Run());
 
 	return S_OK;

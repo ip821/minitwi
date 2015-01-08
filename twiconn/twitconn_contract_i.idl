@@ -18,4 +18,6 @@ interface ITwitterConnection : IUnknown
 	HRESULT GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
 	HRESULT GetTwit(BSTR bstrId, IVariantObject** ppVariantObject);
 	HRESULT Search(BSTR bstrQuery, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray);
+	HRESULT FollowUser(BSTR bstrUserName);
+	HRESULT UnfollowUser(BSTR bstrUserName);
 };
