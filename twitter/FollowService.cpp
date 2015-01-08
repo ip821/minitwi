@@ -72,6 +72,8 @@ STDMETHODIMP CFollowService::OnRun(IVariantObject *pResult)
 		RETURN_IF_FAILED(pConnection->FollowUser(vUserName.bstrVal));
 	}
 
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_ISFOLLOWING, &CComVariant(!bFollowing)));
+
 	return S_OK;
 }
 
