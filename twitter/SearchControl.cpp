@@ -48,6 +48,9 @@ STDMETHODIMP CSearchControl::OnShutdown()
 	m_pTimelineControl.Release();
 	m_pTheme.Release();
 	m_pViewControllerService.Release();
+
+	DestroyWindow();
+
 	return S_OK;
 }
 

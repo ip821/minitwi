@@ -69,7 +69,7 @@ STDMETHODIMP CSettingsControl::OnShutdown()
 	m_pSettings.Release();
 	m_pFormManager.Release();
 	m_pCustomTabControl.Release();
-
+	DestroyWindow();
 	return S_OK;
 }
 
