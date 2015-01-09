@@ -97,11 +97,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	}
 
 	Gdiplus::GdiplusShutdown(g_gdiPlusToken);
-
-#ifdef _DEBUG
-	_CrtDumpMemoryLeaks();
-#endif
-
 	return nRet;
 }
 

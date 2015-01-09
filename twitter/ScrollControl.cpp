@@ -12,6 +12,11 @@ CScrollControl::CScrollControl()
 {
 }
 
+CScrollControl::~CScrollControl()
+{
+	DestroyWindow();
+}
+
 void CScrollControl::SetBitmap(HBITMAP hBitmap)
 {
 	m_bitmap = hBitmap;

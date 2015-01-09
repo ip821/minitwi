@@ -35,6 +35,11 @@ public:
 		m_arrowCursor.LoadSysCursor(IDC_ARROW);
 	}
 
+	virtual ~CCustomTabControl()
+	{
+		DestroyWindow();
+	}
+
 	DECLARE_NO_REGISTRY()
 
 	BEGIN_COM_MAP(CCustomTabControl)
