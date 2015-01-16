@@ -41,6 +41,9 @@ STDMETHODIMP CFollowService::OnRun(IVariantObject *pResult)
 		pVariantObject = m_pVariantObject;
 	}
 
+	if (!pSettings)
+		return S_OK;
+
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
 
