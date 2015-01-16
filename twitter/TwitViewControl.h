@@ -59,9 +59,9 @@ public:
 	}
 
 protected:
-	virtual HRESULT Initializing();
-	virtual HRESULT Initialized();
-	virtual HRESULT ShuttingDown();
+	virtual HRESULT Initializing() override;
+	virtual HRESULT Initialized() override;
+	virtual HRESULT ShuttingDown() override;
 
 private:
 	CComPtr<IVariantObject> m_pVariantObject;
