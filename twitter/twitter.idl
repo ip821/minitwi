@@ -548,6 +548,16 @@ interface ITimelineRelativeTimeService : IUnknown
 };
 
 [
+	object,
+	uuid(972DED6B-0A1C-4AA6-BC05-AF182D9C0241),
+	pointer_default(unique)
+]
+interface IFollowService : IUnknown
+{
+
+};
+
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -828,6 +838,13 @@ library twitterLib
 	{
 		[default] interface IColumnsInfoItem;
 	};
+	[
+		uuid(B03DDD69-58E8-4582-8908-504D7595B579)
+	]
+	coclass FollowService
+	{
+		[default] interface IFollowService;
+	}; 
 };
 
 import "shobjidl.idl";

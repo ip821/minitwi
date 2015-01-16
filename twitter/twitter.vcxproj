@@ -252,6 +252,7 @@
     <ClCompile Include="ColumnsInfo.cpp" />
     <ClCompile Include="ColumnsInfoItem.cpp" />
     <ClCompile Include="DownloadService.cpp" />
+    <ClCompile Include="FollowService.cpp" />
     <ClCompile Include="HomeTimeLineControl.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="CustomTabControl.cpp" />
@@ -348,6 +349,7 @@
     <ClInclude Include="BaseTimeLineControl.h" />
     <ClInclude Include="ColumnsInfo.h" />
     <ClInclude Include="ColumnsInfoItem.h" />
+    <ClInclude Include="FollowService.h" />
     <ClInclude Include="GdilPlusUtils.h" />
     <ClInclude Include="PictureWindowSaveCommand.h" />
     <ClInclude Include="SearchControl.h" />

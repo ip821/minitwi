@@ -36,10 +36,14 @@ private:
 	BYTE m_alphaAmount = 255 / STEPS;
 
 	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
-	HRESULT MeasureInternal(HDC hdc, RECT clientRect, IVariantObject* pVariantObject, LPRECT lpRectScreenName, LPRECT lpRectDisplayName, LPRECT lpRectUserImage);
+	HRESULT MeasureInternal(HDC hdc, RECT clientRect, IVariantObject* pVariantObject, LPRECT lpRectScreenName, LPRECT lpRectDisplayName, LPRECT lpRectUserImage, LPRECT lpRectFollowButton);
+
+	const CString m_strFollow = L"Follow";
+	const CString m_strFollowing = L"Following";
+
 public:
 
-	static void DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect);
+	static void DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect, COLORREF colorRefBrush = 0);
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);

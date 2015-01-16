@@ -113,6 +113,9 @@
     <Filter Include="Services\SearchTimelineService">
       <UniqueIdentifier>{ed1255e1-2502-4500-aecc-e3d8dc019d19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\FollowService">
+      <UniqueIdentifier>{bbbeea3f-60bd-4c08-8744-8323135e82cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -261,6 +264,9 @@
     </ClCompile>
     <ClCompile Include="ColumnsInfoItem.cpp">
       <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowService.cpp">
+      <Filter>Services\FollowService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -431,6 +437,9 @@
     </ClInclude>
     <ClInclude Include="ColumnsInfoItem.h">
       <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowService.h">
+      <Filter>Services\FollowService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
