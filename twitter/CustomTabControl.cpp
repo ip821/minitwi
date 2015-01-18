@@ -31,7 +31,9 @@ STDMETHODIMP CCustomTabControl::StartAnimation()
 STDMETHODIMP CCustomTabControl::StopAnimation(UINT* puiRefs)
 {
 	CHECK_E_POINTER(puiRefs);
-	ATLASSERT(m_cAnimationRefs != 0);
+	if (!m_cAnimationRefs)
+		return S_OK;
+
 	--m_cAnimationRefs;
 	*puiRefs = m_cAnimationRefs;
 
