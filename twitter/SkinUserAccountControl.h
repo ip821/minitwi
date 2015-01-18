@@ -49,7 +49,7 @@ public:
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(EraseBackground)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
-	STDMETHOD(Draw)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+	STDMETHOD(Draw)(HDC hdc, LPRECT lpRect, IVariantObject* pObject, IColumnsInfo* pColumnsInfo);
 	STDMETHOD(AnimationStart)();
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);

@@ -210,7 +210,7 @@ interface ISkinUserAccountControl : IUnknown
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
-	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject, IColumnsInfo* pColumnsInfo);
 	HRESULT Measure(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
 	HRESULT AnimationStart();
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);

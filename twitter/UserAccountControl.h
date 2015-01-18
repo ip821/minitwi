@@ -21,7 +21,8 @@ class CUserAccountControl :
 	public IPluginSupportNotifications,
 	public IDownloadServiceEventSink,
 	public IThemeSupport,
-	public CAnimationTimerSupport<CUserAccountControl>
+	public CAnimationTimerSupport<CUserAccountControl>,
+	public IThreadServiceEventSink
 {
 public:
 	DECLARE_WND_CLASS(L"UserAccountControl")
@@ -41,6 +42,7 @@ public:
 		COM_INTERFACE_ENTRY(IUserAccountControl)
 		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
 		COM_INTERFACE_ENTRY(IThemeSupport)
+		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserAccountControl)
@@ -72,11 +74,13 @@ private:
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
 
 	DWORD dw_mAdviceDownloadService = 0;
+	DWORD dw_mAdviceFollowService = 0;
 	CComBSTR m_bstrBannerUrl;
 	CRect m_rectUserImage;
 	CRect m_rectFollowButton;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
+	BOOL m_bFollowButtonDisabled = FALSE;
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -89,6 +93,7 @@ private:
 
 	void StartAnimation();
 	void UpdateRects();
+	STDMETHOD(UpdateColumnInfo)();
 
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -109,6 +114,10 @@ public:
 	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
 
 	STDMETHOD(SetTheme)(ITheme* pTheme);
+
+	STDMETHOD(OnStart)(IVariantObject *pResult);
+	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
+	STDMETHOD(OnFinish)(IVariantObject *pResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserAccountControl), CUserAccountControl)

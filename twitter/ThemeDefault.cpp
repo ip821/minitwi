@@ -36,6 +36,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ACCOUNT_CONTROL_TEXT, (ARGB)Color::White));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_FOLLOW_BUTTON_RECT, (ARGB)Color::DarkCyan));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, (ARGB)Color::DarkCyan));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, (ARGB)Color::Gray));
 
 	RETURN_IF_FAILED(m_pSkinTabControl->SetColorMap(m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetColorMap(m_pThemeColorMap));

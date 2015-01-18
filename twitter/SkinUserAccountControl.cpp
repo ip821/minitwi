@@ -106,7 +106,7 @@ void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText, bo
 	g.FillRegion(&brush, &r);
 }
 
-STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject)
+STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject, IColumnsInfo* pColumnsInfo)
 {
 	CRect rect = *lpRect;
 	CDCHandle cdc(hdc);
@@ -209,6 +209,20 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_ISFOLLOWING, &vFollowing));
 	auto bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
 
+	BOOL bFollowButtonDisabled = FALSE;
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+		CComBSTR bstrColumnName;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+		if (bstrColumnName != CComBSTR(VAR_ITEM_FOLLOW_BUTTON))
+			continue;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &bFollowButtonDisabled));
+	}
+
 	HFONT hFontFollowButton = 0;
 	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
 	cdc.SelectFont(hFontFollowButton);
@@ -216,13 +230,27 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	DWORD dwFollowButtonColor = 0;
 	if (bFollowing)
 	{
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, &dwFollowButtonColor));
+		if (bFollowButtonDisabled)
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
+		}
+		else
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, &dwFollowButtonColor));
+		}
 		DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);
 		cdc.DrawText(m_strFollowing, m_strFollowing.GetLength(), rectFollowButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	}
 	else
 	{
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT, &dwFollowButtonColor));
+		if (bFollowButtonDisabled)
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
+		}
+		else
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT, &dwFollowButtonColor));
+		}
 		DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);
 		cdc.DrawText(m_strFollow, m_strFollow.GetLength(), rectFollowButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	}

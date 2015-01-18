@@ -29,6 +29,7 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &dw_mAdviceDownloadService));
+	RETURN_IF_FAILED(AtlAdvise(m_pFollowThreadService, pUnk, __uuidof(IThreadServiceEventSink), &dw_mAdviceFollowService));
 
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
@@ -39,6 +40,7 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 STDMETHODIMP CUserAccountControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), dw_mAdviceDownloadService));
+	RETURN_IF_FAILED(AtlUnadvise(m_pFollowThreadService, __uuidof(IThreadServiceEventSink), dw_mAdviceFollowService));
 
 	m_pTheme.Release();
 	m_pSkinCommonControl.Release();
@@ -106,7 +108,7 @@ LRESULT CUserAccountControl::OnPrintClient(UINT uMsg, WPARAM wParam, LPARAM lPar
 {
 	CRect rect;
 	GetClientRect(&rect);
-	m_pSkinUserAccountControl->Draw((HDC)wParam, &rect, m_pVariantObject);
+	m_pSkinUserAccountControl->Draw((HDC)wParam, &rect, m_pVariantObject, m_pColumnsInfo);
 	return 0;
 }
 
@@ -121,7 +123,7 @@ LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	CRect rect = ps.rcPaint;
 	CDC cdc(ps.hdc);
 
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Draw(cdc, &rect, m_pVariantObject));
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Draw(cdc, &rect, m_pVariantObject, m_pColumnsInfo));
 	EndPaint(&ps);
 	return 0;
 }
@@ -299,9 +301,42 @@ LRESULT CUserAccountControl::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
 		ASSERT_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(strUrl)));
 		ASSERT_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
 	}
-	else if (m_rectFollowButton.PtInRect(CPoint(x, y)))
+	else if (m_rectFollowButton.PtInRect(CPoint(x, y)) && !m_bFollowButtonDisabled)
 	{
 		RETURN_IF_FAILED(m_pFollowThreadService->Run());
 	}
 	return 0;
+}
+
+STDMETHODIMP CUserAccountControl::OnStart(IVariantObject *pResult)
+{
+	m_bFollowButtonDisabled = TRUE;
+	UpdateColumnInfo();
+	Invalidate();
+	return S_OK;
+}
+
+STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
+{
+	m_bFollowButtonDisabled = FALSE;
+	UpdateColumnInfo();
+	Invalidate();
+	return S_OK;
+}
+
+STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
+{
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+		CComBSTR bstrColumnName;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+		if (bstrColumnName != CComBSTR(VAR_ITEM_FOLLOW_BUTTON))
+			continue;
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, m_bFollowButtonDisabled));
+	}
+	return S_OK;
 }
