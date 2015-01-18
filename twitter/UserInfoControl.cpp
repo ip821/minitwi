@@ -48,7 +48,7 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE, &m_pTimelineService));
 	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
-	RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
+	RETURN_IF_FAILED(HrInitializeWithSettings(m_pPluginSupport, m_pSettings));
 
 	CComPtr<ITimelineImageService> pTimelineImageService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));

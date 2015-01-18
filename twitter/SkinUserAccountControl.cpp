@@ -288,12 +288,23 @@ STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumns
 	CClientDC cdc(hWnd);
 
 	CRect rectUserImage;
-	RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, nullptr, nullptr, &rectUserImage, nullptr));
+	CRect rectFollowButton;
+	RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, nullptr, nullptr, &rectUserImage, &rectFollowButton));
 
-	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-	RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectUserImage));
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectUserImage));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
+	}
+
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectFollowButton));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_ITEM_FOLLOW_BUTTON)));
+	}
+
 	return S_OK;
 }
 

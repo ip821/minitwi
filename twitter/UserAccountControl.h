@@ -4,6 +4,7 @@
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "AnimationTimerSupport.h"
 #include "..\twiconn\Plugins.h"
+#include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"
 
 using namespace ATL;
 using namespace std;
@@ -65,6 +66,7 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IWindowService> m_pWindowService;
+	CComPtr<IThreadService> m_pFollowThreadService;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
@@ -72,6 +74,7 @@ private:
 	DWORD dw_mAdviceDownloadService = 0;
 	CComBSTR m_bstrBannerUrl;
 	CRect m_rectUserImage;
+	CRect m_rectFollowButton;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
 
