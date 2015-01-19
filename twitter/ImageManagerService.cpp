@@ -44,6 +44,7 @@ STDMETHODIMP CImageManagerService::GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap)
 STDMETHODIMP CImageManagerService::CopyTo(IImageManagerService* pDest)
 {
 	CHECK_E_POINTER(pDest);
+	ATLASSERT(pDest != this);
 	{
 		boost::lock_guard<boost::mutex> mutex(m_mutex);
 		CImageManagerService* pDestClass = static_cast<CImageManagerService*>(pDest);
