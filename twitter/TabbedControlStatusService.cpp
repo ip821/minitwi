@@ -54,8 +54,20 @@ STDMETHODIMP CTabbedControlStatusService::OnShutdown()
 	return S_OK;
 }
 
+STDMETHODIMP CTabbedControlStatusService::StartAnimation()
+{
+	m_cAnimationRefs++;
+	RETURN_IF_FAILED(m_pViewControllerService->StartAnimation());
+	return S_OK;
+}
+
 STDMETHODIMP CTabbedControlStatusService::StopAnimation()
 {
+	if (!m_cAnimationRefs)
+		return S_OK;
+
+	--m_cAnimationRefs;
+
 	RETURN_IF_FAILED(m_pViewControllerService->StopAnimation());
 	return S_OK;
 }
@@ -63,7 +75,7 @@ STDMETHODIMP CTabbedControlStatusService::StopAnimation()
 STDMETHODIMP CTabbedControlStatusService::OnStart(IVariantObject *pResult)
 {
 	RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
-	RETURN_IF_FAILED(m_pViewControllerService->StartAnimation());
+	RETURN_IF_FAILED(StartAnimation());
 	return S_OK;
 }
 

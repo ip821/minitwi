@@ -35,7 +35,9 @@ private:
 	DWORD m_dwAdviceUpdateTimeline = 0;
 	DWORD m_dwAdviceShowMoreTimeline = 0;
 	DWORD m_dwAdviceFollow = 0;
+	UINT m_cAnimationRefs = 0;
 
+	STDMETHOD(StartAnimation)();
 	STDMETHOD(StopAnimation)();
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
