@@ -34,22 +34,26 @@ private:
 	BYTE m_alpha = 0;
 	BYTE m_step = 0;
 	BYTE m_alphaAmount = 255 / STEPS;
-	CRect m_rectUserImage;
 
 	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
+	HRESULT MeasureInternal(HDC hdc, RECT clientRect, IVariantObject* pVariantObject, LPRECT lpRectScreenName, LPRECT lpRectDisplayName, LPRECT lpRectUserImage, LPRECT lpRectFollowButton);
+
+	const CString m_strFollow = L"Follow";
+	const CString m_strFollowing = L"Following";
+
 public:
 
-	static void DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect);
+	static void DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect, COLORREF colorRefBrush = 0);
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(EraseBackground)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
-	STDMETHOD(Draw)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+	STDMETHOD(Draw)(HDC hdc, LPRECT lpRect, IVariantObject* pObject, IColumnsInfo* pColumnsInfo);
 	STDMETHOD(AnimationStart)();
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);
-	STDMETHOD(GetColumnRect)(BSTR bstrColumnName, RECT* pRect);
+	STDMETHOD(Measure)(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinUserAccountControl), CSkinUserAccountControl)

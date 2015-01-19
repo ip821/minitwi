@@ -90,7 +90,7 @@ private:
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	HRESULT Fire_OnItemRemoved(IVariantObject *pItemObject);
-	HRESULT Fire_OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject);
+	HRESULT Fire_OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject);
 	HRESULT Fire_OnItemDoubleClick(IVariantObject* pVariantObject);
 public:
 

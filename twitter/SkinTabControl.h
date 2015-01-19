@@ -41,7 +41,7 @@ private:
 	HWND m_hWnd;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
-	STDMETHOD(DrawTabs)(IColumnRects* pColumnRects, CDCHandle& cdc, RECT rect, int selectedPageIndex);
+	STDMETHOD(DrawTabs)(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect, int selectedPageIndex);
 
 public:
 
@@ -49,9 +49,9 @@ public:
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
 	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
 
-	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnRects* pColumnRects, RECT* clientRect, UINT* puiHeight);
+	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
-	STDMETHOD(DrawHeader)(IColumnRects* pColumnRects, HDC hdc, RECT rect, int selectedPageIndex);
+	STDMETHOD(DrawHeader)(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect, int selectedPageIndex);
 	STDMETHOD(DrawAnimation)(HDC hdc);
 	STDMETHOD(DrawInfoImage)(HDC hdc, BOOL bError, BSTR bstrMessage);
 	STDMETHOD(GetInfoRect)(RECT* pRect);

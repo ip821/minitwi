@@ -274,8 +274,10 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnColumnClick(BSTR bstrColumnName, DWORD dwColumnIndex, IColumnRects* pColumnRects, IVariantObject* pVariantObject)
+STDMETHODIMP CTimelineService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject)
 {
+	CComBSTR bstrColumnName;
+	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_COLUMN_SHOW_MORE) && !m_bShowMoreRunning)
 	{
 		CComPtr<IObjArray> pObjArray;

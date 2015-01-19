@@ -32,12 +32,16 @@ STDMETHODIMP CSearchControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 STDMETHODIMP CSearchControl::OnShutdown()
 {
+	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterStaticControl(m_hWnd));
+	RETURN_IF_FAILED(m_pSkinCommonControl->UnregisterButtonControl(m_buttonGo));
+
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	CComQIPtr<IPluginSupportNotifications> p = m_pTimelineControl;
 	ATLASSERT(p);
 	RETURN_IF_FAILED(p->OnShutdown());
 	m_editText.Clear();
 
+	m_pSkinCommonControl.Release();
 	m_pSettings.Release();
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
@@ -134,9 +138,9 @@ STDMETHODIMP CSearchControl::SetTheme(ITheme* pTheme)
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
 
-	CComPtr<ISkinCommonControl> pSkinCommonControl;
-	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&pSkinCommonControl));
-	RETURN_IF_FAILED(pSkinCommonControl->RegisterControl(m_hWnd));
+	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
+	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterStaticControl(m_hWnd));
+	RETURN_IF_FAILED(m_pSkinCommonControl->RegisterButtonControl(m_buttonGo));
 
 	CComQIPtr<IThemeSupport> pThemeSupport = m_pTimelineControl;
 	ATLASSERT(pThemeSupport);

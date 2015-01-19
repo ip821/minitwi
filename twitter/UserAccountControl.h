@@ -4,6 +4,7 @@
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "AnimationTimerSupport.h"
 #include "..\twiconn\Plugins.h"
+#include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"
 
 using namespace ATL;
 using namespace std;
@@ -19,7 +20,9 @@ class CUserAccountControl :
 	public IInitializeWithVariantObject,
 	public IPluginSupportNotifications,
 	public IDownloadServiceEventSink,
-	public CAnimationTimerSupport<CUserAccountControl>
+	public IThemeSupport,
+	public CAnimationTimerSupport<CUserAccountControl>,
+	public IThreadServiceEventSink
 {
 public:
 	DECLARE_WND_CLASS(L"UserAccountControl")
@@ -38,6 +41,8 @@ public:
 		COM_INTERFACE_ENTRY(IControl2)
 		COM_INTERFACE_ENTRY(IUserAccountControl)
 		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
+		COM_INTERFACE_ENTRY(IThemeSupport)
+		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserAccountControl)
@@ -47,6 +52,7 @@ public:
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
 	END_MSG_MAP()
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -62,12 +68,19 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IWindowService> m_pWindowService;
+	CComPtr<IThreadService> m_pFollowThreadService;
+	CComPtr<ITheme> m_pTheme;
+	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
+	CComPtr<IColumnsInfo> m_pColumnsInfo;
 
 	DWORD dw_mAdviceDownloadService = 0;
+	DWORD dw_mAdviceFollowService = 0;
 	CComBSTR m_bstrBannerUrl;
 	CRect m_rectUserImage;
+	CRect m_rectFollowButton;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
+	BOOL m_bFollowButtonDisabled = FALSE;
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -76,8 +89,12 @@ private:
 	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void StartAnimation();
+	void UpdateRects();
+	STDMETHOD(UpdateColumnInfo)();
+
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);
 	STDMETHOD(CreateEx)(HWND hWndParent, HWND *hWnd);
@@ -94,9 +111,13 @@ public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
-	STDMETHOD(SetSkinUserAccountControl)(ISkinUserAccountControl* pSkinUserAccountControl);
-
 	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
+
+	STDMETHOD(SetTheme)(ITheme* pTheme);
+
+	STDMETHOD(OnStart)(IVariantObject *pResult);
+	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
+	STDMETHOD(OnFinish)(IVariantObject *pResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserAccountControl), CUserAccountControl)

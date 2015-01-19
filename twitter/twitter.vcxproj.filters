@@ -113,6 +113,9 @@
     <Filter Include="Services\SearchTimelineService">
       <UniqueIdentifier>{ed1255e1-2502-4500-aecc-e3d8dc019d19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\FollowService">
+      <UniqueIdentifier>{bbbeea3f-60bd-4c08-8744-8323135e82cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -168,9 +171,6 @@
     </ClCompile>
     <ClCompile Include="ThemeColorMap.cpp">
       <Filter>Services\SkinService\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="ColumnRects.cpp">
-      <Filter>Controls\TimelineControl\Controls</Filter>
     </ClCompile>
     <ClCompile Include="ThemeFontMap.cpp">
       <Filter>Services\SkinService\Default</Filter>
@@ -259,6 +259,15 @@
     <ClCompile Include="TimelineRelativeTimeService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
+    <ClCompile Include="ColumnsInfo.cpp">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="ColumnsInfoItem.cpp">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowService.cpp">
+      <Filter>Services\FollowService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -323,9 +332,6 @@
     </ClInclude>
     <ClInclude Include="ThemeColorMap.h">
       <Filter>Services\SkinService\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="ColumnRects.h">
-      <Filter>Controls\TimelineControl\Controls</Filter>
     </ClInclude>
     <ClInclude Include="ThemeFontMap.h">
       <Filter>Services\SkinService\Default</Filter>
@@ -425,6 +431,15 @@
     </ClInclude>
     <ClInclude Include="TimelineRelativeTimeService.h">
       <Filter>Services\TimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="ColumnsInfo.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ColumnsInfoItem.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowService.h">
+      <Filter>Services\FollowService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

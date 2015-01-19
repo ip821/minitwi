@@ -77,7 +77,7 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
-	CComPtr<IColumnRects> m_pColumnRects;
+	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	UINT m_cAnimationRefs = 0;
 
 	CRect m_rectChildControlArea;

@@ -30,10 +30,11 @@ private:
 	CComQIPtr<IViewControllerService> m_pViewControllerService;
 	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
 	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
+	CComPtr<IThreadService> m_pThreadServiceFollow;
 
 	DWORD m_dwAdviceUpdateTimeline = 0;
 	DWORD m_dwAdviceShowMoreTimeline = 0;
-	BOOL m_bAnimating = FALSE;
+	DWORD m_dwAdviceFollow = 0;
 
 	STDMETHOD(StopAnimation)();
 public:

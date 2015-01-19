@@ -57,8 +57,8 @@ public:
 	}
 
 protected:
-	virtual HRESULT Initializing();
-	virtual HRESULT Initialized();
+	virtual HRESULT Initializing() override;
+	virtual HRESULT Initialized() override;
 private:
 
 public:

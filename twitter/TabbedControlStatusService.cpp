@@ -15,9 +15,16 @@ STDMETHODIMP CTabbedControlStatusService::OnInitialized(IServiceProvider *pServi
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ViewControllerService, &m_pViewControllerService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pThreadServiceFollow));
+	
 	if (m_pThreadServiceShowMoreTimeline)
 	{
 		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMoreTimeline));
+	}
+
+	if (m_pThreadServiceFollow)
+	{
+		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceFollow, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceFollow));
 	}
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
@@ -32,21 +39,24 @@ STDMETHODIMP CTabbedControlStatusService::OnShutdown()
 	{
 		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceShowMoreTimeline));
 	}
+	
+	if (m_dwAdviceFollow)
+	{
+		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceFollow, __uuidof(IThreadServiceEventSink), m_dwAdviceFollow));
+	}
+
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceUpdateTimeline));
 	RETURN_IF_FAILED(StopAnimation());
 	m_pThreadServiceShowMoreTimeline.Release();
 	m_pThreadServiceUpdateTimeline.Release();
 	m_pViewControllerService.Release();
+	m_pThreadServiceFollow.Release();
 	return S_OK;
 }
 
 STDMETHODIMP CTabbedControlStatusService::StopAnimation()
 {
-	if (m_bAnimating)
-	{
-		RETURN_IF_FAILED(m_pViewControllerService->StopAnimation());
-		m_bAnimating = FALSE;
-	}
+	RETURN_IF_FAILED(m_pViewControllerService->StopAnimation());
 	return S_OK;
 }
 
@@ -54,7 +64,6 @@ STDMETHODIMP CTabbedControlStatusService::OnStart(IVariantObject *pResult)
 {
 	RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
 	RETURN_IF_FAILED(m_pViewControllerService->StartAnimation());
-	m_bAnimating = TRUE;
 	return S_OK;
 }
 

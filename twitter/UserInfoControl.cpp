@@ -48,7 +48,7 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE, &m_pTimelineService));
 	RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
-	RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
+	RETURN_IF_FAILED(HrInitializeWithSettings(m_pPluginSupport, m_pSettings));
 
 	CComPtr<ITimelineImageService> pTimelineImageService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));
@@ -187,10 +187,7 @@ STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pUserAccountControl, m_pVariantObject));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pTimelineControl, m_pVariantObject));
-
-	CComQIPtr<IInitializeWithVariantObject> pInit = m_pTimelineService;
-	ATLASSERT(pInit);
-	RETURN_IF_FAILED(pInit->SetVariantObject(m_pVariantObject));
+	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pPluginSupport, m_pVariantObject));
 	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->Run());
 
 	return S_OK;
@@ -201,10 +198,9 @@ STDMETHODIMP CUserInfoControl::SetTheme(ITheme* pTheme)
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
 
-	CComPtr<ISkinUserAccountControl> pSkinUserAccountControl;
-	RETURN_IF_FAILED(pTheme->GetSkinUserAccountControl(&pSkinUserAccountControl));
-	RETURN_IF_FAILED(pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
-	RETURN_IF_FAILED(m_pUserAccountControl->SetSkinUserAccountControl(pSkinUserAccountControl));
+	CComQIPtr<IThemeSupport> pThemeSupport = m_pUserAccountControl;
+	ATLASSERT(pThemeSupport);
+	RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pTheme));
 
 	CComPtr<ISkinTimeline> pSkinTimeline;
 	RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&pSkinTimeline));

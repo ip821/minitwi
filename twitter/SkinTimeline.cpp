@@ -49,12 +49,12 @@ STDMETHODIMP CSkinTimeline::SetFontMap(IThemeFontMap* pThemeFontMap)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis)
+STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
 	if (m_steps.find(lpdis->lpdi->itemID) == m_steps.end())
 	{
-		RETURN_IF_FAILED(DrawTextColumns(hwndControl, pColumnRects, lpdis));
-		RETURN_IF_FAILED(DrawImageColumns(pColumnRects, lpdis));
+		RETURN_IF_FAILED(DrawTextColumns(hwndControl, pColumnsInfo, lpdis));
+		RETURN_IF_FAILED(DrawImageColumns(pColumnsInfo, lpdis));
 		return S_OK;
 	}
 
@@ -78,7 +78,7 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		lpdis->lpdi->rcItem.top = 0;
 		lpdis->lpdi->rcItem.right = rect.Width();
 		lpdis->lpdi->rcItem.bottom = rect.Height();
-		RETURN_IF_FAILED(DrawTextColumns(hwndControl, pColumnRects, lpdis));
+		RETURN_IF_FAILED(DrawTextColumns(hwndControl, pColumnsInfo, lpdis));
 		lpdis->lpdi->rcItem = rect;
 		lpdis->lpdi->hDC = cdcReal;
 	}
@@ -95,11 +95,11 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnRects* pColumnRect
 		bf.SourceConstantAlpha = m_steps[lpdis->lpdi->itemID].alpha;
 	}
 	cdcReal.AlphaBlend(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, rect.Width(), rect.Height(), bf);
-	RETURN_IF_FAILED(DrawImageColumns(pColumnRects, lpdis));
+	RETURN_IF_FAILED(DrawImageColumns(pColumnsInfo, lpdis));
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis)
+STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
 	std::hash_set<UINT> columnIndexesAlreadyAnimated;
 
@@ -115,17 +115,19 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnRects* pColumnRects, TDRAWIT
 	cdc.SetBkMode(TRANSPARENT);
 
 	UINT uiCount = 0;
-	RETURN_IF_FAILED(pColumnRects->GetCount(&uiCount));
+	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 		CRect rect;
-		RETURN_IF_FAILED(pColumnRects->GetRect(i, &rect));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
 		CComBSTR bstrColumnName;
-		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 		BOOL bIsImage = FALSE;
-		RETURN_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_IMAGE, &bIsImage));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_IMAGE, &bIsImage));
 		CComBSTR bstrValue;
-		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_VALUE, &bstrValue));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstrValue));
 
 		if (!bIsImage)
 			continue;
@@ -186,7 +188,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnRects* pColumnRects, TDRAWIT
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pColumnRects, TDRAWITEMSTRUCTTIMELINE* lpdis)
+STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
 	std::hash_set<UINT> columnIndexesAlreadyAnimated;
 
@@ -207,7 +209,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 	cdc.SetBkMode(TRANSPARENT);
 
 	BOOL bDisabledSelection = FALSE;
-	pColumnRects->IsDisabledSelection(&bDisabledSelection);
+	ASSERT_IF_FAILED(pColumnsInfo->IsDisabledSelection(&bDisabledSelection));
 
 	if (lpdis->lpdi->itemState & ODS_SELECTED && !bDisabledSelection)
 	{
@@ -240,23 +242,25 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 	}
 
 	UINT uiCount = 0;
-	RETURN_IF_FAILED(pColumnRects->GetCount(&uiCount));
+	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 		RECT rect = { 0 };
-		RETURN_IF_FAILED(pColumnRects->GetRect(i, &rect));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
 		CComBSTR bstrColumnName;
-		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_COLUMN_NAME, &bstrColumnName));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 		CComBSTR bstrText;
-		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(i, VAR_TEXT, &bstrText));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_TEXT, &bstrText));
 		BOOL bIsUrl = FALSE;
-		RETURN_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_URL, &bIsUrl));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_URL, &bIsUrl));
 		BOOL bIsWordWrap = FALSE;
-		RETURN_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_WORDWRAP, &bIsWordWrap));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_WORDWRAP, &bIsWordWrap));
 		BOOL bIsImage = FALSE;
-		RETURN_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_IS_IMAGE, &bIsImage));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_IMAGE, &bIsImage));
 		BOOL bDoubleSize = FALSE;
-		RETURN_IF_FAILED(pColumnRects->GetRectBoolProp(i, VAR_ITEM_DOUBLE_SIZE, &bDoubleSize));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_ITEM_DOUBLE_SIZE, &bDoubleSize));
 
 		HFONT font = 0;
 		auto bstrFontName = CComBSTR(bstrColumnName);
@@ -290,7 +294,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnRects* pCol
 
 SIZE CSkinTimeline::AddColumn(
 	HDC hdc,
-	IColumnRects* pColumnRects,
+	IColumnsInfo* pColumnsInfo,
 	CString& strColumnName,
 	CString& strDisplayText,
 	CString& strValue,
@@ -346,19 +350,28 @@ SIZE CSkinTimeline::AddColumn(
 		break;
 	}
 
-	UINT uiIndex = 0;
-	pColumnRects->AddRect(CRect(x, y, x + sz.cx, y + sz.cy), &uiIndex);
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+	ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + sz.cx, y + sz.cy)));
 	if (bDisabledSelection)
-		pColumnRects->DisableSelection(TRUE);
-	pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(strColumnName));
-	pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, CComBSTR(strDisplayText));
-	pColumnRects->SetRectStringProp(uiIndex, VAR_VALUE, CComBSTR(strValue));
+	{
+		ASSERT_IF_FAILED(pColumnsInfo->DisableSelection(TRUE));
+	}
+	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(strColumnName)));
+	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, CComBSTR(strDisplayText)));
+	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, CComBSTR(strValue)));
 	if (bWordWrap)
-		pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_WORDWRAP, TRUE);
+	{
+		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_WORDWRAP, TRUE));
+	}
 	if (bIsUrl)
-		pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
+	{
+		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_URL, TRUE));
+	}
 	if (bDoubleSize)
-		pColumnRects->SetRectBoolProp(uiIndex, VAR_ITEM_DOUBLE_SIZE, TRUE);
+	{
+		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_ITEM_DOUBLE_SIZE, TRUE));
+	}
 	return sz;
 }
 
@@ -370,9 +383,9 @@ void CSkinTimeline::GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnNa
 		strValue = v.bstrVal;
 }
 
-STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnRects* pColumnRects)
+STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo)
 {
-	pColumnRects->Clear();
+	pColumnsInfo->Clear();
 	CListBox wndListBox(hwndControl);
 
 	CClientDC hdc(hwndControl);
@@ -391,7 +404,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		auto y = PADDING_Y;
 		CSize sz = AddColumn(
 			hdc,
-			pColumnRects,
+			pColumnsInfo,
 			CString(VAR_COLUMN_SHOW_MORE),
 			bDisabled ? CString(L"Updating...") : CString(L"Show more"),
 			bDisabled ? CString(L"Updating...") : CString(L"Show more"),
@@ -437,13 +450,14 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		{
 			auto x = 10;
 			auto y = PADDING_Y * 2;
-			UINT uiIndex = 0;
-			pColumnRects->AddRect(CRect(x, y, x + 48, y + 48), &uiIndex);
-			pColumnRects->SetRectStringProp(uiIndex, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE));
-			pColumnRects->SetRectStringProp(uiIndex, VAR_TEXT, L"");
-			pColumnRects->SetRectStringProp(uiIndex, VAR_VALUE, CComBSTR(strImageUrl));
-			pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_IMAGE, TRUE);
-			pColumnRects->SetRectBoolProp(uiIndex, VAR_IS_URL, TRUE);
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + 48, y + 48)));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, L""));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, CComBSTR(strImageUrl)));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_IMAGE, TRUE));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_URL, TRUE));
 		}
 
 		CSize sizeRetweetedDislpayName;
@@ -455,7 +469,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 			sizeRetweetedDislpayName = AddColumn(
 				hdc,
-				pColumnRects,
+				pColumnsInfo,
 				CString(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME),
 				L"Retweeted by " + strRetweetedDisplayName + L" @" + strRetweetedName,
 				strRetweetedDisplayName,
@@ -480,7 +494,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 			sizeDislpayName = AddColumn(
 				hdc,
-				pColumnRects,
+				pColumnsInfo,
 				CString(VAR_TWITTER_USER_DISPLAY_NAME),
 				strDisplayName,
 				strDisplayName,
@@ -502,7 +516,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 			sizeName = AddColumn(
 				hdc,
-				pColumnRects,
+				pColumnsInfo,
 				CString(VAR_TWITTER_USER_NAME),
 				L"@" + strName,
 				strName,
@@ -527,7 +541,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 			sizeDateTime = AddColumn(
 				hdc,
-				pColumnRects,
+				pColumnsInfo,
 				CString(VAR_TWITTER_RELATIVE_TIME),
 				strCreatedAt,
 				strCreatedAt,
@@ -555,7 +569,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			auto bDoubleSize = vDoubleSize.vt == VT_BOOL && vDoubleSize.boolVal;
 			sizeText = AddColumn(
 				hdc,
-				pColumnRects,
+				pColumnsInfo,
 				CString(VAR_TWITTER_NORMALIZED_TEXT),
 				strText,
 				strText,
@@ -627,7 +641,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				auto bDoubleSize = vDoubleSize.vt == VT_BOOL && vDoubleSize.boolVal;
 				auto size = AddColumn(
 					hdc,
-					pColumnRects,
+					pColumnsInfo,
 					CString(VAR_TWITTER_URL),
 					CString(bstrUrl),
 					CString(bstrUrl),
@@ -703,14 +717,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 						xOffset += oneImageWidth;
 
-						UINT uiIndexRect = 0;
-						pColumnRects->AddRect(CRect(x, y, x + width, y + height), &uiIndexRect);
-						pColumnRects->SetRectStringProp(uiIndexRect, VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_IMAGE));
-						pColumnRects->SetRectStringProp(uiIndexRect, VAR_TEXT, L"");
-						pColumnRects->SetRectStringProp(uiIndexRect, VAR_VALUE, vMediaUrlThumb.bstrVal);
-						pColumnRects->SetRectStringProp(uiIndexRect, VAR_TWITTER_MEDIAURL, vMediaUrl.bstrVal);
-						pColumnRects->SetRectBoolProp(uiIndexRect, VAR_IS_IMAGE, TRUE);
-						pColumnRects->SetRectBoolProp(uiIndexRect, VAR_IS_URL, TRUE);
+						CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+						ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_IMAGE)));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, L""));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, vMediaUrlThumb.bstrVal));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TWITTER_MEDIAURL, vMediaUrl.bstrVal));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_IMAGE, TRUE));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_URL, TRUE));
 					}
 
 					lastY += lastHeight;
@@ -724,7 +739,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnRects* pColumnRects, int iColumnIndex)
+STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfoItem* pColumnsInfoItem, int iColumnIndex)
 {
 	map<UINT, AnimationItemData>::iterator it = m_steps.find(uiIndex);
 	if (it == m_steps.end())
@@ -744,7 +759,7 @@ STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnRect
 	else
 	{
 		CComBSTR bstrValue;
-		RETURN_IF_FAILED(pColumnRects->GetRectStringProp(iColumnIndex, VAR_VALUE, &bstrValue));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstrValue));
 
 		AnimationItemImageData si;
 		si.index = uiIndex;

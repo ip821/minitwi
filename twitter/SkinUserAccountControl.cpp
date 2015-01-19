@@ -86,7 +86,7 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 	return S_OK;
 }
 
-void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect = false)
+void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect = false, COLORREF colorRefBrush)
 {
 	const int diff_x = 10;
 	const int diff_y = 0; // diff_x / 2;
@@ -99,16 +99,26 @@ void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText, bo
 
 	Gdiplus::Region r(rgn);
 	Gdiplus::Graphics g(cdc);
-	static Color colorBrush(0x882F4F4F);
+	Color colorBrush(0x882F4F4F);
+	if (colorRefBrush)
+		colorBrush.SetFromCOLORREF(colorRefBrush);
 	Gdiplus::SolidBrush brush(colorBrush);
 	g.FillRegion(&brush, &r);
 }
 
-STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject)
+STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject, IColumnsInfo* pColumnsInfo)
 {
 	CRect rect = *lpRect;
 	CDCHandle cdc(hdc);
-	COLORREF dwTextColor = Color((ARGB)Color::White).ToCOLORREF();
+
+	CRect rectDisplayName;
+	CRect rectScreenName;
+	CRect rectBox;
+	CRect rectFollowButton;
+	RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, &rectScreenName, &rectDisplayName, &rectBox, &rectFollowButton));
+
+	DWORD dwTextColor = 0;
+	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ACCOUNT_CONTROL_TEXT, &dwTextColor));
 
 	cdc.SetBkMode(TRANSPARENT);
 	cdc.SetTextColor(dwTextColor);
@@ -129,33 +139,13 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vScreenName));
 	ATLASSERT(vScreenName.vt == VT_BSTR);
 	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
-	CSize szScreenName;
-	cdc.GetTextExtent(bstrScreenName, bstrScreenName.Length(), &szScreenName);
 
-	auto maxWidth = max(szDisplayName.cx, szScreenName.cx);
-	auto boxHeight = szDisplayName.cy + szScreenName.cy + 1 - 10;
-	auto boxWidth = boxHeight;
-	auto boxLeft = rect.Width() / 2 - maxWidth / 2 - boxWidth / 2;
-
-	CRect rectDisplayName;
-	rectDisplayName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
-	rectDisplayName.top = rect.Height() * DISTANCE_DISPLAY_NAME;
-	rectDisplayName.right = rectDisplayName.left + szDisplayName.cx;
-	rectDisplayName.bottom = rectDisplayName.top + szDisplayName.cy;
 	DrawRoundedRect(cdc, rectDisplayName);
 	cdc.DrawText(bstrDisplayName, bstrDisplayName.Length(), &rectDisplayName, 0);
 
-	CRect rectScreenName;
-	rectScreenName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
-	rectScreenName.top = rectDisplayName.bottom + 1;
-	rectScreenName.right = rectScreenName.left + szScreenName.cx;
-	rectScreenName.bottom = rectScreenName.top + szScreenName.cy;
 	DrawRoundedRect(cdc, rectScreenName);
 	cdc.DrawText(bstrScreenName, bstrScreenName.Length(), &rectScreenName, 0);
 
-	auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
-	CRect rectBox = CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight);
-	m_rectUserImage = rectBox;
 	DrawRoundedRect(cdc, rectBox, true);
 
 	CComVariant vUserImage;
@@ -170,6 +160,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 		cdcBitmap.CreateCompatibleDC(cdc);
 		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmapUserImage);
 
+		auto maxWidth = max(rectDisplayName.Width(), rectScreenName.Width());
+		auto boxHeight = rectDisplayName.Width() + rectScreenName.Width() + 1 - 10;
+		auto boxWidth = boxHeight;
+		auto boxLeft = rect.Width() / 2 - maxWidth / 2 - boxWidth / 2;
+		auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
 		auto diff_x = (boxWidth / 2) - (tBitmap.Width / 2);
 		auto diff_y = (boxHeight / 2) - (tBitmap.Height / 2);
 		CRect rectBimtpaUserImage;
@@ -209,6 +204,56 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_FOLLOWERS_COUNT, L"Followers: ");
 	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_FRIENDS_COUNT, L"Following: ");
 	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_TWEETS_COUNT, L"Tweets: ");
+
+	CComVariant vFollowing;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_ISFOLLOWING, &vFollowing));
+	auto bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
+
+	BOOL bFollowButtonDisabled = FALSE;
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+		CComBSTR bstrColumnName;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+		if (bstrColumnName != CComBSTR(VAR_ITEM_FOLLOW_BUTTON))
+			continue;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &bFollowButtonDisabled));
+	}
+
+	HFONT hFontFollowButton = 0;
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
+	cdc.SelectFont(hFontFollowButton);
+
+	DWORD dwFollowButtonColor = 0;
+	if (bFollowing)
+	{
+		if (bFollowButtonDisabled)
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
+		}
+		else
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, &dwFollowButtonColor));
+		}
+		DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);
+		cdc.DrawText(m_strFollowing, m_strFollowing.GetLength(), rectFollowButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+	}
+	else
+	{
+		if (bFollowButtonDisabled)
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
+		}
+		else
+		{
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT, &dwFollowButtonColor));
+		}
+		DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);
+		cdc.DrawText(m_strFollow, m_strFollow.GetLength(), rectFollowButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+	}
 
 	return S_OK;
 }
@@ -263,12 +308,97 @@ STDMETHODIMP CSkinUserAccountControl::AnimationNextFrame(BOOL* pbContinueAnimati
 	return 0;
 }
 
-STDMETHODIMP CSkinUserAccountControl::GetColumnRect(BSTR bstrColumnName, RECT* pRect)
+STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject)
 {
-	CHECK_E_POINTER(bstrColumnName);
-	CHECK_E_POINTER(pRect);
-	if (CComBSTR(bstrColumnName) != CComBSTR(VAR_TWITTER_USER_IMAGE))
-		return E_INVALIDARG;
-	*pRect = m_rectUserImage;
+	CHECK_E_POINTER(pColumnsInfo);
+
+	CRect rect = *lpRect;
+	CClientDC cdc(hWnd);
+
+	CRect rectUserImage;
+	CRect rectFollowButton;
+	RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, nullptr, nullptr, &rectUserImage, &rectFollowButton));
+
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectUserImage));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
+	}
+
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectFollowButton));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_ITEM_FOLLOW_BUTTON)));
+	}
+
+	return S_OK;
+}
+
+HRESULT CSkinUserAccountControl::MeasureInternal(HDC hdc, RECT clientRect, IVariantObject* pVariantObject, LPRECT lpRectScreenName, LPRECT lpRectDisplayName, LPRECT lpRectUserImage, LPRECT lpRectFollowButton)
+{
+	CDCHandle cdc(hdc);
+	CRect rect = clientRect;
+
+	CComVariant vDisplayName;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vDisplayName));
+	ATLASSERT(vDisplayName.vt == VT_BSTR);
+
+	HFONT font = 0;
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, &font));
+	CDCSelectFontScope cdcSelectFontScope(cdc, font);
+
+	CComBSTR bstrDisplayName(vDisplayName.bstrVal);
+	CSize szDisplayName;
+	cdc.GetTextExtent(bstrDisplayName, bstrDisplayName.Length(), &szDisplayName);
+
+	CComVariant vScreenName;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vScreenName));
+	ATLASSERT(vScreenName.vt == VT_BSTR);
+	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
+	CSize szScreenName;
+	cdc.GetTextExtent(bstrScreenName, bstrScreenName.Length(), &szScreenName);
+
+	auto maxWidth = max(szDisplayName.cx, szScreenName.cx);
+	auto boxHeight = szDisplayName.cy + szScreenName.cy + 1 - 10;
+	auto boxWidth = boxHeight;
+	auto boxLeft = rect.Width() / 2 - maxWidth / 2 - boxWidth / 2;
+
+	CRect rectDisplayName;
+	rectDisplayName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
+	rectDisplayName.top = rect.Height() * DISTANCE_DISPLAY_NAME;
+	rectDisplayName.right = rectDisplayName.left + szDisplayName.cx;
+	rectDisplayName.bottom = rectDisplayName.top + szDisplayName.cy;
+
+	CRect rectScreenName;
+	rectScreenName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
+	rectScreenName.top = rectDisplayName.bottom + 1;
+	rectScreenName.right = rectScreenName.left + szScreenName.cx;
+	rectScreenName.bottom = rectScreenName.top + szScreenName.cy;
+
+	auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
+	CRect rectBox = CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight);
+
+	HFONT hFontFollowButton = 0;
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
+	cdc.SelectFont(hFontFollowButton);
+	CSize szFollowButtonCaption;
+	cdc.GetTextExtent(m_strFollowing, m_strFollowing.GetLength(), &szFollowButtonCaption);
+	CRect rectFollowButton;
+	rectFollowButton.bottom = rect.bottom - 15;
+	rectFollowButton.top = rectFollowButton.bottom - szFollowButtonCaption.cy - 20;
+	rectFollowButton.right = rect.right - 15;
+	rectFollowButton.left = rectFollowButton.right - szFollowButtonCaption.cx - 20;
+
+	if (lpRectScreenName)
+		*lpRectScreenName = rectScreenName;
+	if (lpRectDisplayName)
+		*lpRectDisplayName = rectDisplayName;
+	if (lpRectUserImage)
+		*lpRectUserImage = rectBox;
+	if (lpRectFollowButton)
+		*lpRectFollowButton = rectFollowButton;
+
 	return S_OK;
 }

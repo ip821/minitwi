@@ -66,6 +66,7 @@ private:
 	CComQIPtr<ISearchTimelineControl> m_pTimelineControl;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<IViewControllerService> m_pViewControllerService;
+	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 
 	DWORD m_dwAdvice = 0;
 	HWND m_hWndTimelineControl = 0;

@@ -3,9 +3,11 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "twitter_i.h"
+#include <gdiplus.h>
 
 using namespace ATL;
 using namespace std;
+using namespace Gdiplus;
 
 // CSkinCommonControl
 
@@ -32,18 +34,33 @@ private:
 
 	map<HWND, int> m_refs;
 
+	enum class ControlType
+	{
+		Unknown = 0,
+		Static = 1,
+		Button = 2
+	};
+
+	struct WindowDescriptor
+	{
+		HWND hWnd;
+		LONG_PTR pWndProc;
+		ControlType controlType;
+		bool isParent;
+	};
+
 	static CBrush m_bkColor;
-	static map<HWND, LONG_PTR> m_procs;
+	static map<HWND, WindowDescriptor> m_procs;
 
 	static LRESULT WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-
 public:
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
-	STDMETHOD(RegisterControl)(HWND hWnd);
-	STDMETHOD(UnregisterControl)(HWND hWnd);
-
+	STDMETHOD(RegisterStaticControl)(HWND hWnd);
+	STDMETHOD(UnregisterStaticControl)(HWND hWnd);
+	STDMETHOD(RegisterButtonControl)(HWND hWnd);
+	STDMETHOD(UnregisterButtonControl)(HWND hWnd);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinCommonControl), CSkinCommonControl)

@@ -2,13 +2,18 @@
 #include "UserAccountControl.h"
 #include "Plugins.h"
 
+#define OFFSET_X 10
+#define OFFSET_Y 20
+
 HRESULT CUserAccountControl::FinalConstruct()
 {
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	return S_OK;
 }
 
 void CUserAccountControl::FinalRelease()
 {
+	m_pColumnsInfo.Release();
 	if (m_hWnd)
 		DestroyWindow();
 }
@@ -19,10 +24,12 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_DownloadService, &m_pDownloadService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_WindowService, &m_pWindowService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pFollowThreadService));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &dw_mAdviceDownloadService));
+	RETURN_IF_FAILED(AtlAdvise(m_pFollowThreadService, pUnk, __uuidof(IThreadServiceEventSink), &dw_mAdviceFollowService));
 
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
@@ -33,7 +40,10 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 STDMETHODIMP CUserAccountControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), dw_mAdviceDownloadService));
+	RETURN_IF_FAILED(AtlUnadvise(m_pFollowThreadService, __uuidof(IThreadServiceEventSink), dw_mAdviceFollowService));
 
+	m_pTheme.Release();
+	m_pSkinCommonControl.Release();
 	m_pSkinUserAccountControl.Release();
 	m_pVariantObject.Release();
 	m_pImageManagerService.Release();
@@ -41,6 +51,7 @@ STDMETHODIMP CUserAccountControl::OnShutdown()
 	m_pThemeFontMap.Release();
 	m_pDownloadService.Release();
 	m_pWindowService.Release();
+	m_pFollowThreadService.Release();
 
 	return S_OK;
 }
@@ -68,13 +79,18 @@ STDMETHODIMP CUserAccountControl::SetVariantObject(IVariantObject *pVariantObjec
 {
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
+	UpdateRects();
 	return S_OK;
 }
 
-STDMETHODIMP CUserAccountControl::SetSkinUserAccountControl(ISkinUserAccountControl* pSkinUserAccountControl)
+STDMETHODIMP CUserAccountControl::SetTheme(ITheme* pTheme)
 {
-	CHECK_E_POINTER(pSkinUserAccountControl);
-	m_pSkinUserAccountControl = pSkinUserAccountControl;
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
+	RETURN_IF_FAILED(m_pTheme->GetSkinUserAccountControl(&m_pSkinUserAccountControl));
+	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
+	UpdateRects();
 	return S_OK;
 }
 
@@ -92,7 +108,7 @@ LRESULT CUserAccountControl::OnPrintClient(UINT uMsg, WPARAM wParam, LPARAM lPar
 {
 	CRect rect;
 	GetClientRect(&rect);
-	m_pSkinUserAccountControl->Draw((HDC)wParam, &rect, m_pVariantObject);
+	m_pSkinUserAccountControl->Draw((HDC)wParam, &rect, m_pVariantObject, m_pColumnsInfo);
 	return 0;
 }
 
@@ -107,11 +123,57 @@ LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	CRect rect = ps.rcPaint;
 	CDC cdc(ps.hdc);
 
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Draw(cdc, &rect, m_pVariantObject));
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->GetColumnRect(VAR_TWITTER_USER_IMAGE, &m_rectUserImage));
-
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Draw(cdc, &rect, m_pVariantObject, m_pColumnsInfo));
 	EndPaint(&ps);
 	return 0;
+}
+
+LRESULT CUserAccountControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	UpdateRects();
+	return 0;
+}
+
+void CUserAccountControl::UpdateRects()
+{
+	m_rectUserImage.SetRectEmpty();
+	m_rectFollowButton.SetRectEmpty();
+	m_pColumnsInfo->Clear();
+
+	if (!m_pSkinUserAccountControl || !m_pVariantObject)
+		return;
+
+	CRect rect;
+	GetClientRect(&rect);
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(m_hWnd, &rect, m_pColumnsInfo, m_pVariantObject));
+
+	UINT uiCount = 0;
+	ASSERT_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+
+		{
+			CComBSTR bstrColumnName;
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+			if (bstrColumnName == CComBSTR(VAR_TWITTER_USER_IMAGE))
+			{
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectUserImage));
+				continue;
+			}
+		}
+
+		{
+			CComBSTR bstrColumnName;
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+			if (bstrColumnName == CComBSTR(VAR_ITEM_FOLLOW_BUTTON))
+			{
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectFollowButton));
+				continue;
+			}
+		}
+	}
 }
 
 STDMETHODIMP CUserAccountControl::OnActivate()
@@ -232,19 +294,56 @@ LRESULT CUserAccountControl::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
 	auto x = GET_X_LPARAM(lParam);
 	auto y = GET_Y_LPARAM(lParam);
 
-	if (!m_rectUserImage.PtInRect(CPoint(x, y)))
-		return 0;
+	if (m_rectUserImage.PtInRect(CPoint(x, y)))
+	{
+		CComVariant vUserImage;
+		ASSERT_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+		if (vUserImage.vt != VT_BSTR)
+			return 0;
+		CString strUrl(vUserImage.bstrVal);
+		strUrl.Replace(L"_normal", L"");
 
-	CComVariant vUserImage;
-	ASSERT_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
-	if (vUserImage.vt != VT_BSTR)
-		return 0;
-	CString strUrl(vUserImage.bstrVal);
-	strUrl.Replace(L"_normal", L"");
-
-	CComPtr<IVariantObject> pUrlObject;
-	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
-	ASSERT_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(strUrl)));
-	ASSERT_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
+		CComPtr<IVariantObject> pUrlObject;
+		ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
+		ASSERT_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(strUrl)));
+		ASSERT_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
+	}
+	else if (m_rectFollowButton.PtInRect(CPoint(x, y)) && !m_bFollowButtonDisabled)
+	{
+		RETURN_IF_FAILED(m_pFollowThreadService->Run());
+	}
 	return 0;
+}
+
+STDMETHODIMP CUserAccountControl::OnStart(IVariantObject *pResult)
+{
+	m_bFollowButtonDisabled = TRUE;
+	UpdateColumnInfo();
+	Invalidate();
+	return S_OK;
+}
+
+STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
+{
+	m_bFollowButtonDisabled = FALSE;
+	UpdateColumnInfo();
+	Invalidate();
+	return S_OK;
+}
+
+STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
+{
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+		CComBSTR bstrColumnName;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+		if (bstrColumnName != CComBSTR(VAR_ITEM_FOLLOW_BUTTON))
+			continue;
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, m_bFollowButtonDisabled));
+	}
+	return S_OK;
 }

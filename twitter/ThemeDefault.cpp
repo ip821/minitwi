@@ -33,6 +33,10 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_ANIMATION_ACTIVE, (ARGB)Color::Black));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_ANIMATION_INACTIVE, (ARGB)Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_PICTURE_WINDOW_TEXT, (ARGB)Color::White));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ACCOUNT_CONTROL_TEXT, (ARGB)Color::White));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_FOLLOW_BUTTON_RECT, (ARGB)Color::DarkCyan));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, (ARGB)Color::DarkCyan));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, (ARGB)Color::Gray));
 
 	RETURN_IF_FAILED(m_pSkinTabControl->SetColorMap(m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetColorMap(m_pThemeColorMap));
@@ -56,6 +60,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TAB_HEADER, FONT_NAME, FONT_SIZE, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, FONT_NAME, FONT_SIZE * 2, TRUE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_PICTURE_WINDOW_TEXT, FONT_NAME, FONT_SIZE, FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_ITEM_FOLLOW_BUTTON, FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
 
 	RETURN_IF_FAILED(m_pSkinTabControl->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetFontMap(m_pThemeFontMap));
