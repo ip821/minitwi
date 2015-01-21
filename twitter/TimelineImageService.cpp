@@ -14,6 +14,10 @@ STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProv
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pControl;
+	ATLASSERT(pTimelineControlSupport);
+	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
+
 	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
 
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
@@ -232,13 +236,6 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 			}
 		}
 	}
-	return S_OK;
-}
-
-STDMETHODIMP CTimelineImageService::SetTimelineControl(ITimelineControl* pTimelineControl)
-{
-	CHECK_E_POINTER(pTimelineControl);
-	m_pTimelineControl = pTimelineControl;
 	return S_OK;
 }
 

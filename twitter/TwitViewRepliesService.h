@@ -52,8 +52,6 @@ public:
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
-	STDMETHOD(SetTimelineControl)(ITimelineControl *pTimelineControl);
-
 	STDMETHOD(Load)(ISettings* pSettings);
 
 	STDMETHOD(OnStart)(IVariantObject *pResult);

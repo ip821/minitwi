@@ -83,6 +83,17 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 	}
 
 	{
+		CComPtr<IControl> pControlLists;
+		RETURN_IF_FAILED(pFormManager->FindForm(CLSID_ListsControl, &pControlLists));
+		CComQIPtr<IThemeSupport> pThemeSupport = pControlLists;
+		ATLASSERT(pThemeSupport);
+		if (pThemeSupport)
+		{
+			RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pCurrentTheme));
+		}
+	}
+
+	{
 		CComPtr<IControl> pControlSearch;
 		RETURN_IF_FAILED(pFormManager->FindForm(CLSID_SearchControl, &pControlSearch));
 		CComQIPtr<IThemeSupport> pThemeSupport = pControlSearch;

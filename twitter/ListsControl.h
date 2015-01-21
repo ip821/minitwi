@@ -13,8 +13,7 @@ class ATL_NO_VTABLE CListsControl :
 	public CComCoClass<CListsControl, &CLSID_HomeTimeLineControl>,
 	public CWindowImpl<CListsControl>,
 	public CBaseTimeLineControl<CListsControl>,
-	public IListsControl,
-	public IInitializeWithVariantObject
+	public IListsControl
 {
 public:
 	CListsControl()
@@ -32,7 +31,6 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IServiceProviderSupport)
 		COM_INTERFACE_ENTRY(ITimelineControlSupport)
-		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CListsControl)
@@ -60,15 +58,11 @@ public:
 
 protected:
 	virtual HRESULT Initializing() override;
-	virtual HRESULT Initialized() override;
-	virtual HRESULT ShuttingDown() override;
 
 private:
-	CComPtr<IVariantObject> m_pVariantObject;
+	
 public:
 	STDMETHOD(GetText)(BSTR* pbstr);
-	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
-	STDMETHOD(GetVariantObject)(IVariantObject** ppVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ListsControl), CListsControl)

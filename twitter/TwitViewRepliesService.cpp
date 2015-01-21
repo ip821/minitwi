@@ -10,6 +10,10 @@ STDMETHODIMP CTwitViewRepliesService::OnInitialized(IServiceProvider* pServicePr
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
 
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pControl;
+	ATLASSERT(pTimelineControlSupport);
+	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
+
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
@@ -40,13 +44,6 @@ STDMETHODIMP CTwitViewRepliesService::SetVariantObject(IVariantObject* pVariantO
 {
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
-	return S_OK;
-}
-
-STDMETHODIMP CTwitViewRepliesService::SetTimelineControl(ITimelineControl *pTimelineControl)
-{
-	CHECK_E_POINTER(pTimelineControl);
-	m_pTimelineControl = pTimelineControl;
 	return S_OK;
 }
 

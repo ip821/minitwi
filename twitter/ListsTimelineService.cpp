@@ -1,34 +1,28 @@
 #include "stdafx.h"
-#include "SearchTimelineService.h"
+#include "ListsTimelineService.h"
 #include "Plugins.h"
 #include "twitconn_contract_i.h"
 #include "TimelineService.h"
 #include "UpdateScope.h"
 
-#ifdef DEBUG
-#define COUNT_ITEMS 10
-#else
-#define COUNT_ITEMS 100
-#endif
-
-STDMETHODIMP CSearchTimelineService::OnInitialized(IServiceProvider* pServiceProvider)
+STDMETHODIMP CListsTimelineService::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
-
-	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pControl;
-	ATLASSERT(pTimelineControlSupport);
-	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pControl;
+	ATLASSERT(pTimelineControlSupport);
+	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
+
 	return S_OK;
 }
 
-STDMETHODIMP CSearchTimelineService::OnShutdown()
+STDMETHODIMP CListsTimelineService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	{
@@ -40,20 +34,12 @@ STDMETHODIMP CSearchTimelineService::OnShutdown()
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
 	m_pSettings.Release();
-	m_pVariantObject.Release();
 	IInitializeWithControlImpl::OnShutdown();
 
 	return S_OK;
 }
 
-STDMETHODIMP CSearchTimelineService::SetVariantObject(IVariantObject* pVariantObject)
-{
-	CHECK_E_POINTER(pVariantObject);
-	m_pVariantObject = pVariantObject;
-	return S_OK;
-}
-
-STDMETHODIMP CSearchTimelineService::Load(ISettings* pSettings)
+STDMETHODIMP CListsTimelineService::Load(ISettings* pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	{
@@ -63,17 +49,16 @@ STDMETHODIMP CSearchTimelineService::Load(ISettings* pSettings)
 	return S_OK;
 }
 
-STDMETHODIMP CSearchTimelineService::OnStart(IVariantObject *pResult)
+STDMETHODIMP CListsTimelineService::OnStart(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
 	return S_OK;
 }
 
-STDMETHODIMP CSearchTimelineService::OnRun(IVariantObject *pResult)
+STDMETHODIMP CListsTimelineService::OnRun(IVariantObject *pResult)
 {
-	CComPtr<ISearchTimelineService> guard = this;
-	CComPtr<IVariantObject> pVariantObjectMember = m_pVariantObject;
+	CComPtr<CListsTimelineService> guard = this;
 	CHECK_E_POINTER(pResult);
 	CComPtr<ISettings> pSettings;
 	{
@@ -92,20 +77,16 @@ STDMETHODIMP CSearchTimelineService::OnRun(IVariantObject *pResult)
 
 	CComPtr<ITwitterConnection> pConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-	RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
-
-	CComVariant vText;
-	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TEXT, &vText));
-	ATLASSERT(vText.vt == VT_BSTR);
+	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
 	CComPtr<IObjArray> pObjectArray;
-	RETURN_IF_FAILED(pConnection->Search(vText.bstrVal, NULL, COUNT_ITEMS, &pObjectArray));
+	//RETURN_IF_FAILED(pConnection->Search(vText.bstrVal, NULL, COUNT_ITEMS, &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 
 	return S_OK;
 }
 
-STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
+STDMETHODIMP CListsTimelineService::OnFinish(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 

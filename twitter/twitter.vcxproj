@@ -258,6 +258,7 @@
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="CustomTabControl.cpp" />
     <ClCompile Include="ListsControl.cpp" />
+    <ClCompile Include="ListsTimelineService.cpp" />
     <ClCompile Include="PictureWindowSaveCommand.cpp" />
     <ClCompile Include="ScrollControl.cpp" />
     <ClCompile Include="SearchControl.cpp" />
@@ -354,6 +355,7 @@
     <ClInclude Include="FollowService.h" />
     <ClInclude Include="GdilPlusUtils.h" />
     <ClInclude Include="ListsControl.h" />
+    <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="PictureWindowSaveCommand.h" />
     <ClInclude Include="SearchControl.h" />
     <ClInclude Include="SearchTimelineControl.h" />

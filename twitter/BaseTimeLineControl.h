@@ -68,23 +68,11 @@ public:
 
 		RETURN_IF_FAILED(HrNotifyOnInitialized(m_pTimelineControl, m_pPluginSupport));
 
-		CComPtr<ITimelineImageService> pTimelineImageService;
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineImageService, &pTimelineImageService));
-		RETURN_IF_FAILED(pTimelineImageService->SetTimelineControl(m_pTimelineControl));
-
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE, &m_pTimelineService));
-		RETURN_IF_FAILED(m_pTimelineService->SetTimelineControl(m_pTimelineControl));
 		RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
 
 		RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
-
-		CComPtr<ITimelineCleanupService> pTimelineCleanupService;
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineCleanupService, &pTimelineCleanupService));
-		if (pTimelineCleanupService)
-		{
-			RETURN_IF_FAILED(pTimelineCleanupService->SetTimelineControl(m_pTimelineControl));
-		}
 
 		CComPtr<IThreadService> pThreadServiceUpdateTimeline;
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadServiceUpdateTimeline));

@@ -25,17 +25,14 @@ STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::SetTimelineControl(ITimelineControl* pTimelineControl)
-{
-	CHECK_E_POINTER(pTimelineControl);
-	m_pTimelineControl = pTimelineControl;
-	return S_OK;
-}
-
 STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
+
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pControl;
+	ATLASSERT(pTimelineControlSupport);
+	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));

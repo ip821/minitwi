@@ -196,7 +196,6 @@ interface ITimelineControl : IControl2
 ]
 interface ITimelineService : IUnknown
 {
-	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 
 [
@@ -430,7 +429,6 @@ interface IWindowService : IUnknown
 ]
 interface ITimelineImageService : IUnknown
 {
-	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 
 [
@@ -440,7 +438,6 @@ interface ITimelineImageService : IUnknown
 ]
 interface ITimelineCleanupService : IUnknown
 {
-	HRESULT SetTimelineControl(ITimelineControl* pTimelineControl);
 };
 
 [
@@ -861,6 +858,13 @@ library twitterLib
 	coclass ListsControl
 	{
 		[default] interface IListsControl;
+	};
+	[
+		uuid(A763588D-7894-4A63-B2A1-87CFA15DC421)
+	]
+	coclass ListsTimelineService
+	{
+		[default] interface IUnknown;
 	};
 };
 

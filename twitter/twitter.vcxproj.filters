@@ -119,6 +119,9 @@
     <Filter Include="Controls\ListsControl">
       <UniqueIdentifier>{53b8902a-850c-4687-88bf-39fa91d76943}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\ListsTimelineService">
+      <UniqueIdentifier>{17caccf5-d286-4d2a-a813-f52cbe5ba739}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -273,6 +276,9 @@
     </ClCompile>
     <ClCompile Include="ListsControl.cpp">
       <Filter>Controls\ListsControl</Filter>
+    </ClCompile>
+    <ClCompile Include="ListsTimelineService.cpp">
+      <Filter>Services\ListsTimelineService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -449,6 +455,9 @@
     </ClInclude>
     <ClInclude Include="ListsControl.h">
       <Filter>Controls\ListsControl</Filter>
+    </ClInclude>
+    <ClInclude Include="ListsTimelineService.h">
+      <Filter>Services\ListsTimelineService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
