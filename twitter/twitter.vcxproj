@@ -257,6 +257,7 @@
     <ClCompile Include="HomeTimeLineControl.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="CustomTabControl.cpp" />
+    <ClCompile Include="ListsControl.cpp" />
     <ClCompile Include="PictureWindowSaveCommand.cpp" />
     <ClCompile Include="ScrollControl.cpp" />
     <ClCompile Include="SearchControl.cpp" />
@@ -352,6 +353,7 @@
     <ClInclude Include="ColumnsInfoItem.h" />
     <ClInclude Include="FollowService.h" />
     <ClInclude Include="GdilPlusUtils.h" />
+    <ClInclude Include="ListsControl.h" />
     <ClInclude Include="PictureWindowSaveCommand.h" />
     <ClInclude Include="SearchControl.h" />
     <ClInclude Include="SearchTimelineControl.h" />
@@ -410,7 +412,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SkinTabControl.rgs" />
     <None Include="twitter.def" />
   </ItemGroup>
   <ItemGroup>

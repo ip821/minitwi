@@ -31,6 +31,7 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapHome;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapSearch;
+	shared_ptr<Gdiplus::Bitmap> m_pBitmapLists;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapSettings;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapError;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapInfo;

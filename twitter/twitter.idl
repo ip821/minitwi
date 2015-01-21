@@ -558,6 +558,16 @@ interface IFollowService : IUnknown
 };
 
 [
+	object,
+	uuid(81460622-FB70-4105-9B9A-D478E4F44716),
+	pointer_default(unique)
+]
+interface IListsControl : IUnknown
+{
+
+};
+
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -845,6 +855,13 @@ library twitterLib
 	{
 		[default] interface IFollowService;
 	}; 
+	[
+		uuid(B720FBFB-E607-463A-91C6-13D82741F4F2)
+	]
+	coclass ListsControl
+	{
+		[default] interface IListsControl;
+	};
 };
 
 import "shobjidl.idl";

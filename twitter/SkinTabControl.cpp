@@ -15,6 +15,15 @@ const int ITEM_OFFSET_Y = 1;
 const int TOOLTIP_ID = 1;
 #define ITEM_DELIMITER_HEIGHT 1
 
+#define PADDING_Y 5
+#define PADDING_X 10
+#define IMAGE_TO_TEXT_DISTANCE 0
+
+#define INDEX_CONTROL_HOME 0
+#define INDEX_CONTROL_LISTS 1
+#define INDEX_CONTROL_SEARCH 2
+#define INDEX_CONTROL_SETTINGS 3
+
 STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
 {
 	HMODULE hModule = _AtlBaseModule.GetModuleInstance();
@@ -50,6 +59,7 @@ HRESULT CSkinTabControl::FinalConstruct()
 	InitImageFromResource(IDR_PICTURESETTINGS, L"PNG", m_pBitmapSettings);
 	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
 	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
+	InitImageFromResource(IDR_PICTURELISTS, L"PNG", m_pBitmapLists);
 	return S_OK;
 }
 
@@ -78,10 +88,6 @@ STDMETHODIMP CSkinTabControl::SetFontMap(IThemeFontMap* pThemeFontMap)
 	return S_OK;
 }
 
-#define PADDING_Y 5
-#define PADDING_X 10
-#define IMAGE_TO_TEXT_DISTANCE 0
-
 STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight)
 {
 	m_hWnd = hWnd;
@@ -106,7 +112,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		rectHomeColumn = CRect(x, y, x + (int)m_pBitmapHome->GetWidth(), y + (int)m_pBitmapHome->GetHeight());
 
 		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(0, __uuidof(IControl2), (LPVOID*)&pControl2));
+		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_HOME, __uuidof(IControl2), (LPVOID*)&pControl2));
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pControl2->GetText(&bstr));
 
@@ -121,14 +127,36 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
 	}
 
-	CRect rectSearchColumn;
+	CRect rectListsColumn;
 	{
 		auto x = rectHomeColumn.right + PADDING_X;
 		auto y = PADDING_Y;
-		rectSearchColumn = CRect(x, y, x + (int)m_pBitmapSettings->GetWidth(), y + (int)m_pBitmapSettings->GetHeight());
+		rectListsColumn = CRect(x, y, x + (int)m_pBitmapLists->GetWidth(), y + (int)m_pBitmapLists->GetHeight());
 
 		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(1, __uuidof(IControl2), (LPVOID*)&pControl2));
+		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_LISTS, __uuidof(IControl2), (LPVOID*)&pControl2));
+		CComBSTR bstr;
+		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+
+		CSize sz;
+		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
+		rectListsColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectListsColumn));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
+	}
+
+	CRect rectSearchColumn;
+	{
+		auto x = rectListsColumn.right + PADDING_X;
+		auto y = PADDING_Y;
+		rectSearchColumn = CRect(x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight());
+
+		CComPtr<IControl2> pControl2;
+		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_SEARCH, __uuidof(IControl2), (LPVOID*)&pControl2));
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pControl2->GetText(&bstr));
 
@@ -149,7 +177,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		CRect rect = { x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight() };
 
 		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(2, __uuidof(IControl2), (LPVOID*)&pControl2));
+		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_SETTINGS, __uuidof(IControl2), (LPVOID*)&pControl2));
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pControl2->GetText(&bstr));
 
@@ -229,19 +257,25 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 		UINT imageWidth = 0;
 		UINT imageHeight = 0;
 		CBitmap bitmap;
-		if (i == 0)
+		if (i == INDEX_CONTROL_HOME)
 		{
 			m_pBitmapHome->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
 			imageWidth = m_pBitmapHome->GetWidth();
 			imageHeight = m_pBitmapHome->GetHeight();
 		}
-		else if (i == 1)
+		else if (i == INDEX_CONTROL_LISTS)
+		{
+			m_pBitmapLists->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
+			imageWidth = m_pBitmapLists->GetWidth();
+			imageHeight = m_pBitmapLists->GetHeight();
+		}
+		else if (i == INDEX_CONTROL_SEARCH)
 		{
 			m_pBitmapSearch->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-			imageWidth = m_pBitmapSettings->GetWidth();
-			imageHeight = m_pBitmapSettings->GetHeight();
+			imageWidth = m_pBitmapSearch->GetWidth();
+			imageHeight = m_pBitmapSearch->GetHeight();
 		}
-		else if (i == 2)
+		else if (i == INDEX_CONTROL_SETTINGS)
 		{
 			m_pBitmapSettings->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
 			imageWidth = m_pBitmapSettings->GetWidth();
