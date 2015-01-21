@@ -158,6 +158,55 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::GetLists(IObjArray** ppObjectArray)
+{
+	CHECK_E_POINTER(ppObjectArray);
+
+	USES_CONVERSION;
+
+	string strAppToken = CW2A(m_strAppToken.c_str());
+
+	if (!m_pTwitObj->listsGet())
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	CComPtr<IObjCollection> pObjectCollection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjectCollection));
+	auto items = value.get()->AsArray();
+	for (size_t i = 0; i < items.size(); i++)
+	{
+		auto item = items[i]->AsObject();
+		CComPtr<IVariantObject> pVariantObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+
+		auto strId = item[L"id_str"]->AsString();
+		auto strName = item[L"name"]->AsString();
+		auto userObj = item[L"user"]->AsObject();
+
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(strId.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_NAME, &CComVariant(strName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TEXT, &CComVariant(strName.c_str())));
+
+		CComPtr<IVariantObject> pUserVariantObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));
+		RETURN_IF_FAILED(ParseUser(userObj, pUserVariantObject));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_OBJECT, &CComVariant(pUserVariantObject)));
+
+		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
+	}
+	RETURN_IF_FAILED(pObjectCollection->QueryInterface(ppObjectArray));
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::Search(BSTR bstrQuery, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray)
 {
 	CHECK_E_POINTER(bstrQuery);

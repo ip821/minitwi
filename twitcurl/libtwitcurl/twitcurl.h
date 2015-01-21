@@ -114,6 +114,9 @@ public:
     bool trendsCurrentGet();
     bool trendsAvailableGet();
 
+	/*Twitter lists APIs*/
+	bool listsGet();
+
     /* cURL APIs */
     bool isCurlInit();
     void getLastWebResponse( std::string& outWebResp /* out */ );

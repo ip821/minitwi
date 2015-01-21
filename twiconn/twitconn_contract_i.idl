@@ -20,4 +20,5 @@ interface ITwitterConnection : IUnknown
 	HRESULT Search(BSTR bstrQuery, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray);
 	HRESULT FollowUser(BSTR bstrUserName);
 	HRESULT UnfollowUser(BSTR bstrUserName);
+	HRESULT GetLists(IObjArray** ppObjectArray);
 };

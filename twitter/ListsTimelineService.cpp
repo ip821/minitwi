@@ -80,7 +80,7 @@ STDMETHODIMP CListsTimelineService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
 	CComPtr<IObjArray> pObjectArray;
-	//RETURN_IF_FAILED(pConnection->Search(vText.bstrVal, NULL, COUNT_ITEMS, &pObjectArray));
+	RETURN_IF_FAILED(pConnection->GetLists(&pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 
 	return S_OK;

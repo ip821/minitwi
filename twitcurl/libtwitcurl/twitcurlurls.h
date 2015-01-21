@@ -117,6 +117,8 @@ namespace twitterDefaults
     const std::string TWITCURL_TRENDSWEEKLY_URL = TWITCURL_BASE_URL + "trends/weekly";
     const std::string TWITCURL_TRENDSAVAILABLE_URL = TWITCURL_BASE_URL + "trends/available";
 
+	/* Lists URLs*/
+	const std::string TWITCURL_LISTSLIST_URL = TWITCURL_BASE_URL + "lists/list";
 };
 
 namespace oAuthLibDefaults

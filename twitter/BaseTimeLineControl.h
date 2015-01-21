@@ -41,6 +41,19 @@ protected:
 		return S_OK;
 	}
 
+	virtual HRESULT OnActivateInternal()
+	{
+		RETURN_IF_FAILED(m_pTimelineControl->OnActivate());
+		::SetFocus(m_hWndTimelineControl);
+		return S_OK;
+	}
+
+	virtual HRESULT OnDeactivateInternal()
+	{
+		RETURN_IF_FAILED(m_pTimelineControl->OnDeactivate());
+		return S_OK;
+	}
+
 public:
 	METHOD_EMPTY(STDMETHOD(CreateEx2)(HWND hWndParent, RECT rect, HWND* hWnd));
 	METHOD_EMPTY(STDMETHOD(OnClose)());
@@ -70,13 +83,9 @@ public:
 
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE, &m_pTimelineService));
-		RETURN_IF_FAILED(HrInitializeWithSettings(m_pTimelineService, m_pSettings));
+		RETURN_IF_FAILED(HrInitializeWithSettings(m_pPluginSupport, m_pSettings));
 
 		RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
-
-		CComPtr<IThreadService> pThreadServiceUpdateTimeline;
-		RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadServiceUpdateTimeline));
-		RETURN_IF_FAILED(pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
 
 		CComPtr<IThreadPoolService> pThreadPoolService;
 		RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThreadPoolService, &pThreadPoolService));
@@ -165,14 +174,13 @@ public:
 
 	STDMETHOD(OnActivate)()
 	{
-		RETURN_IF_FAILED(m_pTimelineControl->OnActivate());
-		::SetFocus(m_hWndTimelineControl);
+		RETURN_IF_FAILED(OnActivateInternal());
 		return S_OK;
 	}
 
 	STDMETHOD(OnDeactivate)()
 	{
-		RETURN_IF_FAILED(m_pTimelineControl->OnDeactivate());
+		RETURN_IF_FAILED(OnDeactivateInternal());
 		return S_OK;
 	}
 

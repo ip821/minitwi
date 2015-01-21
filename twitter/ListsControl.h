@@ -56,11 +56,14 @@ public:
 			DestroyWindow();
 	}
 
+private:
+
 protected:
 	virtual HRESULT Initializing() override;
+	virtual HRESULT Initialized() override;
+	virtual HRESULT OnActivateInternal() override;
+	virtual HRESULT OnDeactivateInternal() override;
 
-private:
-	
 public:
 	STDMETHOD(GetText)(BSTR* pbstr);
 };
