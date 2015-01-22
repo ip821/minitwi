@@ -142,7 +142,7 @@ interface ISkinTimeline : IUnknown
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
-	
+
 	HRESULT DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdi);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
 
@@ -580,14 +580,14 @@ library twitterLib
 		[default] interface IPluginTable;
 	};
 	[
-		uuid(75E49C09-05E4-4643-983F-624DC073535A)		
+		uuid(75E49C09-05E4-4643-983F-624DC073535A)
 	]
 	coclass TimelineControl
 	{
 		[default] interface ITimelineControl;
 	};
 	[
-		uuid(5BEE1835-5D53-48C0-AB58-05EC1513010F)		
+		uuid(5BEE1835-5D53-48C0-AB58-05EC1513010F)
 	]
 	coclass FormsService
 	{
@@ -601,42 +601,42 @@ library twitterLib
 		[default] interface IControl;
 	};
 	[
-		uuid(FB68EE85-7555-407C-BECA-64406C74F1BC)		
+		uuid(FB68EE85-7555-407C-BECA-64406C74F1BC)
 	]
 	coclass TimelineService
 	{
 		[default] interface ITimelineService;
 	};
 	[
-		uuid(A31AF0A5-BE10-46FE-974F-55E0AA68070D)		
+		uuid(A31AF0A5-BE10-46FE-974F-55E0AA68070D)
 	]
 	coclass ViewControllerService
 	{
 		[default] interface IViewControllerService;
 	};
 	[
-		uuid(C4587505-CBA9-4583-A0F0-CA7BEF457FA0)		
+		uuid(C4587505-CBA9-4583-A0F0-CA7BEF457FA0)
 	]
 	coclass ThemeService
 	{
 		[default] interface IThemeService;
 	};
 	[
-		uuid(A7C215DD-BB09-4045-9029-9EE9D1D0A389)		
+		uuid(A7C215DD-BB09-4045-9029-9EE9D1D0A389)
 	]
 	coclass ThemeDefault
 	{
 		[default] interface ITheme;
 	};
 	[
-		uuid(B682B92C-ACB3-446D-A37D-E11C901385CA)		
+		uuid(B682B92C-ACB3-446D-A37D-E11C901385CA)
 	]
 	coclass SkinTimeline
 	{
 		[default] interface ISkinTimeline;
 	};
 	[
-		uuid(41F33BEE-3D82-4173-9F5E-79C91523843B)		
+		uuid(41F33BEE-3D82-4173-9F5E-79C91523843B)
 	]
 	coclass ThemeColorMap
 	{
@@ -650,7 +650,7 @@ library twitterLib
 		[default] interface IThemeFontMap;
 	};
 	[
-		uuid(89CA168E-8568-4653-9DCF-8DEB3CA21A37)		
+		uuid(89CA168E-8568-4653-9DCF-8DEB3CA21A37)
 	]
 	coclass ColumnsInfo
 	{
@@ -671,56 +671,56 @@ library twitterLib
 		[default] interface ICommand;
 	};
 	[
-		uuid(204D2E4F-72BE-41EF-8B7D-992B89BE36DA)		
+		uuid(204D2E4F-72BE-41EF-8B7D-992B89BE36DA)
 	]
 	coclass ImageManagerService
 	{
 		[default] interface IImageManagerService;
 	};
 	[
-		uuid(8A7C5710-9FCB-4FD9-83A2-36EE81E10FB9)		
+		uuid(8A7C5710-9FCB-4FD9-83A2-36EE81E10FB9)
 	]
 	coclass DownloadService
 	{
 		[default] interface IDownloadService;
 	};
 	[
-		uuid(8C2F7C68-A0A4-4A79-9908-5FE3D1596C7A)		
+		uuid(8C2F7C68-A0A4-4A79-9908-5FE3D1596C7A)
 	]
 	coclass UpdateService
 	{
 		[default] interface IUpdateService;
 	};
 	[
-		uuid(10AEB079-CE14-4F8F-8CEE-C4C6428BD4E8)		
+		uuid(10AEB079-CE14-4F8F-8CEE-C4C6428BD4E8)
 	]
 	coclass PictureWindow
 	{
 		[default] interface IPictureWindow;
 	};
 	[
-		uuid(DD23A3C8-D851-4F92-9201-276ED70C162F)		
+		uuid(DD23A3C8-D851-4F92-9201-276ED70C162F)
 	]
 	coclass WindowService
 	{
 		[default] interface IWindowService;
 	};
 	[
-		uuid(5A272730-A01D-48FD-9005-A308F656F12D)		
+		uuid(5A272730-A01D-48FD-9005-A308F656F12D)
 	]
 	coclass PictureWindowCopyCommand
 	{
 		[default] interface ICommand;
 	};
 	[
-		uuid(51856EF3-A8A6-4B84-95E7-84C6B107271C)		
+		uuid(51856EF3-A8A6-4B84-95E7-84C6B107271C)
 	]
 	coclass TimelineImageService
 	{
 		[default] interface ITimelineImageService;
 	};
 	[
-		uuid(ECFFA762-CEF8-430C-8B9F-E6203D228D74)		
+		uuid(ECFFA762-CEF8-430C-8B9F-E6203D228D74)
 	]
 	coclass TimelineCleanupService
 	{
@@ -734,7 +734,7 @@ library twitterLib
 		[default] interface ICustomTabControl;
 	};
 	[
-		uuid(A4B1D02D-648F-4D71-9907-7B84B9DF2422)		
+		uuid(A4B1D02D-648F-4D71-9907-7B84B9DF2422)
 	]
 	coclass SkinTabControl
 	{
@@ -809,7 +809,7 @@ library twitterLib
 	coclass SearchControl
 	{
 		[default] interface ISearchControl;
-	}; 
+	};
 	[
 		uuid(DB25B344-8870-45CE-8C9E-CF6F26C32EBE)
 	]
@@ -851,7 +851,7 @@ library twitterLib
 	coclass FollowService
 	{
 		[default] interface IFollowService;
-	}; 
+	};
 	[
 		uuid(B720FBFB-E607-463A-91C6-13D82741F4F2)
 	]
@@ -863,6 +863,20 @@ library twitterLib
 		uuid(A763588D-7894-4A63-B2A1-87CFA15DC421)
 	]
 	coclass ListsTimelineService
+	{
+		[default] interface IUnknown;
+	};
+	[
+		uuid(F35D78C8-546F-4A35-A90C-3FD282925C5A)
+	]
+	coclass ListTimelineControl
+	{
+		[default] interface ITimelineControl;
+	};
+	[
+		uuid(7020C8B1-CCB9-4EDE-B60C-0584580CCB4B)
+	]
+	coclass ListTimelineControlService
 	{
 		[default] interface IUnknown;
 	};

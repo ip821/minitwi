@@ -19,6 +19,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_UserInfoControl, L"User info control object"));
 	RETURN_IF_FAILED(AddObject(CLSID_TwitViewControl, L"Twit view control object"));
 	RETURN_IF_FAILED(AddObject(CLSID_SearchTimelineControl, L"Search timeline control object"));
+	RETURN_IF_FAILED(AddObject(CLSID_ListTimelineControl, L"List timeline control object"));
 
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEME, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PTYPE_THEMECOLORMAP, THEME_DEFAULT, CLSID_ThemeDefault, L"Default theme colors"));
@@ -106,6 +107,18 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for lists control"));
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_UPDATEIMAGES_TIMER, CLSID_TimerService, L"Timer update images service for lists control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for lists control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_OPEN_URLS, CLSID_OpenUrlService, L"Open url service for list timeline control"));
+
+	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ThreadPoolService, CLSID_ThreadPoolService, L"Thread pool service for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_DownloadService, CLSID_DownloadService, L"Download service user for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ImageManagerService, CLSID_ImageManagerService, L"Image manager service for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_UPDATEIMAGES_TIMER, CLSID_TimerService, L"Timer update images service for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_THREAD, CLSID_ThreadService, L"Timeline thread service for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE, CLSID_ListTimelineControlService, L"Timeline service for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service for list timeline control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_OPEN_URLS, CLSID_OpenUrlService, L"Open url service for list timeline control"));
 
 	return S_OK;
 }

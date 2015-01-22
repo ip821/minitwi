@@ -122,6 +122,12 @@
     <Filter Include="Services\ListsTimelineService">
       <UniqueIdentifier>{17caccf5-d286-4d2a-a813-f52cbe5ba739}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\ListTimelineControl">
+      <UniqueIdentifier>{85132372-5011-463e-890b-6028b92e0ac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\ListTimelineControlService">
+      <UniqueIdentifier>{0dd72f09-a37d-453e-88ac-6828e225e515}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -279,6 +285,12 @@
     </ClCompile>
     <ClCompile Include="ListsTimelineService.cpp">
       <Filter>Services\ListsTimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="ListTimelineControl.cpp">
+      <Filter>Controls\ListTimelineControl</Filter>
+    </ClCompile>
+    <ClCompile Include="ListTimelineControlService.cpp">
+      <Filter>Services\ListTimelineControlService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -458,6 +470,12 @@
     </ClInclude>
     <ClInclude Include="ListsTimelineService.h">
       <Filter>Services\ListsTimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="ListTimelineControl.h">
+      <Filter>Controls\ListTimelineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="ListTimelineControlService.h">
+      <Filter>Services\ListTimelineControlService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

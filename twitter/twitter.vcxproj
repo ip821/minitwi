@@ -259,6 +259,8 @@
     <ClCompile Include="CustomTabControl.cpp" />
     <ClCompile Include="ListsControl.cpp" />
     <ClCompile Include="ListsTimelineService.cpp" />
+    <ClCompile Include="ListTimelineControl.cpp" />
+    <ClCompile Include="ListTimelineControlService.cpp" />
     <ClCompile Include="PictureWindowSaveCommand.cpp" />
     <ClCompile Include="ScrollControl.cpp" />
     <ClCompile Include="SearchControl.cpp" />
@@ -356,6 +358,8 @@
     <ClInclude Include="GdilPlusUtils.h" />
     <ClInclude Include="ListsControl.h" />
     <ClInclude Include="ListsTimelineService.h" />
+    <ClInclude Include="ListTimelineControl.h" />
+    <ClInclude Include="ListTimelineControlService.h" />
     <ClInclude Include="PictureWindowSaveCommand.h" />
     <ClInclude Include="SearchControl.h" />
     <ClInclude Include="SearchTimelineControl.h" />

@@ -8,21 +8,19 @@
 using namespace ATL;
 using namespace std;
 
-class ATL_NO_VTABLE CSearchTimelineControl :
+class ATL_NO_VTABLE CListTimelineControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CSearchTimelineControl, &CLSID_SearchTimelineControl>,
-	public CWindowImpl<CSearchTimelineControl>,
-	public CBaseTimeLineControl<CSearchTimelineControl>,
-	public ISearchTimelineControl
+	public CComCoClass<CListTimelineControl, &CLSID_ListTimelineControl>,
+	public CWindowImpl<CListTimelineControl>,
+	public CBaseTimeLineControl<CListTimelineControl>
 {
 public:
-	CSearchTimelineControl()
+	CListTimelineControl()
 	{
 	}
 
 	DECLARE_NO_REGISTRY()
-	BEGIN_COM_MAP(CSearchTimelineControl)
-		COM_INTERFACE_ENTRY(ISearchTimelineControl)
+	BEGIN_COM_MAP(CListTimelineControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
 		COM_INTERFACE_ENTRY(IThemeSupport)
@@ -58,11 +56,12 @@ public:
 
 protected:
 	virtual HRESULT Initializing() override;
-	virtual HRESULT Initialized() override;
+	virtual HRESULT OnActivateInternal() override;
+
 private:
 
 public:
 	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(SearchTimelineControl), CSearchTimelineControl)
+OBJECT_ENTRY_AUTO(__uuidof(ListTimelineControl), CListTimelineControl)

@@ -81,7 +81,19 @@ STDMETHODIMP COpenUrlService::OpenTwitViewForm(IVariantObject* pVariantObject)
 
 STDMETHODIMP COpenUrlService::OnItemDoubleClick(IVariantObject* pVariantObject)
 {
-	RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
+	CComVariant vObjectType;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_OBJECT_TYPE, &vObjectType));
+	if (vObjectType.vt == VT_BSTR)
+	{
+		if (CComBSTR(vObjectType.bstrVal) == CComBSTR(TYPE_TWITTER_OBJECT))
+		{
+			RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
+		}
+		else if (CComBSTR(vObjectType.bstrVal) == CComBSTR(TYPE_LIST_OBJECT))
+		{
+			RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_ListTimelineControl, pVariantObject));
+		}
+	}
 	return S_OK;
 }
 

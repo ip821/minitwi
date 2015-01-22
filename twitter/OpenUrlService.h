@@ -41,8 +41,6 @@ private:
 	STDMETHOD(OpenTwitViewForm)(IVariantObject* pVariantObject);
 	STDMETHOD(OpenUserInfoForm)(IVariantObject* pVariantObject);
 
-private:
-
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
