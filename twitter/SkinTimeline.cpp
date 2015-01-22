@@ -396,8 +396,14 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CString strObjectType;
 	GetValue(pItemObject, CComBSTR(VAR_OBJECT_TYPE), strObjectType);
 
-	if (strObjectType == TYPE_SHOWMORE_OBJECT)
+	if (strObjectType == TYPE_CUSTOM_TIMELINE_OBJECT)
 	{
+		CString strCustomText;
+		GetValue(pItemObject, CComBSTR(VAR_TEXT), strCustomText);
+
+		CString strCustomDisabledText;
+		GetValue(pItemObject, CComBSTR(VAR_ITEM_DISABLED_TEXT), strCustomDisabledText);
+
 		CComVariant vDisabled;
 		pItemObject->GetVariantValue(VAR_ITEM_DISABLED, &vDisabled);
 		auto bDisabled = vDisabled.vt == VT_BOOL && vDisabled.boolVal;
@@ -406,8 +412,8 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			hdc,
 			pColumnsInfo,
 			CString(VAR_COLUMN_SHOW_MORE),
-			bDisabled ? CString(L"Updating...") : CString(L"Show more"),
-			bDisabled ? CString(L"Updating...") : CString(L"Show more"),
+			bDisabled ? strCustomDisabledText : strCustomText,
+			bDisabled ? strCustomDisabledText : strCustomText,
 			0,
 			y,
 			CSize(clientRect.right - clientRect.left),
@@ -421,7 +427,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		lpMeasureItemStruct->itemHeight = y + sz.cy + PADDING_Y;
 		lpMeasureItemStruct->itemWidth = sz.cx;
 	}
-	else if (strObjectType == TYPE_TWITTER_OBJECT)
+	else if (strObjectType == TYPE_TWITTER_OBJECT || strObjectType == TYPE_LIST_OBJECT)
 	{
 		CString strRetweetedDisplayName;
 		GetValue(pItemObject, CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME), strRetweetedDisplayName);

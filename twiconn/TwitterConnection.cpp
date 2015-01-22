@@ -191,10 +191,18 @@ STDMETHODIMP CTwitterConnection::GetLists(IObjArray** ppObjectArray)
 		auto strId = item[L"id_str"]->AsString();
 		auto strName = item[L"name"]->AsString();
 		auto userObj = item[L"user"]->AsObject();
+		auto userScreenName = userObj[L"screen_name"]->AsString();
+		auto userImageUrl = userObj[L"profile_image_url_https"]->AsString();
+		auto userDisplayName = userObj[L"name"]->AsString();
 
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_ID, &CComVariant(strId.c_str())));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_NAME, &CComVariant(strName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TEXT, &CComVariant(strName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_TEXT, &CComVariant(strName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_NORMALIZED_TEXT, &CComVariant(strName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &CComVariant(userDisplayName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_USER_IMAGE, &CComVariant(userImageUrl.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_LIST_OBJECT)));
 
 		CComPtr<IVariantObject> pUserVariantObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));

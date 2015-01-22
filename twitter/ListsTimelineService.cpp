@@ -53,6 +53,15 @@ STDMETHODIMP CListsTimelineService::OnStart(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
+
+	CUpdateScope scope(m_pTimelineControl);
+	CComPtr<IVariantObject> pLoadingObject;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading lists...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading lists...")));
+	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
+
 	return S_OK;
 }
 
@@ -109,6 +118,7 @@ STDMETHODIMP CListsTimelineService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
+	RETURN_IF_FAILED(m_pTimelineControl->Clear());
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
 	return S_OK;
 }

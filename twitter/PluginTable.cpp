@@ -104,6 +104,8 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ImageManagerService, CLSID_ImageManagerService, L"Image manager service for lists control"));
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ThreadPoolService, CLSID_ThreadPoolService, L"Thread pool service for lists control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for lists control"));
+	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_UPDATEIMAGES_TIMER, CLSID_TimerService, L"Timer update images service for lists control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LISTS_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for lists control"));
 
 	return S_OK;
 }

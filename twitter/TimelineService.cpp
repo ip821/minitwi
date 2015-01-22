@@ -15,6 +15,8 @@
 #define COUNT_ITEMS 100
 #endif
 
+#define CUSTOM_OBJECT_LOADING_ID 1
+
 STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
@@ -77,6 +79,15 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 		if (m_bstrUser != L"")
 			uiMaxCount = 20;
 		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_COUNT, &CComVariant(uiMaxCount)));
+
+		CUpdateScope scope(m_pTimelineControl);
+		CComPtr<IVariantObject> pLoadingObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ID, &CComVariant(CUSTOM_OBJECT_LOADING_ID)));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading tweets...")));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading tweets...")));
+		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 	}
 	else
 	{
@@ -212,15 +223,37 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	{
-		CUpdateScope scope(m_pTimelineControl);
+		{
+			CComPtr<IObjArray> pItems;
+			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pItems));
+			UINT uiCount = 0;
+			RETURN_IF_FAILED(pItems->GetCount(&uiCount));
+			if (uiCount)
+			{
+				CComPtr<IVariantObject> pFirstItem;
+				RETURN_IF_FAILED(pItems->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
+				CComVariant vId;
+				RETURN_IF_FAILED(pFirstItem->GetVariantValue(VAR_ID, &vId));
+				CComVariant vObjectType;
+				RETURN_IF_FAILED(pFirstItem->GetVariantValue(VAR_OBJECT_TYPE, &vObjectType));
+				if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == CComBSTR(TYPE_CUSTOM_TIMELINE_OBJECT))
+				{
+					CUpdateScope scope(m_pTimelineControl);
+					RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(0));
+				}
+			}
+		}
 
 		BOOL bEmpty = FALSE;
 		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
+
 		if (bEmpty)
 		{
 			CComPtr<IVariantObject> pShowMoreObject;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pShowMoreObject));
-			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_SHOWMORE_OBJECT)));
+			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Show more")));
+			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Show more")));
 			CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
 			RETURN_IF_FAILED(pObjCollection->AddObject(pShowMoreObject));
 		}
