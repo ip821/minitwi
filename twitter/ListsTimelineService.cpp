@@ -114,6 +114,22 @@ STDMETHODIMP CListsTimelineService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
-	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+	if (uiCount)
+	{
+		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
+	}
+	else
+	{
+		CComPtr<IVariantObject> pNoListsFoundObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pNoListsFoundObject));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_TEXT, &CComVariant(L"No lists found")));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"No lists found")));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
+		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pNoListsFoundObject, 0));
+	}
+
 	return S_OK;
 }

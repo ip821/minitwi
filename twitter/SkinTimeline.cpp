@@ -532,33 +532,36 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				);
 		}
 
-		CSize sizeDateTime;
+		if (strObjectType != TYPE_LIST_OBJECT)
 		{
-			auto x = clientRect.right - clientRect.left;
-			auto y = COLUMN_Y_SPACING + PADDING_Y;
-
-			if (sizeRetweetedDislpayName.cy)
+			CSize sizeDateTime;
 			{
-				y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+				auto x = clientRect.right - clientRect.left;
+				auto y = COLUMN_Y_SPACING + PADDING_Y;
+
+				if (sizeRetweetedDislpayName.cy)
+				{
+					y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+				}
+
+				if (strCreatedAt.IsEmpty())
+					strCreatedAt = L"0s";
+
+				sizeDateTime = AddColumn(
+					hdc,
+					pColumnsInfo,
+					CString(VAR_TWITTER_RELATIVE_TIME),
+					strCreatedAt,
+					strCreatedAt,
+					x,
+					y,
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+					TRUE,
+					FALSE,
+					30,
+					Justify::Right
+					);
 			}
-
-			if (strCreatedAt.IsEmpty())
-				strCreatedAt = L"0s";
-
-			sizeDateTime = AddColumn(
-				hdc,
-				pColumnsInfo,
-				CString(VAR_TWITTER_RELATIVE_TIME),
-				strCreatedAt,
-				strCreatedAt,
-				x,
-				y,
-				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
-				TRUE,
-				FALSE,
-				30,
-				Justify::Right
-				);
 		}
 
 		CSize sizeText;
