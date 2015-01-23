@@ -34,6 +34,11 @@ HRESULT CListsControl::OnActivateInternal()
 	{
 		RETURN_IF_FAILED(pThreadService->Run());
 	}
+
+	HWND hWnd = 0;
+	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hWnd));
+	::SetFocus(hWnd);
+
 	return S_OK;
 }
 

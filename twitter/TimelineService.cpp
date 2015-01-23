@@ -87,6 +87,7 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ID, &CComVariant(CUSTOM_OBJECT_LOADING_ID)));
 		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading tweets...")));
 		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading tweets...")));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 	}
 	else

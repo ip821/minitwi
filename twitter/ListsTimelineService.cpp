@@ -60,6 +60,7 @@ STDMETHODIMP CListsTimelineService::OnStart(IVariantObject *pResult)
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading lists...")));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading lists...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 
 	return S_OK;
@@ -98,12 +99,6 @@ STDMETHODIMP CListsTimelineService::OnRun(IVariantObject *pResult)
 STDMETHODIMP CListsTimelineService::OnFinish(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
-
-	HWND hWnd = 0;
-	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hWnd));
-
-	if (!IsWindowVisible(hWnd))
-		return S_OK;
 
 	CUpdateScope scope(m_pTimelineControl);
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
