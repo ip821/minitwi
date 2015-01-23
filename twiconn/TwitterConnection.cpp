@@ -188,6 +188,34 @@ STDMETHODIMP CTwitterConnection::GetListTweets(BSTR bstrListId, UINT uiCount, IO
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::GetUserSettings(IVariantObject** ppVariantObject)
+{
+	CHECK_E_POINTER(ppVariantObject);
+
+	USES_CONVERSION;
+
+	if (!m_pTwitObj->accountGetSettings())
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	CComPtr<IVariantObject> pVariantObjectSettings;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObjectSettings));
+	auto settingsObject = value.get()->AsObject();
+	auto userScreenName = settingsObject[L"screen_name"]->AsString();
+	RETURN_IF_FAILED(pVariantObjectSettings->SetVariantValue(VAR_TWITTER_USER_NAME, &CComVariant(userScreenName.c_str())));
+	RETURN_IF_FAILED(pVariantObjectSettings->QueryInterface(ppVariantObject));
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::GetLists(IObjArray** ppObjectArray)
 {
 	CHECK_E_POINTER(ppObjectArray);

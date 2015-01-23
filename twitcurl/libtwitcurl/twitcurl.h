@@ -88,6 +88,7 @@ public:
     /* Twitter account APIs */
     bool accountRateLimitGet();
     bool accountVerifyCredGet();
+	bool accountGetSettings();
 
     /* Twitter favorites APIs */
     bool favoriteGet();

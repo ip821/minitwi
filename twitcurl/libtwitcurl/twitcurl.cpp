@@ -1455,6 +1455,14 @@ bool twitCurl::trendsGet()
 		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
 }
 
+bool twitCurl::accountGetSettings()
+{
+	/* Perform GET */
+	return performGet(twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_ACCOUNTSETTINGS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType]);
+}
+
 bool twitCurl::listsGet()
 {
 	/* Perform GET */

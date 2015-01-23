@@ -93,6 +93,7 @@ namespace twitterDefaults
     /* Account URLs */
     const std::string TWITCURL_ACCOUNTRATELIMIT_URL = TWITCURL_BASE_URL + "account/rate_limit_status";
     const std::string TWITCURL_ACCOUNTVERIFYCRED_URL = TWITCURL_BASE_URL + "account/verify_credentials";
+	const std::string TWITCURL_ACCOUNTSETTINGS_URL = TWITCURL_BASE_URL + "account/settings";
 
     /* Favorites URLs */
     const std::string TWITCURL_FAVORITESGET_URL = TWITCURL_BASE_URL + "favorites";
