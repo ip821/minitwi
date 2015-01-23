@@ -565,6 +565,16 @@ interface IListsControl : IUnknown
 };
 
 [
+	object,
+	uuid(CB71393F-9F24-4720-8B54-86B2AF2DC697),
+	pointer_default(unique)
+]
+interface IListTimelineControl : IUnknown
+{
+
+};
+
+[
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),
 	version(1.0),
 ]
@@ -871,7 +881,7 @@ library twitterLib
 	]
 	coclass ListTimelineControl
 	{
-		[default] interface ITimelineControl;
+		[default] interface IListTimelineControl;
 	};
 	[
 		uuid(7020C8B1-CCB9-4EDE-B60C-0584580CCB4B)

@@ -207,6 +207,27 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 		}
 	}
 
+	{
+		CComPtr<IObjArray> pItems;
+		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pItems));
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pItems->GetCount(&uiCount));
+		if (uiCount)
+		{
+			CComPtr<IVariantObject> pFirstItem;
+			RETURN_IF_FAILED(pItems->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
+			CComVariant vId;
+			RETURN_IF_FAILED(pFirstItem->GetVariantValue(VAR_ID, &vId));
+			CComVariant vObjectType;
+			RETURN_IF_FAILED(pFirstItem->GetVariantValue(VAR_OBJECT_TYPE, &vObjectType));
+			if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == CComBSTR(TYPE_CUSTOM_TIMELINE_OBJECT))
+			{
+				CUpdateScope scope(m_pTimelineControl);
+				RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(0));
+			}
+		}
+	}
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
@@ -223,27 +244,6 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	{
-		{
-			CComPtr<IObjArray> pItems;
-			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pItems));
-			UINT uiCount = 0;
-			RETURN_IF_FAILED(pItems->GetCount(&uiCount));
-			if (uiCount)
-			{
-				CComPtr<IVariantObject> pFirstItem;
-				RETURN_IF_FAILED(pItems->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
-				CComVariant vId;
-				RETURN_IF_FAILED(pFirstItem->GetVariantValue(VAR_ID, &vId));
-				CComVariant vObjectType;
-				RETURN_IF_FAILED(pFirstItem->GetVariantValue(VAR_OBJECT_TYPE, &vObjectType));
-				if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == CComBSTR(TYPE_CUSTOM_TIMELINE_OBJECT))
-				{
-					CUpdateScope scope(m_pTimelineControl);
-					RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(0));
-				}
-			}
-		}
-
 		BOOL bEmpty = FALSE;
 		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
 

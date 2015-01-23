@@ -63,6 +63,7 @@ public:
 	STDMETHOD(FollowUser)(BSTR bstrUserName);
 	STDMETHOD(UnfollowUser)(BSTR bstrUserName);
 	STDMETHOD(GetLists)(IObjArray** ppObjectArray);
+	STDMETHOD(GetListTweets)(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterConnection), CTwitterConnection)

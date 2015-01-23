@@ -5,6 +5,12 @@
 #include "TimelineService.h"
 #include "UpdateScope.h"
 
+#ifdef DEBUG
+#define COUNT_ITEMS 10
+#else
+#define COUNT_ITEMS 100
+#endif
+
 STDMETHODIMP CListTimelineControlService::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
@@ -28,6 +34,7 @@ STDMETHODIMP CListTimelineControlService::OnShutdown()
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings.Release();
+		m_pVariantObject.Release();
 	}
 
 	m_pTimelineControl.Release();
@@ -36,6 +43,13 @@ STDMETHODIMP CListTimelineControlService::OnShutdown()
 	m_pSettings.Release();
 	IInitializeWithControlImpl::OnShutdown();
 
+	return S_OK;
+}
+
+STDMETHODIMP CListTimelineControlService::SetVariantObject(IVariantObject* pVariantObject)
+{
+	CHECK_E_POINTER(pVariantObject);
+	m_pVariantObject = pVariantObject;
 	return S_OK;
 }
 
@@ -58,8 +72,8 @@ STDMETHODIMP CListTimelineControlService::OnStart(IVariantObject *pResult)
 	CComPtr<IVariantObject> pLoadingObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading lists...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading lists...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading list tweets...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading list tweets...")));
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 
 	return S_OK;
@@ -70,9 +84,11 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 	CComPtr<CListTimelineControlService> guard = this;
 	CHECK_E_POINTER(pResult);
 	CComPtr<ISettings> pSettings;
+	CComPtr<IVariantObject> pListVariantObject;
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		pSettings = m_pSettings;
+		pListVariantObject = m_pVariantObject;
 	}
 
 	CComPtr<ISettings> pSettingsTwitter;
@@ -88,8 +104,12 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
+	CComVariant vListId;
+	RETURN_IF_FAILED(pListVariantObject->GetVariantValue(VAR_ID, &vListId));
+	ATLASSERT(vListId.vt == VT_BSTR);
+
 	CComPtr<IObjArray> pObjectArray;
-	//RETURN_IF_FAILED(pConnection->GetLists(&pObjectArray));
+	RETURN_IF_FAILED(pConnection->GetListTweets(vListId.bstrVal, COUNT_ITEMS, &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
 
 	return S_OK;
@@ -105,6 +125,9 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 	if (!IsWindowVisible(hWnd))
 		return S_OK;
 
+	CUpdateScope scope(m_pTimelineControl);
+	RETURN_IF_FAILED(m_pTimelineControl->Clear());
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
@@ -112,13 +135,10 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CUpdateScope scope(m_pTimelineControl);
-
 	CComVariant vResult;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
-	RETURN_IF_FAILED(m_pTimelineControl->Clear());
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
 	return S_OK;
 }

@@ -16,3 +16,9 @@ HRESULT CListTimelineControl::OnActivateInternal()
 	RETURN_IF_FAILED(pThreadService->Run());
 	return S_OK;
 }
+
+STDMETHODIMP CListTimelineControl::SetVariantObject(IVariantObject* pVariantObject)
+{
+	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pPluginSupport, pVariantObject));
+	return S_OK;
+}

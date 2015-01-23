@@ -105,6 +105,9 @@ STDMETHODIMP CListsTimelineService::OnFinish(IVariantObject *pResult)
 	if (!IsWindowVisible(hWnd))
 		return S_OK;
 
+	CUpdateScope scope(m_pTimelineControl);
+	RETURN_IF_FAILED(m_pTimelineControl->Clear());
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
@@ -112,13 +115,10 @@ STDMETHODIMP CListsTimelineService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CUpdateScope scope(m_pTimelineControl);
-
 	CComVariant vResult;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
-	RETURN_IF_FAILED(m_pTimelineControl->Clear());
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
 	return S_OK;
 }

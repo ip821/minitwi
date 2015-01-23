@@ -166,6 +166,14 @@ STDMETHODIMP CViewControllerService::OnDeactivate(IControl *pControl)
 		RETURN_IF_FAILED(m_pFormsService->Close(pControl));
 		return S_OK;
 	}
+
+	CComQIPtr<IListTimelineControl> pListTimelineControl = pControl;
+	if (pListTimelineControl)
+	{
+		RETURN_IF_FAILED(m_pFormsService->Close(pControl));
+		return S_OK;
+	}
+
 	return S_OK;
 }
 

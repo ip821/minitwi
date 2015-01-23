@@ -12,7 +12,9 @@ class ATL_NO_VTABLE CListTimelineControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CListTimelineControl, &CLSID_ListTimelineControl>,
 	public CWindowImpl<CListTimelineControl>,
-	public CBaseTimeLineControl<CListTimelineControl>
+	public CBaseTimeLineControl<CListTimelineControl>,
+	public IInitializeWithVariantObject,
+	public IListTimelineControl
 {
 public:
 	CListTimelineControl()
@@ -23,12 +25,14 @@ public:
 	BEGIN_COM_MAP(CListTimelineControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
+		COM_INTERFACE_ENTRY(IListTimelineControl)
 		COM_INTERFACE_ENTRY(IThemeSupport)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IServiceProviderSupport)
 		COM_INTERFACE_ENTRY(ITimelineControlSupport)
+		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserInfoControl)
@@ -62,6 +66,7 @@ private:
 
 public:
 	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
+	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ListTimelineControl), CListTimelineControl)

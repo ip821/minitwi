@@ -38,6 +38,7 @@ namespace twitCurlDefaults
     const std::string TWITCURL_INCLUDE_ENTITIES = "include_entities=";
     const std::string TWITCURL_STRINGIFY_IDS = "stringify_ids=";
     const std::string TWITCURL_INREPLYTOSTATUSID = "in_reply_to_status_id=";
+	const std::string TWITCURL_LISTID = "list_id=";
 
     /* URL separators */
     const std::string TWITCURL_URL_SEP_AMP = "&";
@@ -119,6 +120,7 @@ namespace twitterDefaults
 
 	/* Lists URLs*/
 	const std::string TWITCURL_LISTSLIST_URL = TWITCURL_BASE_URL + "lists/list";
+	const std::string TWITCURL_LISTSTATUSES_URL = TWITCURL_BASE_URL + "lists/statuses";
 };
 
 namespace oAuthLibDefaults

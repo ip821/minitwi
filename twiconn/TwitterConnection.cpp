@@ -158,6 +158,36 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::GetListTweets(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray)
+{
+	CHECK_E_POINTER(bstrListId);
+	CHECK_E_POINTER(ppObjectArray);
+
+	USES_CONVERSION;
+
+	string strListId = CW2A(bstrListId);
+
+	if (!m_pTwitObj->listStatuses(strListId, boost::lexical_cast<string>(uiCount)))
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	CComPtr<IObjCollection> pObjectCollection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjectCollection));
+	auto items = value.get();
+	RETURN_IF_FAILED(ParseTweets(items, pObjectCollection));
+	RETURN_IF_FAILED(pObjectCollection->QueryInterface(ppObjectArray));
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::GetLists(IObjArray** ppObjectArray)
 {
 	CHECK_E_POINTER(ppObjectArray);

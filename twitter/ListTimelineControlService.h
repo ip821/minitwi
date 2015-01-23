@@ -15,7 +15,8 @@ class ATL_NO_VTABLE CListTimelineControlService :
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,
 	public ITimelineService,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public IInitializeWithVariantObject
 {
 public:
 	CListTimelineControlService()
@@ -31,6 +32,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ITimelineService)
+		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
 private:
@@ -38,6 +40,7 @@ private:
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<IVariantObject> m_pVariantObject;
 
 	DWORD m_dwAdvice = 0;
 	boost::mutex m_mutex;
@@ -45,6 +48,8 @@ private:
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();
+
+	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 
 	STDMETHOD(Load)(ISettings* pSettings);
 

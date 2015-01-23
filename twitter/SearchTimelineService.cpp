@@ -67,6 +67,15 @@ STDMETHODIMP CSearchTimelineService::OnStart(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
+
+	CUpdateScope scope(m_pTimelineControl);
+	CComPtr<IVariantObject> pLoadingObject;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Searching...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Searching...")));
+	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
+
 	return S_OK;
 }
 
@@ -115,14 +124,15 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 	if (!IsWindowVisible(hWnd))
 		return S_OK;
 
+	CUpdateScope scope(m_pTimelineControl);
+	RETURN_IF_FAILED(m_pTimelineControl->Clear());
+
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
 	}
-
-	CUpdateScope scope(m_pTimelineControl);
 
 	CComVariant vResult;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
