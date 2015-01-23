@@ -40,7 +40,6 @@ STDMETHODIMP CListTimelineControlService::OnShutdown()
 	m_pTimelineControl.Release();
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
-	m_pSettings.Release();
 	IInitializeWithControlImpl::OnShutdown();
 
 	return S_OK;
