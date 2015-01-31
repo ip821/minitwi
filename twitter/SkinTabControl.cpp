@@ -98,7 +98,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	cdc.CreateCompatibleDC(hdc);
 
 	HFONT font = 0;
-	m_pThemeFontMap->GetFont(CComBSTR(Twitter::Metadata::Tabs::Header), &font);
+	m_pThemeFontMap->GetFont(Twitter::Metadata::Tabs::Header, &font);
 	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	UINT uiHeight = max(m_pBitmapHome->GetHeight(), m_pBitmapSettings->GetHeight()) + PADDING_Y * 2;
@@ -297,7 +297,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 		pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Text, &bstr);
 
 		HFONT font = 0;
-		m_pThemeFontMap->GetFont(CComBSTR(Twitter::Metadata::Tabs::Header), &font);
+		m_pThemeFontMap->GetFont(Twitter::Metadata::Tabs::Header, &font);
 		CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 		CRect rectText = rect;

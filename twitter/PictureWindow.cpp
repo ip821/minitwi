@@ -282,7 +282,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
-	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(Twitter::Metadata::Types::ImagePictureWindow))
+	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::ImagePictureWindow)
 		return S_OK;
 
 	CComVariant vHr;

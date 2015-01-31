@@ -221,7 +221,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 			CComVariant vObjectType;
 			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
-			if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == CComBSTR(Twitter::Metadata::Types::CustomTimelineObject))
+			if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == Twitter::Metadata::Types::CustomTimelineObject)
 			{
 				CUpdateScope scope(m_pTimelineControl);
 				RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(0));
@@ -309,7 +309,7 @@ STDMETHODIMP CTimelineService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem,
 {
 	CComBSTR bstrColumnName;
 	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Metadata::Column::ShowMoreColumn) && !m_bShowMoreRunning)
+	if (CComBSTR(bstrColumnName) == Twitter::Metadata::Column::ShowMoreColumn && !m_bShowMoreRunning)
 	{
 		CComPtr<IObjArray> pObjArray;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));

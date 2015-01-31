@@ -85,11 +85,11 @@ STDMETHODIMP COpenUrlService::OnItemDoubleClick(IVariantObject* pVariantObject)
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
 	if (vObjectType.vt == VT_BSTR)
 	{
-		if (CComBSTR(vObjectType.bstrVal) == CComBSTR(Twitter::Connection::Metadata::TweetObject::TypeId))
+		if (CComBSTR(vObjectType.bstrVal) == Twitter::Connection::Metadata::TweetObject::TypeId)
 		{
 			RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
 		}
-		else if (CComBSTR(vObjectType.bstrVal) == CComBSTR(Twitter::Connection::Metadata::ListObject::TypeId))
+		else if (CComBSTR(vObjectType.bstrVal) == Twitter::Connection::Metadata::ListObject::TypeId)
 		{
 			RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_ListTimelineControl, pVariantObject));
 		}
@@ -106,8 +106,8 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 
 	CString strUrl;
-	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::UserObject::DisplayName) ||
-		CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::UserObject::Name))
+	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::UserObject::DisplayName ||
+		CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::UserObject::Name)
 	{
 		CComVariant vUserObject;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &vUserObject));
@@ -119,7 +119,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		}
 	}
 
-	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName))
+	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName)
 	{
 		CComVariant v;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserName, &v));
@@ -129,19 +129,19 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		}
 	}
 
-	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME))
+	if (CComBSTR(bstrColumnName) == Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME)
 	{
 		RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
 	}
 
-	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::TweetObject::Url))
+	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::Url)
 	{
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstr));
 		strUrl = bstr;
 	}
 
-	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::UserObject::Image))
+	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::UserObject::Image)
 	{
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstr));
@@ -156,7 +156,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		return S_OK;
 	}
 
-	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::TweetObject::Image))
+	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::Image)
 	{
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, &bstr));

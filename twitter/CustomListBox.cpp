@@ -160,7 +160,7 @@ void CCustomListBox::OnItemsUpdated()
 				ASSERT_IF_FAILED(m_columnsInfo[i]->GetItem(j, &pColumnsInfoItem));
 				CComBSTR bstrColumnName;
 				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-				if (bstrColumnName == CComBSTR(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME))
+				if (bstrColumnName == Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME)
 				{
 					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, v.bstrVal));
 					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, v.bstrVal));
@@ -351,7 +351,7 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 					CComBSTR bstrMediaUrl;
 					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, &bstrMediaUrl));
-					if (bstrColumnName == CComBSTR(Twitter::Connection::Metadata::TweetObject::Image) && bstrMediaUrl != CComBSTR(L""))
+					if (bstrColumnName == Twitter::Connection::Metadata::TweetObject::Image && bstrMediaUrl != CComBSTR(L""))
 					{
 						CRect itemRect;
 						GetItemRect(curSel, &itemRect);

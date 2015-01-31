@@ -157,7 +157,7 @@ void CUserAccountControl::UpdateRects()
 		{
 			CComBSTR bstrColumnName;
 			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-			if (bstrColumnName == CComBSTR(Twitter::Connection::Metadata::UserObject::Image))
+			if (bstrColumnName == Twitter::Connection::Metadata::UserObject::Image)
 			{
 				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectUserImage));
 				continue;
@@ -167,7 +167,7 @@ void CUserAccountControl::UpdateRects()
 		{
 			CComBSTR bstrColumnName;
 			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-			if (bstrColumnName == CComBSTR(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON))
+			if (bstrColumnName == Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
 			{
 				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectFollowButton));
 				continue;
@@ -230,7 +230,7 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == CComBSTR(Twitter::Metadata::Types::ImageUserImage) && vUrl.vt == VT_BSTR && vFilePath.vt == VT_BSTR)
+	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserImage && vUrl.vt == VT_BSTR && vFilePath.vt == VT_BSTR)
 	{
 		BOOL bContains = FALSE;
 		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
@@ -241,7 +241,7 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 		Invalidate();
 	}
 
-	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == CComBSTR(Twitter::Metadata::Types::ImageUserBanner) && vUrl.vt == VT_BSTR && m_bstrBannerUrl == vUrl.bstrVal && vFilePath.vt == VT_BSTR)
+	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserBanner && vUrl.vt == VT_BSTR && m_bstrBannerUrl == vUrl.bstrVal && vFilePath.vt == VT_BSTR)
 	{
 		RETURN_IF_FAILED(m_pSkinUserAccountControl->AnimationStart());
 		BOOL bContains = FALSE;
@@ -341,7 +341,7 @@ STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 		CComBSTR bstrColumnName;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-		if (bstrColumnName != CComBSTR(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON))
+		if (bstrColumnName != Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
 			continue;
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, m_bFollowButtonDisabled));
 	}

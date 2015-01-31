@@ -119,7 +119,7 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	if (CComBSTR(vType.bstrVal) == CComBSTR(Twitter::Metadata::Types::SoftwareUpdateVersion))
+	if (CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::SoftwareUpdateVersion)
 	{
 		CComVariant vUrl;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
@@ -144,7 +144,7 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 			return S_OK;
 		}
 	}
-	else if (CComBSTR(vType.bstrVal) == CComBSTR(Twitter::Metadata::Types::SoftwareUpdateMsi))
+	else if (CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::SoftwareUpdateMsi)
 	{
 		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::KeepFileFlag, &CComVariant(true)));
 

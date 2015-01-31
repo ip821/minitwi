@@ -377,7 +377,7 @@ SIZE CSkinTimeline::AddColumn(
 	return sz;
 }
 
-void CSkinTimeline::GetValue(IVariantObject* pItemObject, CComBSTR& bstrColumnName, CString& strValue)
+void CSkinTimeline::GetValue(IVariantObject* pItemObject, const CComBSTR& bstrColumnName, CString& strValue)
 {
 	CComVariant v;
 	pItemObject->GetVariantValue(bstrColumnName, &v);
@@ -396,15 +396,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	wndListBox.GetClientRect(&clientRect);
 
 	CString strObjectType;
-	GetValue(pItemObject, CComBSTR(ObjectModel::Metadata::Object::Type), strObjectType);
+	GetValue(pItemObject, ObjectModel::Metadata::Object::Type, strObjectType);
 
 	if (strObjectType == Twitter::Metadata::Types::CustomTimelineObject)
 	{
 		CString strCustomText;
-		GetValue(pItemObject, CComBSTR(Twitter::Metadata::Object::Text), strCustomText);
+		GetValue(pItemObject, Twitter::Metadata::Object::Text, strCustomText);
 
 		CString strCustomDisabledText;
-		GetValue(pItemObject, CComBSTR(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT), strCustomDisabledText);
+		GetValue(pItemObject, Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, strCustomDisabledText);
 
 		CComVariant vDisabled;
 		pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &vDisabled);
@@ -432,25 +432,25 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	else if (strObjectType == Twitter::Connection::Metadata::TweetObject::TypeId || strObjectType == Twitter::Connection::Metadata::ListObject::TypeId)
 	{
 		CString strRetweetedDisplayName;
-		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName), strRetweetedDisplayName);
+		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, strRetweetedDisplayName);
 
 		CString strRetweetedName;
-		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName), strRetweetedName);
+		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, strRetweetedName);
 
 		CString strDisplayName;
-		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::DisplayName), strDisplayName);
+		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::DisplayName, strDisplayName);
 
 		CString strCreatedAt;
-		GetValue(pItemObject, CComBSTR(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME), strCreatedAt);
+		GetValue(pItemObject, Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME, strCreatedAt);
 
 		CString strName;
-		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::Name), strName);
+		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::Name, strName);
 
 		CString strText;
-		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::TweetObject::NormalizedText), strText);
+		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::NormalizedText, strText);
 
 		CString strImageUrl;
-		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::Image), strImageUrl);
+		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::Image, strImageUrl);
 		
 		CComVariant vDoubleSize;
 		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &vDoubleSize));
@@ -461,7 +461,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 			ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + 48, y + 48)));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(Twitter::Connection::Metadata::UserObject::Image)));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::UserObject::Image));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, CComBSTR(strImageUrl)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
@@ -731,7 +731,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 						ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(Twitter::Connection::Metadata::TweetObject::Image)));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::TweetObject::Image));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, vMediaUrlThumb.bstrVal));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
