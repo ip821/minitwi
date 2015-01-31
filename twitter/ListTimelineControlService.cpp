@@ -71,9 +71,9 @@ STDMETHODIMP CListTimelineControlService::OnStart(IVariantObject *pResult)
 	CComPtr<IVariantObject> pLoadingObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading list tweets...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading list tweets...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"Loading list tweets...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading list tweets...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 
 	return S_OK;
@@ -110,7 +110,7 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 
 	CComPtr<IObjArray> pObjectArray;
 	RETURN_IF_FAILED(pConnection->GetListTweets(vListId.bstrVal, COUNT_ITEMS, &pObjectArray));
-	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjectArray)));
 
 	return S_OK;
 }
@@ -136,7 +136,7 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 	}
 
 	CComVariant vResult;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));

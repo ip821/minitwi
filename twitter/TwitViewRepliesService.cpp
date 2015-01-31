@@ -109,7 +109,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 			{
 				CComPtr<IVariantObject> pParentItem;
 				RETURN_IF_FAILED(pConnection->GetTwit(vOriginalParentTwitId.bstrVal, &pParentItem));
-				RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
+				RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::ParentResult, &CComVariant(pParentItem)));
 				m_bParentRetrieved = true;
 			}
 		}
@@ -118,7 +118,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 		{
 			CComPtr<IVariantObject> pParentItem;
 			RETURN_IF_FAILED(pConnection->GetTwit(vParentTwitId.bstrVal, &pParentItem));
-			RETURN_IF_FAILED(pResult->SetVariantValue(VAR_PARENT_RESULT, &CComVariant(pParentItem)));
+			RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::ParentResult, &CComVariant(pParentItem)));
 			m_bParentRetrieved = true;
 		}
 	}
@@ -153,7 +153,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 		RETURN_IF_FAILED(pObjectCollectionResult->AddObject(pVariantObject));
 	}
 
-	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectCollectionResult)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjectCollectionResult)));
 
 	return S_OK;
 }
@@ -174,7 +174,7 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 	auto insertIndex = 1;
 
 	CComVariant vParentTwit;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_PARENT_RESULT, &vParentTwit));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::ParentResult, &vParentTwit));
 
 	if (vParentTwit.vt == VT_UNKNOWN)
 	{
@@ -185,7 +185,7 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 	}
 
 	CComVariant vResult;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));

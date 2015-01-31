@@ -129,7 +129,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		}
 	}
 
-	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
+	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME))
 	{
 		RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
 	}
@@ -137,14 +137,14 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::TweetObject::Url))
 	{
 		CComBSTR bstr;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstr));
 		strUrl = bstr;
 	}
 
 	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::UserObject::Image))
 	{
 		CComBSTR bstr;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstr));
 		CString strUrl(bstr);
 		strUrl.Replace(L"_normal", L"");
 

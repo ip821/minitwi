@@ -19,7 +19,7 @@ STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObjectCopy));
 	m_pVariantObject = pVariantObjectCopy;
 	RETURN_IF_FAILED(pVariantObject->CopyTo(pVariantObjectCopy));
-	RETURN_IF_FAILED(pVariantObjectCopy->SetVariantValue(VAR_ITEM_DOUBLE_SIZE, &CComVariant(true)));
+	RETURN_IF_FAILED(pVariantObjectCopy->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &CComVariant(true)));
 	RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObjectCopy));
 	
 	{

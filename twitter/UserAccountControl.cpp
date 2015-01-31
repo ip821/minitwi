@@ -167,7 +167,7 @@ void CUserAccountControl::UpdateRects()
 		{
 			CComBSTR bstrColumnName;
 			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-			if (bstrColumnName == CComBSTR(VAR_ITEM_FOLLOW_BUTTON))
+			if (bstrColumnName == CComBSTR(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON))
 			{
 				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectFollowButton));
 				continue;
@@ -186,7 +186,7 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 
 		CComPtr<IVariantObject> pDownloadObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObject));
-		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_URL, &vBannerUrl));
+		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(Twitter::Metadata::Object::Url, &vBannerUrl));
 		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::ImageUserBanner)));
 		RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObject));
 	}
@@ -201,7 +201,7 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 		{
 			CComPtr<IVariantObject> pDownloadObjectUserImage;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObjectUserImage));
-			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_URL, &vUserImage));
+			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(Twitter::Metadata::Object::Url, &vUserImage));
 			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::ImageUserImage)));
 			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObjectUserImage));
 		}
@@ -219,7 +219,7 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 	CComVariant vUrl;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 
@@ -341,9 +341,9 @@ STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 		CComBSTR bstrColumnName;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-		if (bstrColumnName != CComBSTR(VAR_ITEM_FOLLOW_BUTTON))
+		if (bstrColumnName != CComBSTR(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON))
 			continue;
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, m_bFollowButtonDisabled));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, m_bFollowButtonDisabled));
 	}
 	return S_OK;
 }

@@ -76,7 +76,7 @@ STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
 
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/version.txt")));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(L"http://version.minitwi.googlecode.com/git/version.txt")));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::SoftwareUpdateVersion)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 	return S_OK;
@@ -122,7 +122,7 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 	if (CComBSTR(vType.bstrVal) == CComBSTR(Twitter::Metadata::Types::SoftwareUpdateVersion))
 	{
 		CComVariant vUrl;
-		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 		CComVariant vFilePath;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 
@@ -134,9 +134,9 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 			CComPtr<IVariantObject> pDownloadTask;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 #ifdef __WINXP__
-			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/Release_XP/Setup.msi")));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(L"http://version.minitwi.googlecode.com/git/Release_XP/Setup.msi")));
 #else
-			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/Release/Setup.msi")));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(L"http://version.minitwi.googlecode.com/git/Release/Setup.msi")));
 #endif
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::SoftwareUpdateMsi)));
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::Extension, &CComVariant(L".msi")));

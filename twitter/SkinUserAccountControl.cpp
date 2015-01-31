@@ -118,7 +118,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, &rectScreenName, &rectDisplayName, &rectBox, &rectFollowButton));
 
 	DWORD dwTextColor = 0;
-	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ACCOUNT_CONTROL_TEXT, &dwTextColor));
+	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::AccountControlText, &dwTextColor));
 
 	cdc.SetBkMode(TRANSPARENT);
 	cdc.SetTextColor(dwTextColor);
@@ -218,13 +218,13 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 		CComBSTR bstrColumnName;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-		if (bstrColumnName != CComBSTR(VAR_ITEM_FOLLOW_BUTTON))
+		if (bstrColumnName != CComBSTR(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON))
 			continue;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &bFollowButtonDisabled));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &bFollowButtonDisabled));
 	}
 
 	HFONT hFontFollowButton = 0;
-	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
 	cdc.SelectFont(hFontFollowButton);
 
 	DWORD dwFollowButtonColor = 0;
@@ -232,11 +232,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	{
 		if (bFollowButtonDisabled)
 		{
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
 		}
 		else
 		{
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, &dwFollowButtonColor));
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, &dwFollowButtonColor));
 		}
 		DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);
 		cdc.DrawText(m_strFollowing, m_strFollowing.GetLength(), rectFollowButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
@@ -245,11 +245,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	{
 		if (bFollowButtonDisabled)
 		{
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
 		}
 		else
 		{
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_ITEM_FOLLOW_BUTTON_RECT, &dwFollowButtonColor));
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT, &dwFollowButtonColor));
 		}
 		DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);
 		cdc.DrawText(m_strFollow, m_strFollow.GetLength(), rectFollowButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
@@ -330,7 +330,7 @@ STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumns
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectFollowButton));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(VAR_ITEM_FOLLOW_BUTTON)));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)));
 	}
 
 	return S_OK;
@@ -381,7 +381,7 @@ HRESULT CSkinUserAccountControl::MeasureInternal(HDC hdc, RECT clientRect, IVari
 	CRect rectBox = CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight);
 
 	HFONT hFontFollowButton = 0;
-	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
 	cdc.SelectFont(hFontFollowButton);
 	CSize szFollowButtonCaption;
 	cdc.GetTextExtent(m_strFollowing, m_strFollowing.GetLength(), &szFollowButtonCaption);

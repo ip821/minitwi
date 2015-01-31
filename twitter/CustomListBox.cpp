@@ -149,7 +149,7 @@ void CCustomListBox::OnItemsUpdated()
 		ASSERT_IF_FAILED(m_pItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 
 		CComVariant v;
-		ASSERT_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_RELATIVE_TIME, &v));
+		ASSERT_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME, &v));
 		if (v.vt == VT_BSTR)
 		{
 			UINT uiColumnCount = 0;
@@ -160,10 +160,10 @@ void CCustomListBox::OnItemsUpdated()
 				ASSERT_IF_FAILED(m_columnsInfo[i]->GetItem(j, &pColumnsInfoItem));
 				CComBSTR bstrColumnName;
 				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-				if (bstrColumnName == CComBSTR(VAR_TWITTER_RELATIVE_TIME))
+				if (bstrColumnName == CComBSTR(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME))
 				{
-					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, v.bstrVal));
-					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, v.bstrVal));
+					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, v.bstrVal));
+					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, v.bstrVal));
 				}
 			}
 		}
@@ -202,12 +202,12 @@ void CCustomListBox::UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemI
 		ASSERT_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 
 		BOOL bImage = FALSE;
-		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_IMAGE, &bImage));
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bImage));
 		if (!bImage)
 			continue;
 
 		CComBSTR bstrValue;
-		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstrValue));
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstrValue));
 
 		BOOL bContains = FALSE;
 		ASSERT_IF_FAILED(pImageManagerService->ContainsImageKey(bstrValue, &bContains));
@@ -265,7 +265,7 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			if (rect.PtInRect(CPoint(x, y)))
 			{
 				BOOL bIsUrl = FALSE;
-				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_URL, &bIsUrl));
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, &bIsUrl));
 
 				if (bIsUrl)
 				{
@@ -313,7 +313,7 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			if (rect.PtInRect(point) && (i != m_HoveredColumnIndex || uiItem != m_HoveredItemIndex))
 			{
 				BOOL bIsUrl = FALSE;
-				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_URL, &bIsUrl));
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, &bIsUrl));
 
 				if (bIsUrl)
 				{

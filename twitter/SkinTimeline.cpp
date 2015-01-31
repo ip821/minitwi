@@ -125,9 +125,9 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWIT
 		CComBSTR bstrColumnName;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 		BOOL bIsImage = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_IMAGE, &bIsImage));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bIsImage));
 		CComBSTR bstrValue;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstrValue));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstrValue));
 
 		if (!bIsImage)
 			continue;
@@ -233,7 +233,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pCol
 	if (!bDisabledSelection)
 	{
 		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TWITTER_DELIMITER, &dwColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_TWITTER_DELIMITER, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
 		RECT rect = lpdis->lpdi->rcItem;
@@ -252,25 +252,27 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pCol
 		CComBSTR bstrColumnName;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 		CComBSTR bstrText;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_TEXT, &bstrText));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Text, &bstrText));
 		BOOL bIsUrl = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_URL, &bIsUrl));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, &bIsUrl));
 		BOOL bIsWordWrap = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_WORDWRAP, &bIsWordWrap));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_WORDWRAP, &bIsWordWrap));
 		BOOL bIsImage = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_IMAGE, &bIsImage));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bIsImage));
 		BOOL bDoubleSize = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_ITEM_DOUBLE_SIZE, &bDoubleSize));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &bDoubleSize));
 
 		HFONT font = 0;
 		auto bstrFontName = CComBSTR(bstrColumnName);
 		if (bDoubleSize)
-			bstrFontName += VAR_DOUBLE_SIZE_POSTFIX;
+			bstrFontName += Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX;
 		RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrFontName, &font));
 
 		if (lpdis->iHoveredItem == static_cast<int>(lpdis->lpdi->itemID) && lpdis->iHoveredColumn == static_cast<int>(i) && bIsUrl)
 		{
-			RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrFontName + VAR_SELECTED_POSTFIX, &font));
+			CComBSTR bstrFontNameTemp = bstrFontName;
+			bstrFontNameTemp.Append(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX);
+			RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrFontNameTemp, &font));
 		}
 
 		if (!bIsImage)
@@ -314,7 +316,7 @@ SIZE CSkinTimeline::AddColumn(
 	HFONT font = nullptr;
 	auto bstrFontName = CComBSTR(strColumnName);
 	if (bDoubleSize)
-		bstrFontName += VAR_DOUBLE_SIZE_POSTFIX;
+		bstrFontName += Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX;
 	m_pThemeFontMap->GetFont(bstrFontName, &font);
 	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
@@ -358,19 +360,19 @@ SIZE CSkinTimeline::AddColumn(
 		ASSERT_IF_FAILED(pColumnsInfo->DisableSelection(TRUE));
 	}
 	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(strColumnName)));
-	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, CComBSTR(strDisplayText)));
-	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, CComBSTR(strValue)));
+	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, CComBSTR(strDisplayText)));
+	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, CComBSTR(strValue)));
 	if (bWordWrap)
 	{
-		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_WORDWRAP, TRUE));
+		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_WORDWRAP, TRUE));
 	}
 	if (bIsUrl)
 	{
-		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_URL, TRUE));
+		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
 	}
 	if (bDoubleSize)
 	{
-		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_ITEM_DOUBLE_SIZE, TRUE));
+		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, TRUE));
 	}
 	return sz;
 }
@@ -399,13 +401,13 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	if (strObjectType == Twitter::Metadata::Types::CustomTimelineObject)
 	{
 		CString strCustomText;
-		GetValue(pItemObject, CComBSTR(VAR_TEXT), strCustomText);
+		GetValue(pItemObject, CComBSTR(Twitter::Metadata::Object::Text), strCustomText);
 
 		CString strCustomDisabledText;
-		GetValue(pItemObject, CComBSTR(VAR_ITEM_DISABLED_TEXT), strCustomDisabledText);
+		GetValue(pItemObject, CComBSTR(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT), strCustomDisabledText);
 
 		CComVariant vDisabled;
-		pItemObject->GetVariantValue(VAR_ITEM_DISABLED, &vDisabled);
+		pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &vDisabled);
 		auto bDisabled = vDisabled.vt == VT_BOOL && vDisabled.boolVal;
 		auto y = PADDING_Y;
 		CSize sz = AddColumn(
@@ -439,7 +441,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::DisplayName), strDisplayName);
 
 		CString strCreatedAt;
-		GetValue(pItemObject, CComBSTR(VAR_TWITTER_RELATIVE_TIME), strCreatedAt);
+		GetValue(pItemObject, CComBSTR(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME), strCreatedAt);
 
 		CString strName;
 		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::Name), strName);
@@ -451,7 +453,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::Image), strImageUrl);
 		
 		CComVariant vDoubleSize;
-		RETURN_IF_FAILED(pItemObject->GetVariantValue(VAR_ITEM_DOUBLE_SIZE, &vDoubleSize));
+		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &vDoubleSize));
 
 		{
 			auto x = 10;
@@ -460,10 +462,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + 48, y + 48)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(Twitter::Connection::Metadata::UserObject::Image)));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, L""));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, CComBSTR(strImageUrl)));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_IMAGE, TRUE));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_URL, TRUE));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, CComBSTR(strImageUrl)));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
 		}
 
 		CSize sizeRetweetedDislpayName;
@@ -550,7 +552,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				sizeDateTime = AddColumn(
 					hdc,
 					pColumnsInfo,
-					CString(VAR_TWITTER_RELATIVE_TIME),
+					CString(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME),
 					strCreatedAt,
 					strCreatedAt,
 					x,
@@ -730,11 +732,11 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(Twitter::Connection::Metadata::TweetObject::Image)));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, L""));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, vMediaUrlThumb.bstrVal));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, vMediaUrlThumb.bstrVal));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_IMAGE, TRUE));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_URL, TRUE));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
 					}
 
 					lastY += lastHeight;
@@ -768,7 +770,7 @@ STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnsInf
 	else
 	{
 		CComBSTR bstrValue;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_VALUE, &bstrValue));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstrValue));
 
 		AnimationItemImageData si;
 		si.index = uiIndex;

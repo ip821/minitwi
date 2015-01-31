@@ -41,7 +41,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 
 	HRESULT hr = S_OK;
 	CComVariant vUrl;
-	if (FAILED(hr = pResult->GetVariantValue(VAR_URL, &vUrl)) || vUrl.vt != VT_BSTR)
+	if (FAILED(hr = pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl)) || vUrl.vt != VT_BSTR)
 	{
 		curl_easy_cleanup(curl);
 		return E_INVALIDARG;
@@ -142,7 +142,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 {
 	CComVariant vUrl;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 	ATLASSERT(vUrl.vt == VT_BSTR);
 	if (vUrl.vt == VT_BSTR)
 	{
@@ -172,7 +172,7 @@ STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
 	CComVariant vUrl;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_URL, &vUrl));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		ATLASSERT(vUrl.vt == VT_BSTR);

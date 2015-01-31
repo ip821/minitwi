@@ -123,7 +123,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectHomeColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
 	}
 
@@ -145,7 +145,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectListsColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
 	}
 
@@ -167,7 +167,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectSearchColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
 	}
 
@@ -188,7 +188,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rect));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
 	}
 
@@ -237,7 +237,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 
 	{
 		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TWITTER_DELIMITER, &dwColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_TWITTER_DELIMITER, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
 #pragma warning(suppress: 6246)
@@ -294,7 +294,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 		TransparentBlt(cdc, x, y, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
 
 		CComBSTR bstr;
-		pColumnsInfoItem->GetRectStringProp(VAR_TEXT, &bstr);
+		pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Text, &bstr);
 
 		HFONT font = 0;
 		m_pThemeFontMap->GetFont(CComBSTR(Twitter::Metadata::Tabs::Header), &font);
@@ -336,9 +336,9 @@ STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc)
 	rect.top += rect.Height() / 2 - ITEM_SIZE / 2 + ITEM_OFFSET_Y;
 
 	DWORD dwActiveColor = 0;
-	m_pThemeColorMap->GetColor(VAR_ITEM_ANIMATION_ACTIVE, &dwActiveColor);
+	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_ACTIVE, &dwActiveColor);
 	DWORD dwInactiveColor = 0;
-	m_pThemeColorMap->GetColor(VAR_ITEM_ANIMATION_INACTIVE, &dwInactiveColor);
+	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_INACTIVE, &dwInactiveColor);
 
 	CBrush brushActive;
 	brushActive.CreateSolidBrush(dwActiveColor);

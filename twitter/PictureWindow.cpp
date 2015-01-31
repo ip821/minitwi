@@ -242,9 +242,9 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 	auto str = m_bitmapsUrls[index];
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(str)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(str)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant((INT64)m_hWnd)));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ITEM_INDEX, &CComVariant(index)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &CComVariant(index)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::ImagePictureWindow)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 
@@ -311,7 +311,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		return S_OK;
 
 	CComVariant vIndex;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ITEM_INDEX, &vIndex));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &vIndex));
 
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
@@ -428,7 +428,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		CComPtr<IThemeColorMap> pThemeColorMap;
 		ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
 		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwBrushColor));
-		ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_PICTURE_WINDOW_TEXT, &dwTextColor));
+		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::PictureWindowText, &dwTextColor));
 	}
 
 	static HFONT font = 0;
@@ -436,7 +436,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	{
 		CComPtr<IThemeFontMap> pThemeFontMap;
 		ASSERT_IF_FAILED(m_pTheme->GetFontMap(&pThemeFontMap));
-		ASSERT_IF_FAILED(pThemeFontMap->GetFont(VAR_PICTURE_WINDOW_TEXT, &font));
+		ASSERT_IF_FAILED(pThemeFontMap->GetFont(Twitter::Metadata::Drawing::PictureWindowText, &font));
 	}
 	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 

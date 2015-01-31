@@ -72,9 +72,9 @@ STDMETHODIMP CSearchTimelineService::OnStart(IVariantObject *pResult)
 	CComPtr<IVariantObject> pLoadingObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Searching...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Searching...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"Searching...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Searching...")));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
 	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 
 	return S_OK;
@@ -105,12 +105,12 @@ STDMETHODIMP CSearchTimelineService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
 
 	CComVariant vText;
-	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TEXT, &vText));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(Twitter::Metadata::Object::Text, &vText));
 	ATLASSERT(vText.vt == VT_BSTR);
 
 	CComPtr<IObjArray> pObjectArray;
 	RETURN_IF_FAILED(pConnection->Search(vText.bstrVal, NULL, COUNT_ITEMS, &pObjectArray));
-	RETURN_IF_FAILED(pResult->SetVariantValue(VAR_RESULT, &CComVariant(pObjectArray)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjectArray)));
 
 	return S_OK;
 }
@@ -136,7 +136,7 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 	}
 
 	CComVariant vResult;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_RESULT, &vResult));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	UINT uiCount = 0;
@@ -150,9 +150,9 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 		CComPtr<IVariantObject> pNoListsFoundObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pNoListsFoundObject));
 		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_TEXT, &CComVariant(L"No tweets found")));
-		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"No tweets found")));
-		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"No tweets found")));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"No tweets found")));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pNoListsFoundObject, 0));
 	}
 
