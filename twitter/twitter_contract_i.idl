@@ -1,0 +1,569 @@
+import "oaidl.idl";
+import "ocidl.idl";
+import "objmdl_contract_i.idl";
+import "viewmdl_contract_i.idl";
+
+typedef struct TtagDRAWITEMSTRUCT {
+	UINT        CtlType;
+	UINT        CtlID;
+	UINT        itemID;
+	UINT        itemAction;
+	UINT        itemState;
+	HWND        hwndItem;
+	HDC         hDC;
+	RECT        rcItem;
+	ULONG_PTR   itemData;
+} TDRAWITEMSTRUCT;
+
+typedef struct TtagDRAWITEMSTRUCTTIMELINE
+{
+	TDRAWITEMSTRUCT* lpdi;
+	int iHoveredItem;
+	int iHoveredColumn;
+	UINT* puiNotAnimatedColumnIndexes;
+	UINT uiNotAnimatedColumnIndexesCount;
+} TDRAWITEMSTRUCTTIMELINE;
+
+typedef struct TtagMEASUREITEMSTRUCT {
+	UINT       CtlType;
+	UINT       CtlID;
+	UINT       itemID;
+	UINT       itemWidth;
+	UINT       itemHeight;
+	ULONG_PTR  itemData;
+} TMEASUREITEMSTRUCT;
+
+typedef struct TtagBITMAP
+{
+	UINT Width;
+	UINT Height;
+} TBITMAP;
+
+[
+	object,
+	uuid(DC001682-90CC-497F-BCE6-D00D712FD241),
+	pointer_default(unique)
+]
+interface IFormsService : IUnknown
+{
+	HRESULT OpenForm(GUID gId, IVariantObject* pVariantObject);
+	HRESULT Close(IControl *pControl);
+};
+
+[
+	object,
+	uuid(828C2337-535F-491B-943D-EDF93F760CB7),
+	pointer_default(unique)
+]
+interface IImageManagerService : IUnknown
+{
+	HRESULT GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap);
+	HRESULT CreateImageBitmap(BSTR bstrKey, HBITMAP* phBitmap);
+	HRESULT AddImageFromFile(BSTR bstrKey, BSTR bstrFileName);
+	HRESULT AddImageFromHBITMAP(BSTR bstrKey, HBITMAP hBitmap);
+	HRESULT ContainsImageKey(BSTR bstrKey, BOOL* pbContains);
+	HRESULT RemoveImage(BSTR bstrKey);
+	HRESULT CopyImageTo(BSTR bstrKey, IImageManagerService* pDest);
+	HRESULT CopyTo(IImageManagerService* pDest);
+	HRESULT SaveImage(BSTR bstrKey, BSTR bstrFilePath);
+
+};
+
+[
+	object,
+	uuid(627BE6CD-5CB1-4364-817A-1EABA04B52C9),
+	pointer_default(unique)
+]
+interface IThemeColorMap : IUnknown
+{
+	HRESULT GetColor(BSTR bstrColorName, DWORD* dwColor);
+	HRESULT SetColor(BSTR bstrColorName, DWORD dwColor);
+};
+
+[
+	object,
+	uuid(DD372332-232D-4CA9-9807-B2F21D3C689A),
+	pointer_default(unique)
+]
+interface IThemeFontMap : IUnknown
+{
+	HRESULT GetFont(BSTR bstrFontName, HFONT* phFont);
+	HRESULT SetFont(BSTR bstrFontName, BSTR bstrFontFamily, DWORD dwSize, BOOL bBold, BOOL bUnderline);
+};
+
+[
+	object,
+	uuid(B204A899-A54F-4F36-A8E4-56A3DDF71E66),
+	pointer_default(unique),
+	local
+]
+interface IColumnsInfoItem : IUnknown
+{
+	HRESULT GetRect(RECT* rect);
+	HRESULT SetRect(RECT rect);
+	HRESULT SetRectStringProp(BSTR bstrKey, BSTR bstrValue);
+	HRESULT GetRectStringProp(BSTR bstrKey, BSTR* bstrValue);
+	HRESULT SetRectBoolProp(BSTR bstrKey, BOOL bValue);
+	HRESULT GetRectBoolProp(BSTR bstrKey, BOOL* pbValue);
+	HRESULT Clear();
+};
+
+[
+	object,
+	uuid(2EC751CC-D4F3-4B3B-B0C7-862916A085FC),
+	pointer_default(unique),
+	local
+]
+interface IColumnsInfo : IUnknown
+{
+	HRESULT AddItem(IColumnsInfoItem** ppColumnsInfoItem);
+	HRESULT GetItem(UINT uiIndex, IColumnsInfoItem** ppColumnsInfoItem);
+	HRESULT GetCount(UINT* puiCount);
+	HRESULT Clear();
+	HRESULT IsDisabledSelection(BOOL* pbDisabled);
+	HRESULT DisableSelection(BOOL bDisabled);
+};
+
+[
+	object,
+	uuid(CAE8EE20-A39A-4677-A9C0-FDD8D3D7015E),
+	pointer_default(unique),
+	local
+]
+interface ISkinTimeline : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
+	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
+
+	HRESULT DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdi);
+	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
+
+	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfoItem* pColumnsInfoItem, int iColumnIndex);
+	HRESULT AnimationGetParams(UINT* puiMilliseconds);
+	HRESULT AnimationGetIndexes(UINT* puiIndexArray, UINT* puiCount);
+	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);
+};
+
+[
+	object,
+	uuid(53ADEAC2-0827-4AAF-9B82-E695ACC14918),
+	pointer_default(unique)
+]
+interface ITimelineControlEventSink : IUnknown
+{
+	HRESULT OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject);
+	HRESULT OnItemDoubleClick(IVariantObject* pVariantObject);
+	HRESULT OnItemRemoved(IVariantObject* pItemObject);
+};
+
+[
+	object,
+	uuid(304C4130-701C-4951-AF30-2A38A0A51D31),
+	pointer_default(unique)
+]
+interface ITimelineControl : IControl2
+{
+	HRESULT GetItems(IObjArray** ppObjectArray);
+	HRESULT InsertItem(IVariantObject* pVariantObject, UINT uiIndex);
+	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
+	HRESULT RefreshItem(UINT uiIndex);
+	HRESULT RefreshItems(IVariantObject** pItemArray, UINT uiCountArray);
+	HRESULT IsEmpty(BOOL* pbIsEmpty);
+	HRESULT InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
+	HRESULT Clear();
+	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
+	HRESULT BeginUpdate();
+	HRESULT EndUpdate();
+	HRESULT OnItemsUpdated();
+	HRESULT GetTopVisibleItemIndex(UINT* puiIndex);
+	HRESULT GetItemsCount(UINT* puiCount);
+	HRESULT RemoveItemByIndex(UINT uiIndex);
+	HRESULT ScrollToItem(UINT uiIndex);
+};
+
+[
+	object,
+	uuid(03F5DD74-E610-409A-991F-20BDDBA9A625),
+	pointer_default(unique)
+]
+interface ITimelineService : IUnknown
+{
+};
+
+[
+	object,
+	uuid(99939FE4-3FE1-4AFE-B8AC-2D10B9A9DDCE),
+	pointer_default(unique)
+]
+interface ISkinUserAccountControl : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
+	HRESULT EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
+	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject, IColumnsInfo* pColumnsInfo);
+	HRESULT Measure(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
+	HRESULT AnimationStart();
+	HRESULT AnimationGetParams(UINT* puiMilliseconds);
+	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);
+}
+
+[
+	object,
+	uuid(69E6394D-E65E-4DBB-8812-48AA40D507B1),
+	pointer_default(unique)
+]
+interface IUserAccountControl : IControl2
+{
+};
+
+[
+	object,
+	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
+	pointer_default(unique)
+]
+interface ISkinTabControl : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
+	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
+	HRESULT EraseBackground(HDC hdc);
+	HRESULT DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect, int selectedPageIndex);
+	HRESULT DrawAnimation(HDC hdc);
+	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
+	HRESULT GetInfoRect(RECT* pRect);
+	HRESULT StartInfoImage();
+	HRESULT StopInfoImage();
+	HRESULT AnimationGetParams(UINT* puiMilliseconds);
+	HRESULT AnimationNextFrame();
+};
+
+[
+	object,
+	uuid(83780BED-9F73-4AE3-B583-C1097789398B),
+	pointer_default(unique)
+]
+interface ISkinCommonControl : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT RegisterStaticControl(HWND hWnd);
+	HRESULT UnregisterStaticControl(HWND hWnd);
+	HRESULT RegisterButtonControl(HWND hWnd);
+	HRESULT UnregisterButtonControl(HWND hWnd);
+};
+
+[
+	object,
+	uuid(825B6027-F439-4586-8DAE-DF9AE8527ABD),
+	pointer_default(unique)
+]
+interface ITheme : IUnknown
+{
+	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
+	HRESULT GetFontMap(IThemeFontMap** ppThemeFontMap);
+	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
+	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
+	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);
+	HRESULT GetSkinUserAccountControl(ISkinUserAccountControl** ppSkinUserAccountControl);
+};
+
+[
+	object,
+	uuid(F32CBA77-77AF-454E-8381-0DAE6A9F9D99),
+	pointer_default(unique)
+]
+interface ISettingsControl : IControl2
+{
+};
+
+[
+	object,
+	uuid(27812A7C-A85F-4184-B1DA-7E9EA55B5816),
+	pointer_default(unique)
+]
+interface IViewControllerService : IUnknown
+{
+	HRESULT SetTheme(ITheme* pTheme);
+	HRESULT StartAnimation();
+	HRESULT StopAnimation();
+	HRESULT ShowInfo(HRESULT hr, BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
+	HRESULT HideInfo();
+};
+
+[
+	object,
+	uuid(E0DCCDDB-E725-4F6D-B490-220F23977CEB),
+	pointer_default(unique)
+]
+interface IServiceProviderSupport : IUnknown
+{
+	HRESULT GetServiceProvider(IServiceProvider** ppServiceProvider);
+};
+
+[
+	object,
+	uuid(3A2E1784-55A2-4075-8617-2253A70762FF),
+	pointer_default(unique)
+]
+interface IThemeService : IUnknown
+{
+	HRESULT AddColorMap(GUID gThemeId, IThemeColorMap* pThemeColorMap);
+	HRESULT RemoveColorMap(GUID gThemeId);
+
+	HRESULT AddTheme(GUID gThemeId, ITheme* pTheme);
+	HRESULT RemoveTheme(GUID gThemeId);
+
+	HRESULT GetThemes(IObjArray** ppObjectArray);
+	HRESULT ApplyTheme(GUID gId);
+
+	HRESULT ApplyThemeFromSettings();
+	HRESULT GetCurrentTheme(ITheme** ppTheme);
+};
+
+[
+	object,
+	uuid(924BA62A-74BF-463A-8008-497B241FC448),
+	pointer_default(unique)
+]
+interface IOpenUrlService : IUnknown
+{
+};
+
+[
+	object,
+	uuid(5304DEAC-784A-457C-9037-1E878B9D2EAA),
+	pointer_default(unique)
+]
+interface IDownloadServiceEventSink : IUnknown
+{
+	HRESULT OnDownloadComplete(IVariantObject *pResult);
+};
+
+[
+	object,
+	uuid(18A1A514-1F78-4811-B469-509CFE4AAF94),
+	pointer_default(unique)
+]
+interface IDownloadService : IUnknown
+{
+	HRESULT AddDownload(IVariantObject *pVariantObject);
+	HRESULT SuspendDownloads();
+	HRESULT ResumeDownloads();
+};
+
+[
+	object,
+	uuid(B9A65F18-0B3C-4612-B0A6-B10107F39909),
+	pointer_default(unique)
+]
+interface IUpdateService : IUnknown
+{
+	HRESULT IsUpdateAvailable(BOOL* pbUpdateAvailable);
+	HRESULT RunUpdate();
+};
+
+[
+	object,
+	uuid(EF814E3D-BAFD-48BF-8DAC-29CD2F238F64),
+	pointer_default(unique)
+]
+interface IWindowEventSink : IUnknown
+{
+	HRESULT OnClosed(HWND hWndSelf);
+};
+
+[
+	object,
+	uuid(2620EF14-88EB-44D8-9ACA-56E0866E3A09),
+	pointer_default(unique)
+]
+interface IWindow : IUnknown
+{
+	HRESULT Show(HWND hWndParent);
+	HRESULT GetHWND(HWND* phWnd);
+};
+
+[
+	object,
+	uuid(A7C3B442-CF36-48B5-A990-32604D9242B9),
+	pointer_default(unique)
+]
+interface IThemeSupport : IUnknown
+{
+	HRESULT SetTheme(ITheme* pTheme);
+};
+
+[
+	object,
+	uuid(6687C546-6AB5-4D4F-9054-9AE45E55AAEB),
+	pointer_default(unique)
+]
+interface IPictureWindow : IWindow
+{
+};
+
+[
+	object,
+	uuid(B3C5E00B-C8CF-4CF5-9147-ED5E0CF20F01),
+	pointer_default(unique)
+]
+interface IWindowService : IUnknown
+{
+	HRESULT OpenWindow(HWND hWndParent, REFCLSID clsid, IVariantObject* pVariantObject);
+};
+
+[
+	object,
+	uuid(4F8E2446-4D39-4ED0-809B-5CAC30D578E5),
+	pointer_default(unique)
+]
+interface ITimelineImageService : IUnknown
+{
+};
+
+[
+	object,
+	uuid(0E1D5F6E-61ED-4168-8C86-D15C43699B72),
+	pointer_default(unique)
+]
+interface ITimelineCleanupService : IUnknown
+{
+};
+
+[
+	object,
+	uuid(391D8B43-2FB8-4B9A-B0FF-050BB2F07728),
+	pointer_default(unique)
+]
+interface ICustomTabControl : ITabbedControl
+{
+	HRESULT SetSkinTabControl(ISkinTabControl* pSkinTabControl);
+	HRESULT StartAnimation();
+	HRESULT StopAnimation(UINT* puiRefs);
+	HRESULT ShowInfo(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
+	HRESULT HideInfo();
+};
+
+[
+	object,
+	uuid(C20DBDD1-9959-4352-9EC7-7CD4F6B57938),
+	pointer_default(unique)
+]
+interface ITimelineControlSupport : IUnknown
+{
+	HRESULT GetTimelineControl(ITimelineControl** ppTimelineControl);
+};
+
+[
+	object,
+	uuid(970095A2-7854-42C9-BCF7-FCFD07BA5E65),
+	pointer_default(unique)
+]
+interface IUserInfoControl : ITimelineControlSupport
+{
+	HRESULT GetVariantObject(IVariantObject**ppVariantObject);
+};
+
+[
+	object,
+	uuid(CDDDE357-19CA-441E-9F3B-7828A900A4DC),
+	pointer_default(unique)
+]
+interface IHomeTimeLineControl : IUnknown
+{
+	HRESULT StartTimers();
+	HRESULT StopTimers();
+};
+
+[
+	object,
+	uuid(F09D2C6D-3AF5-4178-B4FD-5D4976EFFC1C),
+	pointer_default(unique)
+]
+interface ITwitViewControl : IUnknown
+{
+	HRESULT GetVariantObject(IVariantObject**ppVariantObject);
+};
+
+[
+	object,
+	uuid(F233594D-4C7B-4214-95BD-65DC61CB7E4A),
+	pointer_default(unique)
+]
+interface ITwitViewRepliesService : ITimelineService
+{
+};
+
+[
+	object,
+	uuid(660627C9-4575-49A8-A00B-2B1F7E2ED872),
+	pointer_default(unique)
+]
+interface ISearchControl : IControl2
+{
+
+};
+
+[
+	object,
+	uuid(A79E2871-02D3-4015-AB01-CE5B7E795B2C),
+	pointer_default(unique)
+]
+interface ISearchTimelineControl : IUnknown
+{
+
+};
+
+[
+	object,
+	uuid(03F4B0C5-EB2A-4550-B160-25804D4FF41B),
+	pointer_default(unique)
+]
+interface ISearchTimelineService : ITimelineService
+{
+
+};
+
+[
+	object,
+	uuid(C6578CE9-9A13-4D3C-841B-8FFB55847642),
+	pointer_default(unique)
+]
+interface ITimelineRelativeTimeService : IUnknown
+{
+
+};
+
+[
+	object,
+	uuid(972DED6B-0A1C-4AA6-BC05-AF182D9C0241),
+	pointer_default(unique)
+]
+interface IFollowService : IUnknown
+{
+
+};
+
+[
+	object,
+	uuid(81460622-FB70-4105-9B9A-D478E4F44716),
+	pointer_default(unique)
+]
+interface IListsControl : IUnknown
+{
+
+};
+
+[
+	object,
+	uuid(CB71393F-9F24-4720-8B54-86B2AF2DC697),
+	pointer_default(unique)
+]
+interface IListTimelineControl : IUnknown
+{
+
+};

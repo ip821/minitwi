@@ -340,3 +340,6 @@
 /twiconn/Debug_XP/twiconn.log
 /twitter/Debug_XP/twitter.log
 /curl/build/Win32/VC12/LIB Debug - DLL Windows SSPI/*.lastcodeanalysissucceeded
+/twitter/twitter_contract_i.c
+/twitter/twitter_contract_i.h
+/twitter/twitter_contract_i_p.c

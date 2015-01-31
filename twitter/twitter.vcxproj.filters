@@ -292,6 +292,9 @@
     <ClCompile Include="ListTimelineControlService.cpp">
       <Filter>Services\ListTimelineControlService</Filter>
     </ClCompile>
+    <ClCompile Include="twitter_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -480,6 +483,9 @@
     <ClInclude Include="Metadata.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="twitter_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -505,6 +511,9 @@
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
     <Midl Include="..\model-libs\ViewMdl\viewmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="twitter_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>
