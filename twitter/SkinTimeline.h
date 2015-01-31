@@ -11,6 +11,7 @@
 
 using namespace ATL;
 using namespace std;
+using namespace IP;
 
 // CSkinTimeline
 

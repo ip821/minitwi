@@ -171,7 +171,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWIT
 			}
 		}
 
-		if (bstrColumnName == VAR_TWITTER_USER_IMAGE && bf.SourceConstantAlpha == MAX_ALPHA)
+		if (bstrColumnName == Twitter::Connection::Metadata::UserObject::Image && bf.SourceConstantAlpha == MAX_ALPHA)
 		{
 			static DWORD dwColor = 0;
 			if (!dwColor)
@@ -394,7 +394,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	wndListBox.GetClientRect(&clientRect);
 
 	CString strObjectType;
-	GetValue(pItemObject, CComBSTR(VAR_OBJECT_TYPE), strObjectType);
+	GetValue(pItemObject, CComBSTR(ObjectModel::Metadata::Object::Type), strObjectType);
 
 	if (strObjectType == TYPE_CUSTOM_TIMELINE_OBJECT)
 	{
@@ -427,28 +427,28 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		lpMeasureItemStruct->itemHeight = y + sz.cy + PADDING_Y;
 		lpMeasureItemStruct->itemWidth = sz.cx;
 	}
-	else if (strObjectType == TYPE_TWITTER_OBJECT || strObjectType == TYPE_LIST_OBJECT)
+	else if (strObjectType == Twitter::Connection::Metadata::TweetObject::TypeId || strObjectType == Twitter::Connection::Metadata::ListObject::TypeId)
 	{
 		CString strRetweetedDisplayName;
-		GetValue(pItemObject, CComBSTR(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME), strRetweetedDisplayName);
+		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName), strRetweetedDisplayName);
 
 		CString strRetweetedName;
-		GetValue(pItemObject, CComBSTR(VAR_TWITTER_RETWEETED_USER_NAME), strRetweetedName);
+		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName), strRetweetedName);
 
 		CString strDisplayName;
-		GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME), strDisplayName);
+		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::DisplayName), strDisplayName);
 
 		CString strCreatedAt;
 		GetValue(pItemObject, CComBSTR(VAR_TWITTER_RELATIVE_TIME), strCreatedAt);
 
 		CString strName;
-		GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_NAME), strName);
+		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::Name), strName);
 
 		CString strText;
-		GetValue(pItemObject, CComBSTR(VAR_TWITTER_NORMALIZED_TEXT), strText);
+		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::TweetObject::NormalizedText), strText);
 
 		CString strImageUrl;
-		GetValue(pItemObject, CComBSTR(VAR_TWITTER_USER_IMAGE), strImageUrl);
+		GetValue(pItemObject, CComBSTR(Twitter::Connection::Metadata::UserObject::Image), strImageUrl);
 		
 		CComVariant vDoubleSize;
 		RETURN_IF_FAILED(pItemObject->GetVariantValue(VAR_ITEM_DOUBLE_SIZE, &vDoubleSize));
@@ -459,7 +459,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 			ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + 48, y + 48)));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(Twitter::Connection::Metadata::UserObject::Image)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, L""));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, CComBSTR(strImageUrl)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_IMAGE, TRUE));
@@ -476,7 +476,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			sizeRetweetedDislpayName = AddColumn(
 				hdc,
 				pColumnsInfo,
-				CString(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME),
+				CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName),
 				L"Retweeted by " + strRetweetedDisplayName + L" @" + strRetweetedName,
 				strRetweetedDisplayName,
 				x,
@@ -501,7 +501,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			sizeDislpayName = AddColumn(
 				hdc,
 				pColumnsInfo,
-				CString(VAR_TWITTER_USER_DISPLAY_NAME),
+				CString(Twitter::Connection::Metadata::UserObject::DisplayName),
 				strDisplayName,
 				strDisplayName,
 				x,
@@ -523,7 +523,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			sizeName = AddColumn(
 				hdc,
 				pColumnsInfo,
-				CString(VAR_TWITTER_USER_NAME),
+				CString(Twitter::Connection::Metadata::UserObject::Name),
 				L"@" + strName,
 				strName,
 				x,
@@ -532,7 +532,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				);
 		}
 
-		if (strObjectType != TYPE_LIST_OBJECT)
+		if (strObjectType != Twitter::Connection::Metadata::ListObject::TypeId)
 		{
 			CSize sizeDateTime;
 			{
@@ -579,7 +579,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			sizeText = AddColumn(
 				hdc,
 				pColumnsInfo,
-				CString(VAR_TWITTER_NORMALIZED_TEXT),
+				CString(Twitter::Connection::Metadata::TweetObject::NormalizedText),
 				strText,
 				strText,
 				x,
@@ -605,7 +605,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 		{ //Images
 			CComVariant vMediaUrls;
-			pItemObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls);
+			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
 			if (vMediaUrls.vt == VT_UNKNOWN)
 			{
 				CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
@@ -621,7 +621,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
 						CComVariant vMediaUrlShort;
-						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_SHORT, &vMediaUrlShort);
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &vMediaUrlShort);
 
 						imageUrls.insert(vMediaUrlShort.bstrVal);
 					}
@@ -630,7 +630,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		}
 
 		CComVariant vUrls;
-		pItemObject->GetVariantValue(VAR_TWITTER_URLS, &vUrls);
+		pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls);
 		if (vUrls.vt == VT_UNKNOWN)
 		{
 			auto x = COL_NAME_LEFT;
@@ -651,7 +651,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				auto size = AddColumn(
 					hdc,
 					pColumnsInfo,
-					CString(VAR_TWITTER_URL),
+					CString(Twitter::Connection::Metadata::TweetObject::Url),
 					CString(bstrUrl),
 					CString(bstrUrl),
 					x,
@@ -671,7 +671,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 		{ //Images
 			CComVariant vMediaUrls;
-			pItemObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls);
+			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
 			if (vMediaUrls.vt == VT_UNKNOWN)
 			{
 				CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
@@ -688,7 +688,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
 						CComVariant vMediaUrlThumb;
-						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrlThumb);
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
 						TBITMAP tBitmap = { 0 };
 						m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
@@ -708,10 +708,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
 						CComVariant vMediaUrl;
-						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl);
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
 
 						CComVariant vMediaUrlThumb;
-						pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrlThumb);
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
 						TBITMAP tBitmap = { 0 };
 						m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
@@ -729,10 +729,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 						ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_IMAGE)));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(Twitter::Connection::Metadata::TweetObject::Image)));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, L""));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, vMediaUrlThumb.bstrVal));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TWITTER_MEDIAURL, vMediaUrl.bstrVal));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_IMAGE, TRUE));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_URL, TRUE));
 					}

@@ -44,7 +44,7 @@ STDMETHODIMP CPictureWindowSaveCommand::Invoke(REFGUID guidCommand)
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
 
 	CComVariant vMediaUrl;
-	RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl));
+	RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl));
 
 	if (vMediaUrl.vt != VT_BSTR)
 	{
@@ -94,7 +94,7 @@ STDMETHODIMP CPictureWindowSaveCommand::GetEnabled(REFGUID guidCommand, BOOL *pb
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &pImageManagerService));
 
 	CComVariant vMediaUrl;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl));
+	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl));
 
 	if (vMediaUrl.vt != VT_BSTR)
 	{

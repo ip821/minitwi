@@ -77,7 +77,7 @@ STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/version.txt")));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_SOFTWARE_UPDATE_VERSION)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_SOFTWARE_UPDATE_VERSION)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 	return S_OK;
 }
@@ -107,13 +107,13 @@ CString CUpdateService::GetInstalledVersion()
 STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 {
 	CComVariant vType;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_OBJECT_TYPE, &vType));
+	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
 	if (vType.vt != VT_BSTR)
 		return S_OK;
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
@@ -138,7 +138,7 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 #else
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/Release/Setup.msi")));
 #endif
-			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_SOFTWARE_UPDATE_MSI)));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_SOFTWARE_UPDATE_MSI)));
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_FILE_EXT, &CComVariant(L".msi")));
 			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 			return S_OK;

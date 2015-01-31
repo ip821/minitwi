@@ -157,7 +157,7 @@ void CUserAccountControl::UpdateRects()
 		{
 			CComBSTR bstrColumnName;
 			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
-			if (bstrColumnName == CComBSTR(VAR_TWITTER_USER_IMAGE))
+			if (bstrColumnName == CComBSTR(Twitter::Connection::Metadata::UserObject::Image))
 			{
 				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectUserImage));
 				continue;
@@ -179,7 +179,7 @@ void CUserAccountControl::UpdateRects()
 STDMETHODIMP CUserAccountControl::OnActivate()
 {
 	CComVariant vBannerUrl;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_BANNER, &vBannerUrl));
+	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl));
 	if (vBannerUrl.vt == VT_BSTR)
 	{
 		m_bstrBannerUrl = vBannerUrl.bstrVal;
@@ -187,12 +187,12 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 		CComPtr<IVariantObject> pDownloadObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObject));
 		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_URL, &vBannerUrl));
-		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_USER_BANNER)));
+		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_IMAGE_USER_BANNER)));
 		RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObject));
 	}
 
 	CComVariant vUserImage;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
 	if (vUserImage.vt == VT_BSTR)
 	{
 		BOOL bContains = FALSE;
@@ -202,7 +202,7 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 			CComPtr<IVariantObject> pDownloadObjectUserImage;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObjectUserImage));
 			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_URL, &vUserImage));
-			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_USER_IMAGE)));
+			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_IMAGE_USER_IMAGE)));
 			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObjectUserImage));
 		}
 	}
@@ -217,14 +217,14 @@ STDMETHODIMP CUserAccountControl::OnDeactivate()
 STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 {
 	CComVariant vType;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_OBJECT_TYPE, &vType));
+	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 	CComVariant vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
 	CComVariant vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
@@ -297,7 +297,7 @@ LRESULT CUserAccountControl::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
 	if (m_rectUserImage.PtInRect(CPoint(x, y)))
 	{
 		CComVariant vUserImage;
-		ASSERT_IF_FAILED(m_pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+		ASSERT_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
 		if (vUserImage.vt != VT_BSTR)
 			return 0;
 		CString strUrl(vUserImage.bstrVal);
@@ -305,7 +305,7 @@ LRESULT CUserAccountControl::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 		CComPtr<IVariantObject> pUrlObject;
 		ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
-		ASSERT_IF_FAILED(pUrlObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(strUrl)));
+		ASSERT_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(strUrl)));
 		ASSERT_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
 	}
 	else if (m_rectFollowButton.PtInRect(CPoint(x, y)) && !m_bFollowButtonDisabled)

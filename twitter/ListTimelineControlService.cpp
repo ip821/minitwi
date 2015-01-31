@@ -70,7 +70,7 @@ STDMETHODIMP CListTimelineControlService::OnStart(IVariantObject *pResult)
 	CUpdateScope scope(m_pTimelineControl);
 	CComPtr<IVariantObject> pLoadingObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading list tweets...")));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading list tweets...")));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
@@ -105,7 +105,7 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
 	CComVariant vListId;
-	RETURN_IF_FAILED(pListVariantObject->GetVariantValue(VAR_ID, &vListId));
+	RETURN_IF_FAILED(pListVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vListId));
 	ATLASSERT(vListId.vt == VT_BSTR);
 
 	CComPtr<IObjArray> pObjectArray;
@@ -129,7 +129,7 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;

@@ -88,14 +88,14 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
 
 	CComVariant vParentTwitId;
-	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vParentTwitId));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(Twitter::Connection::Metadata::TweetObject::InReplyToStatusId, &vParentTwitId));
 
 	CComVariant vId;
-	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_ID, &vId));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 	ATLASSERT(vId.vt == VT_BSTR);
 
 	CComVariant vOriginalId;
-	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_ORIGINAL_ID, &vOriginalId));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(Twitter::Connection::Metadata::TweetObject::OriginalId, &vOriginalId));
 
 	if (!m_bParentRetrieved)
 	{
@@ -104,7 +104,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 			CComPtr<IVariantObject> pOriginalItem;
 			RETURN_IF_FAILED(pConnection->GetTwit(vOriginalId.bstrVal, &pOriginalItem));
 			CComVariant vOriginalParentTwitId;
-			RETURN_IF_FAILED(pOriginalItem->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vOriginalParentTwitId));
+			RETURN_IF_FAILED(pOriginalItem->GetVariantValue(Twitter::Connection::Metadata::TweetObject::InReplyToStatusId, &vOriginalParentTwitId));
 			if (vOriginalParentTwitId.vt == VT_BSTR)
 			{
 				CComPtr<IVariantObject> pParentItem;
@@ -124,7 +124,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 	}
 
 	CComVariant vUserName;
-	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
+	RETURN_IF_FAILED(pVariantObjectMember->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 	ATLASSERT(vUserName.vt == VT_BSTR);
 
 	CComPtr<IObjArray> pObjectArray;
@@ -141,7 +141,7 @@ STDMETHODIMP CTwitViewRepliesService::OnRun(IVariantObject *pResult)
 		RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 
 		CComVariant vInReplyToStatusId;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_IN_REPLYTO_STATUS_ID, &vInReplyToStatusId));
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::InReplyToStatusId, &vInReplyToStatusId));
 
 		if (vInReplyToStatusId.vt != VT_BSTR)
 			continue;
@@ -163,7 +163,7 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 	CHECK_E_POINTER(pResult);
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;

@@ -67,7 +67,7 @@ STDMETHODIMP CTimelineRelativeTimeService::OnFinish(IVariantObject *pResult)
 HRESULT CTimelineRelativeTimeService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject)
 {
 	CComVariant v;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_CREATED_AT, &v));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::CreatedAt, &v));
 
 	if (v.vt != VT_BSTR)
 		return S_OK;

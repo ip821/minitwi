@@ -5,6 +5,7 @@
 #include "..\twiconn\Plugins.h"
 
 using namespace ATL;
+using namespace IP;
 
 class ATL_NO_VTABLE COpenUrlService :
 	public CComObjectRootEx<CComSingleThreadModel>,

@@ -6,6 +6,7 @@
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;
+using namespace IP;
 
 // CTimelineControlCopyCommand
 

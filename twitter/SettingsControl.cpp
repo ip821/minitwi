@@ -263,12 +263,12 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 	EnableLoginControls(TRUE);
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	RETURN_IF_FAILED(m_pViewControllerService->StopAnimation());
 	if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;
-		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
+		RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResultDescription, &vDesc));
 		RETURN_IF_FAILED(m_pCustomTabControl->ShowInfo(TRUE, FALSE, vDesc.bstrVal));
 		MessageBox(vDesc.bstrVal, L"Error", MB_OK | MB_ICONERROR);
 		return S_OK;

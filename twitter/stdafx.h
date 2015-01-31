@@ -70,11 +70,15 @@
 #include "..\ObjMdl\ManualComObjectLoader.h"
 #include "..\ObjMdl\Plugins.h"
 #include "..\ObjMdl\Functions.h"
+#include "..\ObjMdl\Metadata.h"
 
 #include "..\ViewMdl\Plugins.h"
 #include "..\ViewMdl\Functions.h"
 
 #include "..\model-libs\asyncsvc\Plugins.h"
+#include "..\model-libs\asyncsvc\Metadata.h"
+
+#include "..\twiconn\Metadata.h"
 
 #pragma comment (lib,"Gdiplus.lib")
 #pragma comment (lib,"Winhttp.lib")

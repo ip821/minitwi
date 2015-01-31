@@ -45,6 +45,9 @@
 #include "..\model-libs\ObjMdl\Macros.h"
 #include "..\model-libs\ObjMdl\Plugins.h"
 #include "..\model-libs\ObjMdl\Functions.h"
+#include "..\model-libs\ObjMdl\Metadata.h"
+
+#include "Metadata.h"
 
 #include "..\json\src\JSON.h"
 #include "..\json\src\JSONValue.h"

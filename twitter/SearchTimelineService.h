@@ -2,6 +2,7 @@
 
 using namespace ATL;
 using namespace std;
+using namespace IP;
 
 #include "twitter_i.h"
 #include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"

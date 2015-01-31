@@ -156,6 +156,9 @@
     <ClInclude Include="TextNormalizeTable.h">
       <Filter>Connection</Filter>
     </ClInclude>
+    <ClInclude Include="Metadata.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twiconn.rc">

@@ -9,6 +9,7 @@
 using namespace ATL;
 using namespace std;
 using namespace Gdiplus;
+using namespace IP;
 
 class CUserAccountControl :
 	public CComObjectRootEx<CComSingleThreadModel>,

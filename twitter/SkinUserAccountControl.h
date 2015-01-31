@@ -7,6 +7,7 @@
 using namespace ATL;
 using namespace std;
 using namespace Gdiplus;
+using namespace IP;
 
 class CSkinUserAccountControl :
 	public CComObjectRootEx<CComSingleThreadModel>,

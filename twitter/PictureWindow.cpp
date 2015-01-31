@@ -190,7 +190,7 @@ STDMETHODIMP CPictureWindow::InitCommandSupport(int index)
 
 	CComPtr<IVariantObject> pVariantObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(VAR_TWITTER_MEDIAURL, &CComVariant(m_bitmapsUrls[index])));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(m_bitmapsUrls[index])));
 
 	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
 	ATLASSERT(pInitializeWithVariantObject);
@@ -203,11 +203,11 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 	CHECK_E_POINTER(pVariantObject);
 
 	CComVariant vMediaUrl;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrl));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl));
 
 	int currentBitmapIndex = 0;
 	CComVariant vMediaUrls;
-	if (SUCCEEDED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls)) && vMediaUrls.vt == VT_UNKNOWN)
+	if (SUCCEEDED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls)) && vMediaUrls.vt == VT_UNKNOWN)
 	{
 		CComQIPtr<IObjArray> pMediaUrls = vMediaUrls.punkVal;
 		UINT uiCount = 0;
@@ -218,7 +218,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 			CComPtr<IVariantObject> pMediaUrlObject;
 			RETURN_IF_FAILED(pMediaUrls->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaUrlObject));
 			CComVariant vMediaUrlForObject;
-			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(VAR_TWITTER_MEDIAURL, &vMediaUrlForObject));
+			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrlForObject));
 			m_bitmapsUrls[i] = vMediaUrlForObject.bstrVal;
 
 			if (CComBSTR(vMediaUrlForObject.bstrVal) == CComBSTR(vMediaUrl.bstrVal))
@@ -243,9 +243,9 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 	auto str = m_bitmapsUrls[index];
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(str)));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &CComVariant((INT64)m_hWnd)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant((INT64)m_hWnd)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ITEM_INDEX, &CComVariant(index)));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE_PICTURE_WINDOW)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_IMAGE_PICTURE_WINDOW)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 
 	return S_OK;
@@ -280,17 +280,17 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	CHECK_E_POINTER(pResult);
 
 	CComVariant vType;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_OBJECT_TYPE, &vType));
+	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
 	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(TYPE_IMAGE_PICTURE_WINDOW))
 		return S_OK;
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;
-		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
+		RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResultDescription, &vDesc));
 		CComBSTR bstrMsg = L"Unknown error";
 		if (vDesc.vt == VT_BSTR)
 			bstrMsg = vDesc.bstrVal;
@@ -305,7 +305,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	}
 
 	CComVariant vId;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
+	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 
 	if (vId.vt != VT_I8 || vId.llVal != (INT64)m_hWnd)
 		return S_OK;

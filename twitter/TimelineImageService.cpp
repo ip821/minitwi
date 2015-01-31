@@ -128,13 +128,13 @@ STDMETHODIMP CTimelineImageService::OnFinish(IVariantObject *pResult)
 STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 {
 	CComVariant vType;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_OBJECT_TYPE, &vType));
+	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
 	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(TYPE_IMAGE))
 		return S_OK;
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
@@ -151,7 +151,7 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	}
 
 	CComVariant vId;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ID, &vId));
+	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 	CComVariant vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
 	CComVariant vFilePath;
@@ -208,7 +208,7 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 			RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 
 			CComVariant vId;
-			RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+			RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 
 			vector<wstring> itemUrls;
 			RETURN_IF_FAILED(GetUrls(pVariantObject, itemUrls));
@@ -227,9 +227,9 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 					CComPtr<IVariantObject> pDownloadTask;
 					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(url.c_str())));
-					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ID, &vId));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ITEM_INDEX, &CComVariant(i)));
-					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_IMAGE)));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_IMAGE)));
 					RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 					urls.insert(url);
 				}
@@ -242,14 +242,14 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 HRESULT CTimelineImageService::GetUrls(IVariantObject* pVariantObject, vector<wstring>& urls)
 {
 	CComVariant vUserImage;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
 	if (vUserImage.vt == VT_BSTR)
 	{
 		urls.push_back(vUserImage.bstrVal);
 	}
 
 	CComVariant vMediaUrls;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_MEDIAURLS, &vMediaUrls));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls));
 	if (vMediaUrls.vt == VT_UNKNOWN)
 	{
 		CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
@@ -261,7 +261,7 @@ HRESULT CTimelineImageService::GetUrls(IVariantObject* pVariantObject, vector<ws
 			pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
 			CComVariant vMediaUrl;
-			pMediaObject->GetVariantValue(VAR_TWITTER_MEDIAURL_THUMB, &vMediaUrl);
+			pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrl);
 
 			if (vMediaUrl.vt == VT_BSTR)
 			{

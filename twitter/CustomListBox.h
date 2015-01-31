@@ -6,6 +6,7 @@
 #include <atomic>
 
 using namespace std;
+using namespace IP;
 
 struct NMCOLUMNCLICK
 {

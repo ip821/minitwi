@@ -40,7 +40,7 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 	TBITMAP tBitmap = { 0 };
 
 	CComVariant vBitmapUrl;
-	pVariantObject->GetVariantValue(VAR_TWITTER_USER_BANNER, &vBitmapUrl);
+	pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBitmapUrl);
 	if (vBitmapUrl.vt == VT_BSTR)
 	{
 		m_pImageManagerService->CreateImageBitmap(vBitmapUrl.bstrVal, &bitmap.m_hBitmap);
@@ -124,11 +124,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	cdc.SetTextColor(dwTextColor);
 
 	CComVariant vDisplayName;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vDisplayName));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vDisplayName));
 	ATLASSERT(vDisplayName.vt == VT_BSTR);
 
 	HFONT font = 0;
-	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, &font));
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Connection::Metadata::UserObject::DisplayNameUserAccount, &font));
 	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	CComBSTR bstrDisplayName(vDisplayName.bstrVal);
@@ -136,7 +136,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	cdc.GetTextExtent(bstrDisplayName, bstrDisplayName.Length(), &szDisplayName);
 
 	CComVariant vScreenName;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vScreenName));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vScreenName));
 	ATLASSERT(vScreenName.vt == VT_BSTR);
 	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
 
@@ -149,7 +149,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	DrawRoundedRect(cdc, rectBox, true);
 
 	CComVariant vUserImage;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_IMAGE, &vUserImage));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
 	CBitmap bitmapUserImage;
 	if (vUserImage.vt == VT_BSTR && SUCCEEDED(m_pImageManagerService->CreateImageBitmap(vUserImage.bstrVal, &bitmapUserImage.m_hBitmap)))
 	{
@@ -176,11 +176,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 		cdc.TransparentBlt(rectBimtpaUserImage.left, rectBimtpaUserImage.top, rectBimtpaUserImage.Width(), rectBimtpaUserImage.Height(), cdcBitmap, 0, 0, tBitmap.Width, tBitmap.Height, colorTransparent.ToCOLORREF());
 	}
 
-	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_NORMALIZED_TEXT, &font));
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Connection::Metadata::TweetObject::NormalizedText, &font));
 	CDCSelectFontScope cdcSelectFontScope2(cdc, font);
 
 	CComVariant vDescription;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DESCRIPTION, &vDescription));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Description, &vDescription));
 	ATLASSERT(vDescription.vt == VT_BSTR);
 	CComBSTR bstrDescription(vDescription.bstrVal);
 	CSize szDescription;
@@ -201,12 +201,12 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	cdc.DrawTextEx(bstrDescription, bstrDescription.Length(), &rectDescription, DT_WORDBREAK | DT_CENTER, NULL);
 
 	auto bottom = rect.bottom - DISTANCE_COUNTERS_Y;
-	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_FOLLOWERS_COUNT, L"Followers: ");
-	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_FRIENDS_COUNT, L"Following: ");
-	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, VAR_TWITTER_USER_TWEETS_COUNT, L"Tweets: ");
+	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, Twitter::Connection::Metadata::UserObject::FollowersCount, L"Followers: ");
+	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, Twitter::Connection::Metadata::UserObject::FriendsCount, L"Following: ");
+	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, Twitter::Connection::Metadata::UserObject::TweetsCount, L"Tweets: ");
 
 	CComVariant vFollowing;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_ISFOLLOWING, &vFollowing));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::IsFollowingFlag, &vFollowing));
 	auto bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
 
 	BOOL bFollowButtonDisabled = FALSE;
@@ -323,7 +323,7 @@ STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumns
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectUserImage));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(VAR_TWITTER_USER_IMAGE)));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(Twitter::Connection::Metadata::UserObject::Image)));
 	}
 
 	{
@@ -342,11 +342,11 @@ HRESULT CSkinUserAccountControl::MeasureInternal(HDC hdc, RECT clientRect, IVari
 	CRect rect = clientRect;
 
 	CComVariant vDisplayName;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vDisplayName));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vDisplayName));
 	ATLASSERT(vDisplayName.vt == VT_BSTR);
 
 	HFONT font = 0;
-	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, &font));
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Connection::Metadata::UserObject::DisplayNameUserAccount, &font));
 	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	CComBSTR bstrDisplayName(vDisplayName.bstrVal);
@@ -354,7 +354,7 @@ HRESULT CSkinUserAccountControl::MeasureInternal(HDC hdc, RECT clientRect, IVari
 	cdc.GetTextExtent(bstrDisplayName, bstrDisplayName.Length(), &szDisplayName);
 
 	CComVariant vScreenName;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vScreenName));
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vScreenName));
 	ATLASSERT(vScreenName.vt == VT_BSTR);
 	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
 	CSize szScreenName;

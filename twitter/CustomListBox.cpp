@@ -64,7 +64,7 @@ void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
 	m_columnsInfo.erase(m_columnsInfo.begin() + uiIndex);
 
 	CComVariant vId;
-	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(VAR_ID, &vId));
+	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 	m_animatedColumns.erase(pVariantObject.p);
 }
 
@@ -173,7 +173,7 @@ void CCustomListBox::OnItemsUpdated()
 void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 {
 	CComVariant vId;
-	ASSERT_IF_FAILED(pItemObject->GetVariantValue(VAR_ID, &vId));
+	ASSERT_IF_FAILED(pItemObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 
 	m_pItems->InsertObject(pItemObject, index);
 	CComPtr<IColumnsInfo> pColumnsInfo;
@@ -350,8 +350,8 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					CComBSTR bstrColumnName;
 					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
 					CComBSTR bstrMediaUrl;
-					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_TWITTER_MEDIAURL, &bstrMediaUrl));
-					if (bstrColumnName == CComBSTR(VAR_TWITTER_IMAGE) && bstrMediaUrl != CComBSTR(L""))
+					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, &bstrMediaUrl));
+					if (bstrColumnName == CComBSTR(Twitter::Connection::Metadata::TweetObject::Image) && bstrMediaUrl != CComBSTR(L""))
 					{
 						CRect itemRect;
 						GetItemRect(curSel, &itemRect);

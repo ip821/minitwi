@@ -11,6 +11,8 @@
 
 using namespace ATL;
 using namespace std;
+using namespace IP;
+using namespace IP;
 
 // CTwitterConnection
 

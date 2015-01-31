@@ -84,12 +84,12 @@ STDMETHODIMP CTabbedControlStatusService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(StopAnimation());
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 
 	if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;
-		RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT_DESCRIPTION, &vDesc));
+		RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResultDescription, &vDesc));
 		CComBSTR bstrMsg = L"Unknown error";
 		if (vDesc.vt == VT_BSTR)
 			bstrMsg = vDesc.bstrVal;

@@ -7,6 +7,7 @@
 
 using namespace ATL;
 using namespace std;
+using namespace IP;
 
 class ATL_NO_VTABLE CTabbedControlStatusService :
 	public CComObjectRootEx<CComSingleThreadModel>,

@@ -47,7 +47,7 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(m_pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 		CComVariant vId;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(VAR_GUID_ID, &vId));
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Plugins::Object::Id, &vId));
 		if (vId.vt == VT_BSTR)
 		{
 			GUID gFoundId = GUID_NULL;
@@ -138,7 +138,7 @@ STDMETHODIMP CThemeService::ApplyThemeFromSettings()
 	CComPtr<ISettings> pSettings;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(SETTINGS_PATH_THEMES, &pSettings));
 	CComVariant vThemeId;
-	RETURN_IF_FAILED(pSettings->GetVariantValue(VAR_GUID_ID, &vThemeId));
+	RETURN_IF_FAILED(pSettings->GetVariantValue(ObjectModel::Metadata::Plugins::Object::Id, &vThemeId));
 	if (vThemeId.vt == VT_BSTR)
 	{
 		GUID gId = GUID_NULL;

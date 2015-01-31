@@ -125,7 +125,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 		case CURLE_COULDNT_CONNECT:
 			curlHr = HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 		}
-		RETURN_IF_FAILED(pResult->SetVariantValue(KEY_HRESULT, &CComVariant(curlHr)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Thread::HResult, &CComVariant(curlHr)));
 		curl_easy_cleanup(curl);
 		fclose(file);
 		return curlHr;

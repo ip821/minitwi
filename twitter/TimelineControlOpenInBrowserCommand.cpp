@@ -43,9 +43,9 @@ STDMETHODIMP CTimelineControlOpenInBrowserCommand::Invoke(REFGUID guidCommand)
 	m_pVariantObject.Release();
 
 	CComVariant vUserName;
-	RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
+	RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 	CComVariant v;
-	RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_ID, &v));
+	RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &v));
 	if (vUserName.vt == VT_BSTR && v.vt == VT_BSTR)
 	{
 		auto strUrl = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(v.bstrVal);

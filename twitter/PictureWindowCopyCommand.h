@@ -5,6 +5,7 @@
 #include "twitter_i.h"
 
 using namespace ATL;
+using namespace IP;
 
 // CPictureWindowCopyCommand
 

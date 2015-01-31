@@ -11,6 +11,7 @@
 #define FONT_SIZE 10
 
 using namespace Gdiplus;
+using namespace IP;
 
 HRESULT CThemeDefault::FinalConstruct()
 {
@@ -20,12 +21,12 @@ HRESULT CThemeDefault::FinalConstruct()
 
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_BACKGROUND, (ARGB)Color::White));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_SELECTED, (ARGB)Color::Beige));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_USER_DISPLAY_NAME, (ARGB)Color::SteelBlue));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_USER_NAME, (ARGB)Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_NORMALIZED_TEXT, (ARGB)Color::Black));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::UserObject::DisplayName, (ARGB)Color::SteelBlue));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::UserObject::Name, (ARGB)Color::Gray));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::NormalizedText, (ARGB)Color::Black));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_DELIMITER, (ARGB)Color::LightGray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_URL, (ARGB)Color::SteelBlue));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, (ARGB)Color::Gray));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::Url, (ARGB)Color::SteelBlue));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, (ARGB)Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_RELATIVE_TIME, (ARGB)Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_COLUMN_SHOW_MORE, (ARGB)Color::SteelBlue));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TAB_HEADER_SELECTED, (ARGB)Color::Black));
@@ -42,23 +43,23 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetColorMap(m_pThemeColorMap));
 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeFontMap, &m_pThemeFontMap));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME, FONT_NAME, FONT_SIZE - 2, FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, FONT_NAME, FONT_SIZE - 2, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_RELATIVE_TIME, FONT_NAME, FONT_SIZE, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_RELATIVE_TIME + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_USER_DISPLAY_NAME, FONT_NAME, FONT_SIZE, TRUE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_USER_DISPLAY_NAME + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_USER_NAME, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_USER_NAME + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_NORMALIZED_TEXT, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_NORMALIZED_TEXT + CString(VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_URL, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_URL + CString(VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_URL + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_TWITTER_URL + CString(VAR_DOUBLE_SIZE_POSTFIX) + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, TRUE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::DisplayName, FONT_NAME, FONT_SIZE, TRUE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::UserObject::DisplayName + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::Name, FONT_NAME, FONT_SIZE, FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::UserObject::Name + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::NormalizedText, FONT_NAME, FONT_SIZE, FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::NormalizedText + CString(VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::Url, FONT_NAME, FONT_SIZE, FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(VAR_DOUBLE_SIZE_POSTFIX) + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, TRUE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_COLUMN_SHOW_MORE, FONT_NAME, FONT_SIZE, TRUE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_COLUMN_SHOW_MORE + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TAB_HEADER, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT, FONT_NAME, FONT_SIZE * 2, TRUE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::DisplayNameUserAccount, FONT_NAME, FONT_SIZE * 2, TRUE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_PICTURE_WINDOW_TEXT, FONT_NAME, FONT_SIZE, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_ITEM_FOLLOW_BUTTON, FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
 

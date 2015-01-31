@@ -54,9 +54,9 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 			if (IsEqualGUID(guidCommand, COMMAND_COPY_URL))
 			{
 				CComVariant vUserName;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 				CComVariant v;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_ID, &v));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &v));
 				if (vUserName.vt == VT_BSTR && v.vt == VT_BSTR)
 				{
 					str = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(v.bstrVal);
@@ -65,11 +65,11 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 			else if (IsEqualGUID(guidCommand, COMMAND_COPY_TEXT))
 			{
 				CComVariant vUserDisplayName;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_USER_DISPLAY_NAME, &vUserDisplayName));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vUserDisplayName));
 				CComVariant vUserName;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_USER_NAME, &vUserName));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 				CComVariant vText;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(VAR_TWITTER_TEXT, &vText));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Text, &vText));
 				if (vUserDisplayName.vt == VT_BSTR)
 					str = vUserDisplayName.bstrVal;
 				if (vUserName.vt == VT_BSTR)

@@ -348,6 +348,7 @@
     <ClInclude Include="..\twitcurl\libtwitcurl\twitcurlurls.h" />
     <ClInclude Include="..\twitcurl\libtwitcurl\urlencode.h" />
     <ClInclude Include="dllmain.h" />
+    <ClInclude Include="Metadata.h" />
     <ClInclude Include="objmdl_contract_i.h" />
     <ClInclude Include="Plugins.h" />
     <ClInclude Include="PluginTable.h" />

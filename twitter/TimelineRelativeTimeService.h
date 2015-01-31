@@ -7,6 +7,7 @@
 
 using namespace ATL;
 using namespace std;
+using namespace IP;
 using namespace boost;
 using namespace boost::posix_time;
 using namespace boost::gregorian;

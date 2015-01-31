@@ -71,7 +71,7 @@ STDMETHODIMP CSearchTimelineService::OnStart(IVariantObject *pResult)
 	CUpdateScope scope(m_pTimelineControl);
 	CComPtr<IVariantObject> pLoadingObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Searching...")));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Searching...")));
 	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
@@ -129,7 +129,7 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 
 	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_HRESULT, &vHr));
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
@@ -149,7 +149,7 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 	{
 		CComPtr<IVariantObject> pNoListsFoundObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pNoListsFoundObject));
-		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_OBJECT_TYPE, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
 		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_TEXT, &CComVariant(L"No tweets found")));
 		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"No tweets found")));
 		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(VAR_ITEM_DISABLED, &CComVariant(true)));
