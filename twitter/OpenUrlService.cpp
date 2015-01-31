@@ -103,7 +103,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 	CHECK_E_POINTER(pColumnsInfoItem);
 
 	CComBSTR bstrColumnName;
-	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 
 	CString strUrl;
 	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Connection::Metadata::UserObject::DisplayName) ||

@@ -61,7 +61,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	StrPathAppend(strTempFolder, strGuid);
 
 	CComVariant vExt;
-	ASSERT_IF_FAILED(pResult->GetVariantValue(VAR_FILE_EXT, &vExt));
+	ASSERT_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Extension, &vExt));
 	if (vExt.vt == VT_BSTR)
 	{
 		strTempFolder += vExt.bstrVal;
@@ -134,7 +134,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	curl_easy_cleanup(curl);
 	fclose(file);
 
-	pResult->SetVariantValue(VAR_FILEPATH, &CComVariant(strTempFolder));
+	pResult->SetVariantValue(Twitter::Metadata::File::Path, &CComVariant(strTempFolder));
 
 	return S_OK;
 }
@@ -155,11 +155,11 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
 
 	CComVariant vFilePath;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 	if (vFilePath.vt == VT_BSTR)
 	{
 		CComVariant vKeepFile;
-		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_KEEP_FILE, &vKeepFile));
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::KeepFileFlag, &vKeepFile));
 		if (vKeepFile.vt != VT_BOOL || !vKeepFile.boolVal)
 		{
 			DeleteFile(vFilePath.bstrVal);

@@ -477,6 +477,9 @@
     <ClInclude Include="ListTimelineControlService.h">
       <Filter>Services\ListTimelineControlService</Filter>
     </ClInclude>
+    <ClInclude Include="Metadata.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">

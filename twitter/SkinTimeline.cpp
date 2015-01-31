@@ -123,7 +123,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWIT
 		CRect rect;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
 		CComBSTR bstrColumnName;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 		BOOL bIsImage = FALSE;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(VAR_IS_IMAGE, &bIsImage));
 		CComBSTR bstrValue;
@@ -176,7 +176,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWIT
 			static DWORD dwColor = 0;
 			if (!dwColor)
 			{
-				RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor));
+				RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwColor));
 			}
 			cdc.TransparentBlt(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, dwColor);
 		}
@@ -214,7 +214,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pCol
 	if (lpdis->lpdi->itemState & ODS_SELECTED && !bDisabledSelection)
 	{
 		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_SELECTED, &dwColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushSelected, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
 		cdc.FillRect(&(lpdis->lpdi->rcItem), brush);
@@ -222,7 +222,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pCol
 	else
 	{
 		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
 		RECT rect = lpdis->lpdi->rcItem;
@@ -250,7 +250,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pCol
 		RECT rect = { 0 };
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
 		CComBSTR bstrColumnName;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 		CComBSTR bstrText;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_TEXT, &bstrText));
 		BOOL bIsUrl = FALSE;
@@ -357,7 +357,7 @@ SIZE CSkinTimeline::AddColumn(
 	{
 		ASSERT_IF_FAILED(pColumnsInfo->DisableSelection(TRUE));
 	}
-	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(strColumnName)));
+	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(strColumnName)));
 	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, CComBSTR(strDisplayText)));
 	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, CComBSTR(strValue)));
 	if (bWordWrap)
@@ -396,7 +396,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 	CString strObjectType;
 	GetValue(pItemObject, CComBSTR(ObjectModel::Metadata::Object::Type), strObjectType);
 
-	if (strObjectType == TYPE_CUSTOM_TIMELINE_OBJECT)
+	if (strObjectType == Twitter::Metadata::Types::CustomTimelineObject)
 	{
 		CString strCustomText;
 		GetValue(pItemObject, CComBSTR(VAR_TEXT), strCustomText);
@@ -411,7 +411,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		CSize sz = AddColumn(
 			hdc,
 			pColumnsInfo,
-			CString(VAR_COLUMN_SHOW_MORE),
+			CString(Twitter::Metadata::Column::ShowMoreColumn),
 			bDisabled ? strCustomDisabledText : strCustomText,
 			bDisabled ? strCustomDisabledText : strCustomText,
 			0,
@@ -459,7 +459,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 			ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + 48, y + 48)));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(Twitter::Connection::Metadata::UserObject::Image)));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(Twitter::Connection::Metadata::UserObject::Image)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, L""));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, CComBSTR(strImageUrl)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_IS_IMAGE, TRUE));
@@ -729,7 +729,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 						ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_COLUMN_NAME, CComBSTR(Twitter::Connection::Metadata::TweetObject::Image)));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(Twitter::Connection::Metadata::TweetObject::Image)));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, L""));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_VALUE, vMediaUrlThumb.bstrVal));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));

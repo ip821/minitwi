@@ -80,6 +80,11 @@
 
 #include "..\twiconn\Metadata.h"
 
+#include "Plugins.h"
+#include "Metadata.h"
+
+using namespace IP;
+
 #pragma comment (lib,"Gdiplus.lib")
 #pragma comment (lib,"Winhttp.lib")
 #ifdef DEBUG

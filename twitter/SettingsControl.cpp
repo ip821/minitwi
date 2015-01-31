@@ -32,12 +32,12 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
 
 	CComPtr<ISettings> pSettingsTwitter;
-	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
 	CComVariant vKey;
 	CComVariant vSecret;
 	
-	if (SUCCEEDED(pSettingsTwitter->GetVariantValue(KEY_TWITTERKEY, &vKey)) &&
-		SUCCEEDED(pSettingsTwitter->GetVariantValue(KEY_TWITTERSECRET, &vSecret)) &&
+	if (SUCCEEDED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey)) &&
+		SUCCEEDED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret)) &&
 		vKey.vt == VT_BSTR &&
 		vSecret.vt == VT_BSTR)
 	{
@@ -154,7 +154,7 @@ void CSettingsControl::SwitchToLogoutMode()
 
 LRESULT CSettingsControl::OnClickedLogout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	m_pSettings->RemoveSubSettings(SETTINGS_PATH);
+	m_pSettings->RemoveSubSettings(Twitter::Metadata::Settings::PathRoot);
 	m_pTimelineControl->Clear();
 	SwitchToLoginMode();
 	return 0;
@@ -171,8 +171,8 @@ STDMETHODIMP CSettingsControl::Load(ISettings *pSettings)
 	CHECK_E_POINTER(pSettings);
 	m_pSettings = pSettings;
 	CComPtr<ISettings> pSettingsTwitter;
-	RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
-	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITUSER, KEY_USER, pSettingsTwitter));
+	RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
+	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITUSER, Twitter::Metadata::Settings::Twitter::User, pSettingsTwitter));
 	return S_OK;
 }
 
@@ -180,7 +180,7 @@ STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 
-	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, KEY_USER, pSettings));
+	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, Twitter::Metadata::Settings::Twitter::User, pSettings));
 
 	return S_OK;
 }
@@ -252,8 +252,8 @@ STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
 	CComBSTR bstrKey, bstrSecret;
 	RETURN_IF_FAILED(pConnection->GetAuthKeys(bstrUser, bstrPass, &bstrKey, &bstrSecret));
 
-	RETURN_IF_FAILED(pResult->SetVariantValue(KEY_TWITTERKEY, &CComVariant(bstrKey)));
-	RETURN_IF_FAILED(pResult->SetVariantValue(KEY_TWITTERSECRET, &CComVariant(bstrSecret)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &CComVariant(bstrKey)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &CComVariant(bstrSecret)));
 
 	return S_OK;
 }
@@ -275,14 +275,14 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 	}
 
 	CComVariant vKey, vSecret;
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_TWITTERKEY, &vKey));
-	RETURN_IF_FAILED(pResult->GetVariantValue(KEY_TWITTERSECRET, &vSecret));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 
 	CComPtr<ISettings> pSettingsTwitter;
-	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
 
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(KEY_TWITTERKEY, &vKey));
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(KEY_TWITTERSECRET, &vSecret));
+	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
+	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 
 	m_editPass.SetWindowText(L"");
 	Save(pSettingsTwitter);

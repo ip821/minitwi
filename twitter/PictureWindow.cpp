@@ -245,7 +245,7 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(str)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant((INT64)m_hWnd)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_ITEM_INDEX, &CComVariant(index)));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_IMAGE_PICTURE_WINDOW)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::ImagePictureWindow)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 
 	return S_OK;
@@ -282,7 +282,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
-	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(TYPE_IMAGE_PICTURE_WINDOW))
+	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != CComBSTR(Twitter::Metadata::Types::ImagePictureWindow))
 		return S_OK;
 
 	CComVariant vHr;
@@ -314,7 +314,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_ITEM_INDEX, &vIndex));
 
 	CComVariant vFilePath;
-	RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 
 	int currentBitmapIndex = 0;
 	{
@@ -427,7 +427,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	{
 		CComPtr<IThemeColorMap> pThemeColorMap;
 		ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
-		ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwBrushColor));
+		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwBrushColor));
 		ASSERT_IF_FAILED(pThemeColorMap->GetColor(VAR_PICTURE_WINDOW_TEXT, &dwTextColor));
 	}
 

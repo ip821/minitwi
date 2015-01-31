@@ -19,8 +19,8 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinCommonControl, &m_pSkinCommonControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeColorMap, &m_pThemeColorMap));
 
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_BACKGROUND, (ARGB)Color::White));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_BRUSH_SELECTED, (ARGB)Color::Beige));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::BrushBackground, (ARGB)Color::White));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::BrushSelected, (ARGB)Color::Beige));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::UserObject::DisplayName, (ARGB)Color::SteelBlue));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::UserObject::Name, (ARGB)Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::NormalizedText, (ARGB)Color::Black));
@@ -28,9 +28,9 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::Url, (ARGB)Color::SteelBlue));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, (ARGB)Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TWITTER_RELATIVE_TIME, (ARGB)Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_COLUMN_SHOW_MORE, (ARGB)Color::SteelBlue));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TAB_HEADER_SELECTED, (ARGB)Color::Black));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_TAB_HEADER, (ARGB)Color::Gray));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Column::ShowMoreColumn, (ARGB)Color::SteelBlue));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Tabs::HeaderSelected, (ARGB)Color::Black));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Tabs::Header, (ARGB)Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_ANIMATION_ACTIVE, (ARGB)Color::Black));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_ITEM_ANIMATION_INACTIVE, (ARGB)Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(VAR_PICTURE_WINDOW_TEXT, (ARGB)Color::White));
@@ -56,9 +56,9 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(VAR_DOUBLE_SIZE_POSTFIX) + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_COLUMN_SHOW_MORE, FONT_NAME, FONT_SIZE, TRUE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(VAR_COLUMN_SHOW_MORE + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_TAB_HEADER, FONT_NAME, FONT_SIZE, FALSE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Column::ShowMoreColumn, FONT_NAME, FONT_SIZE, TRUE, FALSE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Metadata::Column::ShowMoreColumn + CString(VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
+	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Tabs::Header, FONT_NAME, FONT_SIZE, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::DisplayNameUserAccount, FONT_NAME, FONT_SIZE * 2, TRUE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_PICTURE_WINDOW_TEXT, FONT_NAME, FONT_SIZE, FALSE, FALSE));
 	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(VAR_ITEM_FOLLOW_BUTTON, FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));

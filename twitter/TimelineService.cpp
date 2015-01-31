@@ -83,7 +83,7 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 		CUpdateScope scope(m_pTimelineControl);
 		CComPtr<IVariantObject> pLoadingObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
 		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant(CUSTOM_OBJECT_LOADING_ID)));
 		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Loading tweets...")));
 		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading tweets...")));
@@ -130,13 +130,13 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 	}
 
 	CComPtr<ISettings> pSettingsTwitter;
-	RETURN_IF_FAILED(pSettings->OpenSubSettings(SETTINGS_PATH, &pSettingsTwitter));
+	RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
 
 	CComBSTR bstrKey;
-	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, KEY_TWITTERKEY, &bstrKey));
+	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterKey, &bstrKey));
 
 	CComBSTR bstrSecret;
-	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, KEY_TWITTERSECRET, &bstrSecret));
+	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterSecret, &bstrSecret));
 
 	CComPtr<ITwitterConnection> pConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
@@ -221,7 +221,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 			CComVariant vObjectType;
 			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
-			if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == CComBSTR(TYPE_CUSTOM_TIMELINE_OBJECT))
+			if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == CComBSTR(Twitter::Metadata::Types::CustomTimelineObject))
 			{
 				CUpdateScope scope(m_pTimelineControl);
 				RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(0));
@@ -252,7 +252,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 		{
 			CComPtr<IVariantObject> pShowMoreObject;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pShowMoreObject));
-			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_CUSTOM_TIMELINE_OBJECT)));
+			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
 			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(VAR_TEXT, &CComVariant(L"Show more")));
 			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Show more")));
 			CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
@@ -308,8 +308,8 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 STDMETHODIMP CTimelineService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject)
 {
 	CComBSTR bstrColumnName;
-	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName));
-	if (CComBSTR(bstrColumnName) == CComBSTR(VAR_COLUMN_SHOW_MORE) && !m_bShowMoreRunning)
+	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
+	if (CComBSTR(bstrColumnName) == CComBSTR(Twitter::Metadata::Column::ShowMoreColumn) && !m_bShowMoreRunning)
 	{
 		CComPtr<IObjArray> pObjArray;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));

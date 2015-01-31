@@ -98,7 +98,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	cdc.CreateCompatibleDC(hdc);
 
 	HFONT font = 0;
-	m_pThemeFontMap->GetFont(CComBSTR(VAR_TAB_HEADER), &font);
+	m_pThemeFontMap->GetFont(CComBSTR(Twitter::Metadata::Tabs::Header), &font);
 	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	UINT uiHeight = max(m_pBitmapHome->GetHeight(), m_pBitmapSettings->GetHeight()) + PADDING_Y * 2;
@@ -124,7 +124,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectHomeColumn));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
 	}
 
 	CRect rectListsColumn;
@@ -146,7 +146,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectListsColumn));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
 	}
 
 	CRect rectSearchColumn;
@@ -168,7 +168,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectSearchColumn));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
 	}
 
 	{
@@ -189,7 +189,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rect));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(VAR_TEXT, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(VAR_TAB_HEADER_SELECTED, FALSE));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
 	}
 
 	m_rectHeader = clientRect;
@@ -215,7 +215,7 @@ STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 
 	CDCHandle cdc(hdc);
 	DWORD dwColor = 0;
-	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwColor));
+	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwColor));
 	CBrush brush;
 	brush.CreateSolidBrush(dwColor);
 	cdc.FillRect(m_rectHeader, brush);
@@ -297,7 +297,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 		pColumnsInfoItem->GetRectStringProp(VAR_TEXT, &bstr);
 
 		HFONT font = 0;
-		m_pThemeFontMap->GetFont(CComBSTR(VAR_TAB_HEADER), &font);
+		m_pThemeFontMap->GetFont(CComBSTR(Twitter::Metadata::Tabs::Header), &font);
 		CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 		CRect rectText = rect;
@@ -312,11 +312,11 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 		DWORD dwColor = 0;
 		if (bSelected)
 		{
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TAB_HEADER_SELECTED, &dwColor));
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Tabs::HeaderSelected, &dwColor));
 		}
 		else
 		{
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(VAR_TAB_HEADER, &dwColor));
+			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Tabs::Header, &dwColor));
 		}
 		cdc.SetTextColor(dwColor);
 

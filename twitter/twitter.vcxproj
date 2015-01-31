@@ -360,6 +360,7 @@
     <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="ListTimelineControl.h" />
     <ClInclude Include="ListTimelineControlService.h" />
+    <ClInclude Include="Metadata.h" />
     <ClInclude Include="PictureWindowSaveCommand.h" />
     <ClInclude Include="SearchControl.h" />
     <ClInclude Include="SearchTimelineControl.h" />

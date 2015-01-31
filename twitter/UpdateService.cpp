@@ -8,7 +8,7 @@
 
 // CUpdateService
 
-const CComBSTR REG_SETTINGS_PATH = L"Software\\IP\\Minitwi";
+const CComBSTR SETTINGS_PATH = L"Software\\IP\\Minitwi";
 const CComBSTR HKEY_SETTINGS_KEY = L"InstalledVersion";
 
 static void Parse(int result[4], const std::wstring& input)
@@ -77,7 +77,7 @@ STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/version.txt")));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_SOFTWARE_UPDATE_VERSION)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::SoftwareUpdateVersion)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 	return S_OK;
 }
@@ -92,7 +92,7 @@ CString CUpdateService::GetInstalledVersion()
 	CString strInstalledVersion;
 	{
 		CRegKey regInstalledVersion;
-		auto res = regInstalledVersion.Open(HKEY_LOCAL_MACHINE, REG_SETTINGS_PATH, KEY_QUERY_VALUE);
+		auto res = regInstalledVersion.Open(HKEY_LOCAL_MACHINE, SETTINGS_PATH, KEY_QUERY_VALUE);
 		if (res == S_OK)
 		{
 			auto lpszInstalledVersion = strInstalledVersion.GetBuffer(MAX_PATH);
@@ -119,12 +119,12 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	if (CComBSTR(vType.bstrVal) == CComBSTR(TYPE_SOFTWARE_UPDATE_VERSION))
+	if (CComBSTR(vType.bstrVal) == CComBSTR(Twitter::Metadata::Types::SoftwareUpdateVersion))
 	{
 		CComVariant vUrl;
 		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_URL, &vUrl));
 		CComVariant vFilePath;
-		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 
 		CString strVersion;
 		CTextFile::ReadAllText(vFilePath.bstrVal, strVersion);
@@ -138,18 +138,18 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 #else
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_URL, &CComVariant(L"http://version.minitwi.googlecode.com/git/Release/Setup.msi")));
 #endif
-			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(TYPE_SOFTWARE_UPDATE_MSI)));
-			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(VAR_FILE_EXT, &CComVariant(L".msi")));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::SoftwareUpdateMsi)));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::Extension, &CComVariant(L".msi")));
 			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 			return S_OK;
 		}
 	}
-	else if (CComBSTR(vType.bstrVal) == CComBSTR(TYPE_SOFTWARE_UPDATE_MSI))
+	else if (CComBSTR(vType.bstrVal) == CComBSTR(Twitter::Metadata::Types::SoftwareUpdateMsi))
 	{
-		RETURN_IF_FAILED(pResult->SetVariantValue(VAR_KEEP_FILE, &CComVariant(true)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::KeepFileFlag, &CComVariant(true)));
 
 		CComVariant vFilePath;
-		RETURN_IF_FAILED(pResult->GetVariantValue(VAR_FILEPATH, &vFilePath));
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 
 		{
 			boost::lock_guard<boost::mutex> lock(m_mutex);

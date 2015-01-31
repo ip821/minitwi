@@ -18,7 +18,7 @@ STDMETHODIMP CSkinCommonControl::SetColorMap(IThemeColorMap* pThemeColorMap)
 	CHECK_E_POINTER(pThemeColorMap);
 	m_pThemeColorMap = pThemeColorMap;
 	DWORD dwBkColor = 0;
-	m_pThemeColorMap->GetColor(VAR_BRUSH_BACKGROUND, &dwBkColor);
+	m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwBkColor);
 	m_bkColor.CreateSolidBrush(dwBkColor);
 	return S_OK;
 }

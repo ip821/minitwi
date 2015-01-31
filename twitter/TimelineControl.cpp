@@ -256,7 +256,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 			ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
 			CComBSTR bstrColumnName;
-			pColumnsInfoItem->GetRectStringProp(VAR_COLUMN_NAME, &bstrColumnName);
+			pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName);
 			ASSERT_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
 		}
 	}
@@ -392,9 +392,9 @@ STDMETHODIMP CTimelineControl::Load(ISettings *pSettings)
 	CHECK_E_POINTER(pSettings);
 	m_pSettings = pSettings;
 	CComPtr<ISettings> pTimelineSettings;
-	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(VAR_SETTINGS_TIMELINE_PATH, &pTimelineSettings));
+	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathTimeline, &pTimelineSettings));
 	CComVariant vDisableAnimation;
-	RETURN_IF_FAILED(pTimelineSettings->GetVariantValue(VAR_SETTINGS_TIMELINE_DISABLE_ANIMATION, &vDisableAnimation));
+	RETURN_IF_FAILED(pTimelineSettings->GetVariantValue(Twitter::Metadata::Settings::Timeline::DisableAnimation, &vDisableAnimation));
 	m_listBox.EnableAnimation(vDisableAnimation.vt != VT_I4 || (!vDisableAnimation.intVal));
 	return S_OK;
 }
