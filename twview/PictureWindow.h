@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "AnimationTimerSupport.h"
 #include "Plugins.h"
@@ -33,7 +33,7 @@ public:
 	CPictureWindow();
 	virtual ~CPictureWindow();
 
-	DECLARE_REGISTRY_RESOURCEID(IDR_PICTUREWINDOW)
+	DECLARE_NO_REGISTRY()
 
 	BEGIN_COM_MAP(CPictureWindow)
 		COM_INTERFACE_ENTRY(IPictureWindow)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "twitter_i.h"
+#include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "asyncsvc_contract_i.h"
 #include "BaseTimeLineControl.h"
@@ -8,29 +8,31 @@
 using namespace ATL;
 using namespace std;
 
-class ATL_NO_VTABLE CHomeTimeLineControl :
+class ATL_NO_VTABLE CListTimelineControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CHomeTimeLineControl, &CLSID_HomeTimeLineControl>,
-	public CWindowImpl<CHomeTimeLineControl>,
-	public CBaseTimeLineControl<CHomeTimeLineControl>,
-	public IHomeTimeLineControl
+	public CComCoClass<CListTimelineControl, &CLSID_ListTimelineControl>,
+	public CWindowImpl<CListTimelineControl>,
+	public CBaseTimeLineControl<CListTimelineControl>,
+	public IInitializeWithVariantObject,
+	public IListTimelineControl
 {
 public:
-	CHomeTimeLineControl()
+	CListTimelineControl()
 	{
 	}
 
 	DECLARE_NO_REGISTRY()
-	BEGIN_COM_MAP(CHomeTimeLineControl)
-		COM_INTERFACE_ENTRY(IHomeTimeLineControl)
+	BEGIN_COM_MAP(CListTimelineControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
+		COM_INTERFACE_ENTRY(IListTimelineControl)
 		COM_INTERFACE_ENTRY(IThemeSupport)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IServiceProviderSupport)
 		COM_INTERFACE_ENTRY(ITimelineControlSupport)
+		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserInfoControl)
@@ -58,13 +60,13 @@ public:
 
 protected:
 	virtual HRESULT Initializing() override;
-	virtual HRESULT Initialized() override;
+	virtual HRESULT OnActivateInternal() override;
+
 private:
 
 public:
-	STDMETHOD(StartTimers)();
-	STDMETHOD(StopTimers)();
-	STDMETHOD(GetText)(BSTR* pbstr);
+	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
+	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(HomeTimeLineControl), CHomeTimeLineControl)
+OBJECT_ENTRY_AUTO(__uuidof(ListTimelineControl), CListTimelineControl)

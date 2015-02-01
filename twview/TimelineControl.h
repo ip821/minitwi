@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twview_i.h"
 #include "CustomListBox.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 #include "Plugins.h"
@@ -33,7 +33,7 @@ public:
 	{
 	}
 
-	DECLARE_REGISTRY_RESOURCEID(IDR_TIMELINECONTROL)
+	DECLARE_NO_REGISTRY()
 
 	BEGIN_COM_MAP(CTimelineControl)
 		COM_INTERFACE_ENTRY(IControl)

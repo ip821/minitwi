@@ -7,6 +7,11 @@
 import "oaidl.idl";
 import "ocidl.idl";
 
+import "..\model-libs\objmdl\objmdl_contract_i.idl";
+import "..\model-libs\asyncsvc\asyncsvc_contract_i.idl";
+import "..\model-libs\viewmdl\viewmdl_contract_i.idl";
+import "..\twitter\twitter_contract_i.idl";
+
 [
 	uuid(C2670317-C208-4C91-A844-75922381F104),
 	version(1.0),
@@ -14,5 +19,124 @@ import "ocidl.idl";
 library twviewLib
 {
 	importlib("stdole2.tlb");
+	[
+		uuid(6EA78630-DC6D-4D2B-91F0-686B260F29D6)
+	]
+	coclass PluginTable
+	{
+		[default] interface IPluginTable;
+	};
+	[
+		uuid(75E49C09-05E4-4643-983F-624DC073535A)
+	]
+	coclass TimelineControl
+	{
+		[default] interface ITimelineControl;
+	};
+	[
+		uuid(6AFA6FA2-12D6-450E-AEFF-60B66F8B7574)
+	]
+	coclass SettingsControl
+	{
+		[default] interface IControl;
+	};
+	[
+		uuid(F09290A9-AF90-416D-9309-C649ECC97935)
+	]
+	coclass TimelineControlCopyCommand
+	{
+		[default] interface ICommand;
+	};
+	[
+		uuid(10AEB079-CE14-4F8F-8CEE-C4C6428BD4E8)
+	]
+	coclass PictureWindow
+	{
+		[default] interface IPictureWindow;
+	};
+	[
+		uuid(5A272730-A01D-48FD-9005-A308F656F12D)
+	]
+	coclass PictureWindowCopyCommand
+	{
+		[default] interface ICommand;
+	};
+	[
+		uuid(262329E2-B603-4FC0-97CB-40D95D41A1C0)
+	]
+	coclass CustomTabControl
+	{
+		[default] interface ICustomTabControl;
+	};
+	[
+		uuid(C65CC0F7-866D-40F6-89E5-652C0295F15C)
+	]
+	coclass UserInfoControl
+	{
+		[default] interface IUserInfoControl;
+	};
+	[
+		uuid(45B12203-6FD3-492E-858A-7EA20454493B)
+	]
+	coclass UserAccountControl
+	{
+		[default] interface IControl;
+	};
+	[
+		uuid(80F4CF87-03B7-4929-8ABB-11DC7D57B99E)
+	]
+	coclass HomeTimeLineControl
+	{
+		[default] interface IHomeTimeLineControl;
+	};
+	[
+		uuid(7C7062D1-A7B6-499B-B6FC-78B2458515DC)
+	]
+	coclass TwitViewControl
+	{
+		[default] interface ITwitViewControl;
+	};
+	[
+		uuid(03598148-FEBB-406A-BA6A-1092C957B600)
+	]
+	coclass TimelineControlOpenInBrowserCommand
+	{
+		[default] interface ICommand;
+	};
+	[
+		uuid(31699CC6-E397-45CB-BBD6-ECF80D9C343C)
+	]
+	coclass SearchControl
+	{
+		[default] interface ISearchControl;
+	};
+	[
+		uuid(DB25B344-8870-45CE-8C9E-CF6F26C32EBE)
+	]
+	coclass SearchTimelineControl
+	{
+		[default] interface ISearchTimelineControl;
+	};
+	[
+		uuid(3D06F6F5-9BDC-47DA-BEE4-A8EEB57C3E57)
+	]
+	coclass PictureWindowSaveCommand
+	{
+		[default] interface ICommand2;
+	};
+	[
+		uuid(B720FBFB-E607-463A-91C6-13D82741F4F2)
+	]
+	coclass ListsControl
+	{
+		[default] interface IListsControl;
+	};
+	[
+		uuid(F35D78C8-546F-4A35-A90C-3FD282925C5A)
+	]
+	coclass ListTimelineControl
+	{
+		[default] interface IListTimelineControl;
+	};
 };
 

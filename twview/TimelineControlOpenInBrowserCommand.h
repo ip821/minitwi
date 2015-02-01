@@ -1,18 +1,17 @@
-// CopyCommand.h : Declaration of the CTimelineControlCopyCommand
-
 #pragma once
+
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twview_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;
 using namespace IP;
 
-// CTimelineControlCopyCommand
+// CTimelineControlOpenInBrowserCommand
 
-class ATL_NO_VTABLE CTimelineControlCopyCommand :
+class ATL_NO_VTABLE CTimelineControlOpenInBrowserCommand :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CTimelineControlCopyCommand, &CLSID_TimelineControlCopyCommand>,
+	public CComCoClass<CTimelineControlOpenInBrowserCommand, &CLSID_TimelineControlCopyCommand>,
 	public ICommand,
 	public IAcceleratorSupport,
 	public IInitializeWithControlImpl,
@@ -21,13 +20,13 @@ class ATL_NO_VTABLE CTimelineControlCopyCommand :
 	public IPluginSupportNotifications
 {
 public:
-	CTimelineControlCopyCommand()
+	CTimelineControlOpenInBrowserCommand()
 	{
 	}
 
 	DECLARE_NO_REGISTRY()
 
-	BEGIN_COM_MAP(CTimelineControlCopyCommand)
+	BEGIN_COM_MAP(CTimelineControlOpenInBrowserCommand)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ICommand)
 		COM_INTERFACE_ENTRY(IAcceleratorSupport)
@@ -51,4 +50,4 @@ public:
 	STDMETHOD(OnShutdown)();
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(TimelineControlCopyCommand), CTimelineControlCopyCommand)
+OBJECT_ENTRY_AUTO(__uuidof(TimelineControlOpenInBrowserCommand), CTimelineControlOpenInBrowserCommand)

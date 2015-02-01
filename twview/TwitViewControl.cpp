@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TwitViewControl.h"
 #include "Plugins.h"
-#include "UpdateScope.h"
+#include "..\twitter\UpdateScope.h"
 
 STDMETHODIMP CTwitViewControl::GetVariantObject(IVariantObject** ppVariantObject)
 {

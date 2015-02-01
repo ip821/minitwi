@@ -1,6 +1,6 @@
 #pragma once
 
-#include "twitter_i.h"
+#include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "asyncsvc_contract_i.h"
 #include "BaseTimeLineControl.h"
@@ -8,24 +8,24 @@
 using namespace ATL;
 using namespace std;
 
-class ATL_NO_VTABLE CListTimelineControl :
+class ATL_NO_VTABLE CTwitViewControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CListTimelineControl, &CLSID_ListTimelineControl>,
-	public CWindowImpl<CListTimelineControl>,
-	public CBaseTimeLineControl<CListTimelineControl>,
-	public IInitializeWithVariantObject,
-	public IListTimelineControl
+	public CComCoClass<CTwitViewControl, &CLSID_HomeTimeLineControl>,
+	public CWindowImpl<CTwitViewControl>,
+	public CBaseTimeLineControl<CTwitViewControl>,
+	public ITwitViewControl,
+	public IInitializeWithVariantObject
 {
 public:
-	CListTimelineControl()
+	CTwitViewControl()
 	{
 	}
 
 	DECLARE_NO_REGISTRY()
-	BEGIN_COM_MAP(CListTimelineControl)
+	BEGIN_COM_MAP(CTwitViewControl)
+		COM_INTERFACE_ENTRY(ITwitViewControl)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IControl2)
-		COM_INTERFACE_ENTRY(IListTimelineControl)
 		COM_INTERFACE_ENTRY(IThemeSupport)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
@@ -35,7 +35,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
-	BEGIN_MSG_MAP(CUserInfoControl)
+	BEGIN_MSG_MAP(CTwitViewControl)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
@@ -60,13 +60,15 @@ public:
 
 protected:
 	virtual HRESULT Initializing() override;
-	virtual HRESULT OnActivateInternal() override;
+	virtual HRESULT Initialized() override;
+	virtual HRESULT ShuttingDown() override;
 
 private:
-
+	CComPtr<IVariantObject> m_pVariantObject;
 public:
 	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
+	STDMETHOD(GetVariantObject)(IVariantObject** ppVariantObject);
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(ListTimelineControl), CListTimelineControl)
+OBJECT_ENTRY_AUTO(__uuidof(TwitViewControl), CTwitViewControl)

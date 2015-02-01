@@ -26,18 +26,6 @@
     <Filter Include="Include">
       <UniqueIdentifier>{80d5c463-863b-4e80-a453-88648f089221}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls">
-      <UniqueIdentifier>{608aaf79-5e61-45d0-8a62-4dec66bd2eae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\TimelineControl">
-      <UniqueIdentifier>{f23e9fc7-ff66-4eb3-be66-6313d24454a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\TimelineControl\Controls">
-      <UniqueIdentifier>{a0a23dcf-91ac-4fd6-a9e9-58e22d2ffe25}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\SettingsControl">
-      <UniqueIdentifier>{d749962b-4157-4fa8-8efc-9efc7aed1a41}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Services">
       <UniqueIdentifier>{c16ae913-2fe4-4e5b-9e70-567c02ec20fb}</UniqueIdentifier>
     </Filter>
@@ -56,9 +44,6 @@
     <Filter Include="Services\OpenUrlService">
       <UniqueIdentifier>{da8470ea-63f7-46fa-a852-d803039486ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls\TimelineControl\Commands">
-      <UniqueIdentifier>{4ccc7e57-a859-4d6a-9b56-0b8b9ec06220}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Services\ImageManagerService">
       <UniqueIdentifier>{3a59f18e-e53f-4d9a-a4b0-cabdd41035ed}</UniqueIdentifier>
     </Filter>
@@ -68,44 +53,17 @@
     <Filter Include="Services\UpdateService">
       <UniqueIdentifier>{6825b08d-39e3-49b7-b760-29b194f3a564}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls\PictureWindow">
-      <UniqueIdentifier>{1a926e4e-29c6-44ae-aa50-8394de0b168c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Services\WindowService">
       <UniqueIdentifier>{5a4254e1-7ffb-4266-944c-8ad3e2d5d527}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\PictureWindow\Commands">
-      <UniqueIdentifier>{f7c6e900-dc23-4395-bee5-19d98a0eef97}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\TabControl">
-      <UniqueIdentifier>{453846c2-4e1e-4b13-9315-0f5f31dbcf72}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{81449f12-4e91-4140-8d88-4ad193d29201}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls\UserInfoControl">
-      <UniqueIdentifier>{f6ed28dd-0043-475a-b1f0-052600344dbc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\UserAccountControl">
-      <UniqueIdentifier>{7bc42faf-7e52-4be6-aed8-d30c4f7bb8e0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Services\TabbedControlStatusService">
       <UniqueIdentifier>{162e3e54-0234-48ae-aee5-dc6422511c5b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls\HomeTimeLineControl">
-      <UniqueIdentifier>{e188ec27-44ea-4b97-80fd-2a3c9569695e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\TwitViewControl">
-      <UniqueIdentifier>{6e207d57-9115-48bb-a9af-dcd3a132082b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Services\TwitViewRepliesService">
       <UniqueIdentifier>{c1539b39-8000-46b4-915e-f3f82d6bba61}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\SearchControl">
-      <UniqueIdentifier>{049790fd-bd6f-45f2-bdf3-e3f393e51338}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\SearchTimelineControl">
-      <UniqueIdentifier>{050aeaeb-6676-4cdd-8e6d-ef27816d7ba4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Services\SearchTimelineService">
       <UniqueIdentifier>{ed1255e1-2502-4500-aecc-e3d8dc019d19}</UniqueIdentifier>
@@ -113,20 +71,17 @@
     <Filter Include="Services\FollowService">
       <UniqueIdentifier>{bbbeea3f-60bd-4c08-8744-8323135e82cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls\ListsControl">
-      <UniqueIdentifier>{53b8902a-850c-4687-88bf-39fa91d76943}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Services\ListsTimelineService">
       <UniqueIdentifier>{17caccf5-d286-4d2a-a813-f52cbe5ba739}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Controls\ListTimelineControl">
-      <UniqueIdentifier>{85132372-5011-463e-890b-6028b92e0ac1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Services\ListTimelineControlService">
       <UniqueIdentifier>{0dd72f09-a37d-453e-88ac-6828e225e515}</UniqueIdentifier>
     </Filter>
     <Filter Include="Services\LoginService">
       <UniqueIdentifier>{db9640c6-4321-420f-9dc3-7e5305949ec7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ColumnsInfo">
+      <UniqueIdentifier>{a46c2823-09be-422c-a048-a42f97805d44}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -151,17 +106,8 @@
     <ClCompile Include="viewmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="TimelineControl.cpp">
-      <Filter>Controls\TimelineControl</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomListBox.cpp">
-      <Filter>Controls\TimelineControl\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="FormsService.cpp">
       <Filter>Services\FormsService</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingsControl.cpp">
-      <Filter>Controls\SettingsControl</Filter>
     </ClCompile>
     <ClCompile Include="twitconn_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
@@ -178,9 +124,6 @@
     <ClCompile Include="OpenUrlService.cpp">
       <Filter>Services\OpenUrlService</Filter>
     </ClCompile>
-    <ClCompile Include="TimelineControlCopyCommand.cpp">
-      <Filter>Controls\TimelineControl\Commands</Filter>
-    </ClCompile>
     <ClCompile Include="asyncsvc_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
@@ -193,14 +136,8 @@
     <ClCompile Include="UpdateService.cpp">
       <Filter>Services\UpdateService</Filter>
     </ClCompile>
-    <ClCompile Include="PictureWindow.cpp">
-      <Filter>Controls\PictureWindow</Filter>
-    </ClCompile>
     <ClCompile Include="WindowService.cpp">
       <Filter>Services\WindowService</Filter>
-    </ClCompile>
-    <ClCompile Include="PictureWindowCopyCommand.cpp">
-      <Filter>Controls\PictureWindow\Commands</Filter>
     </ClCompile>
     <ClCompile Include="TimelineImageService.cpp">
       <Filter>Services\TimelineService</Filter>
@@ -208,65 +145,23 @@
     <ClCompile Include="TimelineCleanupService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
-    <ClCompile Include="CustomTabControl.cpp">
-      <Filter>Controls\TabControl</Filter>
-    </ClCompile>
-    <ClCompile Include="ScrollControl.cpp">
-      <Filter>Controls\TabControl</Filter>
-    </ClCompile>
-    <ClCompile Include="UserInfoControl.cpp">
-      <Filter>Controls\UserInfoControl</Filter>
-    </ClCompile>
-    <ClCompile Include="UserAccountControl.cpp">
-      <Filter>Controls\UserAccountControl</Filter>
-    </ClCompile>
     <ClCompile Include="TabbedControlStatusService.cpp">
       <Filter>Services\TabbedControlStatusService</Filter>
-    </ClCompile>
-    <ClCompile Include="HomeTimeLineControl.cpp">
-      <Filter>Controls\HomeTimeLineControl</Filter>
-    </ClCompile>
-    <ClCompile Include="TwitViewControl.cpp">
-      <Filter>Controls\TwitViewControl</Filter>
     </ClCompile>
     <ClCompile Include="TwitViewRepliesService.cpp">
       <Filter>Services\TwitViewRepliesService</Filter>
     </ClCompile>
-    <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp">
-      <Filter>Controls\TimelineControl\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="SearchControl.cpp">
-      <Filter>Controls\SearchControl</Filter>
-    </ClCompile>
-    <ClCompile Include="SearchTimelineControl.cpp">
-      <Filter>Controls\SearchTimelineControl</Filter>
-    </ClCompile>
     <ClCompile Include="SearchTimelineService.cpp">
       <Filter>Services\SearchTimelineService</Filter>
-    </ClCompile>
-    <ClCompile Include="PictureWindowSaveCommand.cpp">
-      <Filter>Controls\PictureWindow\Commands</Filter>
     </ClCompile>
     <ClCompile Include="TimelineRelativeTimeService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
-    <ClCompile Include="ColumnsInfo.cpp">
-      <Filter>Controls\TimelineControl\Controls</Filter>
-    </ClCompile>
-    <ClCompile Include="ColumnsInfoItem.cpp">
-      <Filter>Controls\TimelineControl\Controls</Filter>
-    </ClCompile>
     <ClCompile Include="FollowService.cpp">
       <Filter>Services\FollowService</Filter>
     </ClCompile>
-    <ClCompile Include="ListsControl.cpp">
-      <Filter>Controls\ListsControl</Filter>
-    </ClCompile>
     <ClCompile Include="ListsTimelineService.cpp">
       <Filter>Services\ListsTimelineService</Filter>
-    </ClCompile>
-    <ClCompile Include="ListTimelineControl.cpp">
-      <Filter>Controls\ListTimelineControl</Filter>
     </ClCompile>
     <ClCompile Include="ListTimelineControlService.cpp">
       <Filter>Services\ListTimelineControlService</Filter>
@@ -276,6 +171,12 @@
     </ClCompile>
     <ClCompile Include="LoginService.cpp">
       <Filter>Services\LoginService</Filter>
+    </ClCompile>
+    <ClCompile Include="ColumnsInfo.cpp">
+      <Filter>ColumnsInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="ColumnsInfoItem.cpp">
+      <Filter>ColumnsInfo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -306,20 +207,11 @@
     <ClInclude Include="viewmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="TimelineControl.h">
-      <Filter>Controls\TimelineControl</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomListBox.h">
-      <Filter>Controls\TimelineControl\Controls</Filter>
-    </ClInclude>
     <ClInclude Include="FormsService.h">
       <Filter>Services\FormsService</Filter>
     </ClInclude>
     <ClInclude Include="Plugins.h">
       <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsControl.h">
-      <Filter>Controls\SettingsControl</Filter>
     </ClInclude>
     <ClInclude Include="twitconn_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
@@ -336,9 +228,6 @@
     <ClInclude Include="OpenUrlService.h">
       <Filter>Services\OpenUrlService</Filter>
     </ClInclude>
-    <ClInclude Include="TimelineControlCopyCommand.h">
-      <Filter>Controls\TimelineControl\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="asyncsvc_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
@@ -354,14 +243,8 @@
     <ClInclude Include="UpdateService.h">
       <Filter>Services\UpdateService</Filter>
     </ClInclude>
-    <ClInclude Include="PictureWindow.h">
-      <Filter>Controls\PictureWindow</Filter>
-    </ClInclude>
     <ClInclude Include="WindowService.h">
       <Filter>Services\WindowService</Filter>
-    </ClInclude>
-    <ClInclude Include="PictureWindowCopyCommand.h">
-      <Filter>Controls\PictureWindow\Commands</Filter>
     </ClInclude>
     <ClInclude Include="TimelineImageService.h">
       <Filter>Services\TimelineService</Filter>
@@ -369,71 +252,26 @@
     <ClInclude Include="TimelineCleanupService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
-    <ClInclude Include="CustomTabControl.h">
-      <Filter>Controls\TabControl</Filter>
-    </ClInclude>
-    <ClInclude Include="ScrollControl.h">
-      <Filter>Controls\TabControl</Filter>
-    </ClInclude>
     <ClInclude Include="AnimationTimerSupport.h">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="UserInfoControl.h">
-      <Filter>Controls\UserInfoControl</Filter>
-    </ClInclude>
-    <ClInclude Include="UserAccountControl.h">
-      <Filter>Controls\UserAccountControl</Filter>
     </ClInclude>
     <ClInclude Include="TabbedControlStatusService.h">
       <Filter>Services\TabbedControlStatusService</Filter>
     </ClInclude>
-    <ClInclude Include="HomeTimeLineControl.h">
-      <Filter>Controls\HomeTimeLineControl</Filter>
-    </ClInclude>
-    <ClInclude Include="TwitViewControl.h">
-      <Filter>Controls\TwitViewControl</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseTimeLineControl.h">
-      <Filter>Controls\HomeTimeLineControl</Filter>
-    </ClInclude>
     <ClInclude Include="TwitViewRepliesService.h">
       <Filter>Services\TwitViewRepliesService</Filter>
-    </ClInclude>
-    <ClInclude Include="TimelineControlOpenInBrowserCommand.h">
-      <Filter>Controls\TimelineControl\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="SearchControl.h">
-      <Filter>Controls\SearchControl</Filter>
-    </ClInclude>
-    <ClInclude Include="SearchTimelineControl.h">
-      <Filter>Controls\SearchTimelineControl</Filter>
     </ClInclude>
     <ClInclude Include="SearchTimelineService.h">
       <Filter>Services\SearchTimelineService</Filter>
     </ClInclude>
-    <ClInclude Include="PictureWindowSaveCommand.h">
-      <Filter>Controls\PictureWindow\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="TimelineRelativeTimeService.h">
       <Filter>Services\TimelineService</Filter>
-    </ClInclude>
-    <ClInclude Include="ColumnsInfo.h">
-      <Filter>Controls\TimelineControl\Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="ColumnsInfoItem.h">
-      <Filter>Controls\TimelineControl\Controls</Filter>
     </ClInclude>
     <ClInclude Include="FollowService.h">
       <Filter>Services\FollowService</Filter>
     </ClInclude>
-    <ClInclude Include="ListsControl.h">
-      <Filter>Controls\ListsControl</Filter>
-    </ClInclude>
     <ClInclude Include="ListsTimelineService.h">
       <Filter>Services\ListsTimelineService</Filter>
-    </ClInclude>
-    <ClInclude Include="ListTimelineControl.h">
-      <Filter>Controls\ListTimelineControl</Filter>
     </ClInclude>
     <ClInclude Include="ListTimelineControlService.h">
       <Filter>Services\ListTimelineControlService</Filter>
@@ -446,6 +284,12 @@
     </ClInclude>
     <ClInclude Include="LoginService.h">
       <Filter>Services\LoginService</Filter>
+    </ClInclude>
+    <ClInclude Include="ColumnsInfo.h">
+      <Filter>ColumnsInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="ColumnsInfoItem.h">
+      <Filter>ColumnsInfo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

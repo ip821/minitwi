@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twview_i.h"
 
 using namespace ATL;
 using namespace IP;
@@ -21,7 +21,7 @@ public:
 	{
 	}
 
-	DECLARE_REGISTRY_RESOURCEID(IDR_PICTUREWINDOWCOPYCOMMAND)
+	DECLARE_NO_REGISTRY()
 
 	BEGIN_COM_MAP(CPictureWindowCopyCommand)
 		COM_INTERFACE_ENTRY(ICommand)

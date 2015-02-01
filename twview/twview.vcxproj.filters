@@ -20,6 +20,60 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="PluginTable">
+      <UniqueIdentifier>{fc643975-203b-4da8-9400-8f5de81bf7e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{5af13fdb-2188-46dd-9ff6-460d63ab8592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\TimelineControl">
+      <UniqueIdentifier>{7553a7ec-291f-48c1-91b5-96cbaa58033e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\TimelineControl\Controls">
+      <UniqueIdentifier>{ec0015df-9439-4db6-bed9-7080d9088c0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\TimelineControl\Commands">
+      <UniqueIdentifier>{2e1468db-32aa-405c-aa57-564a86af771f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\SettingsControl">
+      <UniqueIdentifier>{39c952b2-d444-4ad2-8417-0d92737ddffe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\PictureWindow">
+      <UniqueIdentifier>{8c3dbbab-cbc6-477f-a51f-1fe1683a5828}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\PictureWindow\Commands">
+      <UniqueIdentifier>{9b92c700-b88c-47e6-9c24-6c83e5917791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\TabControl">
+      <UniqueIdentifier>{caac6ef3-b999-486c-a465-feebddc3fe0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\UserInfoControl">
+      <UniqueIdentifier>{1c365a2d-811d-4ad2-ab1d-0f2a7d385394}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\UserAccountControl">
+      <UniqueIdentifier>{cb431835-f06b-4156-ad0d-dafb0c1897d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\TwitViewControl">
+      <UniqueIdentifier>{3c0614f9-b900-4b17-959d-12ffc0c23c1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\SearchControl">
+      <UniqueIdentifier>{d83f7a3c-75d1-4b2c-9639-b6b28aae3a43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\SearchTimelineControl">
+      <UniqueIdentifier>{b53c1aef-d7a6-414a-a45f-b336cf814337}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\ListsControl">
+      <UniqueIdentifier>{5e4ec6fa-28d5-4ae8-bbb2-393ff221274f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\ListTimelineControl">
+      <UniqueIdentifier>{41b990a6-06fa-4ad0-b3ea-c536882183bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\HomeTimeLineControl">
+      <UniqueIdentifier>{9218db49-7145-4421-81b9-744a492398f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{d976d64d-35e3-4df1-941a-d44d35f116fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -31,10 +85,76 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xdlldata.c">
-      <Filter>ZZZMisc\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="twview_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HomeTimeLineControl.cpp">
+      <Filter>Controls\HomeTimeLineControl</Filter>
+    </ClCompile>
+    <ClCompile Include="ListsControl.cpp">
+      <Filter>Controls\ListsControl</Filter>
+    </ClCompile>
+    <ClCompile Include="ListTimelineControl.cpp">
+      <Filter>Controls\ListTimelineControl</Filter>
+    </ClCompile>
+    <ClCompile Include="PictureWindowCopyCommand.cpp">
+      <Filter>Controls\PictureWindow\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PictureWindowSaveCommand.cpp">
+      <Filter>Controls\PictureWindow\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PictureWindow.cpp">
+      <Filter>Controls\PictureWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchControl.cpp">
+      <Filter>Controls\SearchControl</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchTimelineControl.cpp">
+      <Filter>Controls\SearchTimelineControl</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsControl.cpp">
+      <Filter>Controls\SettingsControl</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomTabControl.cpp">
+      <Filter>Controls\TabControl</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollControl.cpp">
+      <Filter>Controls\TabControl</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineControlCopyCommand.cpp">
+      <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp">
+      <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomListBox.cpp">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="TimelineControl.cpp">
+      <Filter>Controls\TimelineControl</Filter>
+    </ClCompile>
+    <ClCompile Include="TwitViewControl.cpp">
+      <Filter>Controls\TwitViewControl</Filter>
+    </ClCompile>
+    <ClCompile Include="UserAccountControl.cpp">
+      <Filter>Controls\UserAccountControl</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInfoControl.cpp">
+      <Filter>Controls\UserInfoControl</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginTable.cpp">
+      <Filter>PluginTable</Filter>
+    </ClCompile>
+    <ClCompile Include="asyncsvc_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="objmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="twitter_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="viewmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -57,6 +177,81 @@
     <ClInclude Include="twview_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="BaseTimeLineControl.h">
+      <Filter>Controls\HomeTimeLineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="HomeTimeLineControl.h">
+      <Filter>Controls\HomeTimeLineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="ListsControl.h">
+      <Filter>Controls\ListsControl</Filter>
+    </ClInclude>
+    <ClInclude Include="ListTimelineControl.h">
+      <Filter>Controls\ListTimelineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="PictureWindowCopyCommand.h">
+      <Filter>Controls\PictureWindow\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="PictureWindowSaveCommand.h">
+      <Filter>Controls\PictureWindow\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="PictureWindow.h">
+      <Filter>Controls\PictureWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchControl.h">
+      <Filter>Controls\SearchControl</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchTimelineControl.h">
+      <Filter>Controls\SearchTimelineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsControl.h">
+      <Filter>Controls\SettingsControl</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomTabControl.h">
+      <Filter>Controls\TabControl</Filter>
+    </ClInclude>
+    <ClInclude Include="ScrollControl.h">
+      <Filter>Controls\TabControl</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineControlCopyCommand.h">
+      <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineControlOpenInBrowserCommand.h">
+      <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomListBox.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineControl.h">
+      <Filter>Controls\TimelineControl</Filter>
+    </ClInclude>
+    <ClInclude Include="TwitViewControl.h">
+      <Filter>Controls\TwitViewControl</Filter>
+    </ClInclude>
+    <ClInclude Include="UserAccountControl.h">
+      <Filter>Controls\UserAccountControl</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInfoControl.h">
+      <Filter>Controls\UserInfoControl</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginTable.h">
+      <Filter>PluginTable</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTimerSupport.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="asyncsvc_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="objmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="twitter_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="viewmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twview.rc">
@@ -64,15 +259,24 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="twview.rgs">
-      <Filter>ZZZMisc\Resource Files</Filter>
-    </None>
     <None Include="twview.def">
       <Filter>ZZZMisc\Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="twview.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\model-libs\objmdl\objmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\model-libs\viewmdl\viewmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\model-libs\asyncsvc\asyncsvc_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\twitter\twitter_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

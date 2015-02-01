@@ -47,9 +47,9 @@ private:
 	CString m_strUpdatePath;
 	boost::mutex m_mutex;
 
+	static CString GetInstalledVersionInternal();
+
 public:
-	static CString GetInstalledVersion();
-	
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
@@ -61,6 +61,7 @@ public:
 
 	STDMETHOD(IsUpdateAvailable)(BOOL* pbUpdateAvailable);
 	STDMETHOD(RunUpdate)();
+	STDMETHOD(GetInstalledVersion)(BSTR* pbstrVersion);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UpdateService), CUpdateService)

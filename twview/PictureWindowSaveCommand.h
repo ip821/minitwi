@@ -1,53 +1,52 @@
-#pragma once
+// PictureWindowSaveCommand.h : Declaration of the CPictureWindowSaveCommand
 
+#pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
-#include "..\ViewMdl\IInitializeWithControlImpl.h"
+#include "twview_i.h"
 
 using namespace ATL;
 using namespace IP;
 
-// CTimelineControlOpenInBrowserCommand
+// CPictureWindowSaveCommand
 
-class ATL_NO_VTABLE CTimelineControlOpenInBrowserCommand :
+class ATL_NO_VTABLE CPictureWindowSaveCommand :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CTimelineControlOpenInBrowserCommand, &CLSID_TimelineControlCopyCommand>,
-	public ICommand,
+	public CComCoClass<CPictureWindowSaveCommand, &CLSID_PictureWindowSaveCommand>,
+	public ICommand2,
 	public IAcceleratorSupport,
-	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
-	public IInitializeWithColumnName,
 	public IPluginSupportNotifications
 {
 public:
-	CTimelineControlOpenInBrowserCommand()
+	CPictureWindowSaveCommand()
 	{
 	}
 
 	DECLARE_NO_REGISTRY()
 
-	BEGIN_COM_MAP(CTimelineControlOpenInBrowserCommand)
-		COM_INTERFACE_ENTRY(IInitializeWithControl)
+	BEGIN_COM_MAP(CPictureWindowSaveCommand)
 		COM_INTERFACE_ENTRY(ICommand)
+		COM_INTERFACE_ENTRY(ICommand2)
 		COM_INTERFACE_ENTRY(IAcceleratorSupport)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
-		COM_INTERFACE_ENTRY(IInitializeWithColumnName)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 	END_COM_MAP()
 
 private:
 	CComPtr<IVariantObject> m_pVariantObject;
-	CString m_strColumnName;
+	CComPtr<IServiceProvider> m_pServiceProvider;
 public:
 
 	STDMETHOD(GetCommandText)(REFGUID guidCommand, BSTR* bstrText);
 	STDMETHOD(InstallMenu)(IMenu* pMenu);
 	STDMETHOD(Invoke)(REFGUID guidCommand);
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
-	STDMETHOD(SetColumnName)(LPCTSTR lpszColumnName);
 	STDMETHOD(GetAccelerator)(REFGUID guidCommand, TACCEL *pAccel);
+	STDMETHOD(GetEnabled)(REFGUID guidCommand, BOOL *pbEnabled);
+	METHOD_EMPTY(STDMETHOD(GetHBITMAP)(REFGUID guidCommand, HBITMAP *pHBITMAP));
+	METHOD_EMPTY(STDMETHOD(InstallToolbar)(IToolbar *pToolbar));
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(TimelineControlOpenInBrowserCommand), CTimelineControlOpenInBrowserCommand)
+OBJECT_ENTRY_AUTO(__uuidof(PictureWindowSaveCommand), CPictureWindowSaveCommand)

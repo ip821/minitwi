@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ListsControl.h"
 #include "Plugins.h"
-#include "UpdateScope.h"
+#include "..\twitter\UpdateScope.h"
 
 STDMETHODIMP CListsControl::GetText(BSTR* pbstr)
 {

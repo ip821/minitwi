@@ -364,6 +364,7 @@ interface IUpdateService : IUnknown
 {
 	HRESULT IsUpdateAvailable(BOOL* pbUpdateAvailable);
 	HRESULT RunUpdate();
+	HRESULT GetInstalledVersion(BSTR* pbstrVersion);
 };
 
 [

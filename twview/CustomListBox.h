@@ -1,7 +1,7 @@
 #pragma once
 
 #include "atlctrls.h"
-#include "twitter_i.h"
+#include "twview_i.h"
 #include "AnimationTimerSupport.h"
 #include <atomic>
 

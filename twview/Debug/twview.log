@@ -1,0 +1,40 @@
+﻿Build started 01.02.2015 13:09:16.
+     1>Project "C:\Users\ip\Desktop\minitwi\twview\twview.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\boost /I..\WTL90_4140_Final\Include /ZI /nologo /W4 /WX /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _USRDLL /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\twview.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4238 /wd4100 /wd4239 /analyze- /errorReport:prompt PluginTable.cpp
+         PluginTable.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\ip\Desktop\minitwi\Debug\twview.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /DEF:".\twview.def" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\ip\Desktop\minitwi\Debug\twview.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X86 /DLL Debug\twview.res
+         Debug\asyncsvc_contract_i.obj
+         Debug\CustomListBox.obj
+         Debug\CustomTabControl.obj
+         Debug\HomeTimeLineControl.obj
+         Debug\ListsControl.obj
+         Debug\ListTimelineControl.obj
+         Debug\objmdl_contract_i.obj
+         Debug\PictureWindow.obj
+         Debug\PictureWindowCopyCommand.obj
+         Debug\PictureWindowSaveCommand.obj
+         Debug\PluginTable.obj
+         Debug\ScrollControl.obj
+         Debug\SearchControl.obj
+         Debug\SearchTimelineControl.obj
+         Debug\SettingsControl.obj
+         Debug\TimelineControl.obj
+         Debug\TimelineControlCopyCommand.obj
+         Debug\TimelineControlOpenInBrowserCommand.obj
+         Debug\twitter_contract_i.obj
+         Debug\TwitViewControl.obj
+         Debug\UserAccountControl.obj
+         Debug\UserInfoControl.obj
+         Debug\dllmain.obj
+         Debug\stdafx.obj
+         Debug\twview.obj
+         Debug\twview_i.obj
+         Debug\viewmdl_contract_i.obj
+         twview.vcxproj -> C:\Users\ip\Desktop\minitwi\Debug\twview.dll
+     1>Done Building Project "C:\Users\ip\Desktop\minitwi\twview\twview.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.81

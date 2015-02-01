@@ -61,6 +61,14 @@
         <File Id="twitter.dll" KeyPath="yes" Source="$(var.twitter.TargetPath)"/>
       </Component>
 
+      <Component Id="twview.dll" Guid="4573368F-1FE3-4D9C-83C1-763569F00087">
+        <File Id="twview.dll" KeyPath="yes" Source="$(var.twview.TargetPath)"/>
+      </Component>
+
+      <Component Id="twtheme.dll" Guid="145F1654-715C-45D4-9050-00DBB75237E4">
+        <File Id="twtheme.dll" KeyPath="yes" Source="$(var.twtheme.TargetPath)"/>
+      </Component>
+
       <Component Id="objmdl.dll" Guid="7DA7B31E-ABFE-493A-B9FD-72ADAD8182FD">
         <File Id="objmdl.dll" KeyPath="yes" Source="$(var.objmdl.TargetPath)"/>
       </Component>
@@ -95,16 +103,11 @@
       <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">NOT Installed AND NOT PATCH</Publish>
       <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">Installed AND PATCH</Publish>
 
-      <!--<Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="1">WixUI_InstallMode = "Change"</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2">WixUI_InstallMode = "InstallCustom"</Publish>
-      <Publish Dialog="CustomizeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>-->
-
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="1">WixUI_InstallMode = "Repair" OR WixUI_InstallMode = "Remove"</Publish>
       <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2"></Publish>
 
       <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg">1</Publish>
 
-      <!--<Publish Dialog="MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog" Value="CustomizeDlg">1</Publish>-->
       <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
       <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
       <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg">1</Publish>

@@ -87,7 +87,7 @@ STDMETHODIMP CUpdateService::OnFinish(IVariantObject *pResult)
 	return S_OK;
 }
 
-CString CUpdateService::GetInstalledVersion()
+CString CUpdateService::GetInstalledVersionInternal()
 {
 	CString strInstalledVersion;
 	{
@@ -128,7 +128,7 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 
 		CString strVersion;
 		CTextFile::ReadAllText(vFilePath.bstrVal, strVersion);
-		CString strInstalledVersion = GetInstalledVersion();
+		CString strInstalledVersion = GetInstalledVersionInternal();
 		if (LessThanVersion(std::wstring(strInstalledVersion), std::wstring(strVersion)))
 		{
 			CComPtr<IVariantObject> pDownloadTask;
@@ -191,5 +191,13 @@ STDMETHODIMP CUpdateService::RunUpdate()
 
 	exit(0);
 
+	return S_OK;
+}
+
+STDMETHODIMP CUpdateService::GetInstalledVersion(BSTR* pbstrVersion)
+{
+	CHECK_E_POINTER(pbstrVersion);
+	CComBSTR bstrVersion(GetInstalledVersionInternal());
+	*pbstrVersion = bstrVersion.Detach();
 	return S_OK;
 }

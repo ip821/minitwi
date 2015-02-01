@@ -4,7 +4,6 @@
 #include "SettingsControl.h"
 #include "Plugins.h"
 #include "..\model-libs\asyncsvc\Plugins.h"
-#include "UpdateService.h"
 #include "..\twiconn\Plugins.h"
 
 // CSettingsControl
@@ -46,6 +45,12 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	{
 		SwitchToLoginMode();
 	}
+
+	CComPtr<IUpdateService> pUpdateService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_UpdateService, &pUpdateService));
+	CComBSTR bstrVersion;
+	RETURN_IF_FAILED(pUpdateService->GetInstalledVersion(&bstrVersion));
+	m_labelVersion.SetWindowText(bstrVersion);
 
 	return S_OK;
 }
@@ -106,8 +111,6 @@ LRESULT CSettingsControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	m_buttonLogin = GetDlgItem(IDC_BUTTON_LOGIN);
 	m_buttonLogout = GetDlgItem(IDC_BUTTON_LOGOUT);
 	m_labelHomePage.SubclassWindow(GetDlgItem(IDC_LABEL_HOMEPAGE));
-
-	m_labelVersion.SetWindowText(CUpdateService::GetInstalledVersion());
 
 	return 0;
 }
