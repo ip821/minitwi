@@ -5,6 +5,8 @@
 
 STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 {
+	CHECK_E_POINTER(hWnd);
+	*hWnd = m_hWnd;
 	return S_OK;
 }
 

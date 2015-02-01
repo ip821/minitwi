@@ -373,3 +373,4 @@
 /twtheme/twtheme_i.h
 /twview/twview_i.c
 /twview/twview_i.h
+/twview/Debug/*.log
