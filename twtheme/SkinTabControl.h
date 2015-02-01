@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twtheme_i.h"
 
 using namespace ATL;
 using namespace std;

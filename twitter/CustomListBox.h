@@ -48,9 +48,6 @@ public:
 
 	CCustomListBox();
 
-	static const int INVALID_COLUMN_INDEX = -1;
-	static const int INVALID_ITEM_INDEX = -1;
-
 private:
 	CComPtr<IObjCollection> m_pItems;
 	vector<CAdapt<CComPtr<IColumnsInfo>>> m_columnsInfo;

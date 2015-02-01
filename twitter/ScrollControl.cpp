@@ -2,7 +2,7 @@
 #include "ScrollControl.h"
 #include "CustomTabControl.h"
 #include "Mmsystem.h"
-#include "GdilPlusUtils.h"
+#include "..\twtheme\GdilPlusUtils.h"
 #pragma comment(lib, "Winmm.lib")
 
 #define TARGET_RESOLUTION 1

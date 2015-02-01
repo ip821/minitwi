@@ -4,7 +4,6 @@
 #include "SkinTimeline.h"
 #include "Plugins.h"
 #include "GdilPlusUtils.h"
-#include "CustomListBox.h"
 
 // CSkinTimeline
 
@@ -762,7 +761,7 @@ STDMETHODIMP CSkinTimeline::AnimationRegisterItemIndex(UINT uiIndex, IColumnsInf
 		it = m_steps.find(uiIndex);
 	}
 
-	if (iColumnIndex == CCustomListBox::INVALID_COLUMN_INDEX)
+	if (iColumnIndex == INVALID_COLUMN_INDEX)
 	{
 		it->second.step = 0;
 		it->second.alpha = 0;

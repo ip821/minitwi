@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twtheme_i.h"
 
 using namespace ATL;
 
@@ -18,7 +18,7 @@ public:
 	{
 	}
 
-	DECLARE_REGISTRY_RESOURCEID(IDR_SKINDEFAULT)
+	DECLARE_NO_REGISTRY()
 
 	BEGIN_COM_MAP(CThemeDefault)
 		COM_INTERFACE_ENTRY(ITheme)

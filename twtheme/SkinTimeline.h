@@ -5,7 +5,7 @@
 #include <gdiplus.h>
 
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twtheme_i.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
 
@@ -23,7 +23,7 @@ class ATL_NO_VTABLE CSkinTimeline :
 public:
 	CSkinTimeline();
 
-	DECLARE_REGISTRY_RESOURCEID(IDR_SKINTIMELINE)
+	DECLARE_NO_REGISTRY()
 
 	BEGIN_COM_MAP(CSkinTimeline)
 		COM_INTERFACE_ENTRY(ISkinTimeline)

@@ -66,34 +66,6 @@ library twitterLib
 		[default] interface IThemeService;
 	};
 	[
-		uuid(A7C215DD-BB09-4045-9029-9EE9D1D0A389)
-	]
-	coclass ThemeDefault
-	{
-		[default] interface ITheme;
-	};
-	[
-		uuid(B682B92C-ACB3-446D-A37D-E11C901385CA)
-	]
-	coclass SkinTimeline
-	{
-		[default] interface ISkinTimeline;
-	};
-	[
-		uuid(41F33BEE-3D82-4173-9F5E-79C91523843B)
-	]
-	coclass ThemeColorMap
-	{
-		[default] interface IThemeColorMap;
-	};
-	[
-		uuid(986AF532-E457-4A2D-894D-0805AB6BD0B1)
-	]
-	coclass ThemeFontMap
-	{
-		[default] interface IThemeFontMap;
-	};
-	[
 		uuid(89CA168E-8568-4653-9DCF-8DEB3CA21A37)
 	]
 	coclass ColumnsInfo
@@ -178,20 +150,6 @@ library twitterLib
 		[default] interface ICustomTabControl;
 	};
 	[
-		uuid(A4B1D02D-648F-4D71-9907-7B84B9DF2422)
-	]
-	coclass SkinTabControl
-	{
-		[default] interface ISkinTabControl;
-	};
-	[
-		uuid(D9BF55FB-091B-4858-82EC-EBD0137D04FB)
-	]
-	coclass SkinCommonControl
-	{
-		[default] interface ISkinCommonControl;
-	};
-	[
 		uuid(C65CC0F7-866D-40F6-89E5-652C0295F15C)
 	]
 	coclass UserInfoControl
@@ -204,13 +162,6 @@ library twitterLib
 	coclass UserAccountControl
 	{
 		[default] interface IControl;
-	};
-	[
-		uuid(0B2EE239-BF11-41FF-8DF0-525232084378)
-	]
-	coclass SkinUserAccountControl
-	{
-		[default] interface ISkinUserAccountControl;
 	};
 	[
 		uuid(51E59535-2665-4C06-B550-3FF56565F89B)

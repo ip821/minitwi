@@ -221,7 +221,7 @@ LRESULT CTimelineControl::OnItemDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);
-	if (pNm->dwCurrentColumn == CCustomListBox::INVALID_COLUMN_INDEX)
+	if (pNm->dwCurrentColumn == INVALID_COLUMN_INDEX)
 		return 0;
 
 	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
@@ -248,7 +248,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		ASSERT_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pNm->pVariantObject));
 	}
 
-	if (pNm->dwCurrentColumn != CCustomListBox::INVALID_COLUMN_INDEX)
+	if (pNm->dwCurrentColumn != INVALID_COLUMN_INDEX)
 	{
 		CComQIPtr<IInitializeWithColumnName> pInitializeWithColumnName = m_pCommandSupport;
 		if (pInitializeWithColumnName)

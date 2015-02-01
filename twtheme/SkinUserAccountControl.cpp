@@ -86,26 +86,6 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 	return S_OK;
 }
 
-void CSkinUserAccountControl::DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect = false, COLORREF colorRefBrush)
-{
-	const int diff_x = 10;
-	const int diff_y = 0; // diff_x / 2;
-
-	CRgn rgn;
-	if (strictRect)
-		rgn.CreateRoundRectRgn(rectText.left, rectText.top, rectText.right, rectText.bottom, 10, 10);
-	else
-		rgn.CreateRoundRectRgn(rectText.left - diff_x, rectText.top - diff_y, rectText.right + diff_x, rectText.bottom + diff_y, 10, 10);
-
-	Gdiplus::Region r(rgn);
-	Gdiplus::Graphics g(cdc);
-	Color colorBrush(0x882F4F4F);
-	if (colorRefBrush)
-		colorBrush.SetFromCOLORREF(colorRefBrush);
-	Gdiplus::SolidBrush brush(colorBrush);
-	g.FillRegion(&brush, &r);
-}
-
 STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject, IColumnsInfo* pColumnsInfo)
 {
 	CRect rect = *lpRect;

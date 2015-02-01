@@ -5,7 +5,7 @@
 #include "Plugins.h"
 #include "TimelineService.h"
 #include "UpdateScope.h"
-#include "GdilPlusUtils.h"
+#include "..\twtheme\GdilPlusUtils.h"
 
 // CTimelineImageService
 

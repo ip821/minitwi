@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "ImageManagerService.h"
-#include "GdilPlusUtils.h"
+#include "..\twtheme\GdilPlusUtils.h"
 
 // CImageManagerService
 

@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twtheme_i.h"
 #include <gdiplus.h>
 
 using namespace ATL;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gdiplus.h>
-#include "twitter_i.h"
+#include "twtheme_i.h"
 #include "Plugins.h"
 
 using namespace ATL;
@@ -43,8 +43,6 @@ private:
 	const CString m_strFollowing = L"Following";
 
 public:
-
-	static void DrawRoundedRect(CDCHandle& cdc, CRect rectText, bool strictRect, COLORREF colorRefBrush = 0);
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);

@@ -6,6 +6,9 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
+import "..\model-libs\objmdl\objmdl_contract_i.idl";
+import "..\model-libs\viewmdl\viewmdl_contract_i.idl";
+import "..\twitter\twitter_contract_i.idl";
 
 [
 	uuid(F7BFC6EF-D8BE-4C1A-A9D5-9FC57D58BF5C),
@@ -14,5 +17,61 @@ import "ocidl.idl";
 library twthemeLib
 {
 	importlib("stdole2.tlb");
+	[
+		uuid(6EA78630-DC6D-4D2B-91F0-686B260F29D6)
+	]
+	coclass PluginTable
+	{
+		[default] interface IPluginTable;
+	};
+	[
+		uuid(B682B92C-ACB3-446D-A37D-E11C901385CA)
+	]
+	coclass SkinTimeline
+	{
+		[default] interface ISkinTimeline;
+	};
+	[
+		uuid(41F33BEE-3D82-4173-9F5E-79C91523843B)
+	]
+	coclass ThemeColorMap
+	{
+		[default] interface IThemeColorMap;
+	};
+	[
+		uuid(986AF532-E457-4A2D-894D-0805AB6BD0B1)
+	]
+	coclass ThemeFontMap
+	{
+		[default] interface IThemeFontMap;
+	};
+	[
+		uuid(A4B1D02D-648F-4D71-9907-7B84B9DF2422)
+	]
+	coclass SkinTabControl
+	{
+		[default] interface ISkinTabControl;
+	};
+	[
+		uuid(D9BF55FB-091B-4858-82EC-EBD0137D04FB)
+	]
+	coclass SkinCommonControl
+	{
+		[default] interface ISkinCommonControl;
+	};
+	[
+		uuid(0B2EE239-BF11-41FF-8DF0-525232084378)
+	]
+	coclass SkinUserAccountControl
+	{
+		[default] interface ISkinUserAccountControl;
+	};
+	[
+		uuid(A7C215DD-BB09-4045-9029-9EE9D1D0A389)
+	]
+	coclass ThemeDefault
+	{
+		[default] interface ITheme;
+	};
 };
 

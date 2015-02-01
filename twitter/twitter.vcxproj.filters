@@ -53,9 +53,6 @@
     <Filter Include="Services\SkinService">
       <UniqueIdentifier>{093f2170-3e53-4ffa-bcad-8d8a211ecafa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Services\SkinService\Default">
-      <UniqueIdentifier>{1c700d2e-5a19-4ae8-a485-e0246a353dbb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Services\OpenUrlService">
       <UniqueIdentifier>{da8470ea-63f7-46fa-a852-d803039486ac}</UniqueIdentifier>
     </Filter>
@@ -172,20 +169,8 @@
     <ClCompile Include="ViewControllerService.cpp">
       <Filter>Services\ViewControllerService</Filter>
     </ClCompile>
-    <ClCompile Include="SkinTimeline.cpp">
-      <Filter>Services\SkinService\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="ThemeDefault.cpp">
-      <Filter>Services\SkinService\Default</Filter>
-    </ClCompile>
     <ClCompile Include="ThemeService.cpp">
       <Filter>Services\SkinService</Filter>
-    </ClCompile>
-    <ClCompile Include="ThemeColorMap.cpp">
-      <Filter>Services\SkinService\Default</Filter>
-    </ClCompile>
-    <ClCompile Include="ThemeFontMap.cpp">
-      <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
     <ClCompile Include="OpenUrlService.cpp">
       <Filter>Services\OpenUrlService</Filter>
@@ -220,14 +205,8 @@
     <ClCompile Include="TimelineCleanupService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
-    <ClCompile Include="SkinTabControl.cpp">
-      <Filter>Services\SkinService\Default</Filter>
-    </ClCompile>
     <ClCompile Include="CustomTabControl.cpp">
       <Filter>Controls\TabControl</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinCommonControl.cpp">
-      <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
     <ClCompile Include="ScrollControl.cpp">
       <Filter>Controls\TabControl</Filter>
@@ -237,9 +216,6 @@
     </ClCompile>
     <ClCompile Include="UserAccountControl.cpp">
       <Filter>Controls\UserAccountControl</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinUserAccountControl.cpp">
-      <Filter>Services\SkinService\Default</Filter>
     </ClCompile>
     <ClCompile Include="TabbedControlStatusService.cpp">
       <Filter>Services\TabbedControlStatusService</Filter>
@@ -348,20 +324,8 @@
     <ClInclude Include="ViewControllerService.h">
       <Filter>Services\ViewControllerService</Filter>
     </ClInclude>
-    <ClInclude Include="SkinTimeline.h">
-      <Filter>Services\SkinService\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="ThemeDefault.h">
-      <Filter>Services\SkinService\Default</Filter>
-    </ClInclude>
     <ClInclude Include="ThemeService.h">
       <Filter>Services\SkinService</Filter>
-    </ClInclude>
-    <ClInclude Include="ThemeColorMap.h">
-      <Filter>Services\SkinService\Default</Filter>
-    </ClInclude>
-    <ClInclude Include="ThemeFontMap.h">
-      <Filter>Services\SkinService\Default</Filter>
     </ClInclude>
     <ClInclude Include="OpenUrlService.h">
       <Filter>Services\OpenUrlService</Filter>
@@ -399,14 +363,8 @@
     <ClInclude Include="TimelineCleanupService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
-    <ClInclude Include="SkinTabControl.h">
-      <Filter>Services\SkinService\Default</Filter>
-    </ClInclude>
     <ClInclude Include="CustomTabControl.h">
       <Filter>Controls\TabControl</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinCommonControl.h">
-      <Filter>Services\SkinService\Default</Filter>
     </ClInclude>
     <ClInclude Include="ScrollControl.h">
       <Filter>Controls\TabControl</Filter>
@@ -419,9 +377,6 @@
     </ClInclude>
     <ClInclude Include="UserAccountControl.h">
       <Filter>Controls\UserAccountControl</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinUserAccountControl.h">
-      <Filter>Services\SkinService\Default</Filter>
     </ClInclude>
     <ClInclude Include="TabbedControlStatusService.h">
       <Filter>Services\TabbedControlStatusService</Filter>
@@ -449,9 +404,6 @@
     </ClInclude>
     <ClInclude Include="SearchTimelineService.h">
       <Filter>Services\SearchTimelineService</Filter>
-    </ClInclude>
-    <ClInclude Include="GdilPlusUtils.h">
-      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="PictureWindowSaveCommand.h">
       <Filter>Controls\PictureWindow\Commands</Filter>

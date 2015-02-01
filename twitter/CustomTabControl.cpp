@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CustomTabControl.h"
 #include "Plugins.h"
-#include "GdilPlusUtils.h"
+#include "..\twtheme\GdilPlusUtils.h"
 
 STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 {

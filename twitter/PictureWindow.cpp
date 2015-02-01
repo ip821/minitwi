@@ -3,9 +3,8 @@
 #include "stdafx.h"
 #include "PictureWindow.h"
 #include "Plugins.h"
-#include "SkinUserAccountControl.h"
 #include "..\twiconn\Plugins.h"
-#include "GdilPlusUtils.h"
+#include "..\twtheme\GdilPlusUtils.h"
 
 // CPictureWindow
 
@@ -461,7 +460,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
 
 		CRect rectText(x, y, x + size.cx, y + size.cy);
-		CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
+		DrawRoundedRect(CDCHandle(cdc), rectText, false);
 		cdc.DrawTextEx(str, str.Length(), &rectText, DT_WORDBREAK | DT_CENTER, NULL);
 	}
 	else
@@ -495,7 +494,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		auto y = rect.bottom - sz.cy - IMAGE_PADDING * 2;
 
 		CRect rectText(x, y, x + sz.cx, y + sz.cy);
-		CSkinUserAccountControl::DrawRoundedRect(CDCHandle(cdc), rectText, false);
+		DrawRoundedRect(CDCHandle(cdc), rectText, false);
 		cdc.DrawText(str, str.GetLength(), rectText, 0);
 	}
 

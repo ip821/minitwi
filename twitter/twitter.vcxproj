@@ -266,9 +266,6 @@
     <ClCompile Include="SearchControl.cpp" />
     <ClCompile Include="SearchTimelineControl.cpp" />
     <ClCompile Include="SearchTimelineService.cpp" />
-    <ClCompile Include="SkinCommonControl.cpp" />
-    <ClCompile Include="SkinTabControl.cpp" />
-    <ClCompile Include="SkinUserAccountControl.cpp" />
     <ClCompile Include="TabbedControlStatusService.cpp" />
     <ClCompile Include="TimelineCleanupService.cpp" />
     <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp" />
@@ -301,11 +298,7 @@
     <ClCompile Include="OpenUrlService.cpp" />
     <ClCompile Include="PluginTable.cpp" />
     <ClCompile Include="SettingsControl.cpp" />
-    <ClCompile Include="ThemeColorMap.cpp" />
-    <ClCompile Include="ThemeDefault.cpp" />
-    <ClCompile Include="ThemeFontMap.cpp" />
     <ClCompile Include="ThemeService.cpp" />
-    <ClCompile Include="SkinTimeline.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">Create</PrecompiledHeader>
@@ -361,7 +354,6 @@
     <ClInclude Include="ColumnsInfo.h" />
     <ClInclude Include="ColumnsInfoItem.h" />
     <ClInclude Include="FollowService.h" />
-    <ClInclude Include="GdilPlusUtils.h" />
     <ClInclude Include="ListsControl.h" />
     <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="ListTimelineControl.h" />
@@ -380,9 +372,6 @@
     <ClInclude Include="ImageManagerService.h" />
     <ClInclude Include="CustomTabControl.h" />
     <ClInclude Include="ScrollControl.h" />
-    <ClInclude Include="SkinCommonControl.h" />
-    <ClInclude Include="SkinTabControl.h" />
-    <ClInclude Include="SkinUserAccountControl.h" />
     <ClInclude Include="TabbedControlStatusService.h" />
     <ClInclude Include="TimelineCleanupService.h" />
     <ClInclude Include="TimelineImageService.h" />
@@ -398,11 +387,7 @@
     <ClInclude Include="PluginTable.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SettingsControl.h" />
-    <ClInclude Include="ThemeColorMap.h" />
-    <ClInclude Include="ThemeDefault.h" />
-    <ClInclude Include="ThemeFontMap.h" />
     <ClInclude Include="ThemeService.h" />
-    <ClInclude Include="SkinTimeline.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TimelineControl.h" />

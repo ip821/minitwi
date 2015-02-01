@@ -1,79 +1,168 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="ZZZMisc">
+      <UniqueIdentifier>{52f1c0b9-6109-4696-a84f-92a4e0a3158d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="ZZZMisc\Generated Files">
+      <UniqueIdentifier>{3b99a339-87fd-4c9f-bb74-84ad80dab6f6}</UniqueIdentifier>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="ZZZMisc\Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="ZZZMisc\Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Generated Files">
-      <UniqueIdentifier>{3b99a339-87fd-4c9f-bb74-84ad80dab6f6}</UniqueIdentifier>
-      <SourceControlFiles>False</SourceControlFiles>
+    <Filter Include="ZZZMisc\Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Skins">
+      <UniqueIdentifier>{a3a7441e-8e7d-431b-8489-293edf776a3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Theme">
+      <UniqueIdentifier>{5b3a4057-303a-4b28-a084-74042d45c9d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{947dd2b0-0ee4-4764-b2fa-fce192ed94c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PluginTable">
+      <UniqueIdentifier>{fbfafec6-d4a5-4dcc-9997-c2905b9e14a9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="twtheme.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="xdlldata.c">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="twtheme_i.c">
-      <Filter>Generated Files</Filter>
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeColorMap.cpp">
+      <Filter>Theme</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeDefault.cpp">
+      <Filter>Theme</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeFontMap.cpp">
+      <Filter>Theme</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinTabControl.cpp">
+      <Filter>Skins</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinTimeline.cpp">
+      <Filter>Skins</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinUserAccountControl.cpp">
+      <Filter>Skins</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinCommonControl.cpp">
+      <Filter>Skins</Filter>
+    </ClCompile>
+    <ClCompile Include="PluginTable.cpp">
+      <Filter>PluginTable</Filter>
+    </ClCompile>
+    <ClCompile Include="objmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="twitter_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="viewmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dllmain.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xdlldata.h">
-      <Filter>Header Files</Filter>
+      <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="twtheme_i.h">
-      <Filter>Generated Files</Filter>
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeColorMap.h">
+      <Filter>Theme</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeDefault.h">
+      <Filter>Theme</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeFontMap.h">
+      <Filter>Theme</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinCommonControl.h">
+      <Filter>Skins</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinTabControl.h">
+      <Filter>Skins</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinTimeline.h">
+      <Filter>Skins</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinUserAccountControl.h">
+      <Filter>Skins</Filter>
+    </ClInclude>
+    <ClInclude Include="GdilPlusUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginTable.h">
+      <Filter>PluginTable</Filter>
+    </ClInclude>
+    <ClInclude Include="objmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="twitter_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="viewmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twtheme.rc">
-      <Filter>Resource Files</Filter>
+      <Filter>ZZZMisc\Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="twtheme.rgs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="twtheme.def">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="twtheme.idl">
-      <Filter>Source Files</Filter>
+      <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
+    <Midl Include="..\model-libs\objmdl\objmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\model-libs\viewmdl\viewmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\twitter\twitter_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt">
+      <Filter>ZZZMisc</Filter>
+    </Text>
   </ItemGroup>
 </Project>
