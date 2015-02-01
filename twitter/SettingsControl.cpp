@@ -175,8 +175,6 @@ STDMETHODIMP CSettingsControl::Load(ISettings *pSettings)
 STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
-	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, Twitter::Metadata::Settings::Twitter::User, pSettings));
-
 	return S_OK;
 }
 
@@ -243,11 +241,7 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CComPtr<ISettings> pSettingsTwitter;
-	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
-
 	m_editPass.SetWindowText(L"");
-	Save(pSettingsTwitter);
 	SwitchToLogoutMode();
 
 	return S_OK;

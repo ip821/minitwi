@@ -87,13 +87,15 @@ STDMETHODIMP CLoginService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CComVariant vKey, vSecret;
+	CComVariant vKey, vSecret, vUser;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
 
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
 
+	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
 	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
 	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 
