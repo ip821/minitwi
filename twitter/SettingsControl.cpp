@@ -18,16 +18,15 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_AUTH_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &m_pFormManager));
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ViewControllerService, &m_pViewControllerService));
+
+	CComPtr<IFormManager> pFormManager;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
 
 	m_pCustomTabControl = m_pControl;
 
 	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
-	m_pHomeTimeLineControl = pControl;
-	ATLASSERT(m_pHomeTimeLineControl);
-	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pHomeTimeLineControl;
+	RETURN_IF_FAILED(pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
+	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = pControl;
 	ATLASSERT(pTimelineControlSupport);
 	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
 
@@ -60,14 +59,11 @@ STDMETHODIMP CSettingsControl::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 
 	m_pSkinCommonControl.Release();
-	m_pViewControllerService.Release();
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
 	m_pTimelineControl.Release();
-	m_pHomeTimeLineControl.Release();
 	m_pTheme.Release();
 	m_pSettings.Release();
-	m_pFormManager.Release();
 	m_pCustomTabControl.Release();
 	DestroyWindow();
 	return S_OK;
@@ -179,7 +175,6 @@ STDMETHODIMP CSettingsControl::Load(ISettings *pSettings)
 STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
-
 	RETURN_IF_FAILED(SaveEditBoxText(IDC_EDITUSER, Twitter::Metadata::Settings::Twitter::User, pSettings));
 
 	return S_OK;
@@ -220,25 +215,6 @@ HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
 	EnableLoginControls(FALSE);
-	RETURN_IF_FAILED(m_pCustomTabControl->HideInfo());
-	RETURN_IF_FAILED(m_pViewControllerService->StartAnimation());
-	return S_OK;
-}
-
-STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
-{
-	CComPtr<IFormManager> pFormManager;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
-	CComPtr<IControl> pTimelineControl;
-	RETURN_IF_FAILED(pFormManager->FindForm(CLSID_HomeTimeLineControl, &pTimelineControl));
-	CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pTimelineControl;
-	CComPtr<IServiceProvider> pServiceProvider;
-	RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
-	CComPtr<IThreadService> pTimelineThreadService;
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThreadService));
-	RETURN_IF_FAILED(pTimelineThreadService->Join());
-
-	RETURN_IF_FAILED(m_pHomeTimeLineControl->StopTimers());
 
 	CComBSTR bstrUser;
 	m_editUser.GetWindowText(&bstrUser);
@@ -246,14 +222,8 @@ STDMETHODIMP CSettingsControl::OnRun(IVariantObject *pResult)
 	CComBSTR bstrPass;
 	m_editPass.GetWindowText(&bstrPass);
 
-	CComPtr<ITwitterConnection> pConnection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-
-	CComBSTR bstrKey, bstrSecret;
-	RETURN_IF_FAILED(pConnection->GetAuthKeys(bstrUser, bstrPass, &bstrKey, &bstrSecret));
-
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &CComVariant(bstrKey)));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &CComVariant(bstrSecret)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &CComVariant(bstrUser)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::Password, &CComVariant(bstrPass)));
 
 	return S_OK;
 }
@@ -264,7 +234,6 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
-	RETURN_IF_FAILED(m_pViewControllerService->StopAnimation());
 	if (FAILED(vHr.intVal))
 	{
 		CComVariant vDesc;
@@ -274,22 +243,13 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CComVariant vKey, vSecret;
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
-
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
-
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 
 	m_editPass.SetWindowText(L"");
 	Save(pSettingsTwitter);
 	SwitchToLogoutMode();
 
-	RETURN_IF_FAILED(m_pHomeTimeLineControl->StartTimers());
-	RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_HomeTimeLineControl));
 	return S_OK;
 }
 

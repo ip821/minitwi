@@ -93,12 +93,9 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
-	CComPtr<IFormManager> m_pFormManager;
-	CComQIPtr<IHomeTimeLineControl> m_pHomeTimeLineControl;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<ITheme> m_pTheme;
 	CComQIPtr<ICustomTabControl> m_pCustomTabControl;
-	CComPtr<IViewControllerService> m_pViewControllerService;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 
 	DWORD m_dwAdvice = 0;
@@ -140,7 +137,7 @@ public:
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(OnStart)(IVariantObject *pResult);
-	STDMETHOD(OnRun)(IVariantObject *pResult);
+	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 
 	STDMETHOD(SetTheme)(ITheme* pTheme);

@@ -24,6 +24,13 @@ library twitterLib
 		[default] interface IPluginTable;
 	};
 	[
+		uuid(FA34D58E-7EDC-4084-982A-2620979A6D55)
+	]
+	coclass LoginService
+	{
+		[default] interface IUnknown;
+	};
+	[
 		uuid(75E49C09-05E4-4643-983F-624DC073535A)
 	]
 	coclass TimelineControl

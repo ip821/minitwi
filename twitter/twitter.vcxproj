@@ -261,6 +261,7 @@
     <ClCompile Include="ListsTimelineService.cpp" />
     <ClCompile Include="ListTimelineControl.cpp" />
     <ClCompile Include="ListTimelineControlService.cpp" />
+    <ClCompile Include="LoginService.cpp" />
     <ClCompile Include="PictureWindowSaveCommand.cpp" />
     <ClCompile Include="ScrollControl.cpp" />
     <ClCompile Include="SearchControl.cpp" />
@@ -358,6 +359,7 @@
     <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="ListTimelineControl.h" />
     <ClInclude Include="ListTimelineControlService.h" />
+    <ClInclude Include="LoginService.h" />
     <ClInclude Include="Metadata.h" />
     <ClInclude Include="PictureWindowSaveCommand.h" />
     <ClInclude Include="SearchControl.h" />

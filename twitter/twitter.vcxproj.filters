@@ -125,6 +125,9 @@
     <Filter Include="Services\ListTimelineControlService">
       <UniqueIdentifier>{0dd72f09-a37d-453e-88ac-6828e225e515}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\LoginService">
+      <UniqueIdentifier>{db9640c6-4321-420f-9dc3-7e5305949ec7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -270,6 +273,9 @@
     </ClCompile>
     <ClCompile Include="twitter_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginService.cpp">
+      <Filter>Services\LoginService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -437,6 +443,9 @@
     </ClInclude>
     <ClInclude Include="twitter_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginService.h">
+      <Filter>Services\LoginService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
