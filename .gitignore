@@ -369,3 +369,7 @@
 /twview/viewmdl_contract_i.h
 /twview/viewmdl_contract_i_p.c
 /twview/dlldata.c
+/twtheme/twtheme_i.c
+/twtheme/twtheme_i.h
+/twview/twview_i.c
+/twview/twview_i.h
