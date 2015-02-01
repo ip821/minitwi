@@ -1,0 +1,18 @@
+// twtheme.idl : IDL source for twtheme
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (twtheme.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	uuid(F7BFC6EF-D8BE-4C1A-A9D5-9FC57D58BF5C),
+	version(1.0),
+]
+library twthemeLib
+{
+	importlib("stdole2.tlb");
+};
+

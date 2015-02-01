@@ -1,0 +1,18 @@
+// twview.idl : IDL source for twview
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (twview.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	uuid(C2670317-C208-4C91-A844-75922381F104),
+	version(1.0),
+]
+library twviewLib
+{
+	importlib("stdole2.tlb");
+};
+
