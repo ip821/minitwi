@@ -101,7 +101,7 @@ private:
 	void ResizeWindow(UINT uiWidth, UINT uiHeight);
 	void ResizeToCurrentBitmap();
 	STDMETHOD(InitCommandSupport)(int index);
-	void MoveToNextPicture();
+	void MoveToPicture(BOOL bForward);
 
 public:
 	void OnMMTimer();

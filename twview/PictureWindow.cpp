@@ -83,7 +83,7 @@ STDMETHODIMP CPictureWindow::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 	return S_OK;
 }
 
-void CPictureWindow::MoveToNextPicture()
+void CPictureWindow::MoveToPicture(BOOL bForward)
 {
 	int currentBitmapIndex = 0;
 	{
@@ -94,10 +94,16 @@ void CPictureWindow::MoveToNextPicture()
 		if (m_bitmapsUrls.size() == 1)
 			return;
 
-		++m_currentBitmapIndex;
+		if (bForward)
+			++m_currentBitmapIndex;
+		else
+			--m_currentBitmapIndex;
 
 		if ((size_t)m_currentBitmapIndex == m_bitmapsUrls.size())
 			m_currentBitmapIndex = 0;
+
+		if (m_currentBitmapIndex < 0)
+			m_currentBitmapIndex = m_bitmapsUrls.size() - 1;
 
 		ASSERT_IF_FAILED(InitCommandSupport(m_currentBitmapIndex));
 
@@ -128,7 +134,7 @@ void CPictureWindow::MoveToNextPicture()
 
 LRESULT CPictureWindow::OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	MoveToNextPicture();
+	MoveToPicture(TRUE);
 	return 0;
 }
 
@@ -532,8 +538,10 @@ LRESULT CPictureWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
 	if (wParam == VK_ESCAPE)
 		PostMessage(WM_CLOSE, 0, 0);
-	else if (wParam == VK_RETURN)
-		MoveToNextPicture();
+	else if (wParam == VK_RETURN || wParam == VK_RIGHT)
+		MoveToPicture(TRUE);
+	else if (wParam == VK_LEFT)
+		MoveToPicture(FALSE);
 	return 0;
 }
 
