@@ -149,6 +149,9 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		wstring strUrl(vUrl.bstrVal);
 		ATLASSERT(m_urls.size());
+#ifndef DEBUG
+		if (m_urls.find(strUrl) != m_urls.end()) // TODO: crash due to unknown reason here... Avoid crash in release build :(
+#endif
 		m_urls.erase(strUrl);
 	}
 

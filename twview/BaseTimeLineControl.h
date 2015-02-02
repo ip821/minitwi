@@ -109,7 +109,6 @@ public:
 		}
 
 		RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
-		RETURN_IF_FAILED(m_pPluginSupport->UninstallAll());
 		RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 
 		m_pTimerService.Release();
