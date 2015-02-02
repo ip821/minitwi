@@ -374,3 +374,14 @@
 /twview/twview_i.c
 /twview/twview_i.h
 /twview/Debug/*.log
+/twtheme/Release_XP/twtheme.log
+/twview/Release_XP/twview.log
+/twview/asyncsvc_contract_i_h.h
+/twview/asyncsvc_contract_i_i.c
+/twview/objmdl_contract_i_h.h
+/twview/objmdl_contract_i_i.c
+/twview/twitter_contract_i_h.h
+/twview/twitter_contract_i_i.c
+/twview/twview_h.h
+/twview/viewmdl_contract_i_h.h
+/twview/viewmdl_contract_i_i.c
