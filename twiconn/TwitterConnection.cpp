@@ -534,6 +534,7 @@ STDMETHODIMP CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObje
 	auto entities = itemObject[L"entities"]->AsObject();
 	auto urls = entities[L"urls"]->AsArray();
 
+	//CString strText = L"test\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\n";
 	CString strText = text.c_str();
 	hash_set<wstring> urlsHashSet;
 
