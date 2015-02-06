@@ -49,5 +49,5 @@
 
 #include "Metadata.h"
 
-#include "..\json\src\JSON.h"
-#include "..\json\src\JSONValue.h"
+#include "..\model-libs\json\src\JSON.h"
+#include "..\model-libs\json\src\JSONValue.h"

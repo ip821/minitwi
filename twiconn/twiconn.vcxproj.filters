@@ -82,14 +82,14 @@
     <ClCompile Include="objmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\json\src\JSON.cpp">
-      <Filter>ZZZMisc\json</Filter>
-    </ClCompile>
-    <ClCompile Include="..\json\src\JSONValue.cpp">
-      <Filter>ZZZMisc\json</Filter>
-    </ClCompile>
     <ClCompile Include="twitconn_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\json\src\JSON.cpp">
+      <Filter>ZZZMisc\json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\json\src\JSONValue.cpp">
+      <Filter>ZZZMisc\json</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
