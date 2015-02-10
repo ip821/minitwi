@@ -41,6 +41,13 @@
 
 #include <regex>
 
+#include <curl/curl.h>
+#include <curl/easy.h>
+#include <Winhttp.h>
+
+#define APP_KEY "9FA16n89DvlcZCO07IkVHcxio"
+#define APP_SECRET "stU8OFXzqG9dsp80fnH92d9iSsm11WpPIWnvctKYB7zpcz7WqX"
+
 #include <initguid.h>
 #include "..\model-libs\ObjMdl\Macros.h"
 #include "..\model-libs\ObjMdl\Plugins.h"
@@ -51,3 +58,7 @@
 
 #include "..\model-libs\json\src\JSON.h"
 #include "..\model-libs\json\src\JSONValue.h"
+
+//#pragma comment(lib, "ws2_32.lib")
+//#pragma comment(lib, "wldap32.lib")
+#pragma comment (lib,"Winhttp.lib")

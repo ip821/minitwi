@@ -10,9 +10,6 @@
 
 // CTwitterConnection
 
-#define APP_KEY "9FA16n89DvlcZCO07IkVHcxio"
-#define APP_SECRET "stU8OFXzqG9dsp80fnH92d9iSsm11WpPIWnvctKYB7zpcz7WqX"
-
 STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 {
 	if (value == nullptr)

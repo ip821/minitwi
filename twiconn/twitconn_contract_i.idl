@@ -32,7 +32,7 @@ interface ITwitterConnection : IUnknown
 ]
 interface ITwitterStreamingConnection : IUnknown
 {
-	HRESULT StartStream();
+	HRESULT StartStream(BSTR bstrKey, BSTR bstrSecret);
 };
 
 [
