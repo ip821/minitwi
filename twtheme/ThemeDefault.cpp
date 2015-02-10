@@ -35,7 +35,7 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_INACTIVE, (ARGB)Color::Gray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::PictureWindowText, (ARGB)Color::White));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::AccountControlText, (ARGB)Color::White));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT, (ARGB)Color::DarkCyan));
+	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT, (ARGB)Color::DarkGray));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, (ARGB)Color::DarkCyan));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, (ARGB)Color::Gray));
 
