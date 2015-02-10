@@ -220,8 +220,9 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 	CComVariant vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
-	CComVariant vFilePath;
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
+	CComVariant vStream;
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
+	CComQIPtr<IStream> pStream = vStream.punkVal;
 
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
@@ -230,25 +231,25 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserImage && vUrl.vt == VT_BSTR && vFilePath.vt == VT_BSTR)
+	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserImage && vUrl.vt == VT_BSTR)
 	{
 		BOOL bContains = FALSE;
 		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
 		if (!bContains)
 		{
-			RETURN_IF_FAILED(m_pImageManagerService->AddImageFromFile(vUrl.bstrVal, vFilePath.bstrVal));
+			RETURN_IF_FAILED(m_pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
 		}
 		Invalidate();
 	}
 
-	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserBanner && vUrl.vt == VT_BSTR && m_bstrBannerUrl == vUrl.bstrVal && vFilePath.vt == VT_BSTR)
+	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserBanner && vUrl.vt == VT_BSTR && m_bstrBannerUrl == vUrl.bstrVal)
 	{
 		RETURN_IF_FAILED(m_pSkinUserAccountControl->AnimationStart());
 		BOOL bContains = FALSE;
 		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
 		if (!bContains)
 		{
-			RETURN_IF_FAILED(m_pImageManagerService->AddImageFromFile(vUrl.bstrVal, vFilePath.bstrVal));
+			RETURN_IF_FAILED(m_pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
 		}
 		StartAnimation();
 	}

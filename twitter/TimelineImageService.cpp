@@ -179,7 +179,10 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 			}
 			else
 			{
-				RETURN_IF_FAILED(pImageManagerService->AddImageFromFile(vUrl.bstrVal, vFilePath.bstrVal));
+				CComVariant vStream;
+				RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
+				CComQIPtr<IStream> pStream = vStream.punkVal;
+				RETURN_IF_FAILED(pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
 			}
 			for (auto& item : it->second)
 			{

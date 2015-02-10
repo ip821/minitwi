@@ -318,8 +318,9 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vIndex;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &vIndex));
 
-	CComVariant vFilePath;
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
+	CComVariant vStream;
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
+	CComQIPtr<IStream> pStream = vStream.punkVal;
 
 	int currentBitmapIndex = 0;
 	{
@@ -328,7 +329,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		currentBitmapIndex = m_currentBitmapIndex;
 	}
 
-	auto pBitmap = make_shared<Bitmap>(vFilePath.bstrVal);
+	auto pBitmap = make_shared<Bitmap>(pStream);
 	auto hMonitor = MonitorFromWindow(m_hWndParent, MONITOR_DEFAULTTONULL);
 
 	if (hMonitor)

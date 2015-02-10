@@ -123,11 +123,13 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 	{
 		CComVariant vUrl;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
-		CComVariant vFilePath;
-		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
+		CComVariant vStream;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
+		CComQIPtr<IStream> pStream = vStream.punkVal;
 
 		CString strVersion;
-		CTextFile::ReadAllText(vFilePath.bstrVal, strVersion);
+		CTextFile::ReadAllTextFromStream(pStream, strVersion);
+		//CTextFile::ReadAllText(vFilePath.bstrVal, strVersion);
 		CString strInstalledVersion = GetInstalledVersionInternal();
 		if (LessThanVersion(std::wstring(strInstalledVersion), std::wstring(strVersion)))
 		{
@@ -140,14 +142,13 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 #endif
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::SoftwareUpdateMsi)));
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::Extension, &CComVariant(L".msi")));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::KeepFileFlag, &CComVariant(true)));
 			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 			return S_OK;
 		}
 	}
 	else if (CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::SoftwareUpdateMsi)
 	{
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::KeepFileFlag, &CComVariant(true)));
-
 		CComVariant vFilePath;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 

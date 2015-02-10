@@ -45,6 +45,7 @@ private:
 	boost::mutex m_mutex;
 
 	HRESULT Fire_OnDownloadComplete(IVariantObject *pResult);
+	static size_t WriteCallback(char *ptr, size_t size, size_t nmemb, void *userdata);
 
 public:
 

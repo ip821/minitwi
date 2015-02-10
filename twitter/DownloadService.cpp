@@ -33,6 +33,13 @@ STDMETHODIMP CDownloadService::OnStart(IVariantObject *pResult)
 	return S_OK;
 }
 
+size_t CDownloadService::WriteCallback(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	ULONG cbWritten = 0;
+	static_cast<IStream*>(userdata)->Write(ptr, size * nmemb, &cbWritten);
+	return cbWritten;
+}
+
 STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 {
 	CURL* curl = curl_easy_init();
@@ -47,8 +54,13 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 		return E_INVALIDARG;
 	}
 
-	CString strTempFolder;
-	StrGetTempPath(strTempFolder);
+	CComVariant vKeepFile;
+	ASSERT_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::KeepFileFlag, &vKeepFile));
+	CComVariant vExt;
+	ASSERT_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Extension, &vExt));
+
+	CString strFilePath;
+
 	GUID guid = { 0 };
 	if (FAILED(hr = CoCreateGuid(&guid)))
 	{
@@ -58,23 +70,29 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 
 	CString strGuid;
 	ASSERT_IF_FAILED(StrGuidToString(guid, strGuid));
-	StrPathAppend(strTempFolder, strGuid);
 
-	CComVariant vExt;
-	ASSERT_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Extension, &vExt));
-	if (vExt.vt == VT_BSTR)
+	CComPtr<IStream> pStream;
+	if (vKeepFile.vt == VT_BOOL && vKeepFile.boolVal)
 	{
-		strTempFolder += vExt.bstrVal;
+		StrGetTempPath(strFilePath);
+		StrPathAppend(strFilePath, strGuid);
+
+		if (vExt.vt == VT_BSTR)
+			strFilePath += vExt.bstrVal;
+		else
+			strFilePath += L".img";
+
+		ASSERT_IF_FAILED(SHCreateStreamOnFile(strFilePath, STGM_READWRITE | STGM_CREATE | STGM_SHARE_DENY_WRITE, &pStream));
 	}
 	else
 	{
-		strTempFolder += L".img";
+		StrPathAppend(strFilePath, strGuid);
+		if (vExt.vt == VT_BSTR)
+			strFilePath += vExt.bstrVal;
+		else
+			strFilePath += L".img";
+		ASSERT_IF_FAILED(CreateStreamOnHGlobal(0, TRUE, &pStream));
 	}
-
-	USES_CONVERSION;
-
-	string strTempFolderA = CW2A(strTempFolder);
-	auto file = fopen(strTempFolderA.c_str(), "wb");
 
 	char errorBuffer[1024] = { 0 };
 
@@ -84,8 +102,8 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	res = curl_easy_setopt(curl, CURLOPT_HTTPPROXYTUNNEL, 1);
 	res = curl_easy_setopt(curl, CURLOPT_PROXYUSERPWD, NULL);
 	res = curl_easy_setopt(curl, CURLOPT_PROXYAUTH, (long)CURLAUTH_ANY);
-	res = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
-	res = curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+	res = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteCallback);
+	res = curl_easy_setopt(curl, CURLOPT_WRITEDATA, pStream.p);
 	res = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 	res = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
 
@@ -116,7 +134,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	}
 
 	res = curl_easy_perform(curl);
-	
+
 	if (res != CURLcode::CURLE_OK)
 	{
 		HRESULT curlHr = E_FAIL;
@@ -127,14 +145,14 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 		}
 		RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Thread::HResult, &CComVariant(curlHr)));
 		curl_easy_cleanup(curl);
-		fclose(file);
 		return curlHr;
 	}
 
 	curl_easy_cleanup(curl);
-	fclose(file);
-
-	pResult->SetVariantValue(Twitter::Metadata::File::Path, &CComVariant(strTempFolder));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::Path, &CComVariant(strFilePath)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::StreamObject, &CComVariant(pStream)));
+	LARGE_INTEGER li = { 0 };
+	RETURN_IF_FAILED(pStream->Seek(li, STREAM_SEEK_SET, nullptr));
 
 	return S_OK;
 }
@@ -152,22 +170,10 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 #ifndef DEBUG
 		if (m_urls.find(strUrl) != m_urls.end()) // TODO: crash due to unknown reason here... Avoid crash in release build :(
 #endif
-		m_urls.erase(strUrl);
+			m_urls.erase(strUrl);
 	}
 
 	RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
-
-	CComVariant vFilePath;
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
-	if (vFilePath.vt == VT_BSTR)
-	{
-		CComVariant vKeepFile;
-		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::KeepFileFlag, &vKeepFile));
-		if (vKeepFile.vt != VT_BOOL || !vKeepFile.boolVal)
-		{
-			DeleteFile(vFilePath.bstrVal);
-		}
-	}
 	return S_OK;
 }
 

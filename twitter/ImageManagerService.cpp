@@ -81,6 +81,17 @@ STDMETHODIMP CImageManagerService::AddImageFromHBITMAP(BSTR bstrKey, HBITMAP hBi
 	return S_OK;
 }
 
+STDMETHODIMP CImageManagerService::AddImageFromStream(BSTR bstrKey, IStream* pStream)
+{
+	CHECK_E_POINTER(bstrKey);
+	CHECK_E_POINTER(pStream);
+	{
+		boost::lock_guard<boost::mutex> mutex(m_mutex);
+		m_bitmaps[bstrKey] = std::make_shared<Gdiplus::Bitmap>(pStream);
+	}
+	return S_OK;
+}
+
 STDMETHODIMP CImageManagerService::AddImageFromFile(BSTR bstrKey, BSTR bstrFileName)
 {
 	CHECK_E_POINTER(bstrKey);

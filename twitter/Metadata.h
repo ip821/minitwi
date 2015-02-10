@@ -71,6 +71,7 @@ namespace IP
 				const static CComBSTR Extension(L"VAR_FILE_EXT");
 				const static CComBSTR KeepFileFlag(L"VAR_KEEP_FILE");
 				const static CComBSTR Path(L"VAR_FILEPATH");
+				const static CComBSTR StreamObject(L"VAR_STREAM_OBJECT");
 			}
 
 			namespace Object
