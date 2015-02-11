@@ -181,6 +181,9 @@
     <ClCompile Include="HomeTimelineService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
+    <ClCompile Include="TimelineLoadingService.cpp">
+      <Filter>Services\TimelineService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -295,6 +298,9 @@
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
     <ClInclude Include="HomeTimelineService.h">
+      <Filter>Services\TimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineLoadingService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
   </ItemGroup>

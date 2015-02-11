@@ -44,6 +44,9 @@ STDMETHODIMP CHomeTimelineService::OnInitialized(IServiceProvider *pServiceProvi
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
 
+	CComPtr<ITimelineLoadingService> pLoadingService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineLoadingService, &pLoadingService));
+	RETURN_IF_FAILED(pLoadingService->SetText(L"Loading tweets..."));
 	return S_OK;
 }
 
@@ -77,16 +80,6 @@ STDMETHODIMP CHomeTimelineService::OnStart(IVariantObject* pResult)
 	{
 		UINT uiMaxCount = COUNT_ITEMS;
 		RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVariant(uiMaxCount)));
-
-		CUpdateScope scope(m_pTimelineControl);
-		CComPtr<IVariantObject> pLoadingObject;
-		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant(CUSTOM_OBJECT_LOADING_ID)));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"Loading tweets...")));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading tweets...")));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
-		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 	}
 	else
 	{
@@ -185,27 +178,6 @@ STDMETHODIMP CHomeTimelineService::OnFinish(IVariantObject* pResult)
 				RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 				RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(false)));
 				RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
-			}
-		}
-	}
-
-	{
-		CComPtr<IObjArray> pItems;
-		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pItems));
-		UINT uiCount = 0;
-		RETURN_IF_FAILED(pItems->GetCount(&uiCount));
-		if (uiCount)
-		{
-			CComPtr<IVariantObject> pFirstItem;
-			RETURN_IF_FAILED(pItems->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
-			CComVariant vId;
-			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
-			CComVariant vObjectType;
-			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
-			if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == Twitter::Metadata::Types::CustomTimelineObject)
-			{
-				CUpdateScope scope(m_pTimelineControl);
-				RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(0));
 			}
 		}
 	}
