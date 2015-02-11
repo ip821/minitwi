@@ -1,23 +1,23 @@
-// TimelineService.cpp : Implementation of CTimelineService
+// UserTimelineService.cpp : Implementation of CUserTimelineService
 
 #include "stdafx.h"
-#include "TimelineService.h"
+#include "UserTimelineService.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
 #include "twitconn_contract_i.h"
 #include "UpdateScope.h"
 
-// CTimelineService
+// CUserTimelineService
 
 #ifdef DEBUG
 #define COUNT_ITEMS 10
 #else
-#define COUNT_ITEMS 100
+#define COUNT_ITEMS 20
 #endif
 
 #define CUSTOM_OBJECT_LOADING_ID 1
 
-STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
+STDMETHODIMP CUserTimelineService::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	{
@@ -27,7 +27,7 @@ STDMETHODIMP CTimelineService::Load(ISettings *pSettings)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
+STDMETHODIMP CUserTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
@@ -47,7 +47,7 @@ STDMETHODIMP CTimelineService::OnInitialized(IServiceProvider *pServiceProvider)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnShutdown()
+STDMETHODIMP CUserTimelineService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
@@ -68,7 +68,7 @@ STDMETHODIMP CTimelineService::OnShutdown()
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
+STDMETHODIMP CUserTimelineService::OnStart(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
 	BOOL bEmpty = FALSE;
@@ -76,8 +76,6 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 	if (bEmpty)
 	{
 		UINT uiMaxCount = COUNT_ITEMS;
-		if (m_bstrUser != L"")
-			uiMaxCount = 20;
 		RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVariant(uiMaxCount)));
 
 		CUpdateScope scope(m_pTimelineControl);
@@ -118,7 +116,7 @@ STDMETHODIMP CTimelineService::OnStart(IVariantObject* pResult)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
+STDMETHODIMP CUserTimelineService::OnRun(IVariantObject* pResultObj)
 {
 	CHECK_E_POINTER(pResultObj);
 
@@ -140,14 +138,8 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 
 	CComPtr<ITwitterConnection> pConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-	if (m_bstrUser == NULL)
-	{
-		RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
-	}
-	else
-	{
-		RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
-	}
+
+	RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
 
 	CComVariant vMaxId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vMaxId));
@@ -172,7 +164,7 @@ STDMETHODIMP CTimelineService::OnRun(IVariantObject* pResultObj)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::SetVariantObject(IVariantObject* pVariantObject)
+STDMETHODIMP CUserTimelineService::SetVariantObject(IVariantObject* pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
 
@@ -183,7 +175,7 @@ STDMETHODIMP CTimelineService::SetVariantObject(IVariantObject* pVariantObject)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
+STDMETHODIMP CUserTimelineService::OnFinish(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
 
@@ -305,7 +297,7 @@ STDMETHODIMP CTimelineService::OnFinish(IVariantObject* pResult)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject)
+STDMETHODIMP CUserTimelineService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject)
 {
 	CComBSTR bstrColumnName;
 	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));

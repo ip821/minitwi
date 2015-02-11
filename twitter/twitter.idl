@@ -47,7 +47,14 @@ library twitterLib
 	[
 		uuid(FB68EE85-7555-407C-BECA-64406C74F1BC)
 	]
-	coclass TimelineService
+	coclass HomeTimelineService
+	{
+		[default] interface ITimelineService;
+	};
+	[
+		uuid(4563BFAF-AF65-43B3-84BC-619BDA318391)
+	]
+	coclass UserTimelineService
 	{
 		[default] interface ITimelineService;
 	};

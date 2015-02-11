@@ -293,7 +293,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TimelineRelativeTimeService.cpp" />
-    <ClCompile Include="TimelineService.cpp" />
+    <ClCompile Include="HomeTimelineService.cpp" />
     <ClCompile Include="twitconn_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -321,6 +321,7 @@
     </ClCompile>
     <ClCompile Include="TwitViewRepliesService.cpp" />
     <ClCompile Include="UpdateService.cpp" />
+    <ClCompile Include="UserTimelineService.cpp" />
     <ClCompile Include="ViewControllerService.cpp" />
     <ClCompile Include="viewmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -358,12 +359,13 @@
     <ClInclude Include="ThemeService.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TimelineService.h" />
+    <ClInclude Include="HomeTimelineService.h" />
     <ClInclude Include="twitconn_contract_i.h" />
     <ClInclude Include="twitter_i.h" />
     <ClInclude Include="TwitViewRepliesService.h" />
     <ClInclude Include="UpdateScope.h" />
     <ClInclude Include="UpdateService.h" />
+    <ClInclude Include="UserTimelineService.h" />
     <ClInclude Include="ViewControllerService.h" />
     <ClInclude Include="viewmdl_contract_i.h" />
     <ClInclude Include="WindowService.h" />

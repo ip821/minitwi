@@ -2,7 +2,7 @@
 #include "TwitViewRepliesService.h"
 #include "Plugins.h"
 #include "twitconn_contract_i.h"
-#include "TimelineService.h"
+#include "HomeTimelineService.h"
 #include "UpdateScope.h"
 
 STDMETHODIMP CTwitViewRepliesService::OnInitialized(IServiceProvider* pServiceProvider)

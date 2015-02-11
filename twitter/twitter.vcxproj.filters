@@ -112,9 +112,6 @@
     <ClCompile Include="twitconn_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="TimelineService.cpp">
-      <Filter>Services\TimelineService</Filter>
-    </ClCompile>
     <ClCompile Include="ViewControllerService.cpp">
       <Filter>Services\ViewControllerService</Filter>
     </ClCompile>
@@ -178,6 +175,12 @@
     <ClCompile Include="ColumnsInfoItem.cpp">
       <Filter>ColumnsInfo</Filter>
     </ClCompile>
+    <ClCompile Include="UserTimelineService.cpp">
+      <Filter>Services\TimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="HomeTimelineService.cpp">
+      <Filter>Services\TimelineService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -215,9 +218,6 @@
     </ClInclude>
     <ClInclude Include="twitconn_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TimelineService.h">
-      <Filter>Services\TimelineService</Filter>
     </ClInclude>
     <ClInclude Include="ViewControllerService.h">
       <Filter>Services\ViewControllerService</Filter>
@@ -290,6 +290,12 @@
     </ClInclude>
     <ClInclude Include="ColumnsInfoItem.h">
       <Filter>ColumnsInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTimelineService.h">
+      <Filter>Services\TimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="HomeTimelineService.h">
+      <Filter>Services\TimelineService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
