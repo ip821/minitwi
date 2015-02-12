@@ -40,7 +40,6 @@ STDMETHODIMP CUserTimelineService::OnInitialized(IServiceProvider *pServiceProvi
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceShowMoreService));
-	RETURN_IF_FAILED(AtlAdvise(m_pTimelineControl, pUnk, __uuidof(ITimelineControlEventSink), &m_dwAdviceTimelineControl));
 
 	CComPtr<ITimelineLoadingService> pLoadingService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineLoadingService, &pLoadingService));
@@ -51,7 +50,6 @@ STDMETHODIMP CUserTimelineService::OnInitialized(IServiceProvider *pServiceProvi
 
 STDMETHODIMP CUserTimelineService::OnShutdown()
 {
-	RETURN_IF_FAILED(AtlUnadvise(m_pTimelineControl, __uuidof(ITimelineControlEventSink), m_dwAdviceTimelineControl));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
@@ -93,16 +91,6 @@ STDMETHODIMP CUserTimelineService::OnStart(IVariantObject* pResult)
 			CComVariant vId;
 			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 			RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::SinceId, &vId));
-		}
-		else
-		{
-			UINT uiCount = 0;
-			RETURN_IF_FAILED(pObjArray->GetCount(&uiCount));
-			CComPtr<IVariantObject> pVariantObject;
-			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-			RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
-			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
-			RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&pVariantObject.p, 1));
 		}
 	}
 	return S_OK;
@@ -171,27 +159,6 @@ STDMETHODIMP CUserTimelineService::OnFinish(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
 
-	m_bShowMoreRunning = FALSE;
-
-	{
-		CComVariant vId;
-		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
-		if (vId.vt == VT_BSTR)
-		{
-			CComPtr<IObjArray> pAllItems;
-			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
-			UINT uiCount = 0;
-			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
-			if (uiCount)
-			{
-				CComPtr<IVariantObject> pVariantObject;
-				RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-				RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(false)));
-				RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
-			}
-		}
-	}
-
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
@@ -208,20 +175,6 @@ STDMETHODIMP CUserTimelineService::OnFinish(IVariantObject* pResult)
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	{
-		BOOL bEmpty = FALSE;
-		RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
-
-		if (bEmpty)
-		{
-			CComPtr<IVariantObject> pShowMoreObject;
-			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pShowMoreObject));
-			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"Show more")));
-			RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Show more")));
-			CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
-			RETURN_IF_FAILED(pObjCollection->AddObject(pShowMoreObject));
-		}
-
 		int insertIndex = 0;
 		CComVariant vId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
@@ -265,34 +218,5 @@ STDMETHODIMP CUserTimelineService::OnFinish(IVariantObject* pResult)
 		}
 	}
 
-	return S_OK;
-}
-
-STDMETHODIMP CUserTimelineService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject)
-{
-	CComBSTR bstrColumnName;
-	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-	if (CComBSTR(bstrColumnName) == Twitter::Metadata::Column::ShowMoreColumn && !m_bShowMoreRunning)
-	{
-		CComPtr<IObjArray> pObjArray;
-		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
-		UINT uiCount = 0;
-		RETURN_IF_FAILED(pObjArray->GetCount(&uiCount));
-		if (uiCount > 1)
-		{
-			CComPtr<IVariantObject> pVariantObjectItem;
-			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 2, __uuidof(IVariantObject), (LPVOID*)&pVariantObjectItem));
-			CComVariant vId;
-			RETURN_IF_FAILED(pVariantObjectItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
-
-			CComPtr<IVariantObject> pThreadContext;
-			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pThreadContext));
-			RETURN_IF_FAILED(pThreadContext->SetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
-			RETURN_IF_FAILED(pThreadContext->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVariant((UINT)COUNT_ITEMS)));
-			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->SetThreadContext(pThreadContext));
-			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->Run());
-			m_bShowMoreRunning = TRUE;
-		}
-	}
 	return S_OK;
 }

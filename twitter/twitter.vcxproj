@@ -259,6 +259,7 @@
     <ClCompile Include="ListTimelineControlService.cpp" />
     <ClCompile Include="LoginService.cpp" />
     <ClCompile Include="SearchTimelineService.cpp" />
+    <ClCompile Include="ShowMoreSupportService.cpp" />
     <ClCompile Include="TabbedControlStatusService.cpp" />
     <ClCompile Include="TimelineCleanupService.cpp" />
     <ClCompile Include="TimelineImageService.cpp" />
@@ -343,6 +344,7 @@
     <ClInclude Include="LoginService.h" />
     <ClInclude Include="Metadata.h" />
     <ClInclude Include="SearchTimelineService.h" />
+    <ClInclude Include="ShowMoreSupportService.h" />
     <ClInclude Include="TimelineLoadingService.h" />
     <ClInclude Include="TimelineRelativeTimeService.h" />
     <ClInclude Include="twitter_contract_i.h" />

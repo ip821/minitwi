@@ -21,7 +21,6 @@ class ATL_NO_VTABLE CUserTimelineService :
 	public IInitializeWithSettings,
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
-	public ITimelineControlEventSink,
 	public IInitializeWithVariantObject
 {
 public:
@@ -37,7 +36,6 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
-		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
@@ -49,9 +47,7 @@ private:
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
 	DWORD m_dwAdviceThreadServiceUpdateService = 0;
 	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
-	DWORD m_dwAdviceTimelineControl = 0;
 	boost::mutex m_mutex;
-	BOOL m_bShowMoreRunning = 0;
 	CComBSTR m_bstrUser;
 
 
@@ -64,10 +60,6 @@ public:
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
-
-	STDMETHOD(OnColumnClick)(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject);
-	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
-	METHOD_EMPTY(STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject));
 
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 };
