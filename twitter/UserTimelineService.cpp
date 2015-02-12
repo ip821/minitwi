@@ -36,10 +36,13 @@ STDMETHODIMP CUserTimelineService::OnInitialized(IServiceProvider *pServiceProvi
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadServiceUpdateService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceShowMoreService));
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceQueueService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_QUEUE, &m_pTimelineQueueService));
 
 	CComPtr<ITimelineLoadingService> pLoadingService;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineLoadingService, &pLoadingService));
@@ -59,6 +62,8 @@ STDMETHODIMP CUserTimelineService::OnShutdown()
 		m_pSettings.Release();
 	}
 
+	m_pThreadServiceQueueService.Release();
+	m_pTimelineQueueService.Release();
 	m_pThreadServiceUpdateService.Release();
 	m_pTimelineControl.Release();
 	m_pSettings.Release();
@@ -175,18 +180,10 @@ STDMETHODIMP CUserTimelineService::OnFinish(IVariantObject* pResult)
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	{
-		int insertIndex = 0;
 		CComVariant vId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
 		if (vId.vt == VT_BSTR)
 		{
-			CComPtr<IObjArray> pAllItems;
-			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
-			UINT uiCount = 0;
-			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
-			if (uiCount)
-				insertIndex = uiCount - 1;
-
 			{ //Remove first element because it has MAX_ID identifier and exists in the timeline control as last element
 				CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
 				ATLASSERT(pObjCollection);
@@ -199,23 +196,8 @@ STDMETHODIMP CUserTimelineService::OnFinish(IVariantObject* pResult)
 			}
 		}
 
-		UINT uiCurrentTopIndex = 0;
-		RETURN_IF_FAILED(m_pTimelineControl->GetTopVisibleItemIndex(&uiCurrentTopIndex));
-		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
-		if (insertIndex)
-		{
-			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(insertIndex));
-		}
-		else
-		{
-			UINT uiCount = 0;
-			RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
-			if (uiCurrentTopIndex)
-			{
-				uiCurrentTopIndex += uiCount;
-			}
-			RETURN_IF_FAILED(m_pTimelineControl->ScrollToItem(uiCurrentTopIndex));
-		}
+		RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pResult));
+		RETURN_IF_FAILED(m_pThreadServiceQueueService->Run());
 	}
 
 	return S_OK;

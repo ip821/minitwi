@@ -62,6 +62,16 @@ interface ITimelineLoadingService : IUnknown
 
 [
 	object,
+	uuid(A1787D6C-1366-4A83-92AE-C1B46D457000),
+	pointer_default(unique)
+]
+interface ITimelineQueueService : IUnknown
+{
+	HRESULT AddToQueue(IVariantObject* pVariantObject);
+};
+
+[
+	object,
 	uuid(828C2337-535F-491B-943D-EDF93F760CB7),
 	pointer_default(unique)
 ]

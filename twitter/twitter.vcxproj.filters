@@ -187,6 +187,9 @@
     <ClCompile Include="ShowMoreSupportService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
+    <ClCompile Include="TimelineQueueService.cpp">
+      <Filter>Services\TimelineService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -307,6 +310,9 @@
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
     <ClInclude Include="ShowMoreSupportService.h">
+      <Filter>Services\TimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineQueueService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
   </ItemGroup>

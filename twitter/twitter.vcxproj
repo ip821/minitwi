@@ -294,6 +294,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TimelineLoadingService.cpp" />
+    <ClCompile Include="TimelineQueueService.cpp" />
     <ClCompile Include="TimelineRelativeTimeService.cpp" />
     <ClCompile Include="HomeTimelineService.cpp" />
     <ClCompile Include="twitconn_contract_i.c">
@@ -346,6 +347,7 @@
     <ClInclude Include="SearchTimelineService.h" />
     <ClInclude Include="ShowMoreSupportService.h" />
     <ClInclude Include="TimelineLoadingService.h" />
+    <ClInclude Include="TimelineQueueService.h" />
     <ClInclude Include="TimelineRelativeTimeService.h" />
     <ClInclude Include="twitter_contract_i.h" />
     <ClInclude Include="DownloadService.h" />

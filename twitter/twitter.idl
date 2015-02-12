@@ -45,6 +45,13 @@ library twitterLib
 		[default] interface IFormsService;
 	};
 	[
+		uuid(6E86988C-AD2D-4EC5-B353-582524F03268)
+	]
+	coclass TimelineQueueService
+	{
+		[default] interface ITimelineQueueService;
+	};
+	[
 		uuid(E08071C7-127B-4282-BF4B-F701C66526CD)
 	]
 	coclass TimelineLoadingService

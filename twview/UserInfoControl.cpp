@@ -50,7 +50,7 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(HrInitializeWithSettings(m_pPluginSupport, m_pSettings));
 
 	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadServiceUpdateTimeline));
 
 	return S_OK;
 }

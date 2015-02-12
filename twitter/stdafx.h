@@ -52,6 +52,7 @@
 
 #include <vector>
 #include <map>
+#include <queue>
 #include <list>
 #include <hash_set>
 #include <mutex>

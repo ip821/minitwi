@@ -1,4 +1,4 @@
-// HomeTimelineService.h : Declaration of the CHomeTimelineService
+// TimelineQueueService.h : Declaration of the CTimelineQueueService
 
 #pragma once
 #include "resource.h"       // main symbols
@@ -11,53 +11,47 @@ using namespace ATL;
 using namespace std;
 using namespace IP;
 
-// CHomeTimelineService
+// CTimelineQueueService
 
-class ATL_NO_VTABLE CHomeTimelineService :
+class ATL_NO_VTABLE CTimelineQueueService :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CHomeTimelineService, &CLSID_HomeTimelineService>,
-	public ITimelineService,
+	public CComCoClass<CTimelineQueueService, &CLSID_TimelineQueueService>,
 	public IThreadServiceEventSink,
-	public IInitializeWithSettings,
 	public IPluginSupportNotifications,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public ITimelineQueueService
 {
 public:
-	CHomeTimelineService()
+	CTimelineQueueService()
 	{
 	}
 
 	DECLARE_NO_REGISTRY()
 
-	BEGIN_COM_MAP(CHomeTimelineService)
-		COM_INTERFACE_ENTRY(ITimelineService)
+	BEGIN_COM_MAP(CTimelineQueueService)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
-		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(ITimelineQueueService)
 	END_COM_MAP()
 
 private:
-	CComPtr<ISettings> m_pSettings;
-	CComPtr<IThreadService> m_pThreadServiceUpdateService;
-	CComPtr<IThreadService> m_pThreadServiceShowMoreService;
-	CComPtr<IThreadService> m_pThreadServiceQueueService;
-	CComPtr<ITimelineQueueService> m_pTimelineQueueService;
+	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
-	DWORD m_dwAdviceThreadServiceUpdateService = 0;
-	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
 	boost::mutex m_mutex;
+	DWORD m_dwAdviceThreadService = 0;
+	queue<CComPtr<IVariantObject>> m_queue;
 
 public:
-	STDMETHOD(Load)(ISettings *pSettings);
-
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
+
+	STDMETHOD(AddToQueue)(IVariantObject *pResult);
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(HomeTimelineService), CHomeTimelineService)
+OBJECT_ENTRY_AUTO(__uuidof(TimelineQueueService), CTimelineQueueService)
