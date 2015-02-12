@@ -41,7 +41,7 @@ BOOL CMessageLoopWrapper::PreTranslateMessage(MSG* pMsg)
 	for(auto it = m_pFilters.begin(); it != m_pFilters.end(); it++)
 	{
 		BOOL bRes = FALSE;
-		if (FAILED(it->m_T->PreTranslateMessage(pMsg, &bRes)))
+		if (FAILED((*it)->PreTranslateMessage(pMsg, &bRes)))
 		{
 			ATLENSURE(FALSE);
 			return FALSE;
@@ -57,7 +57,7 @@ BOOL CMessageLoopWrapper::OnIdle()
 	for(auto it = m_pIdleHandlers.begin(); it != m_pIdleHandlers.end(); it++)
 	{
 		BOOL bRes = FALSE;
-		if(FAILED(it->m_T->OnIdle(&bRes)))
+		if(FAILED((*it)->OnIdle(&bRes)))
 		{
 			ATLENSURE(FALSE);
 			return FALSE;

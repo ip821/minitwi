@@ -50,7 +50,7 @@ public:
 
 private:
 	CComPtr<IObjCollection> m_pItems;
-	vector<CAdapt<CComPtr<IColumnsInfo>>> m_columnsInfo;
+	vector<CComPtr<IColumnsInfo>> m_columnsInfo;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
 	int m_prevX = 0;
 	int m_prevY = 0;

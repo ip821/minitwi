@@ -117,7 +117,7 @@ STDMETHODIMP CShowMoreSupportService::OnFinish(IVariantObject* pResult)
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pShowMoreObject));
 		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
 		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"Show more")));
-		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Show more")));
+		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading...")));
 		CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
 		RETURN_IF_FAILED(pObjCollection->AddObject(pShowMoreObject));
 	}
