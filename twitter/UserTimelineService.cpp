@@ -10,9 +10,9 @@
 // CUserTimelineService
 
 #ifdef DEBUG
-#define COUNT_ITEMS 10
+#define COUNT_USER_ITEMS 10
 #else
-#define COUNT_ITEMS 20
+#define COUNT_USER_ITEMS 20
 #endif
 
 STDMETHODIMP CUserTimelineService::Load(ISettings *pSettings)
@@ -80,7 +80,7 @@ STDMETHODIMP CUserTimelineService::OnStart(IVariantObject* pResult)
 	RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
 	if (bEmpty)
 	{
-		UINT uiMaxCount = COUNT_ITEMS;
+		UINT uiMaxCount = COUNT_USER_ITEMS;
 		RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVariant(uiMaxCount)));
 	}
 	else

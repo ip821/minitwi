@@ -85,14 +85,26 @@ STDMETHODIMP CTabbedControlStatusService::StopAnimation()
 
 STDMETHODIMP CTabbedControlStatusService::OnStart(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
-	RETURN_IF_FAILED(StartAnimation());
+	CComVariant vThreadId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::Id, &vThreadId));
+	CComQIPtr<IThreadService> pThreadService = vThreadId.punkVal;
+	if (m_pThreadServiceStreamingTimeline != pThreadService)
+	{
+		RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
+		RETURN_IF_FAILED(StartAnimation());
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CTabbedControlStatusService::OnFinish(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(StopAnimation());
+	CComVariant vThreadId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::Id, &vThreadId));
+	CComQIPtr<IThreadService> pThreadService = vThreadId.punkVal;
+	if (m_pThreadServiceStreamingTimeline != pThreadService)
+	{
+		RETURN_IF_FAILED(StopAnimation());
+	}
 
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));

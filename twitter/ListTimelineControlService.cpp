@@ -5,12 +5,6 @@
 #include "HomeTimelineService.h"
 #include "UpdateScope.h"
 
-#ifdef DEBUG
-#define COUNT_ITEMS 10
-#else
-#define COUNT_ITEMS 100
-#endif
-
 STDMETHODIMP CListTimelineControlService::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);

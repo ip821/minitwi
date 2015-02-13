@@ -88,3 +88,9 @@ using namespace IP;
 
 #pragma comment (lib,"Gdiplus.lib")
 #pragma comment (lib,"Winhttp.lib")
+
+#ifdef DEBUG
+#define COUNT_ITEMS 10
+#else
+#define COUNT_ITEMS 100
+#endif

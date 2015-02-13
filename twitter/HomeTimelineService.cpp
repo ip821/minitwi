@@ -9,12 +9,6 @@
 
 // CHomeTimelineService
 
-#ifdef DEBUG
-#define COUNT_ITEMS 10
-#else
-#define COUNT_ITEMS 100
-#endif
-
 #define CUSTOM_OBJECT_LOADING_ID 1
 
 STDMETHODIMP CHomeTimelineService::Load(ISettings *pSettings)
@@ -76,27 +70,19 @@ STDMETHODIMP CHomeTimelineService::OnShutdown()
 STDMETHODIMP CHomeTimelineService::OnStart(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
-	BOOL bEmpty = FALSE;
-	RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
-	if (bEmpty)
+	UINT uiMaxCount = COUNT_ITEMS;
+	RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVariant(uiMaxCount)));
+	CComVariant vMaxId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vMaxId));
+	if (vMaxId.vt == VT_EMPTY)
 	{
-		UINT uiMaxCount = COUNT_ITEMS;
-		RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVariant(uiMaxCount)));
-	}
-	else
-	{
-		CComVariant vMaxId;
-		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vMaxId));
 		CComPtr<IObjArray> pObjArray;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
-		if (vMaxId.vt == VT_EMPTY)
-		{
-			CComPtr<IVariantObject> pFirstItem;
-			RETURN_IF_FAILED(pObjArray->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
-			CComVariant vId;
-			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
-			RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::SinceId, &vId));
-		}
+		CComPtr<IVariantObject> pFirstItem;
+		RETURN_IF_FAILED(pObjArray->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
+		CComVariant vId;
+		RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::SinceId, &vId));
 	}
 	return S_OK;
 }
