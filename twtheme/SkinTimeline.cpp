@@ -67,27 +67,18 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInf
 	cdc.CreateCompatibleDC(cdcReal);
 	CDCSelectBitmapManualScope cdcSelectBitmapManualScope;
 
-	if (m_cacheBitmaps.find(lpdis->lpdi->itemID) == m_cacheBitmaps.end())
-	{
-		shared_ptr<CBitmap> pbitmap = make_shared<CBitmap>();
-		pbitmap->CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
-		cdcSelectBitmapManualScope.SelectBitmap(cdc, pbitmap.get()->m_hBitmap);
+	shared_ptr<CBitmap> pbitmap = make_shared<CBitmap>();
+	pbitmap->CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
+	cdcSelectBitmapManualScope.SelectBitmap(cdc, pbitmap.get()->m_hBitmap);
 
-		m_cacheBitmaps[lpdis->lpdi->itemID] = pbitmap;
-
-		lpdis->lpdi->hDC = cdc;
-		lpdis->lpdi->rcItem.left = 0;
-		lpdis->lpdi->rcItem.top = 0;
-		lpdis->lpdi->rcItem.right = rect.Width();
-		lpdis->lpdi->rcItem.bottom = rect.Height();
-		RETURN_IF_FAILED(DrawTextColumns(hwndControl, pColumnsInfo, lpdis));
-		lpdis->lpdi->rcItem = rect;
-		lpdis->lpdi->hDC = cdcReal;
-	}
-	else
-	{
-		cdcSelectBitmapManualScope.SelectBitmap(cdc, m_cacheBitmaps[lpdis->lpdi->itemID].get()->m_hBitmap);
-	}
+	lpdis->lpdi->hDC = cdc;
+	lpdis->lpdi->rcItem.left = 0;
+	lpdis->lpdi->rcItem.top = 0;
+	lpdis->lpdi->rcItem.right = rect.Width();
+	lpdis->lpdi->rcItem.bottom = rect.Height();
+	RETURN_IF_FAILED(DrawTextColumns(hwndControl, pColumnsInfo, lpdis));
+	lpdis->lpdi->rcItem = rect;
+	lpdis->lpdi->hDC = cdcReal;
 
 	BLENDFUNCTION bf = { 0 };
 	bf.BlendOp = AC_SRC_OVER;
@@ -453,7 +444,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 
 		CString strImageUrl;
 		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::Image, strImageUrl);
-		
+
 		CComVariant vDoubleSize;
 		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &vDoubleSize));
 
@@ -846,7 +837,6 @@ STDMETHODIMP CSkinTimeline::AnimationNextFrame(BOOL* pbContinueAnimation)
 	for (auto& item : vIndexesToRemove)
 	{
 		m_steps.erase(item);
-		m_cacheBitmaps.erase(item);
 	}
 
 	*pbContinueAnimation = m_steps.size() != 0;
