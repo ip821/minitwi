@@ -58,6 +58,7 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 
 	boost::lock_guard<boost::mutex> lock(m_mutex);
 	
+	CUpdateScope updateScope(m_pTimelineControl);
 	while (!m_queue.empty())
 	{
 		CComPtr<IVariantObject> pResult = m_queue.front();
