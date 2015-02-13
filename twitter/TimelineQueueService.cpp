@@ -57,7 +57,7 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 	CHECK_E_POINTER(pThreadResult);
 
 	boost::lock_guard<boost::mutex> lock(m_mutex);
-	
+
 	CUpdateScope updateScope(m_pTimelineControl);
 	while (!m_queue.empty())
 	{
@@ -67,37 +67,47 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
 		CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
+		int insertIndex = 0;
+		CComVariant vId;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
+		if (vId.vt == VT_BSTR)
 		{
-			int insertIndex = 0;
-			CComVariant vId;
-			RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
-			if (vId.vt == VT_BSTR)
-			{
-				CComPtr<IObjArray> pAllItems;
-				RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
-				UINT uiCount = 0;
-				RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
-				if (uiCount)
-					insertIndex = uiCount - 1;
-			}
+			CComPtr<IObjArray> pAllItems;
+			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
+			UINT uiCount = 0;
+			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
+			if (uiCount)
+				insertIndex = uiCount - 1;
+		}
 
-			UINT uiCurrentTopIndex = 0;
-			RETURN_IF_FAILED(m_pTimelineControl->GetTopVisibleItemIndex(&uiCurrentTopIndex));
-			RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
-			if (insertIndex)
+		CComVariant vIndex;
+		RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Index, &vIndex));
+		if (vIndex.vt == VT_I4)
+		{
+			insertIndex = vIndex.intVal;
+		}
+
+		UINT uiCurrentTopIndex = 0;
+		RETURN_IF_FAILED(m_pTimelineControl->GetTopVisibleItemIndex(&uiCurrentTopIndex));
+		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
+
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+
+		if (insertIndex)
+		{
+			if (uiCount)
 			{
 				RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(insertIndex));
 			}
-			else
+		}
+		else
+		{
+			if (uiCurrentTopIndex)
 			{
-				UINT uiCount = 0;
-				RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
-				if (uiCurrentTopIndex)
-				{
-					uiCurrentTopIndex += uiCount;
-				}
-				RETURN_IF_FAILED(m_pTimelineControl->ScrollToItem(uiCurrentTopIndex));
+				uiCurrentTopIndex += uiCount;
 			}
+			RETURN_IF_FAILED(m_pTimelineControl->ScrollToItem(uiCurrentTopIndex));
 		}
 	}
 

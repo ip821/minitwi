@@ -183,16 +183,20 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 
 	if (vParentTwit.vt == VT_UNKNOWN)
 	{
+		CComPtr<IVariantObject> pVariantObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+		CComPtr<IObjCollection> pObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjCollection));
+
 		CComQIPtr<IVariantObject> pParentItem = vParentTwit.punkVal;
-		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pParentItem, 0));
-		RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(0));
+		RETURN_IF_FAILED(pObjCollection->AddObject(pParentItem));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjCollection)));
+		RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pVariantObject));
+
 		++insertIndex;
 	}
 
-	CComVariant vResult;
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
-	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
-
+	RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Index, &CComVariant(insertIndex)));
 	RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pResult));
 	RETURN_IF_FAILED(m_pThreadServiceQueueService->Run());
 	return S_OK;
