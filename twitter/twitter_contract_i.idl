@@ -62,6 +62,16 @@ interface ITimelineLoadingService : IUnknown
 
 [
 	object,
+	uuid(082E4D12-186F-4329-82C6-E51C24167FDE),
+	pointer_default(unique)
+]
+interface IHomeTimelineStreamingService : IUnknown
+{
+	HRESULT Stop();
+};
+
+[
+	object,
 	uuid(A1787D6C-1366-4A83-92AE-C1B46D457000),
 	pointer_default(unique)
 ]

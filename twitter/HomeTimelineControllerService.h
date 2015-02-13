@@ -41,9 +41,10 @@ private:
 	CComPtr<ITimelineQueueService> m_pTimelineQueueService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ITimerService> m_pTimerService;
+	CComPtr<IHomeTimelineStreamingService> m_pHomeTimelineStreamingService;
 	DWORD m_dwAdviceThreadServiceStreamingService = 0;
 	DWORD m_dwAdviceThreadServiceUpdateService = 0;
-	boost::mutex m_mutex;
+	volatile bool m_running = false;
 
 public:
 	METHOD_EMPTY(STDMETHOD(OnInitializing)(IServiceProvider *pServiceProvider));

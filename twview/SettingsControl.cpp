@@ -5,6 +5,7 @@
 #include "Plugins.h"
 #include "..\model-libs\asyncsvc\Plugins.h"
 #include "..\twiconn\Plugins.h"
+#include "..\twitter\Plugins.h"
 
 // CSettingsControl
 
@@ -122,6 +123,17 @@ STDMETHODIMP CSettingsControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 
 void CSettingsControl::SwitchToLoginMode()
 {
+	CComPtr<IFormManager> pFormManager;
+	ASSERT_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
+	CComPtr<IControl> pControl;
+	ASSERT_IF_FAILED(pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
+	CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pControl;
+	CComPtr<IServiceProvider> pServiceProvider;
+	ASSERT_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
+	CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
+	ASSERT_IF_FAILED(pServiceProvider->QueryService(CLSID_HomeTimelineControllerService, &pHomeTimelineControllerService));
+	ASSERT_IF_FAILED(pHomeTimelineControllerService->StopConnection());
+
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_HIDE);
 

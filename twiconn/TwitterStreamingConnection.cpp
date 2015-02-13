@@ -15,7 +15,8 @@ size_t CTwitterStreamingConnection::WriteCallback(char *ptr, size_t size, size_t
 
 int CTwitterStreamingConnection::SaveLastWebResponse(char*& data, size_t size)
 {
-	//CoInitialize(NULL);
+	if (!m_running)
+		return 0;
 
 	if (data && size)
 	{
@@ -67,6 +68,8 @@ int CTwitterStreamingConnection::SaveLastWebResponse(char*& data, size_t size)
 
 STDMETHODIMP CTwitterStreamingConnection::StartStream(BSTR bstrKey, BSTR bstrSecret)
 {
+	m_running = true;
+
 	CURL* curl = curl_easy_init();
 	if (!curl)
 		return E_FAIL;
@@ -194,4 +197,10 @@ HRESULT CTwitterStreamingConnection::Fire_OnMessages(IObjArray* pObjectArray)
 		}
 	}
 	return hr;
+}
+
+STDMETHODIMP CTwitterStreamingConnection::StopStream()
+{
+	m_running = false;
+	return S_OK;
 }

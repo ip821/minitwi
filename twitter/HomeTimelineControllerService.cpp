@@ -21,6 +21,7 @@ STDMETHODIMP CHomeTimelineControllerService::OnInitialized(IServiceProvider *pSe
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadServiceUpdateService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadServiceUpdateService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_TIMER, &m_pTimerService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_HomeTimelineStreamingService, &m_pHomeTimelineStreamingService));
 
 	RETURN_IF_FAILED(m_pThreadServiceUpdateService->SetTimerService(SERVICE_TIMELINE_TIMER));
 
@@ -41,6 +42,7 @@ STDMETHODIMP CHomeTimelineControllerService::OnShutdown()
 	m_pThreadServiceStreamingService.Release();
 	m_pServiceProvider.Release();
 	m_pTimerService.Release();
+	m_pHomeTimelineStreamingService.Release();
 
 	return S_OK;
 }
@@ -59,6 +61,9 @@ STDMETHODIMP CHomeTimelineControllerService::OnRun(IVariantObject* pResultObj)
 STDMETHODIMP CHomeTimelineControllerService::OnFinish(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
+
+	if (!m_running)
+		return S_OK;
 
 	CComVariant vThreadId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::Id, &vThreadId));
@@ -87,11 +92,17 @@ STDMETHODIMP CHomeTimelineControllerService::OnFinish(IVariantObject* pResult)
 
 STDMETHODIMP CHomeTimelineControllerService::StartConnection()
 {
+	m_running = true;
 	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000));
 	return S_OK;
 }
 
 STDMETHODIMP CHomeTimelineControllerService::StopConnection()
 {
+	m_running = false;
+	RETURN_IF_FAILED(m_pTimerService->StopTimer());
+	RETURN_IF_FAILED(m_pThreadServiceUpdateService->Join());
+	RETURN_IF_FAILED(m_pHomeTimelineStreamingService->Stop());
+	RETURN_IF_FAILED(m_pThreadServiceStreamingService->Join());
 	return S_OK;
 }

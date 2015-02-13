@@ -19,7 +19,8 @@ class ATL_NO_VTABLE CHomeTimelineStreamingService :
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,
 	public IPluginSupportNotifications,
-	public ITwitterStreamingConnectionEventSink
+	public ITwitterStreamingConnectionEventSink,
+	public IHomeTimelineStreamingService
 {
 public:
 	CHomeTimelineStreamingService()
@@ -33,6 +34,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(ITwitterStreamingConnectionEventSink)
+		COM_INTERFACE_ENTRY(IHomeTimelineStreamingService)
 	END_COM_MAP()
 
 private:
@@ -40,6 +42,7 @@ private:
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<ITimelineQueueService> m_pTimelineQueueService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
+	CComPtr<ITwitterStreamingConnection> m_pTwitterStreamingConnection;
 	DWORD m_dwAdviceThreadService = 0;
 	boost::mutex m_mutex;
 
@@ -54,6 +57,8 @@ public:
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 
 	STDMETHOD(OnMessages)(IObjArray *pObjectArray);
+
+	STDMETHOD(Stop)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(HomeTimelineStreamingService), CHomeTimelineStreamingService)

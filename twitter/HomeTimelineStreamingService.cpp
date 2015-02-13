@@ -78,6 +78,11 @@ STDMETHODIMP CHomeTimelineStreamingService::OnRun(IVariantObject* pResultObj)
 	CComPtr<ITwitterStreamingConnection> pTwitterStreamingConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterStreamingConnection, &pTwitterStreamingConnection));
 
+	{
+		boost::lock_guard<boost::mutex> lock(m_mutex);
+		m_pTwitterStreamingConnection = pTwitterStreamingConnection;
+	}
+
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
@@ -85,21 +90,18 @@ STDMETHODIMP CHomeTimelineStreamingService::OnRun(IVariantObject* pResultObj)
 	RETURN_IF_FAILED(AtlAdvise(pTwitterStreamingConnection, pUnk, __uuidof(ITwitterStreamingConnectionEventSink), &dwAdvice));
 	RETURN_IF_FAILED(pTwitterStreamingConnection->StartStream(bstrKey, bstrSecret));
 	RETURN_IF_FAILED(AtlUnadvise(pTwitterStreamingConnection, __uuidof(ITwitterStreamingConnectionEventSink), dwAdvice));
+
+	{
+		boost::lock_guard<boost::mutex> lock(m_mutex);
+		m_pTwitterStreamingConnection.Release();
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CHomeTimelineStreamingService::OnFinish(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
-
-	CComVariant vHr;
-	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
-	if (FAILED(vHr.intVal))
-	{
-		return S_OK;
-	}
-
-
 	return S_OK;
 }
 
@@ -115,5 +117,19 @@ STDMETHODIMP CHomeTimelineStreamingService::OnMessages(IObjArray *pObjectArray)
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadService));
 	RETURN_IF_FAILED(pThreadService->Run());
 
+	return S_OK;
+}
+
+STDMETHODIMP CHomeTimelineStreamingService::Stop()
+{
+	CComPtr<ITwitterStreamingConnection> pTwitterStreamingConnection;
+	{
+		boost::lock_guard<boost::mutex> lock(m_mutex);
+		pTwitterStreamingConnection = m_pTwitterStreamingConnection;
+	}
+	if (pTwitterStreamingConnection)
+	{
+		RETURN_IF_FAILED(pTwitterStreamingConnection->StopStream());
+	}
 	return S_OK;
 }

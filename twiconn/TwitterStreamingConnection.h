@@ -44,6 +44,8 @@ private:
 	int SaveLastWebResponse(char*& data, size_t size);
 	static size_t WriteCallback(char *ptr, size_t size, size_t nmemb, CTwitterStreamingConnection* pObj);
 	HRESULT Fire_OnMessages(IObjArray* pObjectArray);
+	volatile bool m_running = false;
+
 public:
 
 	METHOD_EMPTY(STDMETHOD(GetGUID(GUID *pGUID)));
@@ -53,6 +55,7 @@ public:
 	METHOD_EMPTY(STDMETHOD(GetHelpContext(DWORD *pdwHelpContext)));
 
 	STDMETHOD(StartStream)(BSTR bstrKey, BSTR bstrSecret);
+	STDMETHOD(StopStream)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterStreamingConnection), CTwitterStreamingConnection)
