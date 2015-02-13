@@ -34,12 +34,9 @@ STDMETHODIMP CLoginService::Load(ISettings* pSettings)
 
 STDMETHODIMP CLoginService::OnStart(IVariantObject *pResult)
 {
-	CComPtr<IHomeTimeLineControl> pHomeTimeLineControl;
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
-	pHomeTimeLineControl = pControl;
-
-	RETURN_IF_FAILED(pHomeTimeLineControl->StopTimers());
+	CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_HomeTimelineControllerService, &pHomeTimelineControllerService));
+	RETURN_IF_FAILED(pHomeTimelineControllerService->StopConnection());
 	RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
 	RETURN_IF_FAILED(m_pViewControllerService->StartAnimation());
 	return S_OK;
@@ -99,12 +96,10 @@ STDMETHODIMP CLoginService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
 	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 
-	CComPtr<IHomeTimeLineControl> pHomeTimeLineControl;
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
-	pHomeTimeLineControl = pControl;
+	CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_HomeTimelineControllerService, &pHomeTimelineControllerService));
+	RETURN_IF_FAILED(pHomeTimelineControllerService->StartConnection());
 
-	RETURN_IF_FAILED(pHomeTimeLineControl->StartTimers());
 	RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_HomeTimeLineControl));
 	return S_OK;
 }

@@ -45,6 +45,20 @@ library twitterLib
 		[default] interface IFormsService;
 	};
 	[
+		uuid(438C2243-2D84-455D-BE36-BAB54462AB07)
+	]
+	coclass HomeTimelineControllerService
+	{
+		[default] interface IHomeTimelineControllerService;
+	};
+	[
+		uuid(A7558E3E-5C3B-44E3-A4CB-C63127AF6445)
+	]
+	coclass HomeTimelineStreamingService
+	{
+		[default] interface IUnknown;
+	};
+	[
 		uuid(6E86988C-AD2D-4EC5-B353-582524F03268)
 	]
 	coclass TimelineQueueService

@@ -9,6 +9,7 @@ class ATL_NO_VTABLE CBaseTimeLineControl :
 	public IControl2,
 	public IThemeSupport,
 	public IPluginSupportNotifications,
+	public IPluginSupportNotifications2,
 	public IInitializeWithSettings,
 	public IServiceProviderSupport,
 	public ITimelineControlSupport
@@ -94,6 +95,17 @@ public:
 
 		RETURN_IF_FAILED(Initialized());
 
+		return S_OK;
+	}
+
+	STDMETHOD(OnInitializing)(IServiceProvider* pServiceProvider)
+	{
+		return S_OK;
+	}
+
+	STDMETHOD(OnInitCompleted)()
+	{
+		RETURN_IF_FAILED(m_pPluginSupport->OnInitCompleted());
 		return S_OK;
 	}
 

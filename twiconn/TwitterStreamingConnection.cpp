@@ -2,6 +2,7 @@
 #include "TwitterStreamingConnection.h"
 #include "..\model-libs\objmdl\StringUtils.h"
 #include "oauthlib.h"
+#include "TwitterConnection.h"
 
 size_t CTwitterStreamingConnection::WriteCallback(char *ptr, size_t size, size_t nmemb, CTwitterStreamingConnection* pObj)
 {
@@ -14,9 +15,51 @@ size_t CTwitterStreamingConnection::WriteCallback(char *ptr, size_t size, size_t
 
 int CTwitterStreamingConnection::SaveLastWebResponse(char*& data, size_t size)
 {
+	//CoInitialize(NULL);
+
 	if (data && size)
 	{
-		m_callbackData.append(data, size);
+		USES_CONVERSION;
+		string buffer(data, size);
+		m_callbackData.Append(CA2W(buffer.c_str()));
+		vector<CString> messages;
+		StrSplit(m_callbackData, L"\r\n", messages);
+		if (messages.size() > 1 || m_callbackData[m_callbackData.GetLength() - 1] == L'\n')
+		{
+			if (m_callbackData[m_callbackData.GetLength() - 1] != L'\n')
+			{
+				m_callbackData = *(messages.end() - 1);
+				messages.erase(messages.end() - 1);
+			}
+			else
+			{
+				m_callbackData.Empty();
+			}
+
+			CComPtr<IObjCollection> pTweetsCollection;
+			ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pTweetsCollection));
+			bool bExists = false;
+			for (auto it = messages.cbegin(); it != messages.cend(); it++)
+			{
+				auto& str = *it;
+				auto value = shared_ptr<JSONValue>(JSON::Parse(str));
+				CComPtr<IVariantObject> pTweetObject;
+				ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pTweetObject));
+				auto valueObject = value->AsObject();
+				if (valueObject.find(L"id_str") != valueObject.end())
+				{
+					ASSERT_IF_FAILED(CTwitterConnection::ParseTweet(valueObject, pTweetObject));
+					ASSERT_IF_FAILED(pTweetsCollection->AddObject(pTweetObject));
+					bExists = true;
+				}
+			}
+
+			if (bExists)
+			{
+				CComQIPtr<IObjArray> pObjArray = pTweetsCollection;
+				Fire_OnMessages(pObjArray);
+			}
+		}
 		return (int)size;
 	}
 	return 0;
@@ -125,11 +168,11 @@ STDMETHODIMP CTwitterStreamingConnection::StartStream(BSTR bstrKey, BSTR bstrSec
 	}
 
 	curl_easy_cleanup(curl);
-	m_callbackData.clear();
+	m_callbackData.Empty();
 	return curlHr;
 }
 
-HRESULT CTwitterStreamingConnection::Fire_OnMessages(IObjCollection* pObjCollection)
+HRESULT CTwitterStreamingConnection::Fire_OnMessages(IObjArray* pObjectArray)
 {
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -147,7 +190,7 @@ HRESULT CTwitterStreamingConnection::Fire_OnMessages(IObjCollection* pObjCollect
 
 		if (pConnection)
 		{
-			hr = pConnection->OnMessages(pObjCollection);
+			hr = pConnection->OnMessages(pObjectArray);
 		}
 	}
 	return hr;

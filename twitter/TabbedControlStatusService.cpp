@@ -30,11 +30,22 @@ STDMETHODIMP CTabbedControlStatusService::OnInitialized(IServiceProvider *pServi
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadServiceUpdateTimeline));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
 
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_STREAMING_THREAD, &m_pThreadServiceStreamingTimeline));
+	if (m_pThreadServiceStreamingTimeline)
+	{
+		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceStreamingTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceStreamingTimeline));
+	}
+
 	return S_OK;
 }
 
 STDMETHODIMP CTabbedControlStatusService::OnShutdown()
 {
+	if (m_pThreadServiceStreamingTimeline)
+	{
+		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceStreamingTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceStreamingTimeline));
+	}
+
 	if (m_dwAdviceShowMoreTimeline)
 	{
 		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceShowMoreTimeline));

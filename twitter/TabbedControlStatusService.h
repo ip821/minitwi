@@ -32,10 +32,12 @@ private:
 	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
 	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
 	CComPtr<IThreadService> m_pThreadServiceFollow;
+	CComPtr<IThreadService> m_pThreadServiceStreamingTimeline;
 
 	DWORD m_dwAdviceUpdateTimeline = 0;
 	DWORD m_dwAdviceShowMoreTimeline = 0;
 	DWORD m_dwAdviceFollow = 0;
+	DWORD m_dwAdviceStreamingTimeline = 0;
 	UINT m_cAnimationRefs = 0;
 
 	STDMETHOD(StartAnimation)();

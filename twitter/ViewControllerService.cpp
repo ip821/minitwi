@@ -59,10 +59,7 @@ STDMETHODIMP CViewControllerService::OnInitCompleted()
 {
 	CComPtr<IFormManager> pFormManager;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
-	CComQIPtr<IHomeTimeLineControl> pHomeTimeLineControl = pControl;
-	RETURN_IF_FAILED(pHomeTimeLineControl->StartTimers());
+	CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
 	return S_OK;
 }
 

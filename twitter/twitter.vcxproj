@@ -254,6 +254,8 @@
     <ClCompile Include="ColumnsInfoItem.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="FollowService.cpp" />
+    <ClCompile Include="HomeTimelineControllerService.cpp" />
+    <ClCompile Include="HomeTimelineStreamingService.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="ListsTimelineService.cpp" />
     <ClCompile Include="ListTimelineControlService.cpp" />
@@ -340,6 +342,8 @@
     <ClInclude Include="ColumnsInfo.h" />
     <ClInclude Include="ColumnsInfoItem.h" />
     <ClInclude Include="FollowService.h" />
+    <ClInclude Include="HomeTimelineControllerService.h" />
+    <ClInclude Include="HomeTimelineStreamingService.h" />
     <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="ListTimelineControlService.h" />
     <ClInclude Include="LoginService.h" />

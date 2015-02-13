@@ -83,6 +83,12 @@
     <Filter Include="ColumnsInfo">
       <UniqueIdentifier>{a46c2823-09be-422c-a048-a42f97805d44}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\HomeTimelineService">
+      <UniqueIdentifier>{8635e74e-ec62-468b-ba07-28a5f75589ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\UserTimelineService">
+      <UniqueIdentifier>{40dff2ae-d8da-40e6-a784-22e8d8b3016c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -175,12 +181,6 @@
     <ClCompile Include="ColumnsInfoItem.cpp">
       <Filter>ColumnsInfo</Filter>
     </ClCompile>
-    <ClCompile Include="UserTimelineService.cpp">
-      <Filter>Services\TimelineService</Filter>
-    </ClCompile>
-    <ClCompile Include="HomeTimelineService.cpp">
-      <Filter>Services\TimelineService</Filter>
-    </ClCompile>
     <ClCompile Include="TimelineLoadingService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
@@ -189,6 +189,18 @@
     </ClCompile>
     <ClCompile Include="TimelineQueueService.cpp">
       <Filter>Services\TimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="UserTimelineService.cpp">
+      <Filter>Services\UserTimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="HomeTimelineService.cpp">
+      <Filter>Services\HomeTimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="HomeTimelineStreamingService.cpp">
+      <Filter>Services\HomeTimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="HomeTimelineControllerService.cpp">
+      <Filter>Services\HomeTimelineService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -300,12 +312,6 @@
     <ClInclude Include="ColumnsInfoItem.h">
       <Filter>ColumnsInfo</Filter>
     </ClInclude>
-    <ClInclude Include="UserTimelineService.h">
-      <Filter>Services\TimelineService</Filter>
-    </ClInclude>
-    <ClInclude Include="HomeTimelineService.h">
-      <Filter>Services\TimelineService</Filter>
-    </ClInclude>
     <ClInclude Include="TimelineLoadingService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
@@ -314,6 +320,18 @@
     </ClInclude>
     <ClInclude Include="TimelineQueueService.h">
       <Filter>Services\TimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="UserTimelineService.h">
+      <Filter>Services\UserTimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="HomeTimelineService.h">
+      <Filter>Services\HomeTimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="HomeTimelineStreamingService.h">
+      <Filter>Services\HomeTimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="HomeTimelineControllerService.h">
+      <Filter>Services\HomeTimelineService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

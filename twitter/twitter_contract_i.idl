@@ -206,6 +206,17 @@ interface ITimelineControl : IControl2
 
 [
 	object,
+	uuid(66488705-96CC-4F06-A440-157AEE70AC81),
+	pointer_default(unique)
+]
+interface IHomeTimelineControllerService : IUnknown
+{
+	HRESULT StartConnection();
+	HRESULT StopConnection();
+};
+
+[
+	object,
 	uuid(03F5DD74-E610-409A-991F-20BDDBA9A625),
 	pointer_default(unique)
 ]
@@ -497,8 +508,6 @@ interface IUserInfoControl : ITimelineControlSupport
 ]
 interface IHomeTimeLineControl : IUnknown
 {
-	HRESULT StartTimers();
-	HRESULT StopTimers();
 };
 
 [

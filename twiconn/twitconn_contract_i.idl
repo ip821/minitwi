@@ -42,5 +42,5 @@ interface ITwitterStreamingConnection : IUnknown
 ]
 interface ITwitterStreamingConnectionEventSink : IUnknown
 {
-	HRESULT OnMessages(IObjCollection* pObjCollection);
+	HRESULT OnMessages(IObjArray* pObjectArray);
 };

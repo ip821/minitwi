@@ -66,6 +66,24 @@ STDMETHODIMP CFormsService::OnInitialized(IServiceProvider* pServiceProvider)
 	return S_OK;
 }
 
+STDMETHODIMP CFormsService::OnInitCompleted()
+{
+	CComPtr<IObjArray> pObjArray;
+	RETURN_IF_FAILED(m_pFormManager->GetForms(&pObjArray));
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pObjArray->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IPluginSupportNotifications2> pPluginSupportNotifications2;
+		pObjArray->GetAt(i, __uuidof(IPluginSupportNotifications2), (LPVOID*)&pPluginSupportNotifications2);
+		if (pPluginSupportNotifications2)
+		{
+			ASSERT_IF_FAILED(pPluginSupportNotifications2->OnInitCompleted());
+		}
+	}
+	return S_OK;
+}
+
 STDMETHODIMP CFormsService::OnShutdown()
 {
 	m_pFormManager.Release();

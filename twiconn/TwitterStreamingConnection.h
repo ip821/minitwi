@@ -39,11 +39,11 @@ public:
 	END_CONNECTION_POINT_MAP()
 
 private:
-	string m_callbackData;
+	CString m_callbackData;
 	
 	int SaveLastWebResponse(char*& data, size_t size);
 	static size_t WriteCallback(char *ptr, size_t size, size_t nmemb, CTwitterStreamingConnection* pObj);
-	HRESULT Fire_OnMessages(IObjCollection* pObjCollection);
+	HRESULT Fire_OnMessages(IObjArray* pObjectArray);
 public:
 
 	METHOD_EMPTY(STDMETHOD(GetGUID(GUID *pGUID)));
