@@ -24,3 +24,24 @@ interface ITwitterConnection : IUnknown
 	HRESULT GetListTweets(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray);
 	HRESULT GetUserSettings(IVariantObject** ppVariantObject);
 };
+
+[
+	object,
+	uuid(2B3A4708-9EDF-4240-A151-A47A5F317B4C),
+	pointer_default(unique)
+]
+interface ITwitterStreamingConnection : IUnknown
+{
+	HRESULT StartStream(BSTR bstrKey, BSTR bstrSecret);
+	HRESULT StopStream();
+};
+
+[
+	object,
+	uuid(0DBBC2C9-EC68-4CFE-AABA-E0BD094E0626),
+	pointer_default(unique)
+]
+interface ITwitterStreamingConnectionEventSink : IUnknown
+{
+	HRESULT OnMessages(IObjArray* pObjectArray);
+};

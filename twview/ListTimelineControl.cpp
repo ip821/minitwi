@@ -13,7 +13,7 @@ HRESULT CListTimelineControl::OnActivateInternal()
 {
 	__super::OnActivateInternal();
 	CComPtr<IThreadService> pThreadService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadService));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pThreadService));
 	RETURN_IF_FAILED(pThreadService->Run());
 	return S_OK;
 }

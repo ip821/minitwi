@@ -2,14 +2,8 @@
 #include "SearchTimelineService.h"
 #include "Plugins.h"
 #include "twitconn_contract_i.h"
-#include "TimelineService.h"
+#include "HomeTimelineService.h"
 #include "UpdateScope.h"
-
-#ifdef DEBUG
-#define COUNT_ITEMS 10
-#else
-#define COUNT_ITEMS 100
-#endif
 
 STDMETHODIMP CSearchTimelineService::OnInitialized(IServiceProvider* pServiceProvider)
 {
@@ -22,8 +16,15 @@ STDMETHODIMP CSearchTimelineService::OnInitialized(IServiceProvider* pServicePro
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceQueueService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_QUEUE, &m_pTimelineQueueService));
+
+	CComPtr<ITimelineLoadingService> pLoadingService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineLoadingService, &pLoadingService));
+	RETURN_IF_FAILED(pLoadingService->SetText(L"Searching..."));
 
 	return S_OK;
 }
@@ -36,6 +37,8 @@ STDMETHODIMP CSearchTimelineService::OnShutdown()
 		m_pSettings.Release();
 	}
 
+	m_pThreadServiceQueueService.Release();
+	m_pTimelineQueueService.Release();
 	m_pTimelineControl.Release();
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
@@ -67,15 +70,6 @@ STDMETHODIMP CSearchTimelineService::OnStart(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
-
-	CUpdateScope scope(m_pTimelineControl);
-	CComPtr<IVariantObject> pLoadingObject;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"Searching...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Searching...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
-	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 
 	return S_OK;
 }
@@ -143,7 +137,8 @@ STDMETHODIMP CSearchTimelineService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
 	if (uiCount)
 	{
-		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
+		RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pResult));
+		RETURN_IF_FAILED(m_pThreadServiceQueueService->Run());
 	}
 	else
 	{

@@ -29,7 +29,7 @@ STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 	}
 
 	CComPtr<IThreadService> pTimelineThread;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThread));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pTimelineThread));
 	RETURN_IF_FAILED(pTimelineThread->Run());
 
 	return S_OK;

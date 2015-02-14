@@ -22,7 +22,7 @@ STDMETHODIMP CSearchControl::OnInitialized(IServiceProvider* pServiceProvider)
 		ATLASSERT(pServiceProviderSupport);
 		CComPtr<IServiceProvider> pServiceProviderTimelineControl;
 		RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProviderTimelineControl));
-		RETURN_IF_FAILED(pServiceProviderTimelineControl->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
+		RETURN_IF_FAILED(pServiceProviderTimelineControl->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadService));
 	}
 
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
@@ -172,7 +172,7 @@ STDMETHODIMP CSearchControl::DoSearch()
 		RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObject));
 
 		CComPtr<IThreadService> pThreadService;
-		RETURN_IF_FAILED(pServiceProviderTimelineControl->QueryService(SERVICE_TIMELINE_THREAD, &pThreadService));
+		RETURN_IF_FAILED(pServiceProviderTimelineControl->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pThreadService));
 		RETURN_IF_FAILED(pThreadService->Run());
 	}
 	return S_OK;

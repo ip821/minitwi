@@ -26,7 +26,7 @@ public:
 	END_COM_MAP()
 
 private:
-	vector<CAdapt<CComPtr<IColumnsInfoItem>>> m_pItems;
+	vector<CComPtr<IColumnsInfoItem>> m_pItems;
 	BOOL m_bDisabledSelection = FALSE;
 
 public:

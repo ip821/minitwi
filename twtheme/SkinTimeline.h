@@ -33,7 +33,6 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
-	map<int, shared_ptr<CBitmap>> m_cacheBitmaps;
 
 	struct AnimationItemImageData
 	{

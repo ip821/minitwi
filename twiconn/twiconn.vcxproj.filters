@@ -41,6 +41,9 @@
     <Filter Include="ZZZMisc\json">
       <UniqueIdentifier>{ac0f905b-f9ec-4baa-b946-45b352611147}</UniqueIdentifier>
     </Filter>
+    <Filter Include="StreamingConnection">
+      <UniqueIdentifier>{6c3448a8-a3d5-4fa5-98ed-cafa5291a01a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -90,6 +93,9 @@
     </ClCompile>
     <ClCompile Include="..\model-libs\json\src\JSONValue.cpp">
       <Filter>ZZZMisc\json</Filter>
+    </ClCompile>
+    <ClCompile Include="TwitterStreamingConnection.cpp">
+      <Filter>StreamingConnection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="Metadata.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="TwitterStreamingConnection.h">
+      <Filter>StreamingConnection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

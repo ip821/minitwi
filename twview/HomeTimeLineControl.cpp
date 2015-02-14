@@ -2,18 +2,6 @@
 #include "HomeTimeLineControl.h"
 #include "Plugins.h"
 
-STDMETHODIMP CHomeTimeLineControl::StartTimers()
-{
-	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000)); //60 secs
-	return S_OK;
-}
-
-STDMETHODIMP CHomeTimeLineControl::StopTimers()
-{
-	RETURN_IF_FAILED(m_pTimerService->StopTimer());
-	return S_OK;
-}
-
 STDMETHODIMP CHomeTimeLineControl::GetText(BSTR* pbstr)
 {
 	*pbstr = CComBSTR(L"Home").Detach();
@@ -30,8 +18,5 @@ HRESULT CHomeTimeLineControl::Initializing()
 HRESULT CHomeTimeLineControl::Initialized()
 {
 	RETURN_IF_FAILED(__super::Initialized());
-	CComPtr<IThreadService> pThreadServiceUpdateTimeline;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadServiceUpdateTimeline));
-	RETURN_IF_FAILED(pThreadServiceUpdateTimeline->SetTimerService(SERVICE_TIMELINE_TIMER));
 	return S_OK;
 }

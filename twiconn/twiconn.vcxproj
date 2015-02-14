@@ -318,6 +318,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TwitterStreamingConnection.cpp" />
     <ClCompile Include="twiconn.cpp" />
     <ClCompile Include="twiconn_i.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -354,6 +355,7 @@
     <ClInclude Include="PluginTable.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TwitterStreamingConnection.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TextNormalizeTable.h" />
     <ClInclude Include="twiconn_i.h" />

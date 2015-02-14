@@ -34,7 +34,7 @@ void CCustomListBox::Clear()
 		nm.nmhdr.idFrom = nID;
 		nm.nmhdr.code = NM_ITEM_REMOVED;
 		nm.pVariantObject = pVariantObject.p;
-		nm.pColumnsInfo = m_columnsInfo[i].m_T;
+		nm.pColumnsInfo = m_columnsInfo[i];
 		::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 	}
 	ResetContent();
@@ -57,7 +57,7 @@ void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
 	nm.nmhdr.idFrom = nID;
 	nm.nmhdr.code = NM_ITEM_REMOVED;
 	nm.pVariantObject = pVariantObject.p;
-	nm.pColumnsInfo = m_columnsInfo[uiIndex].m_T;
+	nm.pColumnsInfo = m_columnsInfo[uiIndex];
 	::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 
 	ASSERT_IF_FAILED(m_pItems->RemoveObjectAt(uiIndex));
@@ -116,14 +116,14 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 	distl.iHoveredColumn = m_HoveredColumnIndex;
 	distl.puiNotAnimatedColumnIndexes = pui;
 	distl.uiNotAnimatedColumnIndexesCount = vIndexes.size();
-	ASSERT_IF_FAILED(m_pSkinTimeline->DrawItem(m_hWnd, m_columnsInfo[lpdi->itemID].m_T, &distl));
+	ASSERT_IF_FAILED(m_pSkinTimeline->DrawItem(m_hWnd, m_columnsInfo[lpdi->itemID], &distl));
 }
 
 void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	CComPtr<IVariantObject> pVariantObject;
 	ASSERT_IF_FAILED(m_pItems->GetAt(lpMeasureItemStruct->itemID, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-	ASSERT_IF_FAILED(m_pSkinTimeline->MeasureItem(m_hWnd, pVariantObject.p, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnsInfo[lpMeasureItemStruct->itemID].m_T));
+	ASSERT_IF_FAILED(m_pSkinTimeline->MeasureItem(m_hWnd, pVariantObject.p, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnsInfo[lpMeasureItemStruct->itemID]));
 }
 
 void CCustomListBox::IsEmpty(BOOL* pbEmpty)
@@ -562,7 +562,7 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 		GetItemRect(uiIndex, &rectItem);
 		CRect rectIntersect;
 		BOOL bIntersects = rectIntersect.IntersectRect(rectItem, rect);
-		UpdateAnimatedColumns(m_columnsInfo[uiIndex].m_T, uiIndex, pVariantObject, bIntersects);
+		UpdateAnimatedColumns(m_columnsInfo[uiIndex], uiIndex, pVariantObject, bIntersects);
 
 		if (bIntersects)
 			bNeedInvalidate = TRUE;

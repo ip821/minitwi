@@ -1,4 +1,4 @@
-// TimelineService.h : Declaration of the CTimelineService
+// UserTimelineService.h : Declaration of the CUserTimelineService
 
 #pragma once
 #include "resource.h"       // main symbols
@@ -11,33 +11,31 @@ using namespace ATL;
 using namespace std;
 using namespace IP;
 
-// CTimelineService
+// CUserTimelineService
 
-class ATL_NO_VTABLE CTimelineService :
+class ATL_NO_VTABLE CUserTimelineService :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CTimelineService, &CLSID_TimelineService>,
+	public CComCoClass<CUserTimelineService, &CLSID_UserTimelineService>,
 	public ITimelineService,
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
-	public ITimelineControlEventSink,
 	public IInitializeWithVariantObject
 {
 public:
-	CTimelineService()
+	CUserTimelineService()
 	{
 	}
 
-	DECLARE_REGISTRY_RESOURCEID(IDR_TIMELINESERVICE)
+	DECLARE_NO_REGISTRY()
 
-	BEGIN_COM_MAP(CTimelineService)
+	BEGIN_COM_MAP(CUserTimelineService)
 		COM_INTERFACE_ENTRY(ITimelineService)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
-		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 	END_COM_MAP()
 
@@ -45,13 +43,13 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IThreadService> m_pThreadServiceUpdateService;
 	CComPtr<IThreadService> m_pThreadServiceShowMoreService;
+	CComPtr<IThreadService> m_pThreadServiceQueueService;
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComQIPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<ITimelineQueueService> m_pTimelineQueueService;
 	DWORD m_dwAdviceThreadServiceUpdateService = 0;
 	DWORD m_dwAdviceThreadServiceShowMoreService = 0;
-	DWORD m_dwAdviceTimelineControl = 0;
 	boost::mutex m_mutex;
-	BOOL m_bShowMoreRunning = 0;
 	CComBSTR m_bstrUser;
 
 
@@ -65,11 +63,7 @@ public:
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 
-	STDMETHOD(OnColumnClick)(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject);
-	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
-	METHOD_EMPTY(STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject));
-	
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(TimelineService), CTimelineService)
+OBJECT_ENTRY_AUTO(__uuidof(UserTimelineService), CUserTimelineService)

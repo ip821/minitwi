@@ -11,8 +11,8 @@ class ATL_NO_VTABLE CMessageLoopWrapper :
 {
 private:
 	CMessageLoop* m_pMessageLoop;
-	std::list< CAdapt<CComPtr<IMsgFilter> > > m_pFilters;
-	std::list< CAdapt<CComPtr<IIdleHandler> > > m_pIdleHandlers;
+	std::list<CComPtr<IMsgFilter>> m_pFilters;
+	std::list<CComPtr<IIdleHandler>> m_pIdleHandlers;
 
 public:
 	CMessageLoopWrapper()

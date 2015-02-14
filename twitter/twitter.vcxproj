@@ -254,11 +254,14 @@
     <ClCompile Include="ColumnsInfoItem.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="FollowService.cpp" />
+    <ClCompile Include="HomeTimelineControllerService.cpp" />
+    <ClCompile Include="HomeTimelineStreamingService.cpp" />
     <ClCompile Include="ImageManagerService.cpp" />
     <ClCompile Include="ListsTimelineService.cpp" />
     <ClCompile Include="ListTimelineControlService.cpp" />
     <ClCompile Include="LoginService.cpp" />
     <ClCompile Include="SearchTimelineService.cpp" />
+    <ClCompile Include="ShowMoreSupportService.cpp" />
     <ClCompile Include="TabbedControlStatusService.cpp" />
     <ClCompile Include="TimelineCleanupService.cpp" />
     <ClCompile Include="TimelineImageService.cpp" />
@@ -292,8 +295,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TimelineLoadingService.cpp" />
+    <ClCompile Include="TimelineQueueService.cpp" />
     <ClCompile Include="TimelineRelativeTimeService.cpp" />
-    <ClCompile Include="TimelineService.cpp" />
+    <ClCompile Include="HomeTimelineService.cpp" />
     <ClCompile Include="twitconn_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -321,6 +326,7 @@
     </ClCompile>
     <ClCompile Include="TwitViewRepliesService.cpp" />
     <ClCompile Include="UpdateService.cpp" />
+    <ClCompile Include="UserTimelineService.cpp" />
     <ClCompile Include="ViewControllerService.cpp" />
     <ClCompile Include="viewmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -336,11 +342,16 @@
     <ClInclude Include="ColumnsInfo.h" />
     <ClInclude Include="ColumnsInfoItem.h" />
     <ClInclude Include="FollowService.h" />
+    <ClInclude Include="HomeTimelineControllerService.h" />
+    <ClInclude Include="HomeTimelineStreamingService.h" />
     <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="ListTimelineControlService.h" />
     <ClInclude Include="LoginService.h" />
     <ClInclude Include="Metadata.h" />
     <ClInclude Include="SearchTimelineService.h" />
+    <ClInclude Include="ShowMoreSupportService.h" />
+    <ClInclude Include="TimelineLoadingService.h" />
+    <ClInclude Include="TimelineQueueService.h" />
     <ClInclude Include="TimelineRelativeTimeService.h" />
     <ClInclude Include="twitter_contract_i.h" />
     <ClInclude Include="DownloadService.h" />
@@ -358,12 +369,13 @@
     <ClInclude Include="ThemeService.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TimelineService.h" />
+    <ClInclude Include="HomeTimelineService.h" />
     <ClInclude Include="twitconn_contract_i.h" />
     <ClInclude Include="twitter_i.h" />
     <ClInclude Include="TwitViewRepliesService.h" />
     <ClInclude Include="UpdateScope.h" />
     <ClInclude Include="UpdateService.h" />
+    <ClInclude Include="UserTimelineService.h" />
     <ClInclude Include="ViewControllerService.h" />
     <ClInclude Include="viewmdl_contract_i.h" />
     <ClInclude Include="WindowService.h" />

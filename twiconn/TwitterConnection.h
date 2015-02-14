@@ -36,17 +36,19 @@ public:
 		COM_INTERFACE_ENTRY(IErrorInfo)
 	END_COM_MAP()
 
+	friend class CTwitterStreamingConnection;
+
 private:
 
 	CString m_errMsg;
 	shared_ptr<twitCurl> m_pTwitObj;
 	wstring m_strAppToken;
 	STDMETHOD(HandleError)(JSONValue* value);
-	STDMETHOD(AppendUrls)(IVariantObject* pVariantObject, vector<wstring>& urlsVector);
-	STDMETHOD(ParseTweet)(JSONObject& itemObject, IVariantObject* pVariantObject);
+	static HRESULT AppendUrls(IVariantObject* pVariantObject, vector<wstring>& urlsVector);
+	static HRESULT ParseTweet(JSONObject& itemObject, IVariantObject* pVariantObject);
 	STDMETHOD(ParseTweets)(JSONValue* value, IObjCollection* pObjectCollection);
-	STDMETHOD(ParseUser(JSONObject& value, IVariantObject* pVariantObject));
-	STDMETHOD(ParseMedias)(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, hash_set<wstring>& processedMediaUrls);
+	static HRESULT ParseUser(JSONObject& value, IVariantObject* pVariantObject);
+	static HRESULT ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, hash_set<wstring>& processedMediaUrls);
 
 public:
 

@@ -24,7 +24,7 @@ HRESULT CListsControl::Initialized()
 HRESULT CListsControl::OnActivateInternal()
 {
 	CComPtr<IThreadService> pThreadService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadService));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pThreadService));
 	
 	RETURN_IF_FAILED(pThreadService->Join());
 

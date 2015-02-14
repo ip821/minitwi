@@ -27,14 +27,25 @@ STDMETHODIMP CTabbedControlStatusService::OnInitialized(IServiceProvider *pServi
 		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceFollow, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceFollow));
 	}
 
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceUpdateTimeline));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadServiceUpdateTimeline));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_STREAMING_THREAD, &m_pThreadServiceStreamingTimeline));
+	if (m_pThreadServiceStreamingTimeline)
+	{
+		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceStreamingTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceStreamingTimeline));
+	}
 
 	return S_OK;
 }
 
 STDMETHODIMP CTabbedControlStatusService::OnShutdown()
 {
+	if (m_pThreadServiceStreamingTimeline)
+	{
+		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceStreamingTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceStreamingTimeline));
+	}
+
 	if (m_dwAdviceShowMoreTimeline)
 	{
 		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceShowMoreTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceShowMoreTimeline));
@@ -74,14 +85,26 @@ STDMETHODIMP CTabbedControlStatusService::StopAnimation()
 
 STDMETHODIMP CTabbedControlStatusService::OnStart(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
-	RETURN_IF_FAILED(StartAnimation());
+	CComVariant vThreadId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::Id, &vThreadId));
+	CComQIPtr<IThreadService> pThreadService = vThreadId.punkVal;
+	if (m_pThreadServiceStreamingTimeline != pThreadService)
+	{
+		RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
+		RETURN_IF_FAILED(StartAnimation());
+	}
 	return S_OK;
 }
 
 STDMETHODIMP CTabbedControlStatusService::OnFinish(IVariantObject *pResult)
 {
-	RETURN_IF_FAILED(StopAnimation());
+	CComVariant vThreadId;
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::Id, &vThreadId));
+	CComQIPtr<IThreadService> pThreadService = vThreadId.punkVal;
+	if (m_pThreadServiceStreamingTimeline != pThreadService)
+	{
+		RETURN_IF_FAILED(StopAnimation());
+	}
 
 	CComVariant vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));

@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "TimelineCleanupService.h"
 #include "Plugins.h"
-#include "TimelineService.h"
+#include "HomeTimelineService.h"
 #include "UpdateScope.h"
 
 #define MAX_ITEMS_COUNT 50

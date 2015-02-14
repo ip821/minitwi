@@ -45,9 +45,51 @@ library twitterLib
 		[default] interface IFormsService;
 	};
 	[
+		uuid(438C2243-2D84-455D-BE36-BAB54462AB07)
+	]
+	coclass HomeTimelineControllerService
+	{
+		[default] interface IHomeTimelineControllerService;
+	};
+	[
+		uuid(A7558E3E-5C3B-44E3-A4CB-C63127AF6445)
+	]
+	coclass HomeTimelineStreamingService
+	{
+		[default] interface IUnknown;
+	};
+	[
+		uuid(6E86988C-AD2D-4EC5-B353-582524F03268)
+	]
+	coclass TimelineQueueService
+	{
+		[default] interface ITimelineQueueService;
+	};
+	[
+		uuid(E08071C7-127B-4282-BF4B-F701C66526CD)
+	]
+	coclass TimelineLoadingService
+	{
+		[default] interface ITimelineLoadingService;
+	};
+	[
+		uuid(FE18BF94-8AB4-4F45-BFDC-2B2E90DD0C05)
+	]
+	coclass ShowMoreSupportService
+	{
+		[default] interface ITimelineControlEventSink;
+	};
+	[
 		uuid(FB68EE85-7555-407C-BECA-64406C74F1BC)
 	]
-	coclass TimelineService
+	coclass HomeTimelineService
+	{
+		[default] interface ITimelineService;
+	};
+	[
+		uuid(4563BFAF-AF65-43B3-84BC-619BDA318391)
+	]
+	coclass UserTimelineService
 	{
 		[default] interface ITimelineService;
 	};

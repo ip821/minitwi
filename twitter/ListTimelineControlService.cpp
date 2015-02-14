@@ -2,14 +2,8 @@
 #include "ListTimelineControlService.h"
 #include "Plugins.h"
 #include "twitconn_contract_i.h"
-#include "TimelineService.h"
+#include "HomeTimelineService.h"
 #include "UpdateScope.h"
-
-#ifdef DEBUG
-#define COUNT_ITEMS 10
-#else
-#define COUNT_ITEMS 100
-#endif
 
 STDMETHODIMP CListTimelineControlService::OnInitialized(IServiceProvider* pServiceProvider)
 {
@@ -18,12 +12,19 @@ STDMETHODIMP CListTimelineControlService::OnInitialized(IServiceProvider* pServi
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadService));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 
 	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pControl;
 	ATLASSERT(pTimelineControlSupport);
 	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&m_pTimelineControl));
+
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &m_pThreadServiceQueueService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_QUEUE, &m_pTimelineQueueService));
+
+	CComPtr<ITimelineLoadingService> pLoadingService;
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineLoadingService, &pLoadingService));
+	RETURN_IF_FAILED(pLoadingService->SetText(L"Loading list tweets..."));
 
 	return S_OK;
 }
@@ -37,6 +38,8 @@ STDMETHODIMP CListTimelineControlService::OnShutdown()
 		m_pVariantObject.Release();
 	}
 
+	m_pThreadServiceQueueService.Release();
+	m_pTimelineQueueService.Release();
 	m_pTimelineControl.Release();
 	m_pThreadService.Release();
 	m_pServiceProvider.Release();
@@ -66,16 +69,6 @@ STDMETHODIMP CListTimelineControlService::OnStart(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
-
-	CUpdateScope scope(m_pTimelineControl);
-	CComPtr<IVariantObject> pLoadingObject;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"Loading list tweets...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading list tweets...")));
-	RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
-	RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
-
 	return S_OK;
 }
 
@@ -135,10 +128,7 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CComVariant vResult;
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
-	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
-
-	RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, 0));
+	RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pResult));
+	RETURN_IF_FAILED(m_pThreadServiceQueueService->Run());
 	return S_OK;
 }

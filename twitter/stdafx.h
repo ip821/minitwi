@@ -52,6 +52,7 @@
 
 #include <vector>
 #include <map>
+#include <queue>
 #include <list>
 #include <hash_set>
 #include <mutex>
@@ -87,3 +88,9 @@ using namespace IP;
 
 #pragma comment (lib,"Gdiplus.lib")
 #pragma comment (lib,"Winhttp.lib")
+
+#ifdef DEBUG
+#define COUNT_ITEMS 10
+#else
+#define COUNT_ITEMS 100
+#endif

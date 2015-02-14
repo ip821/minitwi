@@ -39,6 +39,8 @@ private:
 	CComPtr<IThreadService> m_pThreadService;
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ITimelineControl> m_pTimelineControl;
+	CComPtr<IThreadService> m_pThreadServiceQueueService;
+	CComPtr<ITimelineQueueService> m_pTimelineQueueService;
 
 	DWORD m_dwAdvice = 0;
 	boost::mutex m_mutex;

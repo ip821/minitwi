@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "TimelineImageService.h"
 #include "Plugins.h"
-#include "TimelineService.h"
+#include "HomeTimelineService.h"
 #include "UpdateScope.h"
 #include "..\twtheme\GdilPlusUtils.h"
 

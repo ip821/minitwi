@@ -10,9 +10,6 @@
 
 // CTwitterConnection
 
-#define APP_KEY "9FA16n89DvlcZCO07IkVHcxio"
-#define APP_SECRET "stU8OFXzqG9dsp80fnH92d9iSsm11WpPIWnvctKYB7zpcz7WqX"
-
 STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 {
 	if (value == nullptr)
@@ -464,7 +461,7 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pVariantObject)
+HRESULT CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pVariantObject)
 {
 	auto userDisplayName = value[L"name"]->AsString();
 	auto userScreenName = value[L"screen_name"]->AsString();
@@ -496,7 +493,7 @@ STDMETHODIMP CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pV
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* pVariantObject)
+HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* pVariantObject)
 {
 	wstring retweetedUserDisplayName;
 	wstring retweetedUserScreenName;
@@ -642,7 +639,7 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, hash_set<wstring>& processedMediaUrls)
+HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, hash_set<wstring>& processedMediaUrls)
 {
 	for (size_t i = 0; i < mediaArray.size(); i++)
 	{
@@ -662,7 +659,7 @@ STDMETHODIMP CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollecti
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, vector<wstring>& urlsVector)
+HRESULT CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, vector<wstring>& urlsVector)
 {
 	CComPtr<IBstrCollection> pBstrCollection;
 	CComVariant vCollection;

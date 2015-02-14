@@ -24,6 +24,13 @@ library twiconnLib
 		[default] interface ITwitterConnection;
 	};
 	[
+		uuid(486001AF-C13C-4BDC-A0CA-BA493B3BF106)
+	]
+	coclass TwitterStreamingConnection
+	{
+		[default] interface ITwitterStreamingConnection;
+	};
+	[
 		uuid(6EA78630-DC6D-4D2B-91F0-686B260F29D6)
 	]
 	coclass PluginTable

@@ -29,6 +29,7 @@ public:
 		COM_INTERFACE_ENTRY(IThemeSupport)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
+		COM_INTERFACE_ENTRY(IPluginSupportNotifications2)
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IServiceProviderSupport)
 		COM_INTERFACE_ENTRY(ITimelineControlSupport)

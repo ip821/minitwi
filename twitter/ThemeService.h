@@ -34,7 +34,7 @@ public:
 	END_COM_MAP()
 
 private:
-	std::map<GUID, CAdapt<CComPtr<IThemeColorMap> >, GUIDComparer> m_colorMaps;
+	std::map<GUID, CComPtr<IThemeColorMap>, GUIDComparer> m_colorMaps;
 	CComPtr<IObjArray> m_pObjectArray;
 	CComPtr<ITheme> m_pCurrentTheme;
 	CComPtr<ISettings> m_pSettings;

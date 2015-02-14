@@ -34,12 +34,15 @@ STDMETHODIMP CLoginService::Load(ISettings* pSettings)
 
 STDMETHODIMP CLoginService::OnStart(IVariantObject *pResult)
 {
-	CComPtr<IHomeTimeLineControl> pHomeTimeLineControl;
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
-	pHomeTimeLineControl = pControl;
+	CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pControl;
+	CComPtr<IServiceProvider> pServiceProvider;
+	RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
+	CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_HomeTimelineControllerService, &pHomeTimelineControllerService));
+	RETURN_IF_FAILED(pHomeTimelineControllerService->StopConnection());
 
-	RETURN_IF_FAILED(pHomeTimeLineControl->StopTimers());
 	RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
 	RETURN_IF_FAILED(m_pViewControllerService->StartAnimation());
 	return S_OK;
@@ -47,10 +50,8 @@ STDMETHODIMP CLoginService::OnStart(IVariantObject *pResult)
 
 STDMETHODIMP CLoginService::OnRun(IVariantObject *pResult)
 {
-	CComPtr<IFormManager> pFormManager;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
 	CComPtr<IControl> pTimelineControl;
-	RETURN_IF_FAILED(pFormManager->FindForm(CLSID_HomeTimeLineControl, &pTimelineControl));
+	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pTimelineControl));
 	CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pTimelineControl;
 	CComPtr<IServiceProvider> pServiceProvider;
 	RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
@@ -99,12 +100,16 @@ STDMETHODIMP CLoginService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
 	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 
-	CComPtr<IHomeTimeLineControl> pHomeTimeLineControl;
 	CComPtr<IControl> pControl;
 	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
-	pHomeTimeLineControl = pControl;
+	CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pControl;
+	CComPtr<IServiceProvider> pServiceProvider;
+	RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
+	CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_HomeTimelineControllerService, &pHomeTimelineControllerService));
 
-	RETURN_IF_FAILED(pHomeTimeLineControl->StartTimers());
+	RETURN_IF_FAILED(pHomeTimelineControllerService->StartConnection());
+
 	RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_HomeTimeLineControl));
 	return S_OK;
 }
