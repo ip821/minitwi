@@ -182,6 +182,7 @@ void CUserAccountControl::UpdateRects()
 
 STDMETHODIMP CUserAccountControl::OnActivate()
 {
+	UpdateColumnInfo();
 	RETURN_IF_FAILED(m_pFollowStatusThreadService->Run());
 
 	CComVariant vBannerUrl;
