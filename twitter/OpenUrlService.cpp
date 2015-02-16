@@ -119,13 +119,16 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		}
 	}
 
-	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName)
+	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName ||
+		CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::RetweetedUserName)
 	{
-		CComVariant v;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserName, &v));
-		if (v.vt == VT_BSTR)
+		CComVariant vUserObject;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserObject, &vUserObject));
+		if (vUserObject.vt == VT_UNKNOWN)
 		{
-			strUrl = L"https://twitter.com/" + CString(v.bstrVal);
+			CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
+			ATLASSERT(pObj);
+			RETURN_IF_FAILED(OpenUserInfoForm(pObj));
 		}
 	}
 

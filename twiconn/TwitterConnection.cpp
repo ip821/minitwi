@@ -514,6 +514,11 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		auto idOriginal = retweetStatusObject[L"id_str"]->AsString();
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::OriginalId, &CComVariant(idOriginal.c_str())));
 		itemObject = retweetStatusObject;
+
+		CComPtr<IVariantObject> pRetwettedUserVariantObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pRetwettedUserVariantObject));
+		RETURN_IF_FAILED(ParseUser(retweetedUserObj, pRetwettedUserVariantObject));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserObject, &CComVariant(pRetwettedUserVariantObject)));
 	}
 
 	auto createdAt = itemObject[L"created_at"]->AsString();

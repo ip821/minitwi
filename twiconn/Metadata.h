@@ -33,6 +33,7 @@ namespace IP
 					const static CComBSTR CreatedAt(L"VAR_TWITTER_CREATED_AT");
 					const static CComBSTR RetweetedUserDisplayName(L"VAR_TWITTER_RETWEETED_USER_DISPLAY_NAME");
 					const static CComBSTR RetweetedUserName(L"VAR_TWITTER_RETWEETED_USER_NAME");
+					const static CComBSTR RetweetedUserObject(L"VAR_TWITTER_RETWEETED_USER_OBJECT");
 					const static CComBSTR InReplyToStatusId(L"VAR_TWITTER_IN_REPLYTO_STATUS_ID");
 					const static CComBSTR OriginalId(L"VAR_TWITTER_ORIGINAL_ID");
 				}

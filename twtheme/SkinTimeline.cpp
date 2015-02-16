@@ -428,7 +428,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, strRetweetedDisplayName);
 
 		CString strRetweetedName;
-		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, strRetweetedName);
+		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::RetweetedUserName, strRetweetedName);
 
 		CString strDisplayName;
 		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::DisplayName, strDisplayName);
@@ -465,21 +465,63 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		UINT uiIndex = 0;
 		if (!strRetweetedDisplayName.IsEmpty())
 		{
-			auto x = COL_NAME_LEFT;
-			auto y = PADDING_Y;
+			{
+				auto x = COL_NAME_LEFT;
+				auto y = PADDING_Y;
 
-			sizeRetweetedDislpayName = AddColumn(
-				hdc,
-				pColumnsInfo,
-				CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName),
-				L"Retweeted by " + strRetweetedDisplayName + L" @" + strRetweetedName,
-				strRetweetedDisplayName,
-				x,
-				y,
-				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
-				FALSE,
-				FALSE
-				);
+				sizeRetweetedDislpayName = AddColumn(
+					hdc,
+					pColumnsInfo,
+					CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName),
+					CString(L"Retweeted by "),
+					CString(L"Retweeted by "),
+					x,
+					y,
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+					FALSE,
+					FALSE
+					);
+			}
+
+			{
+				auto x = COL_NAME_LEFT + sizeRetweetedDislpayName.cx;
+				auto y = PADDING_Y;
+
+				CSize temp = AddColumn(
+					hdc,
+					pColumnsInfo,
+					CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName),
+					strRetweetedDisplayName,
+					strRetweetedName,
+					x,
+					y,
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+					TRUE,
+					FALSE
+					);
+
+				sizeRetweetedDislpayName.cx += temp.cx;
+			}
+
+			{
+				auto x = COL_NAME_LEFT + sizeRetweetedDislpayName.cx;
+				auto y = PADDING_Y;
+
+				CSize temp = AddColumn(
+					hdc,
+					pColumnsInfo,
+					CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserName),
+					L"@" + strRetweetedName,
+					strRetweetedName,
+					x,
+					y,
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+					TRUE,
+					FALSE
+					);
+
+				sizeRetweetedDislpayName.cx += temp.cx;
+			}
 		}
 
 		CSize sizeDislpayName;
