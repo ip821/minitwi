@@ -411,6 +411,16 @@ interface IUpdateService : IUnknown
 
 [
 	object,
+	uuid(68808476-F7A8-4F2A-9382-D74E9110D3D1),
+	pointer_default(unique)
+]
+interface IUpdateServiceEventSink : IUnknown
+{
+	HRESULT OnUpdateAvailable();
+};
+
+[
+	object,
 	uuid(EF814E3D-BAFD-48BF-8DAC-29CD2F238F64),
 	pointer_default(unique)
 ]

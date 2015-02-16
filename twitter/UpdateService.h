@@ -19,15 +19,20 @@ class ATL_NO_VTABLE CUpdateService :
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
 	public IDownloadServiceEventSink,
-	public IInitializeWithControlImpl
+	public IInitializeWithControlImpl,
+	public IConnectionPointContainerImpl<CUpdateService>,
+	public IConnectionPointImpl<CUpdateService, &__uuidof(IUpdateServiceEventSink)>
 {
 public:
 	CUpdateService()
 	{
 	}
 
-	DECLARE_REGISTRY_RESOURCEID(IDR_UPDATESERVICE)
+	DECLARE_NO_REGISTRY()
 
+	BEGIN_CONNECTION_POINT_MAP(CUpdateService)
+		CONNECTION_POINT_ENTRY(__uuidof(IUpdateServiceEventSink))
+	END_CONNECTION_POINT_MAP()
 
 	BEGIN_COM_MAP(CUpdateService)
 		COM_INTERFACE_ENTRY(IUpdateService)
@@ -35,6 +40,7 @@ public:
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
+		COM_INTERFACE_ENTRY(IConnectionPointContainer)
 	END_COM_MAP()
 
 private:
@@ -48,6 +54,7 @@ private:
 	boost::mutex m_mutex;
 
 	static CString GetInstalledVersionInternal();
+	HRESULT Fire_OnUpdateAvailable();
 
 public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);

@@ -161,6 +161,8 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 			}
 		}
 
+		Fire_OnUpdateAvailable();
+
 		return S_OK;
 	}
 	return S_OK;
@@ -201,4 +203,28 @@ STDMETHODIMP CUpdateService::GetInstalledVersion(BSTR* pbstrVersion)
 	CComBSTR bstrVersion(GetInstalledVersionInternal());
 	*pbstrVersion = bstrVersion.Detach();
 	return S_OK;
+}
+
+HRESULT CUpdateService::Fire_OnUpdateAvailable()
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CUpdateService* pThis = static_cast<CUpdateService*>(this);
+	int cConnections = m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		IUpdateServiceEventSink * pConnection = static_cast<IUpdateServiceEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnUpdateAvailable();
+		}
+	}
+	return hr;
 }

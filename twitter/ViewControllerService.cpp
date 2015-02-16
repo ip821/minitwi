@@ -48,6 +48,8 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThemeService, &pThemeService));
 	RETURN_IF_FAILED(pThemeService->ApplyThemeFromSettings());
 
+	RETURN_IF_FAILED(AtlAdvise(m_pUpdateService, pUnk, __uuidof(IUpdateServiceEventSink), &m_dwAdviceUpdateService));
+
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ThreadPoolService, &m_pThreadPoolService));
 	RETURN_IF_FAILED(m_pThreadPoolService->SetThreadCount(2));
 	RETURN_IF_FAILED(m_pThreadPoolService->Start());
@@ -66,6 +68,7 @@ STDMETHODIMP CViewControllerService::OnInitCompleted()
 STDMETHODIMP CViewControllerService::OnShutdown()
 {
 	RETURN_IF_FAILED(m_pMessageLoop->RemoveMessageFilter(this));
+	RETURN_IF_FAILED(AtlUnadvise(m_pUpdateService, __uuidof(IUpdateServiceEventSink), m_dwAdviceUpdateService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ITabbedControlEventSink), m_dwAdviceTabbedControl2));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
@@ -115,6 +118,21 @@ STDMETHODIMP CViewControllerService::StopAnimation()
 {
 	UINT uiRefs = 0;
 	RETURN_IF_FAILED(m_pTabbedControl->StopAnimation(&uiRefs));
+
+	RETURN_IF_FAILED(m_pUpdateService->IsUpdateAvailable(&m_bUpdateAvailable));
+
+	if (m_bUpdateAvailable && !uiRefs)
+	{
+		RETURN_IF_FAILED(m_pTabbedControl->ShowInfo(FALSE, TRUE, L"Update available. Click here to install."));
+		return S_OK;
+	}
+
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::OnUpdateAvailable()
+{
+	PostMessage(m_hControlWnd, WM_UPDATE_AVAILABLE, 0, 0);
 	return S_OK;
 }
 
@@ -178,6 +196,12 @@ STDMETHODIMP CViewControllerService::PreTranslateMessage(MSG *pMsg, BOOL *bResul
 {
 	HWND hWnd = 0;
 	RETURN_IF_FAILED(m_pControl->GetHWND(&hWnd));
+
+	if (pMsg->message == WM_UPDATE_AVAILABLE && pMsg->hwnd == m_hControlWnd)
+	{
+		RETURN_IF_FAILED(ShowInfo(S_OK, FALSE, FALSE, L""));
+	}
+
 	if (pMsg->message == WM_KEYDOWN && GetActiveWindow() == hWnd)
 	{
 		if (pMsg->wParam == VK_ESCAPE)

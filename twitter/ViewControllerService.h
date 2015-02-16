@@ -20,7 +20,8 @@ class ATL_NO_VTABLE CViewControllerService :
 	public IInitializeWithSettings,
 	public IInfoControlEventSink,
 	public ITabbedControlEventSink,
-	public IMsgFilter
+	public IMsgFilter,
+	public IUpdateServiceEventSink
 {
 public:
 	CViewControllerService()
@@ -38,6 +39,7 @@ public:
 		COM_INTERFACE_ENTRY(IInfoControlEventSink)
 		COM_INTERFACE_ENTRY(ITabbedControlEventSink)
 		COM_INTERFACE_ENTRY(IMsgFilter)
+		COM_INTERFACE_ENTRY(IUpdateServiceEventSink)
 	END_COM_MAP()
 
 private:
@@ -52,6 +54,7 @@ private:
 	BOOL m_bUpdateAvailable = FALSE;
 	DWORD m_dwAdviceTabbedControl = 0;
 	DWORD m_dwAdviceTabbedControl2 = 0;
+	DWORD m_dwAdviceUpdateService = 0;
 
 public:
 
@@ -76,6 +79,8 @@ public:
 	STDMETHOD(OnTabHeaderClick)(IControl* pControl);
 
 	STDMETHOD(PreTranslateMessage(MSG *pMsg, BOOL *bResult));
+
+	STDMETHOD(OnUpdateAvailable)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ViewControllerService), CViewControllerService)
