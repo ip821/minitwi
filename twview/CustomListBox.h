@@ -1,9 +1,10 @@
 #pragma once
 
+#include <atomic>
 #include "atlctrls.h"
 #include "twview_i.h"
 #include "AnimationTimerSupport.h"
-#include <atomic>
+#include "StaticListBox.h"
 
 using namespace std;
 using namespace IP;
@@ -28,6 +29,7 @@ struct NMITEMREMOVED
 
 class CCustomListBox :
 	public CWindowImpl<CCustomListBox, CListBox>,
+	public CStaticListBox<CCustomListBox>,
 	public COwnerDraw <CCustomListBox>,
 	public CAnimationTimerSupport<CCustomListBox>
 {
@@ -43,6 +45,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp);
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRMouseButtonUp);
 		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown);
+		CHAIN_MSG_MAP_ALT(CStaticListBox<CCustomListBox>, 1)
 		CHAIN_MSG_MAP_ALT(COwnerDraw<CCustomListBox>, 1)
 	END_MSG_MAP()
 
