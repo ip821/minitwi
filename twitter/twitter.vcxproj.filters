@@ -89,6 +89,9 @@
     <Filter Include="Services\UserTimelineService">
       <UniqueIdentifier>{40dff2ae-d8da-40e6-a784-22e8d8b3016c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\FollowStatusService">
+      <UniqueIdentifier>{861279f4-f8b0-43fa-8403-0d1ce20a37a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -201,6 +204,9 @@
     </ClCompile>
     <ClCompile Include="HomeTimelineControllerService.cpp">
       <Filter>Services\HomeTimelineService</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowStatusService.cpp">
+      <Filter>Services\FollowStatusService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -332,6 +338,9 @@
     </ClInclude>
     <ClInclude Include="HomeTimelineControllerService.h">
       <Filter>Services\HomeTimelineService</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowStatusService.h">
+      <Filter>Services\FollowStatusService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

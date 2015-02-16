@@ -25,11 +25,13 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_DownloadService, &m_pDownloadService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_WindowService, &m_pWindowService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pFollowThreadService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_STATUS_THREAD, &m_pFollowStatusThreadService));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &dw_mAdviceDownloadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pFollowThreadService, pUnk, __uuidof(IThreadServiceEventSink), &dw_mAdviceFollowService));
+	RETURN_IF_FAILED(AtlAdvise(m_pFollowStatusThreadService, pUnk, __uuidof(IThreadServiceEventSink), &dw_mAdviceFollowStatusService));
 
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
@@ -41,6 +43,7 @@ STDMETHODIMP CUserAccountControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), dw_mAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pFollowThreadService, __uuidof(IThreadServiceEventSink), dw_mAdviceFollowService));
+	RETURN_IF_FAILED(AtlUnadvise(m_pFollowStatusThreadService, __uuidof(IThreadServiceEventSink), dw_mAdviceFollowStatusService));
 
 	m_pTheme.Release();
 	m_pSkinCommonControl.Release();
@@ -52,6 +55,7 @@ STDMETHODIMP CUserAccountControl::OnShutdown()
 	m_pDownloadService.Release();
 	m_pWindowService.Release();
 	m_pFollowThreadService.Release();
+	m_pFollowStatusThreadService.Release();
 
 	return S_OK;
 }
@@ -178,6 +182,8 @@ void CUserAccountControl::UpdateRects()
 
 STDMETHODIMP CUserAccountControl::OnActivate()
 {
+	RETURN_IF_FAILED(m_pFollowStatusThreadService->Run());
+
 	CComVariant vBannerUrl;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl));
 	if (vBannerUrl.vt == VT_BSTR)
@@ -321,11 +327,23 @@ STDMETHODIMP CUserAccountControl::OnStart(IVariantObject *pResult)
 	m_bFollowButtonDisabled = TRUE;
 	UpdateColumnInfo();
 	Invalidate();
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &CComVariant(m_bFollowing)));
 	return S_OK;
 }
 
 STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
 {
+	CComVariant vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
+
+	if (FAILED(vHr.intVal))
+	{
+		return S_OK;
+	}
+
+	CComVariant vFollowing;
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &vFollowing));
+	m_bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
 	m_bFollowButtonDisabled = FALSE;
 	UpdateColumnInfo();
 	Invalidate();
@@ -345,6 +363,7 @@ STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 		if (bstrColumnName != Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
 			continue;
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, m_bFollowButtonDisabled));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_FOLLOWING, m_bFollowing));
 	}
 	return S_OK;
 }

@@ -57,6 +57,7 @@ namespace IP
 				const static CComBSTR VAR_IS_URL(L"VAR_IS_URL");
 				const static CComBSTR VAR_IS_IMAGE(L"VAR_IS_IMAGE");
 				const static CComBSTR VAR_IS_WORDWRAP(L"VAR_IS_WORDWRAP");
+				const static CComBSTR VAR_IS_FOLLOWING(L"VAR_IS_FOLLOWING");
 				const static CComBSTR VAR_ITEM_INDEX(L"VAR_ITEM_INDEX");
 			}
 

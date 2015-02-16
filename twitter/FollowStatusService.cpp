@@ -1,20 +1,20 @@
 #include "stdafx.h"
-#include "FollowService.h"
+#include "FollowStatusService.h"
 
-STDMETHODIMP CFollowService::OnInitialized(IServiceProvider* pServiceProvider)
+STDMETHODIMP CFollowStatusService::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
 	m_pServiceProvider = pServiceProvider;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pThreadService));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FOLLOW_STATUS_THREAD, &m_pThreadService));
 
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
 
 	return S_OK;
 }
 
-STDMETHODIMP CFollowService::OnShutdown()
+STDMETHODIMP CFollowStatusService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
 	m_pThreadService.Release();
@@ -29,7 +29,7 @@ STDMETHODIMP CFollowService::OnShutdown()
 	return S_OK;
 }
 
-STDMETHODIMP CFollowService::OnRun(IVariantObject *pResult)
+STDMETHODIMP CFollowStatusService::OnRun(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 
@@ -57,30 +57,18 @@ STDMETHODIMP CFollowService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
-	CComVariant vUserName;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
-	ATLASSERT(vUserName.vt == VT_BSTR);
+	CComVariant vUserNameTarget;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserNameTarget));
+	ATLASSERT(vUserNameTarget.vt == VT_BSTR);
 
-	CComVariant vFollowing;
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &vFollowing));
-
-	bool bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
-
-	if (bFollowing)
-	{
-		RETURN_IF_FAILED(pConnection->UnfollowUser(vUserName.bstrVal));
-	}
-	else
-	{
-		RETURN_IF_FAILED(pConnection->FollowUser(vUserName.bstrVal));
-	}
-
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &CComVariant(!bFollowing)));
+	BOOL bFollowing = FALSE;
+	RETURN_IF_FAILED(pConnection->GetFollowStatus(vUserNameTarget.bstrVal, &bFollowing));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &CComVariant(bFollowing != 0)));
 
 	return S_OK;
 }
 
-STDMETHODIMP CFollowService::SetVariantObject(IVariantObject *pVariantObject)
+STDMETHODIMP CFollowStatusService::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
 	boost::lock_guard<boost::mutex> lock(m_mutex);
@@ -88,7 +76,7 @@ STDMETHODIMP CFollowService::SetVariantObject(IVariantObject *pVariantObject)
 	return S_OK;
 }
 
-STDMETHODIMP CFollowService::Load(ISettings *pSettings)
+STDMETHODIMP CFollowStatusService::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	boost::lock_guard<boost::mutex> lock(m_mutex);

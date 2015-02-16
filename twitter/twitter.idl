@@ -199,6 +199,13 @@ library twitterLib
 		[default] interface IColumnsInfoItem;
 	};
 	[
+		uuid(951B8635-6514-485A-B31D-3C0293203B79)
+	]
+	coclass FollowStatusService
+	{
+		[default] interface IUnknown;
+	};
+	[
 		uuid(B03DDD69-58E8-4582-8908-504D7595B579)
 	]
 	coclass FollowService

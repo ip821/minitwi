@@ -50,8 +50,12 @@ namespace IP
 					const static CComBSTR FriendsCount(L"VAR_TWITTER_USER_FRIENDS_COUNT");
 					const static CComBSTR TweetsCount(L"VAR_TWITTER_USER_TWEETS_COUNT");
 					const static CComBSTR Description(L"VAR_TWITTER_USER_DESCRIPTION");
-					const static CComBSTR IsFollowingFlag(L"VAR_TWITTER_USER_ISFOLLOWING");
 					const static CComBSTR DisplayNameUserAccount(L"VAR_TWITTER_USER_DISPLAY_NAME_USER_ACCOUNT");
+				}
+
+				namespace FriendshipObject
+				{
+					const static CComBSTR IsFollowing(L"VAR_TWITTER_ISFOLLOWING");
 				}
 			}
 		}

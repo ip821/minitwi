@@ -44,6 +44,8 @@ int CTwitterStreamingConnection::SaveLastWebResponse(char*& data, size_t size)
 			{
 				auto& str = *it;
 				auto value = shared_ptr<JSONValue>(JSON::Parse(str));
+				if (value.get() == nullptr)
+					continue;
 				CComPtr<IVariantObject> pTweetObject;
 				ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pTweetObject));
 				auto valueObject = value->AsObject();

@@ -252,6 +252,7 @@
     </ClCompile>
     <ClCompile Include="ColumnsInfo.cpp" />
     <ClCompile Include="ColumnsInfoItem.cpp" />
+    <ClCompile Include="FollowStatusService.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="FollowService.cpp" />
     <ClCompile Include="HomeTimelineControllerService.cpp" />
@@ -341,6 +342,7 @@
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="ColumnsInfo.h" />
     <ClInclude Include="ColumnsInfoItem.h" />
+    <ClInclude Include="FollowStatusService.h" />
     <ClInclude Include="FollowService.h" />
     <ClInclude Include="HomeTimelineControllerService.h" />
     <ClInclude Include="HomeTimelineStreamingService.h" />

@@ -16,7 +16,13 @@ STDMETHODIMP CTabbedControlStatusService::OnInitialized(IServiceProvider *pServi
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ViewControllerService, &m_pViewControllerService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pThreadServiceFollow));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pThreadServiceFollowStatus));
 	
+	if (m_pThreadServiceFollowStatus)
+	{
+		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceFollowStatus, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceFollowStatus));
+	}
+
 	if (m_pThreadServiceShowMoreTimeline)
 	{
 		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceShowMoreTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMoreTimeline));
@@ -56,12 +62,18 @@ STDMETHODIMP CTabbedControlStatusService::OnShutdown()
 		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceFollow, __uuidof(IThreadServiceEventSink), m_dwAdviceFollow));
 	}
 
+	if (m_dwAdviceFollowStatus)
+	{
+		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceFollowStatus, __uuidof(IThreadServiceEventSink), m_dwAdviceFollowStatus));
+	}
+
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceUpdateTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceUpdateTimeline));
 	RETURN_IF_FAILED(StopAnimation());
 	m_pThreadServiceShowMoreTimeline.Release();
 	m_pThreadServiceUpdateTimeline.Release();
 	m_pViewControllerService.Release();
 	m_pThreadServiceFollow.Release();
+	m_pThreadServiceFollowStatus.Release();
 	return S_OK;
 }
 

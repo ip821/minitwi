@@ -185,6 +185,35 @@ STDMETHODIMP CTwitterConnection::GetListTweets(BSTR bstrListId, UINT uiCount, IO
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::GetFollowStatus(BSTR bstrTargetUserName, BOOL* pbFollowing)
+{
+	CHECK_E_POINTER(bstrTargetUserName);
+	CHECK_E_POINTER(pbFollowing);
+	USES_CONVERSION;
+
+	string userName = CW2A(bstrTargetUserName);
+	if (!m_pTwitObj->friendshipShow(userName))
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	CComPtr<IVariantObject> pVariantObjectSettings;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObjectSettings));
+	auto valueObject = value.get()->AsObject();
+	auto relationshipObject = valueObject[L"relationship"]->AsObject();
+	auto targetObject = relationshipObject[L"target"]->AsObject();
+	*pbFollowing = targetObject[L"followed_by"]->AsBool();
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::GetUserSettings(IVariantObject** ppVariantObject)
 {
 	CHECK_E_POINTER(ppVariantObject);
@@ -472,7 +501,6 @@ HRESULT CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pVarian
 	auto friendsCount = value[L"friends_count"]->AsNumber();
 	auto statusesCount = value[L"statuses_count"]->AsNumber();
 	auto description = value[L"description"]->AsString();
-	auto following = value[L"following"]->AsBool();
 	
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVariant(userDisplayName.c_str())));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVariant(userScreenName.c_str())));
@@ -483,7 +511,6 @@ HRESULT CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pVarian
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::FriendsCount, &CComVariant((int)friendsCount)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::TweetsCount, &CComVariant((int)statusesCount)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Description, &CComVariant(description.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::IsFollowingFlag, &CComVariant(following)));
 
 	if (value.find(L"profile_banner_url") != value.end())
 	{

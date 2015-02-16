@@ -23,6 +23,7 @@ interface ITwitterConnection : IUnknown
 	HRESULT GetLists(IObjArray** ppObjectArray);
 	HRESULT GetListTweets(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray);
 	HRESULT GetUserSettings(IVariantObject** ppVariantObject);
+	HRESULT GetFollowStatus(BSTR bstrTargetUserName, BOOL* pbFollowing);
 };
 
 [

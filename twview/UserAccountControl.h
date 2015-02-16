@@ -70,18 +70,21 @@ private:
 	CComPtr<IDownloadService> m_pDownloadService;
 	CComPtr<IWindowService> m_pWindowService;
 	CComPtr<IThreadService> m_pFollowThreadService;
+	CComPtr<IThreadService> m_pFollowStatusThreadService;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
 
 	DWORD dw_mAdviceDownloadService = 0;
 	DWORD dw_mAdviceFollowService = 0;
+	DWORD dw_mAdviceFollowStatusService = 0;
 	CComBSTR m_bstrBannerUrl;
 	CRect m_rectUserImage;
 	CRect m_rectFollowButton;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
 	BOOL m_bFollowButtonDisabled = FALSE;
+	bool m_bFollowing = FALSE;
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

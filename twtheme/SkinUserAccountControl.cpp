@@ -185,11 +185,8 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, Twitter::Connection::Metadata::UserObject::FriendsCount, L"Following: ");
 	bottom = DrawCounter(cdc, DISTANCE_DESCRIPTION_X, bottom, rect.Width(), pVariantObject, Twitter::Connection::Metadata::UserObject::TweetsCount, L"Tweets: ");
 
-	CComVariant vFollowing;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::IsFollowingFlag, &vFollowing));
-	auto bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
-
 	BOOL bFollowButtonDisabled = FALSE;
+	BOOL bFollowing = FALSE;
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
@@ -201,6 +198,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 		if (bstrColumnName != Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
 			continue;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &bFollowButtonDisabled));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &bFollowing));
 	}
 
 	HFONT hFontFollowButton = 0;
