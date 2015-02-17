@@ -44,7 +44,8 @@ public:
 	{
 		T* pT = static_cast<T*>(this);
 
-		UINT curSelIndex = pT->SendMessage(LB_GETCURSEL, 0, 0);
+		BOOL bHandled = FALSE;
+		UINT curSelIndex = OnGetCurSel(LB_GETCURSEL, 0, 0, bHandled);
 
 		switch (wParam)
 		{
@@ -118,7 +119,7 @@ public:
 		return OnItemFromPoint(LB_ITEMFROMPOINT, 0, 0, bHandled);
 	}
 
-	LRESULT OnSetTopIndex(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	void GetVirtualRect(int index, CRect& rectItem)
 	{
 		T* pT = static_cast<T*>(this);
 
@@ -131,18 +132,21 @@ public:
 		CRect rect;
 		for (size_t i = 0; i < uiCount; i++)
 		{
-			CRect rectItem;
 			rectItem.left = rect.left;
 			rectItem.right = rect.right;
 			rectItem.top = lTop;
 			rectItem.bottom = rectItem.top + m_items[i].height;
 
-			if (wParam == i)
-			{
-				SetScrollOffset(0, rectItem.top - m_ptOffset.y);
+			if (index == (int)i)
 				break;
-			}
 		}
+	}
+
+	LRESULT OnSetTopIndex(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		CRect rectItem;
+		GetVirtualRect(wParam, rectItem);
+		SetScrollOffset(0, rectItem.top - m_ptOffset.y);
 
 		return 0;
 	}
@@ -162,7 +166,7 @@ public:
 		for_each(m_items.begin(), m_items.end(), [&](Item& item){item.focused = false; });
 		m_items[wParam].focused = true;
 		T* pT = static_cast<T*>(this);
-		pT->Invalidate();
+		pT->Invalidate(); //TODO: invalidate only previous and current items
 		return 0;
 	}
 
@@ -300,18 +304,12 @@ public:
 		CPoint ptOffset;
 		GetScrollOffset(ptOffset);
 
-		LONG lTop = rect.top;
-		for (size_t i = 0; i < m_items.size(); i++)
-		{
-			if (i == mi.itemID)
-				break;
-
-			lTop += m_items[i].height;
-		}
+		CRect rectItemVirtual;
+		GetVirtualRect(mi.itemID, rectItemVirtual);
 
 		int yOffset = ptOffset.y;
 
-		if (lTop < ptOffset.y)
+		if (rectItemVirtual.top < ptOffset.y)
 			yOffset = ptOffset.y + m_items[wParam].height;
 
 		UpdateScroll(yOffset);
@@ -345,20 +343,15 @@ public:
 		CRect rectClient;
 		pT->GetClientRect(&rectClient);
 
-		LONG lTop = rectClient.top;
-		for (size_t i = 0; i < m_items.size(); i++)
-		{
-			if (i == wParam)
-				break;
-			lTop += m_items[i].height;
-		}
+		CRect rectItemVirtual;
+		GetVirtualRect(wParam, rectItemVirtual);
 
 		CPoint ptOffset;
 		GetScrollOffset(ptOffset);
 
 		int yOffset = ptOffset.y;
 
-		if (lTop < ptOffset.y)
+		if (rectItemVirtual.top < ptOffset.y)
 			yOffset = ptOffset.y + (lParam - m_items[wParam].height);
 
 		m_items[wParam].height = lParam;
