@@ -101,16 +101,10 @@ public:
 
 			if (wParam == i)
 			{
-				rect = rectItem;
+				SetScrollOffset(0, m_ptOffset.y - rectItem.top);
 				break;
 			}
 		}
-
-		CRect rectReal = rect;
-		rectReal.top -= m_ptOffset.y;
-		rectReal.bottom -= m_ptOffset.y;
-
-		ScrollToView(rectReal);
 
 		return 0;
 	}
@@ -276,7 +270,7 @@ public:
 		}
 
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
-		SetScrollSize(rect.Width(), height + 50);
+		SetScrollSize(rect.Width(), height + 50, true, false);
 	}
 
 	LRESULT OnSetItemHeight(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
