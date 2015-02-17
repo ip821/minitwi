@@ -34,9 +34,47 @@ public:
 		MESSAGE_HANDLER(LB_SETCURSEL, OnSetCurSel);
 		MESSAGE_HANDLER(LB_GETITEMRECT, OnGetItemRect);
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonDown)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
 			CHAIN_MSG_MAP(CScrollImpl<T>)
 			CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
 	END_MSG_MAP()
+
+	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		T* pT = static_cast<T*>(this);
+
+		UINT curSelIndex = pT->SendMessage(LB_GETCURSEL, 0, 0);
+
+		switch (wParam)
+		{
+		case VK_DOWN:
+			if (curSelIndex < m_items.size())
+				pT->SendMessage(LB_SETCURSEL, curSelIndex + 1, 0);
+			if (curSelIndex == LB_ERR)
+				pT->SendMessage(LB_SETCURSEL, 0, 0);
+			break;
+		case VK_UP:
+			if (curSelIndex > 0)
+				pT->SendMessage(LB_SETCURSEL, curSelIndex - 1, 0);
+			if (curSelIndex == LB_ERR)
+				pT->SendMessage(LB_SETCURSEL, 0, 0);
+			break;
+		case VK_HOME:
+			pT->SendMessage(WM_COMMAND, ID_SCROLL_TOP, 0);
+			break;
+		case VK_END:
+			pT->SendMessage(WM_COMMAND, ID_SCROLL_BOTTOM, 0);
+			break;
+		case VK_PRIOR:
+			pT->SendMessage(WM_COMMAND, ID_SCROLL_PAGE_UP, 0);
+			break;
+		case VK_NEXT:
+			pT->SendMessage(WM_COMMAND, ID_SCROLL_PAGE_DOWN, 0);
+			break;
+		}
+		return 0;
+	}
 
 	LRESULT OnLMouseButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
@@ -101,7 +139,7 @@ public:
 
 			if (wParam == i)
 			{
-				SetScrollOffset(0, m_ptOffset.y - rectItem.top);
+				SetScrollOffset(0, rectItem.top - m_ptOffset.y);
 				break;
 			}
 		}
