@@ -27,6 +27,8 @@ struct NMITEMREMOVED
 	IVariantObject* pVariantObject;
 };
 
+#define WINDOW_CLASS L"WTL_CCustomListBox"
+
 class CCustomListBox :
 	public CWindowImpl<CCustomListBox, CListBox>,
 	public CStaticListBox<CCustomListBox>,
@@ -34,7 +36,7 @@ class CCustomListBox :
 	public CAnimationTimerSupport<CCustomListBox>
 {
 public:
-	DECLARE_WND_CLASS(_T("WTL_CCustomListBox"))
+	DECLARE_WND_CLASS(WINDOW_CLASS)
 
 	BEGIN_MSG_MAP(CCustomListBox)
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
@@ -72,6 +74,8 @@ private:
 	void StartAnimation();
 
 public:
+	HWND Create(HWND hWndParent, ATL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL, DWORD dwStyle = 0, DWORD dwExStyle = 0, ATL::_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL);
+
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);

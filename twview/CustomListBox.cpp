@@ -14,6 +14,11 @@ CCustomListBox::CCustomListBox()
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pItems);
 }
 
+HWND CCustomListBox::Create(HWND hWndParent, ATL::_U_RECT rect, LPCTSTR szWindowName, DWORD dwStyle, DWORD dwExStyle, ATL::_U_MENUorID MenuOrID, LPVOID lpCreateParam)
+{
+	return CWindowImpl::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu, lpCreateParam);
+}
+
 LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	return 0;
@@ -182,7 +187,7 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	m_columnsInfo.insert(m_columnsInfo.begin() + index, pColumnsInfo);
 
 	SendMessage(LB_INSERTSTRING, index, 0);
-	
+
 	if (m_bEnableAnimation)
 	{
 		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, NULL, INVALID_COLUMN_INDEX));
@@ -471,7 +476,7 @@ void CALLBACK TimerCallback3(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, D
 void CCustomListBox::EndUpdate()
 {
 	--m_updateTefCount;
-	
+
 	if (m_updateTefCount)
 		return;
 
