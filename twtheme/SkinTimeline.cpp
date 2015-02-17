@@ -52,8 +52,6 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInf
 {
 	CDCHandle cdcReal = lpdis->lpdi->hDC;
 	CRect rect = lpdis->lpdi->rcItem;
-	CRgn rgn = CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
-	cdcReal.SelectClipRgn(rgn);
 
 	if (m_steps.find(lpdis->lpdi->itemID) == m_steps.end())
 	{

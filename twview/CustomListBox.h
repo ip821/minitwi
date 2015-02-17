@@ -37,7 +37,6 @@ public:
 	DECLARE_WND_CLASS(_T("WTL_CCustomListBox"))
 
 	BEGIN_MSG_MAP(CCustomListBox)
-		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
@@ -45,7 +44,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp);
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRMouseButtonUp);
 		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown);
-		CHAIN_MSG_MAP_ALT(CStaticListBox<CCustomListBox>, 1)
+		CHAIN_MSG_MAP(CStaticListBox<CCustomListBox>)
 		CHAIN_MSG_MAP_ALT(COwnerDraw<CCustomListBox>, 1)
 	END_MSG_MAP()
 
@@ -81,6 +80,7 @@ public:
 	LRESULT OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	void DoSize(int cx, int cy);
 
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);

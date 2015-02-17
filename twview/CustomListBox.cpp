@@ -80,17 +80,18 @@ void CCustomListBox::RefreshItem(UINT uiIndex)
 	//SetItemHeight(uiIndex, s.itemHeight);
 }
 
-LRESULT CCustomListBox::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+void CCustomListBox::DoSize(int cx, int cy)
 {
+	CStaticListBox::DoSize(cx, cy);
 	if (!m_hWnd)
-		return 0;
+		return;
 
 	auto itemCount = GetCount();
 	for (int i = 0; i < itemCount; i++)
 	{
 		RefreshItem(i);
 	}
-	return 0;
+	return;
 }
 
 void CCustomListBox::SetSkinTimeline(ISkinTimeline* pSkin)
@@ -179,7 +180,8 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	CComPtr<IColumnsInfo> pColumnsInfo;
 	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &pColumnsInfo));
 	m_columnsInfo.insert(m_columnsInfo.begin() + index, pColumnsInfo);
-	SendMessage(LB_INSERTSTRING, index, (LPARAM)1);
+
+	SendMessage(LB_INSERTSTRING, index, 0);
 	
 	if (m_bEnableAnimation)
 	{

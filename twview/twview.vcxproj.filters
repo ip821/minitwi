@@ -288,4 +288,9 @@
       <Filter>ZZZMisc</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Host\res\Twitter.ico">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

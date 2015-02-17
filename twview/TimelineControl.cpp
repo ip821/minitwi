@@ -67,6 +67,8 @@ STDMETHODIMP CTimelineControl::CreateEx(HWND hWndParent, HWND *hWnd)
 	CHECK_E_POINTER(hWnd);
 	m_hWnd = __super::Create(hWndParent);
 	*hWnd = m_hWnd;
+	m_listBox.Create(m_hWnd);
+	AdjustSizes();
 	return S_OK;
 }
 
@@ -101,13 +103,34 @@ STDMETHODIMP CTimelineControl::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM
 	return S_OK;
 }
 
-LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CTimelineControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	DlgResize_Init(false);
+	AdjustSizes();
+	return 0;
+}
+
+void CTimelineControl::AdjustSizes()
+{
+	CRect windowRect;
+	GetWindowRect(windowRect);
+	auto h1 = windowRect.Height(); h1;
+	CRect clientRect;
+	GetClientRect(&clientRect);
+	auto h2 = clientRect.Height(); h2;
+	::SetWindowPos(m_listBox.m_hWnd, 0, 0, 0, clientRect.Width(), clientRect.Height(), 0);
+}
+
+LRESULT CTimelineControl::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	m_listBox.SetFocus();
+	return 0;
+}
+
+LRESULT CTimelineControl::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
 	auto dwExStyle = GetWindowLong(GWL_EXSTYLE);
 	dwExStyle |= WS_EX_COMPOSITED;
 	SetWindowLong(GWL_EXSTYLE, dwExStyle);
-	m_listBox.SubclassWindow(GetDlgItem(IDC_LIST1));
 	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
 	m_pPluginSupport->InitializePlugins(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND);
 	CComQIPtr<IInitializeWithControl> pInit = m_pPluginSupport;
@@ -123,6 +146,7 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	m_pCommandSupport->SetMenu(m_popupMenu);
 	m_pCommandSupport->InstallCommands(m_pPluginSupport);
 	bHandled = FALSE;
+	AdjustSizes();
 	return 0;
 }
 

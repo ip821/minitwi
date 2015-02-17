@@ -426,6 +426,9 @@
     </Midl>
     <Midl Include="twview.idl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Host\res\Twitter.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -46,6 +46,7 @@
 #include <atlctrlw.h>
 #include <atlctrlx.h>
 #include <atlmisc.h>
+#include <atlscrl.h>
 #include <comdef.h>
 
 #include <gdiplus.h>
