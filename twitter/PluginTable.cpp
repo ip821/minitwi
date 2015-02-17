@@ -31,8 +31,8 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_STREAMING_THREAD, CLSID_ThreadService, L"Timeline streaming thread service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_HomeTimelineStreamingService, CLSID_HomeTimelineStreamingService, L"Timeline streaming service"));
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_CLENUP_TIMER, CLSID_TimerService, L"Timeline control items clenup timer service"));
-	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ShowMoreSupportService, CLSID_ShowMoreSupportService, L"Show more service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineLoadingService, CLSID_TimelineLoadingService, L"Timeline loading service"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ShowMoreSupportService, CLSID_ShowMoreSupportService, L"Show more service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE, CLSID_HomeTimelineService, L"Timeline service"));
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_THREAD, CLSID_ThreadService, L"Timeline queue thread service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOME_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_QUEUE, CLSID_TimelineQueueService, L"Timeline queue service"));
@@ -52,8 +52,8 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_UPDATEIMAGES_TIMER, CLSID_TimerService, L"Timer update images service for user info control"));
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_UPDATE_THREAD, CLSID_ThreadService, L"Timeline thread service for user info control"));
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_SHOWMORE_THREAD, CLSID_ThreadService, L"Timeline thread show more items service for user info control"));
-	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ShowMoreSupportService, CLSID_ShowMoreSupportService, L"Show more service for user info control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineLoadingService, CLSID_TimelineLoadingService, L"Timeline loading service for user info control"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ShowMoreSupportService, CLSID_ShowMoreSupportService, L"Show more service for user info control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE, CLSID_UserTimelineService, L"Timeline service for user info control"));
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_THREAD, CLSID_ThreadService, L"Timeline queue thread service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_QUEUE, CLSID_TimelineQueueService, L"Timeline queue service"));

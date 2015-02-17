@@ -6,7 +6,7 @@
 using namespace std;
 
 template <class T>
-class CStaticListBoxImpl : public CScrollImpl<T>
+class CStaticListBoxImpl : public CScrollImpl < T >
 {
 private:
 	struct Item
@@ -34,7 +34,8 @@ public:
 		MESSAGE_HANDLER(LB_SETCURSEL, OnSetCurSel);
 		MESSAGE_HANDLER(LB_GETITEMRECT, OnGetItemRect);
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonDown)
-		CHAIN_MSG_MAP(CScrollImpl<T>)
+			CHAIN_MSG_MAP(CScrollImpl<T>)
+			CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
 	END_MSG_MAP()
 
 	LRESULT OnLMouseButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -81,6 +82,36 @@ public:
 
 	LRESULT OnSetTopIndex(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
+		T* pT = static_cast<T*>(this);
+
+		CRect rectClient;
+		pT->GetClientRect(&rectClient);
+
+		UINT uiCount = m_items.size();
+		LONG lTop = rectClient.top;
+
+		CRect rect;
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CRect rectItem;
+			rectItem.left = rect.left;
+			rectItem.right = rect.right;
+			rectItem.top = lTop;
+			rectItem.bottom = rectItem.top + m_items[i].height;
+
+			if (wParam == i)
+			{
+				rect = rectItem;
+				break;
+			}
+		}
+
+		CRect rectReal = rect;
+		rectReal.top -= m_ptOffset.y;
+		rectReal.bottom -= m_ptOffset.y;
+
+		ScrollToView(rectReal);
+
 		return 0;
 	}
 
