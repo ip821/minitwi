@@ -174,20 +174,19 @@ public:
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		T* pT = static_cast<T*>(this);
-
-		CRect rect;
-		pT->GetClientRect(&rect);
-
 		PAINTSTRUCT ps = { 0 };
 		pT->BeginPaint(&ps);
-		OnPaintInternal(ps.hdc, CRect(rect));
+		OnPaintInternal(ps.hdc, CRect(ps.rcPaint));
 		pT->EndPaint(&ps);
 		return 0;
 	}
 
-	void OnPaintInternal(HDC hdc, CRect& rect)
+	void OnPaintInternal(HDC hdc, CRect& rectToPaint)
 	{
 		T* pT = static_cast<T*>(this);
+
+		CRect rect;
+		pT->GetClientRect(&rect);
 
 		CDCHandle dc(hdc);
 
@@ -204,16 +203,23 @@ public:
 			rectItem.top = lTop;
 			rectItem.bottom = rectItem.top + m_items[i].height;
 
-			DRAWITEMSTRUCT di = { 0 };
-			di.itemID = i;
-			di.rcItem = rectItem;
-			di.hDC = hdc;
+			CRect rectItemReal = rectItem;
+			rectItemReal.top -= m_ptOffset.y;
+			rectItemReal.bottom -= m_ptOffset.y;
 
-			if (m_items[i].focused)
-				di.itemState |= ODS_SELECTED;
+			CRect rectIntersect;
+			if (rectIntersect.IntersectRect(&rectItemReal, &rectToPaint))
+			{
+				DRAWITEMSTRUCT di = { 0 };
+				di.itemID = i;
+				di.rcItem = rectItem;
+				di.hDC = hdc;
 
-			pT->DrawItem(&di);
+				if (m_items[i].focused)
+					di.itemState |= ODS_SELECTED;
 
+				pT->DrawItem(&di);
+			}
 			lTop += rectItem.Height();
 		}
 		dc.SetViewportOrg(ptViewportOrg);
@@ -252,11 +258,29 @@ public:
 		pT->MeasureItem(&mi);
 
 		m_items[wParam].height = mi.itemHeight;
-		UpdateScroll();
+
+		CPoint ptOffset;
+		GetScrollOffset(ptOffset);
+
+		LONG lTop = rect.top;
+		for (size_t i = 0; i < m_items.size(); i++)
+		{
+			if (i == mi.itemID)
+				break;
+
+			lTop += m_items[i].height;
+		}
+
+		int yOffset = ptOffset.y;
+
+		if (lTop < ptOffset.y)
+			yOffset = ptOffset.y + m_items[wParam].height;
+
+		UpdateScroll(yOffset);
 		return 0;
 	}
 
-	void UpdateScroll()
+	void UpdateScroll(int yOffset = 0)
 	{
 		T* pT = static_cast<T*>(this);
 
@@ -270,15 +294,37 @@ public:
 		}
 
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
-		SetScrollSize(rect.Width(), height + 50, true, false);
+		SetScrollSize(rect.Width(), height + 50, true, yOffset);
 	}
 
 	LRESULT OnSetItemHeight(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		if (wParam >= m_items.size())
 			return 0;
+
+		T* pT = static_cast<T*>(this);
+
+		CRect rectClient;
+		pT->GetClientRect(&rectClient);
+
+		LONG lTop = rectClient.top;
+		for (size_t i = 0; i < m_items.size(); i++)
+		{
+			if (i == wParam)
+				break;
+			lTop += m_items[i].height;
+		}
+
+		CPoint ptOffset;
+		GetScrollOffset(ptOffset);
+
+		int yOffset = ptOffset.y;
+
+		if (lTop < ptOffset.y)
+			yOffset = ptOffset.y + (lParam - m_items[wParam].height);
+
 		m_items[wParam].height = lParam;
-		UpdateScroll();
+		UpdateScroll(yOffset);
 		return 0;
 	}
 };

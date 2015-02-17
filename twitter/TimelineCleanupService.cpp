@@ -49,7 +49,6 @@ STDMETHODIMP CTimelineCleanupService::OnTimer(ITimerService* pTimerService)
 	if (m_counter > MAX_MINUTES)
 	{ //cleanup
 		CUpdateScope updateScope(m_pTimelineControl);
-		CTopVisibleItemScope topVisibleItemScope(m_pTimelineControl);
 		UINT uiCount = 0;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItemsCount(&uiCount));
 		while (uiCount > MAX_ITEMS_COUNT)

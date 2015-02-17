@@ -40,7 +40,6 @@ STDMETHODIMP CTimelineRelativeTimeService::OnShutdown()
 STDMETHODIMP CTimelineRelativeTimeService::OnFinish(IVariantObject *pResult)
 {
 	CUpdateScope updateScope(m_pTimelineControl);
-	CTopVisibleItemScope topVisibleItemScope(m_pTimelineControl);
 
 	CComPtr<IObjArray> pAllItemsObjectArray;
 	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));

@@ -101,14 +101,6 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 				RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(insertIndex));
 			}
 		}
-		else
-		{
-			if (uiCurrentTopIndex)
-			{
-				uiCurrentTopIndex += uiCount;
-			}
-			RETURN_IF_FAILED(m_pTimelineControl->ScrollToItem(uiCurrentTopIndex));
-		}
 	}
 
 	return S_OK;

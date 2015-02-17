@@ -77,7 +77,6 @@ STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 	{
 		vector<IVariantObject*> v(ids.begin(), ids.end());
 		{
-			CTopVisibleItemScope topVisibleItemScope(m_pTimelineControl);
 			RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&v[0], v.size()));
 			RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&v[0], v.size()));
 		}
