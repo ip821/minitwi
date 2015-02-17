@@ -4,6 +4,7 @@
 #include "atlctrls.h"
 #include "twview_i.h"
 #include "AnimationTimerSupport.h"
+#include "StaticListBoxImpl.h"
 #include "StaticListBox.h"
 
 using namespace std;
@@ -30,8 +31,8 @@ struct NMITEMREMOVED
 #define WINDOW_CLASS L"WTL_CCustomListBox"
 
 class CCustomListBox :
-	public CWindowImpl<CCustomListBox, CListBox>,
-	public CStaticListBox<CCustomListBox>,
+	public CWindowImpl<CCustomListBox, CStaticListBox>,
+	public CStaticListBoxImpl<CCustomListBox>,
 	public COwnerDraw <CCustomListBox>,
 	public CAnimationTimerSupport<CCustomListBox>
 {
@@ -42,11 +43,11 @@ public:
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnLMouseDoubleClick);
-		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp);
-		MESSAGE_HANDLER(WM_RBUTTONUP, OnRMouseButtonUp);
-		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown);
-		CHAIN_MSG_MAP(CStaticListBox<CCustomListBox>)
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnLMouseDoubleClick)
+		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp)
+		MESSAGE_HANDLER(WM_RBUTTONUP, OnRMouseButtonUp)
+		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
+		CHAIN_MSG_MAP(CStaticListBoxImpl<CCustomListBox>)
 		CHAIN_MSG_MAP_ALT(COwnerDraw<CCustomListBox>, 1)
 	END_MSG_MAP()
 

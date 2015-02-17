@@ -87,7 +87,7 @@ void CCustomListBox::RefreshItem(UINT uiIndex)
 
 void CCustomListBox::DoSize(int cx, int cy)
 {
-	CStaticListBox::DoSize(cx, cy);
+	CStaticListBoxImpl::DoSize(cx, cy);
 	if (!m_hWnd)
 		return;
 
