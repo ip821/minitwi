@@ -50,10 +50,13 @@ public:
 		switch (wParam)
 		{
 		case VK_DOWN:
-			if (curSelIndex < m_items.size())
+			if (curSelIndex < m_items.size() - 1)
 				pT->SendMessage(LB_SETCURSEL, curSelIndex + 1, 0);
 			if (curSelIndex == LB_ERR)
-				pT->SendMessage(LB_SETCURSEL, 0, 0);
+			{
+				auto topIndex = pT->SendMessage(LB_GETTOPINDEX, 0, 0);
+				pT->SendMessage(LB_SETCURSEL, topIndex, 0);
+			}
 			break;
 		case VK_UP:
 			if (curSelIndex > 0)
@@ -119,6 +122,12 @@ public:
 		return OnItemFromPoint(LB_ITEMFROMPOINT, 0, 0, bHandled);
 	}
 
+	void GetRealRect(CRect& rectVirtual)
+	{
+		rectVirtual.top -= m_ptOffset.y;
+		rectVirtual.bottom -= m_ptOffset.y;
+	}
+
 	void GetVirtualRect(int index, CRect& rectItem)
 	{
 		T* pT = static_cast<T*>(this);
@@ -129,16 +138,17 @@ public:
 		UINT uiCount = m_items.size();
 		LONG lTop = rectClient.top;
 
-		CRect rect;
 		for (size_t i = 0; i < uiCount; i++)
 		{
-			rectItem.left = rect.left;
-			rectItem.right = rect.right;
+			rectItem.left = rectClient.left;
+			rectItem.right = rectClient.right;
 			rectItem.top = lTop;
-			rectItem.bottom = rectItem.top + m_items[i].height;
+			rectItem.bottom = rectItem.top + m_items[i].height - 1;
 
 			if (index == (int)i)
 				break;
+
+			lTop += m_items[i].height;
 		}
 	}
 
@@ -147,7 +157,6 @@ public:
 		CRect rectItem;
 		GetVirtualRect(wParam, rectItem);
 		SetScrollOffset(0, rectItem.top - m_ptOffset.y);
-
 		return 0;
 	}
 
@@ -163,36 +172,77 @@ public:
 
 	LRESULT OnSetCurSel(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		for_each(m_items.begin(), m_items.end(), [&](Item& item){item.focused = false; });
-		m_items[wParam].focused = true;
 		T* pT = static_cast<T*>(this);
-		pT->Invalidate(); //TODO: invalidate only previous and current items
+		auto curSelIndex = pT->SendMessage(LB_GETCURSEL, 0, 0);
+		for_each(m_items.begin(), m_items.end(), [&](Item& item){item.focused = false; });
+		if (curSelIndex != LB_ERR)
+			InvalidateItem(curSelIndex);
+
+		if (wParam == (WPARAM)LB_ERR)
+			return 0;
+
+		m_items[wParam].focused = true;
+
+		CRect rectItem;
+		GetVirtualRect(wParam, rectItem);
+		GetRealRect(rectItem);
+
+		CRect rectClient;
+		pT->GetClientRect(rectClient);
+
+		CRect rectIntersect;
+		rectIntersect.IntersectRect(&rectClient, &rectItem);
+
+		if (rectIntersect.Height() < rectItem.Height())
+		{
+			if (curSelIndex != (WPARAM)LB_ERR && wParam < (WPARAM)curSelIndex)
+			{
+				CPoint ptOffset;
+				GetScrollOffset(ptOffset);
+				GetVirtualRect(wParam, rectItem);
+				SetScrollOffset(ptOffset.x, rectItem.top);
+				return 0;
+			}
+
+			if (curSelIndex != (WPARAM)LB_ERR && wParam >(WPARAM)curSelIndex)
+			{
+				CPoint ptOffset;
+				GetScrollOffset(ptOffset);
+				GetVirtualRect(wParam, rectItem);
+				SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()));
+				return 0;
+			}
+		}
+
+		InvalidateItem(wParam);
 		return 0;
+	}
+
+	void InvalidateItem(int index)
+	{
+		T* pT = static_cast<T*>(this);
+		CRect rectItem;
+		GetVirtualRect(index, rectItem);
+		GetRealRect(rectItem);
+		
+		CRect rectClient;
+		pT->GetClientRect(rectClient);
+
+		CRect rectIntersection;
+		if (!rectIntersection.IntersectRect(&rectClient, &rectItem))
+			return;
+
+		pT->InvalidateRect(rectItem);
+		pT->UpdateWindow();
 	}
 
 	LRESULT OnGetItemRect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		T* pT = static_cast<T*>(this);
-
-		CRect rect;
-		GetClientRect(pT->m_hWnd, &rect);
-
 		LPRECT lpResultRect = (LPRECT)lParam;
-
-		CPoint pt(LOWORD(lParam), HIWORD(lParam));
-
-		auto yTop = -m_ptOffset.y;
-		for (size_t i = 0; i < m_items.size(); i++)
-		{
-			auto yBottom = yTop + m_items[i].height - 1;
-			if (wParam == i)
-			{
-				rect.top = yTop;
-				rect.bottom = yBottom;
-				*lpResultRect = rect;
-			}
-			yTop = yBottom + 1;
-		}
+		CRect rect = *lpResultRect;
+		GetVirtualRect(wParam, rect);
+		GetRealRect(rect);
+		*lpResultRect = rect;
 		return 0;
 	}
 
