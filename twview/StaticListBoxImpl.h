@@ -51,6 +51,58 @@ public:
 		return pT->m_hWnd;
 	}
 
+	void GetRealRect(CRect& rectVirtual)
+	{
+		rectVirtual.top -= m_ptOffset.y;
+		rectVirtual.bottom -= m_ptOffset.y;
+	}
+
+	void GetVirtualRect(int index, CRect& rectItem)
+	{
+		CRect rectClient;
+		GetClientRect(GetHWND(), &rectClient);
+
+		UINT uiCount = m_items.size();
+		LONG lTop = rectClient.top;
+
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			rectItem.left = rectClient.left;
+			rectItem.right = rectClient.right;
+			rectItem.top = lTop;
+			rectItem.bottom = rectItem.top + m_items[i].height - 1;
+
+			if (index == (int)i)
+				break;
+
+			lTop += m_items[i].height;
+		}
+	}
+
+	UINT ItemFromPoint(POINT pt, BOOL& bOutside)
+	{
+		ATLASSERT(::IsWindow(GetHWND()));
+		DWORD dw = (DWORD)::SendMessage(GetHWND(), LB_ITEMFROMPOINT, 0, MAKELPARAM(pt.x, pt.y));
+		bOutside = (BOOL)HIWORD(dw);
+		return (UINT)LOWORD(dw);
+	}
+
+	void InvalidateItem(int index)
+	{
+		CRect rectItem;
+		GetVirtualRect(index, rectItem);
+		GetRealRect(rectItem);
+
+		CRect rectClient;
+		GetClientRect(GetHWND(), &rectClient);
+
+		CRect rectIntersection;
+		if (!rectIntersection.IntersectRect(&rectClient, &rectItem))
+			return;
+
+		InvalidateRect(GetHWND(), rectItem, TRUE);
+	}
+
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		UINT curSelIndex = SendMessage(GetHWND(), LB_GETCURSEL, 0, 0);
@@ -88,14 +140,6 @@ public:
 		return 0;
 	}
 
-	UINT ItemFromPoint(POINT pt, BOOL& bOutside)
-	{
-		ATLASSERT(::IsWindow(GetHWND()));
-		DWORD dw = (DWORD)::SendMessage(GetHWND(), LB_ITEMFROMPOINT, 0, MAKELPARAM(pt.x, pt.y));
-		bOutside = (BOOL)HIWORD(dw);
-		return (UINT)LOWORD(dw);
-	}
-
 	LRESULT OnLMouseButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		auto x = GET_X_LPARAM(lParam);
@@ -131,34 +175,6 @@ public:
 	LRESULT OnGetTopIndex(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		return SendMessage(GetHWND(), LB_ITEMFROMPOINT, 0, 0);
-	}
-
-	void GetRealRect(CRect& rectVirtual)
-	{
-		rectVirtual.top -= m_ptOffset.y;
-		rectVirtual.bottom -= m_ptOffset.y;
-	}
-
-	void GetVirtualRect(int index, CRect& rectItem)
-	{
-		CRect rectClient;
-		GetClientRect(GetHWND(), &rectClient);
-
-		UINT uiCount = m_items.size();
-		LONG lTop = rectClient.top;
-
-		for (size_t i = 0; i < uiCount; i++)
-		{
-			rectItem.left = rectClient.left;
-			rectItem.right = rectClient.right;
-			rectItem.top = lTop;
-			rectItem.bottom = rectItem.top + m_items[i].height - 1;
-
-			if (index == (int)i)
-				break;
-
-			lTop += m_items[i].height;
-		}
 	}
 
 	LRESULT OnSetTopIndex(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -238,22 +254,6 @@ public:
 
 		InvalidateItem(wParam);
 		return 0;
-	}
-
-	void InvalidateItem(int index)
-	{
-		CRect rectItem;
-		GetVirtualRect(index, rectItem);
-		GetRealRect(rectItem);
-
-		CRect rectClient;
-		GetClientRect(GetHWND(), &rectClient);
-
-		CRect rectIntersection;
-		if (!rectIntersection.IntersectRect(&rectClient, &rectItem))
-			return;
-
-		InvalidateRect(GetHWND(), rectItem, TRUE);
 	}
 
 	LRESULT OnGetItemRect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
