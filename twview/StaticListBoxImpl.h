@@ -34,8 +34,8 @@ public:
 		MESSAGE_HANDLER(LB_SETCURSEL, OnSetCurSel);
 		MESSAGE_HANDLER(LB_GETITEMRECT, OnGetItemRect);
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonDown)
-		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
-		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
+			MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+			MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
 			CHAIN_MSG_MAP(CScrollImpl<T>)
 			CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
 	END_MSG_MAP()
@@ -65,10 +65,10 @@ public:
 				pT->SendMessage(LB_SETCURSEL, 0, 0);
 			break;
 		case VK_HOME:
-			pT->SendMessage(WM_COMMAND, ID_SCROLL_TOP, 0);
+			pT->SendMessage(LB_SETCURSEL, 0, 0);
 			break;
 		case VK_END:
-			pT->SendMessage(WM_COMMAND, ID_SCROLL_BOTTOM, 0);
+			pT->SendMessage(LB_SETCURSEL, m_items.size() - 1, 0);
 			break;
 		case VK_PRIOR:
 			pT->SendMessage(WM_COMMAND, ID_SCROLL_PAGE_UP, 0);
@@ -193,6 +193,15 @@ public:
 		CRect rectIntersect;
 		rectIntersect.IntersectRect(&rectClient, &rectItem);
 
+		if (rectIntersect.IsRectEmpty())
+		{
+			CPoint ptOffset;
+			GetScrollOffset(ptOffset);
+			GetVirtualRect(wParam, rectItem);
+			SetScrollOffset(ptOffset.x, rectItem.top);
+			return 0;
+		}
+
 		if (rectIntersect.Height() < rectItem.Height())
 		{
 			if (curSelIndex != (WPARAM)LB_ERR && wParam < (WPARAM)curSelIndex)
@@ -204,24 +213,13 @@ public:
 				return 0;
 			}
 
-			if (curSelIndex != (WPARAM)LB_ERR && wParam >(WPARAM)curSelIndex)
+			if (curSelIndex != (WPARAM)LB_ERR && wParam > (WPARAM)curSelIndex)
 			{
-				if (rectIntersect.IsRectEmpty())
-				{
-					CPoint ptOffset;
-					GetScrollOffset(ptOffset);
-					GetVirtualRect(wParam, rectItem);
-					SetScrollOffset(ptOffset.x, rectItem.top);
-					return 0;
-				}
-				else
-				{
-					CPoint ptOffset;
-					GetScrollOffset(ptOffset);
-					GetVirtualRect(wParam, rectItem);
-					SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()));
-					return 0;
-				}
+				CPoint ptOffset;
+				GetScrollOffset(ptOffset);
+				GetVirtualRect(wParam, rectItem);
+				SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()));
+				return 0;
 			}
 		}
 
@@ -235,7 +233,7 @@ public:
 		CRect rectItem;
 		GetVirtualRect(index, rectItem);
 		GetRealRect(rectItem);
-		
+
 		CRect rectClient;
 		pT->GetClientRect(rectClient);
 
