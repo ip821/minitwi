@@ -179,7 +179,12 @@ public:
 	{
 		T* pT = static_cast<T*>(this);
 		auto curSelIndex = pT->SendMessage(LB_GETCURSEL, 0, 0);
+
+		if ((WPARAM)curSelIndex == wParam)
+			return 0;
+
 		for_each(m_items.begin(), m_items.end(), [&](Item& item){item.focused = false; });
+
 		if (curSelIndex != LB_ERR)
 			InvalidateItem(curSelIndex);
 
@@ -223,7 +228,7 @@ public:
 				CPoint ptOffset;
 				GetScrollOffset(ptOffset);
 				GetVirtualRect(wParam, rectItem);
-				SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()));
+				SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()) + 2);
 				return 0;
 			}
 		}
