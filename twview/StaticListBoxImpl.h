@@ -45,44 +45,55 @@ public:
 		m_nWheelLines = 1;
 	}
 
-	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	HWND GetHWND()
 	{
 		T* pT = static_cast<T*>(this);
+		return pT->m_hWnd;
+	}
 
-		BOOL bHandled = FALSE;
-		UINT curSelIndex = OnGetCurSel(LB_GETCURSEL, 0, 0, bHandled);
+	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		UINT curSelIndex = SendMessage(GetHWND(), LB_GETCURSEL, 0, 0);
 
 		switch (wParam)
 		{
 		case VK_DOWN:
 			if (curSelIndex < m_items.size() - 1)
-				pT->SendMessage(LB_SETCURSEL, curSelIndex + 1, 0);
+				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex + 1, 0);
 			if (curSelIndex == LB_ERR)
 			{
-				auto topIndex = pT->SendMessage(LB_GETTOPINDEX, 0, 0);
-				pT->SendMessage(LB_SETCURSEL, topIndex, 0);
+				auto topIndex = SendMessage(GetHWND(), LB_GETTOPINDEX, 0, 0);
+				SendMessage(GetHWND(), LB_SETCURSEL, topIndex, 0);
 			}
 			break;
 		case VK_UP:
 			if (curSelIndex > 0)
-				pT->SendMessage(LB_SETCURSEL, curSelIndex - 1, 0);
+				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex - 1, 0);
 			if (curSelIndex == LB_ERR)
-				pT->SendMessage(LB_SETCURSEL, 0, 0);
+				SendMessage(GetHWND(), LB_SETCURSEL, 0, 0);
 			break;
 		case VK_HOME:
-			pT->SendMessage(LB_SETCURSEL, 0, 0);
+			SendMessage(GetHWND(), LB_SETCURSEL, 0, 0);
 			break;
 		case VK_END:
-			pT->SendMessage(LB_SETCURSEL, m_items.size() - 1, 0);
+			SendMessage(GetHWND(), LB_SETCURSEL, m_items.size() - 1, 0);
 			break;
 		case VK_PRIOR:
-			pT->SendMessage(WM_COMMAND, ID_SCROLL_PAGE_UP, 0);
+			SendMessage(GetHWND(), WM_COMMAND, ID_SCROLL_PAGE_UP, 0);
 			break;
 		case VK_NEXT:
-			pT->SendMessage(WM_COMMAND, ID_SCROLL_PAGE_DOWN, 0);
+			SendMessage(GetHWND(), WM_COMMAND, ID_SCROLL_PAGE_DOWN, 0);
 			break;
 		}
 		return 0;
+	}
+
+	UINT ItemFromPoint(POINT pt, BOOL& bOutside)
+	{
+		ATLASSERT(::IsWindow(GetHWND()));
+		DWORD dw = (DWORD)::SendMessage(GetHWND(), LB_ITEMFROMPOINT, 0, MAKELPARAM(pt.x, pt.y));
+		bOutside = (BOOL)HIWORD(dw);
+		return (UINT)LOWORD(dw);
 	}
 
 	LRESULT OnLMouseButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -90,23 +101,19 @@ public:
 		auto x = GET_X_LPARAM(lParam);
 		auto y = GET_Y_LPARAM(lParam);
 
-		T* pT = static_cast<T*>(this);
-
 		BOOL bOutside = FALSE;
-		auto uiItem = pT->ItemFromPoint(CPoint(x, y), bOutside);
+		auto uiItem = ItemFromPoint(CPoint(x, y), bOutside);
 		if (bOutside || uiItem == (UINT)INVALID_ITEM_INDEX)
 			return 0;
 
-		pT->SetCurSel(uiItem);
+		SendMessage(GetHWND(), LB_SETCURSEL, uiItem, 0);
 		return 0;
 	}
 
 	LRESULT OnItemFromPoint(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		T* pT = static_cast<T*>(this);
-
 		CRect rect;
-		GetClientRect(pT->m_hWnd, &rect);
+		GetClientRect(GetHWND(), &rect);
 
 		CPoint pt(LOWORD(lParam), HIWORD(lParam));
 
@@ -123,8 +130,7 @@ public:
 
 	LRESULT OnGetTopIndex(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		BOOL bHandled = FALSE;
-		return OnItemFromPoint(LB_ITEMFROMPOINT, 0, 0, bHandled);
+		return SendMessage(GetHWND(), LB_ITEMFROMPOINT, 0, 0);
 	}
 
 	void GetRealRect(CRect& rectVirtual)
@@ -135,10 +141,8 @@ public:
 
 	void GetVirtualRect(int index, CRect& rectItem)
 	{
-		T* pT = static_cast<T*>(this);
-
 		CRect rectClient;
-		pT->GetClientRect(&rectClient);
+		GetClientRect(GetHWND(), &rectClient);
 
 		UINT uiCount = m_items.size();
 		LONG lTop = rectClient.top;
@@ -177,8 +181,7 @@ public:
 
 	LRESULT OnSetCurSel(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		T* pT = static_cast<T*>(this);
-		auto curSelIndex = pT->SendMessage(LB_GETCURSEL, 0, 0);
+		auto curSelIndex = SendMessage(GetHWND(), LB_GETCURSEL, 0, 0);
 
 		if ((WPARAM)curSelIndex == wParam)
 			return 0;
@@ -198,7 +201,7 @@ public:
 		GetRealRect(rectItem);
 
 		CRect rectClient;
-		pT->GetClientRect(rectClient);
+		GetClientRect(GetHWND(), &rectClient);
 
 		CRect rectIntersect;
 		rectIntersect.IntersectRect(&rectClient, &rectItem);
@@ -239,20 +242,18 @@ public:
 
 	void InvalidateItem(int index)
 	{
-		T* pT = static_cast<T*>(this);
 		CRect rectItem;
 		GetVirtualRect(index, rectItem);
 		GetRealRect(rectItem);
 
 		CRect rectClient;
-		pT->GetClientRect(rectClient);
+		GetClientRect(GetHWND(), &rectClient);
 
 		CRect rectIntersection;
 		if (!rectIntersection.IntersectRect(&rectClient, &rectItem))
 			return;
 
-		pT->InvalidateRect(rectItem);
-		pT->UpdateWindow();
+		InvalidateRect(GetHWND(), rectItem, TRUE);
 	}
 
 	LRESULT OnGetItemRect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -268,27 +269,25 @@ public:
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		T* pT = static_cast<T*>(this);
-		ATLASSERT(::IsWindow(pT->m_hWnd));
+		ATLASSERT(::IsWindow(GetHWND()));
 		pT->DoSize(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
 	}
 
 	LRESULT OnPrintClient(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		T* pT = static_cast<T*>(this);
 		CRect rect;
-		pT->GetClientRect(&rect);
+		GetClientRect(GetHWND(), &rect);
 		OnPaintInternal((HDC)wParam, rect);
 		return 0;
 	}
 
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		T* pT = static_cast<T*>(this);
 		PAINTSTRUCT ps = { 0 };
-		pT->BeginPaint(&ps);
+		BeginPaint(GetHWND(), &ps);
 		OnPaintInternal(ps.hdc, CRect(ps.rcPaint));
-		pT->EndPaint(&ps);
+		EndPaint(GetHWND(), &ps);
 		return 0;
 	}
 
@@ -297,7 +296,7 @@ public:
 		T* pT = static_cast<T*>(this);
 
 		CRect rect;
-		pT->GetClientRect(&rect);
+		GetClientRect(GetHWND(), &rect);
 
 		CDCHandle dc(hdc);
 
@@ -361,7 +360,7 @@ public:
 		T* pT = static_cast<T*>(this);
 
 		CRect rect;
-		pT->GetClientRect(&rect);
+		GetClientRect(GetHWND(), &rect);
 
 		MEASUREITEMSTRUCT mi = { 0 };
 		mi.itemID = wParam;
@@ -387,10 +386,8 @@ public:
 
 	void UpdateScroll(int yOffset = 0)
 	{
-		T* pT = static_cast<T*>(this);
-
 		CRect rect;
-		pT->GetClientRect(&rect);
+		GetClientRect(GetHWND(), &rect);
 
 		auto height = 0;
 		for (size_t i = 0; i < m_items.size(); i++)
@@ -408,10 +405,8 @@ public:
 		if (wParam >= m_items.size())
 			return 0;
 
-		T* pT = static_cast<T*>(this);
-
 		CRect rectClient;
-		pT->GetClientRect(&rectClient);
+		GetClientRect(GetHWND(), &rectClient);
 
 		CRect rectItemVirtual;
 		GetVirtualRect(wParam, rectItemVirtual);

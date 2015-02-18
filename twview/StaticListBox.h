@@ -44,14 +44,6 @@ public:
 		::SendMessage(m_hWnd, LB_RESETCONTENT, 0, 0L);
 	}
 
-	UINT ItemFromPoint(POINT pt, BOOL& bOutside) const
-	{
-		ATLASSERT(::IsWindow(m_hWnd));
-		DWORD dw = (DWORD)::SendMessage(m_hWnd, LB_ITEMFROMPOINT, 0, MAKELPARAM(pt.x, pt.y));
-		bOutside = (BOOL)HIWORD(dw);
-		return (UINT)LOWORD(dw);
-	}
-
 	int GetItemRect(int nIndex, LPRECT lpRect) const
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
