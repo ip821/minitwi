@@ -82,17 +82,6 @@ STDMETHODIMP CTimelineControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 
 STDMETHODIMP CTimelineControl::OnBeforeCommandInvoke(REFGUID guidCommand, ICommand* pCommand)
 {
-	CComQIPtr<IInitializeWithVariantObject> pInit = pCommand;
-	if (pInit)
-	{
-		CComPtr<IVariantObject> pVariantObject;
-		auto selectedIndex = m_listBox.GetCurSel();
-		CComPtr<IObjArray> pObjArray;
-		RETURN_IF_FAILED(m_listBox.GetItems(&pObjArray));
-		pObjArray->GetAt(selectedIndex, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
-		RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObject));
-	}
-
 	return S_OK;
 }
 
@@ -267,23 +256,21 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 {
 	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);
 
-	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
-	if (pInitializeWithVariantObject)
-	{
-		ASSERT_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pNm->pVariantObject));
-	}
+	CComPtr<IVariantObject> pVariantObject;
+	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+	ASSERT_IF_FAILED(pNm->pVariantObject->CopyTo(pVariantObject));
 
 	if (pNm->dwCurrentColumn != INVALID_COLUMN_INDEX)
 	{
-		CComQIPtr<IInitializeWithColumnName> pInitializeWithColumnName = m_pCommandSupport;
-		if (pInitializeWithColumnName)
-		{
-			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-			ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
-			CComBSTR bstrColumnName;
-			pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName);
-			ASSERT_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
-		}
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
+		ASSERT_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Table::Column::Object, &CComVariant(pColumnsInfoItem)));
+	}
+
+	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
+	if (pInitializeWithVariantObject)
+	{
+		ASSERT_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pVariantObject));
 	}
 
 	CComQIPtr<IIdleHandler> pIdleHandler = m_pCommandSupport;
