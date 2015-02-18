@@ -206,11 +206,22 @@ public:
 
 			if (curSelIndex != (WPARAM)LB_ERR && wParam >(WPARAM)curSelIndex)
 			{
-				CPoint ptOffset;
-				GetScrollOffset(ptOffset);
-				GetVirtualRect(wParam, rectItem);
-				SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()));
-				return 0;
+				if (rectIntersect.IsRectEmpty())
+				{
+					CPoint ptOffset;
+					GetScrollOffset(ptOffset);
+					GetVirtualRect(wParam, rectItem);
+					SetScrollOffset(ptOffset.x, rectItem.top);
+					return 0;
+				}
+				else
+				{
+					CPoint ptOffset;
+					GetScrollOffset(ptOffset);
+					GetVirtualRect(wParam, rectItem);
+					SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()));
+					return 0;
+				}
 			}
 		}
 
@@ -380,7 +391,7 @@ public:
 		}
 
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
-		SetScrollSize(rect.Width(), height + 50, true, yOffset);
+		SetScrollSize(1, height + 50, true, yOffset);
 	}
 
 	LRESULT OnSetItemHeight(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
