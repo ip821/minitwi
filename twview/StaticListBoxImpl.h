@@ -40,6 +40,11 @@ public:
 			CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
 	END_MSG_MAP()
 
+	CStaticListBoxImpl()
+	{
+		m_nWheelLines = 1;
+	}
+
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		T* pT = static_cast<T*>(this);
@@ -390,6 +395,7 @@ public:
 
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
 		SetScrollSize(1, height + 50, true, yOffset);
+		SetScrollLine(1, 40);
 	}
 
 	LRESULT OnSetItemHeight(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
