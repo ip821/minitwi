@@ -5,8 +5,8 @@
 
 using namespace std;
 
-#define ONSETCURSEL_OPTION_KEEP_SELECTION 0
-#define ONSETCURSEL_OPTION_NONE 1
+#define ONSETCURSEL_OPTION_NONE 0
+#define ONSETCURSEL_OPTION_KEEP_SCROLLPOS 1
 
 template <class T>
 class CStaticListBoxImpl : public CScrollImpl < T >
@@ -39,6 +39,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonDown)
 			MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 			MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
+			MESSAGE_HANDLER(WM_SETLISTBOX_SCROLL_MODE, OnSetScrollMode)
 			CHAIN_MSG_MAP(CScrollImpl<T>)
 			CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
 	END_MSG_MAP()
@@ -106,6 +107,11 @@ public:
 		InvalidateRect(GetHWND(), rectItem, TRUE);
 	}
 
+	LRESULT OnSetScrollMode(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		return 0;
+	}
+
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		UINT curSelIndex = SendMessage(GetHWND(), LB_GETCURSEL, 0, 0);
@@ -153,7 +159,7 @@ public:
 		if (bOutside || uiItem == (UINT)INVALID_ITEM_INDEX)
 			return 0;
 
-		SendMessage(GetHWND(), LB_SETCURSEL, uiItem, ONSETCURSEL_OPTION_KEEP_SELECTION);
+		SendMessage(GetHWND(), LB_SETCURSEL, uiItem, ONSETCURSEL_OPTION_KEEP_SCROLLPOS);
 		return 0;
 	}
 
@@ -249,7 +255,7 @@ public:
 				}
 			}
 
-			if (curSelIndex != (WPARAM)LB_ERR && wParam >(WPARAM)curSelIndex && rectIntersect.Height() < rectItem.Height())
+			if (curSelIndex != (WPARAM)LB_ERR && wParam > (WPARAM)curSelIndex && rectIntersect.Height() < rectItem.Height())
 			{
 				CRect rectCurSel;
 				GetVirtualRect(curSelIndex, rectCurSel);
@@ -258,15 +264,15 @@ public:
 				CRect rectCurSelIntersect;
 				rectCurSelIntersect.IntersectRect(&rectCurSel, &rectClient);
 
-				if (rectCurSelIntersect.Height() < m_items[curSelIndex].height)
+				if (rectCurSelIntersect.Height() < m_items[curSelIndex].height && !rectCurSelIntersect.IsRectEmpty())
 				{
 					GetVirtualRect(curSelIndex, rectCurSel);
 					CPoint ptOffset;
 					GetScrollOffset(ptOffset);
 					GetVirtualRect(wParam, rectItem);
 					SetScrollOffset(ptOffset.x, ptOffset.y + rectItem.Height() + (rectCurSel.Height() - rectCurSelIntersect.Height()) + 2);
+					return 0;
 				}
-				return 0;
 			}
 
 			if (rectIntersect.IsRectEmpty())
