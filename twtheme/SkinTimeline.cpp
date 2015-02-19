@@ -13,7 +13,6 @@
 #define PADDING_Y 7
 #define ITEM_SPACING 10
 #define ITEM_DELIMITER_HEIGHT 1
-#define MAX_ITEM_HEIGHT 255
 #define IMAGE_WIDTH_MAX 275
 
 CSkinTimeline::CSkinTimeline()
@@ -52,8 +51,6 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInf
 {
 	CDCHandle cdcReal = lpdis->lpdi->hDC;
 	CRect rect = lpdis->lpdi->rcItem;
-	CRgn rgn = CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
-	cdcReal.SelectClipRgn(rgn);
 
 	if (m_steps.find(lpdis->lpdi->itemID) == m_steps.end())
 	{
@@ -456,6 +453,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + 48, y + 48)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::UserObject::Image));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, CComBSTR(strImageUrl)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, CComBSTR(strImageUrl)));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
 			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
@@ -466,22 +464,22 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		if (!strRetweetedDisplayName.IsEmpty())
 		{
 			{
-				auto x = COL_NAME_LEFT;
-				auto y = PADDING_Y;
+			auto x = COL_NAME_LEFT;
+			auto y = PADDING_Y;
 
-				sizeRetweetedDislpayName = AddColumn(
-					hdc,
-					pColumnsInfo,
-					CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName),
+			sizeRetweetedDislpayName = AddColumn(
+				hdc,
+				pColumnsInfo,
+				CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName),
 					CString(L"Retweeted by "),
 					CString(L"Retweeted by "),
-					x,
-					y,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
-					FALSE,
-					FALSE
-					);
-			}
+				x,
+				y,
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
+				FALSE,
+				FALSE
+				);
+		}
 
 			{
 				auto x = COL_NAME_LEFT + sizeRetweetedDislpayName.cx;
@@ -495,7 +493,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 					strRetweetedName,
 					x,
 					y,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
 					TRUE,
 					FALSE
 					);
@@ -543,7 +541,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				strDisplayName,
 				x,
 				y,
-				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT)
+				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height())
 				);
 		}
 
@@ -565,7 +563,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				strName,
 				x,
 				y,
-				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT)
+				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height())
 				);
 		}
 
@@ -592,7 +590,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 					strCreatedAt,
 					x,
 					y,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
 					TRUE,
 					FALSE,
 					30,
@@ -621,7 +619,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				strText,
 				x,
 				y,
-				CSize((clientRect.right - clientRect.left - COLUMN_X_SPACING * 2) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+				CSize((clientRect.right - clientRect.left - COLUMN_X_SPACING * 2) - COL_NAME_LEFT, clientRect.Height()),
 				FALSE,
 				TRUE,
 				0,
@@ -693,7 +691,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 					CString(bstrUrl),
 					x,
 					lastY,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
 					TRUE,
 					FALSE,
 					0,
@@ -737,7 +735,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 					const UINT oneImageWidthMax = (totalImageWidth / processCount);
 					auto xOffset = (clientRect.Width() - totalImageWidth) / 2;
 
-					UINT maxPossibleHeight = min(TIMELINE_IMAGE_HEIGHT, MAX_ITEM_HEIGHT - lastY - ITEM_SPACING);
+					UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
 					UINT lastHeight = 0;
 					for (size_t i = 0; i < processCount; i++)
 					{
@@ -779,7 +777,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			}
 		}
 
-		lpMeasureItemStruct->itemHeight = min(MAX_ITEM_HEIGHT, max(48 + PADDING_Y * 2 + PADDING_Y * 2, lastY + ITEM_SPACING));
+		lpMeasureItemStruct->itemHeight = max(48 + PADDING_Y * 2 + PADDING_Y * 2, lastY + ITEM_SPACING);
 		lpMeasureItemStruct->itemWidth = sizeText.cx;
 	}
 	return S_OK;

@@ -67,6 +67,8 @@ STDMETHODIMP CTimelineControl::CreateEx(HWND hWndParent, HWND *hWnd)
 	CHECK_E_POINTER(hWnd);
 	m_hWnd = __super::Create(hWndParent);
 	*hWnd = m_hWnd;
+	m_listBox.Create(m_hWnd);
+	AdjustSizes();
 	return S_OK;
 }
 
@@ -80,17 +82,6 @@ STDMETHODIMP CTimelineControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 
 STDMETHODIMP CTimelineControl::OnBeforeCommandInvoke(REFGUID guidCommand, ICommand* pCommand)
 {
-	CComQIPtr<IInitializeWithVariantObject> pInit = pCommand;
-	if (pInit)
-	{
-		CComPtr<IVariantObject> pVariantObject;
-		auto selectedIndex = m_listBox.GetCurSel();
-		CComPtr<IObjArray> pObjArray;
-		RETURN_IF_FAILED(m_listBox.GetItems(&pObjArray));
-		pObjArray->GetAt(selectedIndex, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
-		RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObject));
-	}
-
 	return S_OK;
 }
 
@@ -101,13 +92,34 @@ STDMETHODIMP CTimelineControl::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM
 	return S_OK;
 }
 
-LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CTimelineControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	DlgResize_Init(false);
+	AdjustSizes();
+	return 0;
+}
+
+void CTimelineControl::AdjustSizes()
+{
+	CRect windowRect;
+	GetWindowRect(windowRect);
+	auto h1 = windowRect.Height(); h1;
+	CRect clientRect;
+	GetClientRect(&clientRect);
+	auto h2 = clientRect.Height(); h2;
+	::SetWindowPos(m_listBox.m_hWnd, 0, 0, 0, clientRect.Width(), clientRect.Height(), 0);
+}
+
+LRESULT CTimelineControl::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	m_listBox.SetFocus();
+	return 0;
+}
+
+LRESULT CTimelineControl::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
 	auto dwExStyle = GetWindowLong(GWL_EXSTYLE);
 	dwExStyle |= WS_EX_COMPOSITED;
 	SetWindowLong(GWL_EXSTYLE, dwExStyle);
-	m_listBox.SubclassWindow(GetDlgItem(IDC_LIST1));
 	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
 	m_pPluginSupport->InitializePlugins(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND);
 	CComQIPtr<IInitializeWithControl> pInit = m_pPluginSupport;
@@ -123,6 +135,7 @@ LRESULT CTimelineControl::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	m_pCommandSupport->SetMenu(m_popupMenu);
 	m_pCommandSupport->InstallCommands(m_pPluginSupport);
 	bHandled = FALSE;
+	AdjustSizes();
 	return 0;
 }
 
@@ -243,23 +256,21 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 {
 	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);
 
-	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
-	if (pInitializeWithVariantObject)
-	{
-		ASSERT_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pNm->pVariantObject));
-	}
+	CComPtr<IVariantObject> pVariantObject;
+	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+	ASSERT_IF_FAILED(pNm->pVariantObject->CopyTo(pVariantObject));
 
 	if (pNm->dwCurrentColumn != INVALID_COLUMN_INDEX)
 	{
-		CComQIPtr<IInitializeWithColumnName> pInitializeWithColumnName = m_pCommandSupport;
-		if (pInitializeWithColumnName)
-		{
-			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-			ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
-			CComBSTR bstrColumnName;
-			pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName);
-			ASSERT_IF_FAILED(pInitializeWithColumnName->SetColumnName(bstrColumnName));
-		}
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
+		ASSERT_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Table::Column::Object, &CComVariant(pColumnsInfoItem)));
+	}
+
+	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
+	if (pInitializeWithVariantObject)
+	{
+		ASSERT_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pVariantObject));
 	}
 
 	CComQIPtr<IIdleHandler> pIdleHandler = m_pCommandSupport;

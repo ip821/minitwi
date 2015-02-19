@@ -36,22 +36,3 @@ public:
 private:
 	IDownloadService* m_pDownloadService;
 };
-
-class CTopVisibleItemScope
-{
-public:
-	CTopVisibleItemScope(ITimelineControl* pTimelineControl)
-	{
-		m_pTimelineControl = pTimelineControl;
-		m_pTimelineControl->GetTopVisibleItemIndex(&m_uiTopVisibleIndex);
-	}
-
-	~CTopVisibleItemScope()
-	{
-		m_pTimelineControl->ScrollToItem(m_uiTopVisibleIndex);
-	}
-
-private:
-	UINT m_uiTopVisibleIndex = 0;
-	ITimelineControl* m_pTimelineControl;
-};

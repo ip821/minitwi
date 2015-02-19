@@ -1,9 +1,11 @@
 #pragma once
 
+#include <atomic>
 #include "atlctrls.h"
 #include "twview_i.h"
 #include "AnimationTimerSupport.h"
-#include <atomic>
+#include "StaticListBoxImpl.h"
+#include "StaticListBox.h"
 
 using namespace std;
 using namespace IP;
@@ -26,23 +28,26 @@ struct NMITEMREMOVED
 	IVariantObject* pVariantObject;
 };
 
+#define WINDOW_CLASS L"WTL_CCustomListBox"
+
 class CCustomListBox :
-	public CWindowImpl<CCustomListBox, CListBox>,
+	public CWindowImpl<CCustomListBox, CStaticListBox>,
+	public CStaticListBoxImpl<CCustomListBox>,
 	public COwnerDraw <CCustomListBox>,
 	public CAnimationTimerSupport<CCustomListBox>
 {
 public:
-	DECLARE_WND_CLASS(_T("WTL_CCustomListBox"))
+	DECLARE_WND_CLASS(WINDOW_CLASS)
 
 	BEGIN_MSG_MAP(CCustomListBox)
-		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnLMouseDoubleClick);
-		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp);
-		MESSAGE_HANDLER(WM_RBUTTONUP, OnRMouseButtonUp);
-		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown);
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnLMouseDoubleClick)
+		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonUp)
+		MESSAGE_HANDLER(WM_RBUTTONUP, OnRMouseButtonUp)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+		CHAIN_MSG_MAP(CStaticListBoxImpl<CCustomListBox>)
 		CHAIN_MSG_MAP_ALT(COwnerDraw<CCustomListBox>, 1)
 	END_MSG_MAP()
 
@@ -70,6 +75,8 @@ private:
 	void StartAnimation();
 
 public:
+	HWND Create(HWND hWndParent, ATL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL, DWORD dwStyle = 0, DWORD dwExStyle = 0, ATL::_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL);
+
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
@@ -78,6 +85,7 @@ public:
 	LRESULT OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	void DoSize(int cx, int cy);
 
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);

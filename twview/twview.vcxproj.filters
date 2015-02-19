@@ -252,6 +252,12 @@
     <ClInclude Include="viewmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="StaticListBoxImpl.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticListBox.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twview.rc">
@@ -284,5 +290,10 @@
     <Text Include="ReadMe.txt">
       <Filter>ZZZMisc</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Host\res\Twitter.ico">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -12,13 +12,12 @@ using namespace ATL;
 // CTimelineControl
 
 class ATL_NO_VTABLE CTimelineControl :
+	public CWindowImpl<CTimelineControl>,
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CTimelineControl, &CLSID_TimelineControl>,
 	public ITimelineControl,
 	public IContainerControl,
 	public IMsgHandler,
-	public CAxDialogImpl<CTimelineControl>,
-	public CDialogResize<CTimelineControl>,
 	public IInitializeWithControlImpl,
 	public IPluginSupportNotifications,
 	public ICommandSupportEventSink,
@@ -27,8 +26,6 @@ class ATL_NO_VTABLE CTimelineControl :
 	public IConnectionPointImpl<CTimelineControl, &__uuidof(ITimelineControlEventSink)>
 {
 public:
-	enum { IDD = IDD_TIMELINECONTROL };
-
 	CTimelineControl()
 	{
 	}
@@ -51,26 +48,23 @@ public:
 		CONNECTION_POINT_ENTRY(__uuidof(ITimelineControlEventSink))
 	END_CONNECTION_POINT_MAP()
 	
-	BEGIN_DLGRESIZE_MAP(CTimelineControl)
-		DLGRESIZE_CONTROL(IDC_LIST1, DLSZ_SIZE_X | DLSZ_SIZE_Y)
-	END_DLGRESIZE_MAP()
-
 	BEGIN_MSG_MAP(CTimelineControl)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
-		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_LCLICK, OnColumnClick)
-		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_LDOUBLECLICK, OnItemDoubleClick)
-		NOTIFY_HANDLER(IDC_LIST1, NM_LISTBOX_RCLICK, OnColumnRClick)
-		NOTIFY_HANDLER(IDC_LIST1, NM_ITEM_REMOVED, OnItemRemove)
+		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+		NOTIFY_CODE_HANDLER(NM_LISTBOX_LCLICK, OnColumnClick)
+		NOTIFY_CODE_HANDLER(NM_LISTBOX_LDOUBLECLICK, OnItemDoubleClick)
+		NOTIFY_CODE_HANDLER(NM_LISTBOX_RCLICK, OnColumnRClick)
+		NOTIFY_CODE_HANDLER(NM_ITEM_REMOVED, OnItemRemove)
 		REFLECT_NOTIFICATIONS()
-		CHAIN_MSG_MAP(CDialogResize<CTimelineControl>)
-		CHAIN_MSG_MAP(CAxDialogImpl<CTimelineControl>)
 	END_MSG_MAP()
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 
 	HRESULT FinalConstruct();
 	void FinalRelease();
+	void AdjustSizes();
 
 private:
 	CCustomListBox m_listBox;
@@ -82,12 +76,14 @@ private:
 
 	CMenu m_popupMenu;
 
-	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnColumnClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnColumnRClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnItemDoubleClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnItemRemove(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	HRESULT Fire_OnItemRemoved(IVariantObject *pItemObject);
 	HRESULT Fire_OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject);

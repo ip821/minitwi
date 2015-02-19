@@ -16,6 +16,32 @@ STDMETHODIMP CTimelineControlCopyCommand::OnShutdown()
 	return S_OK;
 }
 
+STDMETHODIMP CTimelineControlCopyCommand::GetEnabled(REFGUID guidCommand, BOOL *pbEnabled)
+{
+	CHECK_E_POINTER(pbEnabled);
+	if (IsEqualGUID(guidCommand, COMMAND_COPY_IMAGE_URL))
+	{
+		*pbEnabled = FALSE;
+		CComVariant vColumnObject;
+		ASSERT_IF_FAILED(m_pVariantObject->GetVariantValue(ObjectModel::Metadata::Table::Column::Object, &vColumnObject));
+		if (vColumnObject.vt == VT_UNKNOWN)
+		{
+			CComQIPtr<IColumnsInfoItem> pColumnsInfoItem = vColumnObject.punkVal;
+			ATLASSERT(pColumnsInfoItem);
+			CComBSTR bstrColumnName;
+			pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName);
+			*pbEnabled =
+				bstrColumnName == Twitter::Connection::Metadata::TweetObject::Image ||
+				bstrColumnName == Twitter::Connection::Metadata::UserObject::Image;
+		}
+	}
+	else
+	{
+		*pbEnabled = TRUE;
+	}
+	return S_OK;
+}
+
 STDMETHODIMP CTimelineControlCopyCommand::GetCommandText(REFGUID guidCommand, BSTR* bstrText)
 {
 	UNREFERENCED_PARAMETER(guidCommand);
@@ -24,6 +50,8 @@ STDMETHODIMP CTimelineControlCopyCommand::GetCommandText(REFGUID guidCommand, BS
 		*bstrText = CComBSTR(L"Copy\tCtrl+C").Detach();
 	else if (guidCommand == COMMAND_COPY_URL)
 		*bstrText = CComBSTR(L"Copy link\tCtrl+Shift+C").Detach();
+	else if (guidCommand == COMMAND_COPY_IMAGE_URL)
+		*bstrText = CComBSTR(L"Copy image link").Detach();
 	return S_OK;
 }
 
@@ -32,6 +60,7 @@ STDMETHODIMP CTimelineControlCopyCommand::InstallMenu(IMenu* pMenu)
 	CHECK_E_POINTER(pMenu);
 	RETURN_IF_FAILED(pMenu->AddMenuCommand(GUID_NULL, COMMAND_COPY_TEXT, this));
 	RETURN_IF_FAILED(pMenu->AddMenuCommand(GUID_NULL, COMMAND_COPY_URL, this));
+	RETURN_IF_FAILED(pMenu->AddMenuCommand(GUID_NULL, COMMAND_COPY_IMAGE_URL, this));
 	return S_OK;
 }
 
@@ -77,6 +106,18 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 				if (vText.vt == VT_BSTR)
 					str += L"\n" + CString(vText.bstrVal);
 			}
+			else if (IsEqualGUID(guidCommand, COMMAND_COPY_IMAGE_URL))
+			{
+				CComVariant vColumnObject;
+				ASSERT_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Table::Column::Object, &vColumnObject));
+				CComQIPtr<IColumnsInfoItem> pColumnsInfoItem = vColumnObject.punkVal;
+				ATLASSERT(pColumnsInfoItem);
+				CComBSTR bstr;
+				RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, &bstr));
+				CString strUrl(bstr);
+				strUrl.Replace(L"_normal", L"");
+				str = strUrl;
+			}
 
 			size_t nLength = _tcslen(str.c_str());
 			size_t nByteOfBuffer = (nLength + 1) * sizeof(TCHAR);
@@ -107,12 +148,6 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 STDMETHODIMP CTimelineControlCopyCommand::SetVariantObject(IVariantObject* pVariantObject)
 {
 	m_pVariantObject = pVariantObject;
-	return S_OK;
-}
-
-STDMETHODIMP CTimelineControlCopyCommand::SetColumnName(LPCTSTR lpszColumnName)
-{
-	m_strColumnName = lpszColumnName;
 	return S_OK;
 }
 

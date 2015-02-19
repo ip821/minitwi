@@ -326,6 +326,8 @@
     <ClInclude Include="SearchControl.h" />
     <ClInclude Include="SearchTimelineControl.h" />
     <ClInclude Include="SettingsControl.h" />
+    <ClInclude Include="StaticListBoxImpl.h" />
+    <ClInclude Include="StaticListBox.h" />
     <ClInclude Include="TimelineControl.h" />
     <ClInclude Include="TimelineControlCopyCommand.h" />
     <ClInclude Include="TimelineControlOpenInBrowserCommand.h" />
@@ -424,6 +426,9 @@
       </ProxyFileName>
     </Midl>
     <Midl Include="twview.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Host\res\Twitter.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
