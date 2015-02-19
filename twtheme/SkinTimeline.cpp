@@ -513,7 +513,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 					strRetweetedName,
 					x,
 					y,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, MAX_ITEM_HEIGHT),
+					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
 					TRUE,
 					FALSE
 					);
