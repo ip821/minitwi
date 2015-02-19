@@ -564,6 +564,7 @@ STDMETHODIMP CCustomTabControl::ShowInfo(BOOL bError, BOOL bInfoImageEnableClick
 	m_bstrInfoMessage = bstrMessage;
 	m_bInfoImageEnableClick = bInfoImageEnableClick;
 	m_pSkinTabControl->StartInfoImage();
+	InvalidateRect(m_rectInfoImage);
 	return S_OK;
 }
 
