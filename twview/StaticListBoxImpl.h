@@ -5,6 +5,9 @@
 
 using namespace std;
 
+#define ONSETCURSEL_OPTION_KEEP_SELECTION 0
+#define ONSETCURSEL_OPTION_NONE 1
+
 template <class T>
 class CStaticListBoxImpl : public CScrollImpl < T >
 {
@@ -111,24 +114,24 @@ public:
 		{
 		case VK_DOWN:
 			if (curSelIndex < m_items.size() - 1)
-				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex + 1, 0);
+				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex + 1, ONSETCURSEL_OPTION_NONE);
 			if (curSelIndex == LB_ERR)
 			{
 				auto topIndex = SendMessage(GetHWND(), LB_GETTOPINDEX, 0, 0);
-				SendMessage(GetHWND(), LB_SETCURSEL, topIndex, 0);
+				SendMessage(GetHWND(), LB_SETCURSEL, topIndex, ONSETCURSEL_OPTION_NONE);
 			}
 			break;
 		case VK_UP:
-			if (curSelIndex > 0)
-				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex - 1, 0);
 			if (curSelIndex == LB_ERR)
-				SendMessage(GetHWND(), LB_SETCURSEL, 0, 0);
+				SendMessage(GetHWND(), LB_SETCURSEL, 0, ONSETCURSEL_OPTION_NONE);
+			else if (curSelIndex > 0)
+				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex - 1, ONSETCURSEL_OPTION_NONE);
 			break;
 		case VK_HOME:
-			SendMessage(GetHWND(), LB_SETCURSEL, 0, 0);
+			SendMessage(GetHWND(), LB_SETCURSEL, 0, ONSETCURSEL_OPTION_NONE);
 			break;
 		case VK_END:
-			SendMessage(GetHWND(), LB_SETCURSEL, m_items.size() - 1, 0);
+			SendMessage(GetHWND(), LB_SETCURSEL, m_items.size() - 1, ONSETCURSEL_OPTION_NONE);
 			break;
 		case VK_PRIOR:
 			SendMessage(GetHWND(), WM_COMMAND, ID_SCROLL_PAGE_UP, 0);
@@ -150,7 +153,7 @@ public:
 		if (bOutside || uiItem == (UINT)INVALID_ITEM_INDEX)
 			return 0;
 
-		SendMessage(GetHWND(), LB_SETCURSEL, uiItem, 0);
+		SendMessage(GetHWND(), LB_SETCURSEL, uiItem, ONSETCURSEL_OPTION_KEEP_SELECTION);
 		return 0;
 	}
 
@@ -204,11 +207,12 @@ public:
 
 		for_each(m_items.begin(), m_items.end(), [&](Item& item){item.focused = false; });
 
-		if (curSelIndex != LB_ERR)
-			InvalidateItem(curSelIndex);
-
 		if (wParam == (WPARAM)LB_ERR)
+		{
+			if (curSelIndex != LB_ERR)
+				InvalidateItem(curSelIndex);
 			return 0;
+		}
 
 		m_items[wParam].focused = true;
 
@@ -222,18 +226,50 @@ public:
 		CRect rectIntersect;
 		rectIntersect.IntersectRect(&rectClient, &rectItem);
 
-		if (rectIntersect.IsRectEmpty())
+		if (lParam == ONSETCURSEL_OPTION_NONE)
 		{
-			CPoint ptOffset;
-			GetScrollOffset(ptOffset);
-			GetVirtualRect(wParam, rectItem);
-			SetScrollOffset(ptOffset.x, rectItem.top);
-			return 0;
-		}
+			if (rectIntersect.Height() < rectItem.Height() && !rectIntersect.IsRectEmpty())
+			{
+				if (curSelIndex != (WPARAM)LB_ERR && wParam < (WPARAM)curSelIndex)
+				{
+					CPoint ptOffset;
+					GetScrollOffset(ptOffset);
+					GetVirtualRect(wParam, rectItem);
+					SetScrollOffset(ptOffset.x, rectItem.top);
+					return 0;
+				}
 
-		if (rectIntersect.Height() < rectItem.Height())
-		{
-			if (curSelIndex != (WPARAM)LB_ERR && wParam < (WPARAM)curSelIndex)
+				if (curSelIndex != (WPARAM)LB_ERR && wParam > (WPARAM)curSelIndex)
+				{
+					CPoint ptOffset;
+					GetScrollOffset(ptOffset);
+					GetVirtualRect(wParam, rectItem);
+					SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()) + 2);
+					return 0;
+				}
+			}
+
+			if (curSelIndex != (WPARAM)LB_ERR && wParam >(WPARAM)curSelIndex && rectIntersect.Height() < rectItem.Height())
+			{
+				CRect rectCurSel;
+				GetVirtualRect(curSelIndex, rectCurSel);
+				GetRealRect(rectCurSel);
+
+				CRect rectCurSelIntersect;
+				rectCurSelIntersect.IntersectRect(&rectCurSel, &rectClient);
+
+				if (rectCurSelIntersect.Height() < m_items[curSelIndex].height)
+				{
+					GetVirtualRect(curSelIndex, rectCurSel);
+					CPoint ptOffset;
+					GetScrollOffset(ptOffset);
+					GetVirtualRect(wParam, rectItem);
+					SetScrollOffset(ptOffset.x, ptOffset.y + rectItem.Height() + (rectCurSel.Height() - rectCurSelIntersect.Height()) + 2);
+				}
+				return 0;
+			}
+
+			if (rectIntersect.IsRectEmpty())
 			{
 				CPoint ptOffset;
 				GetScrollOffset(ptOffset);
@@ -241,18 +277,13 @@ public:
 				SetScrollOffset(ptOffset.x, rectItem.top);
 				return 0;
 			}
-
-			if (curSelIndex != (WPARAM)LB_ERR && wParam > (WPARAM)curSelIndex)
-			{
-				CPoint ptOffset;
-				GetScrollOffset(ptOffset);
-				GetVirtualRect(wParam, rectItem);
-				SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()) + 2);
-				return 0;
-			}
 		}
 
+		if (curSelIndex != LB_ERR)
+			InvalidateItem(curSelIndex);
+
 		InvalidateItem(wParam);
+
 		return 0;
 	}
 
