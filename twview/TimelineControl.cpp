@@ -80,8 +80,22 @@ STDMETHODIMP CTimelineControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineControl::OnBeforeCommandInvoke(REFGUID guidCommand, ICommand* pCommand)
+STDMETHODIMP CTimelineControl::OnBeforeCommandInvoke(REFGUID guidCommand, int iCommandSource, ICommand* pCommand)
 {
+	if (iCommandSource != COMMAND_SOURCE_ACCELERATOR)
+		return S_OK;
+
+	CComQIPtr<IInitializeWithVariantObject> pInit = pCommand;
+	if (pInit)
+	{
+		CComPtr<IVariantObject> pVariantObject;
+		auto selectedIndex = m_listBox.GetCurSel();
+		CComPtr<IObjArray> pObjArray;
+		RETURN_IF_FAILED(m_listBox.GetItems(&pObjArray));
+		pObjArray->GetAt(selectedIndex, __uuidof(IVariantObject), (LPVOID*)&pVariantObject);
+		RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObject));
+	}
+
 	return S_OK;
 }
 
@@ -100,12 +114,8 @@ LRESULT CTimelineControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 void CTimelineControl::AdjustSizes()
 {
-	CRect windowRect;
-	GetWindowRect(windowRect);
-	auto h1 = windowRect.Height(); h1;
 	CRect clientRect;
 	GetClientRect(&clientRect);
-	auto h2 = clientRect.Height(); h2;
 	::SetWindowPos(m_listBox.m_hWnd, 0, 0, 0, clientRect.Width(), clientRect.Height(), 0);
 }
 

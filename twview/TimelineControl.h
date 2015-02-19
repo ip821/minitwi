@@ -124,7 +124,7 @@ public:
 	STDMETHOD(RefreshItem)(UINT uiIndex);
 	STDMETHOD(ScrollToItem)(UINT uiIndex);
 
-	STDMETHOD(OnBeforeCommandInvoke)(REFGUID guidCommand, ICommand* pCommand);
+	STDMETHOD(OnBeforeCommandInvoke)(REFGUID guidCommand, int iCommandSource, ICommand* pCommand);
 	METHOD_EMPTY(STDMETHOD(OnCommandInvoke)(REFGUID guidCommand));
 	STDMETHOD(Load)(ISettings *pSettings);
 };
