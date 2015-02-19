@@ -397,7 +397,11 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 		return 0;
 
 	if (uiCode == NM_LISTBOX_RCLICK)
+	{
+		SendMessage(WM_SETLISTBOX_SCROLL_MODE, SCROLL_OPTION_KEEP_SCROLLPOS);
 		SetCurSel(uiItem);
+		SendMessage(WM_SETLISTBOX_SCROLL_MODE, SCROLL_OPTION_NONE);
+	}
 
 	CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[uiItem];
 

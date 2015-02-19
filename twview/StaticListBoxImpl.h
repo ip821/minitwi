@@ -5,8 +5,8 @@
 
 using namespace std;
 
-#define ONSETCURSEL_OPTION_NONE 0
-#define ONSETCURSEL_OPTION_KEEP_SCROLLPOS 1
+#define SCROLL_OPTION_NONE 0
+#define SCROLL_OPTION_KEEP_SCROLLPOS 1
 
 template <class T>
 class CStaticListBoxImpl : public CScrollImpl < T >
@@ -18,6 +18,8 @@ private:
 		int height;
 		bool focused;
 	};
+
+	int m_scrollMode = SCROLL_OPTION_NONE;
 
 	vector<Item> m_items;
 public:
@@ -37,11 +39,11 @@ public:
 		MESSAGE_HANDLER(LB_SETCURSEL, OnSetCurSel);
 		MESSAGE_HANDLER(LB_GETITEMRECT, OnGetItemRect);
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonDown)
-			MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
-			MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
-			MESSAGE_HANDLER(WM_SETLISTBOX_SCROLL_MODE, OnSetScrollMode)
-			CHAIN_MSG_MAP(CScrollImpl<T>)
-			CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
+		MESSAGE_HANDLER(WM_SETLISTBOX_SCROLL_MODE, OnSetScrollMode)
+		CHAIN_MSG_MAP(CScrollImpl<T>)
+		CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
 	END_MSG_MAP()
 
 	CStaticListBoxImpl()
@@ -109,6 +111,7 @@ public:
 
 	LRESULT OnSetScrollMode(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
+		m_scrollMode = wParam;
 		return 0;
 	}
 
@@ -120,24 +123,24 @@ public:
 		{
 		case VK_DOWN:
 			if (curSelIndex < m_items.size() - 1)
-				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex + 1, ONSETCURSEL_OPTION_NONE);
+				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex + 1, SCROLL_OPTION_NONE);
 			if (curSelIndex == LB_ERR)
 			{
 				auto topIndex = SendMessage(GetHWND(), LB_GETTOPINDEX, 0, 0);
-				SendMessage(GetHWND(), LB_SETCURSEL, topIndex, ONSETCURSEL_OPTION_NONE);
+				SendMessage(GetHWND(), LB_SETCURSEL, topIndex, SCROLL_OPTION_NONE);
 			}
 			break;
 		case VK_UP:
 			if (curSelIndex == LB_ERR)
-				SendMessage(GetHWND(), LB_SETCURSEL, 0, ONSETCURSEL_OPTION_NONE);
+				SendMessage(GetHWND(), LB_SETCURSEL, 0, SCROLL_OPTION_NONE);
 			else if (curSelIndex > 0)
-				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex - 1, ONSETCURSEL_OPTION_NONE);
+				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex - 1, SCROLL_OPTION_NONE);
 			break;
 		case VK_HOME:
-			SendMessage(GetHWND(), LB_SETCURSEL, 0, ONSETCURSEL_OPTION_NONE);
+			SendMessage(GetHWND(), LB_SETCURSEL, 0, SCROLL_OPTION_NONE);
 			break;
 		case VK_END:
-			SendMessage(GetHWND(), LB_SETCURSEL, m_items.size() - 1, ONSETCURSEL_OPTION_NONE);
+			SendMessage(GetHWND(), LB_SETCURSEL, m_items.size() - 1, SCROLL_OPTION_NONE);
 			break;
 		case VK_PRIOR:
 			SendMessage(GetHWND(), WM_COMMAND, ID_SCROLL_PAGE_UP, 0);
@@ -159,7 +162,7 @@ public:
 		if (bOutside || uiItem == (UINT)INVALID_ITEM_INDEX)
 			return 0;
 
-		SendMessage(GetHWND(), LB_SETCURSEL, uiItem, ONSETCURSEL_OPTION_KEEP_SCROLLPOS);
+		SendMessage(GetHWND(), LB_SETCURSEL, uiItem, SCROLL_OPTION_KEEP_SCROLLPOS);
 		return 0;
 	}
 
@@ -232,7 +235,7 @@ public:
 		CRect rectIntersect;
 		rectIntersect.IntersectRect(&rectClient, &rectItem);
 
-		if (lParam == ONSETCURSEL_OPTION_NONE)
+		if (lParam == SCROLL_OPTION_NONE && m_scrollMode == SCROLL_OPTION_NONE)
 		{
 			if (rectIntersect.Height() < rectItem.Height() && !rectIntersect.IsRectEmpty())
 			{
@@ -255,7 +258,7 @@ public:
 				}
 			}
 
-			if (curSelIndex != (WPARAM)LB_ERR && wParam > (WPARAM)curSelIndex && rectIntersect.Height() < rectItem.Height())
+			if (curSelIndex != (WPARAM)LB_ERR && wParam > (WPARAM)curSelIndex && rectIntersect.Height() < rectItem.Height() && wParam - curSelIndex == 1)
 			{
 				CRect rectCurSel;
 				GetVirtualRect(curSelIndex, rectCurSel);
@@ -414,7 +417,7 @@ public:
 
 		int yOffset = ptOffset.y;
 
-		if (rectItemVirtual.top < ptOffset.y)
+		if (rectItemVirtual.top < ptOffset.y || m_scrollMode == SCROLL_OPTION_KEEP_SCROLLPOS)
 			yOffset = ptOffset.y + m_items[wParam].height;
 
 		UpdateScroll(yOffset);
@@ -453,7 +456,7 @@ public:
 
 		int yOffset = ptOffset.y;
 
-		if (rectItemVirtual.top < ptOffset.y)
+		if (rectItemVirtual.top < ptOffset.y || m_scrollMode == SCROLL_OPTION_KEEP_SCROLLPOS)
 			yOffset = ptOffset.y + (lParam - m_items[wParam].height);
 
 		m_items[wParam].height = lParam;

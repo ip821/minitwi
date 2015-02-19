@@ -291,7 +291,9 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		ASSERT_IF_FAILED(pIdleHandler->OnIdle(&bResult));
 	}
 
+	m_listBox.SendMessage(WM_SETLISTBOX_SCROLL_MODE, SCROLL_OPTION_KEEP_SCROLLPOS);
 	m_popupMenu.TrackPopupMenu(0, pNm->x, pNm->y, m_hWnd);
+	m_listBox.SendMessage(WM_SETLISTBOX_SCROLL_MODE, SCROLL_OPTION_NONE);
 	return 0;
 }
 
