@@ -193,7 +193,7 @@ public:
 	{
 		CRect rectItem;
 		GetVirtualRect(wParam, rectItem);
-		SetScrollOffset(0, rectItem.top - m_ptOffset.y);
+		SetScrollOffset(0, rectItem.top);
 		return 0;
 	}
 
@@ -211,8 +211,8 @@ public:
 	{
 		auto curSelIndex = SendMessage(GetHWND(), LB_GETCURSEL, 0, 0);
 
-		if ((WPARAM)curSelIndex == wParam)
-			return 0;
+		//if ((WPARAM)curSelIndex == wParam)
+		//	return 0;
 
 		for_each(m_items.begin(), m_items.end(), [&](Item& item){item.focused = false; });
 
@@ -225,67 +225,86 @@ public:
 
 		m_items[wParam].focused = true;
 
-		CRect rectItem;
-		GetVirtualRect(wParam, rectItem);
-		GetRealRect(rectItem);
-
-		CRect rectClient;
-		GetClientRect(GetHWND(), &rectClient);
-
-		CRect rectIntersect;
-		rectIntersect.IntersectRect(&rectClient, &rectItem);
-
 		if (lParam == SCROLL_OPTION_NONE && m_scrollMode == SCROLL_OPTION_NONE)
 		{
-			if (rectIntersect.Height() < rectItem.Height() && !rectIntersect.IsRectEmpty())
+			if (curSelIndex == LB_ERR)
 			{
-				if (curSelIndex != (WPARAM)LB_ERR && wParam < (WPARAM)curSelIndex)
-				{
-					CPoint ptOffset;
-					GetScrollOffset(ptOffset);
-					GetVirtualRect(wParam, rectItem);
-					SetScrollOffset(ptOffset.x, rectItem.top);
-					return 0;
-				}
-
-				if (curSelIndex != (WPARAM)LB_ERR && wParam > (WPARAM)curSelIndex)
-				{
-					CPoint ptOffset;
-					GetScrollOffset(ptOffset);
-					GetVirtualRect(wParam, rectItem);
-					SetScrollOffset(ptOffset.x, ptOffset.y + (rectItem.Height() - rectIntersect.Height()) + 2);
-					return 0;
-				}
-			}
-
-			if (curSelIndex != (WPARAM)LB_ERR && wParam > (WPARAM)curSelIndex && rectIntersect.Height() < rectItem.Height() && wParam - curSelIndex == 1)
-			{
-				CRect rectCurSel;
-				GetVirtualRect(curSelIndex, rectCurSel);
-				GetRealRect(rectCurSel);
-
-				CRect rectCurSelIntersect;
-				rectCurSelIntersect.IntersectRect(&rectCurSel, &rectClient);
-
-				if (rectCurSelIntersect.Height() < m_items[curSelIndex].height && !rectCurSelIntersect.IsRectEmpty())
-				{
-					GetVirtualRect(curSelIndex, rectCurSel);
-					CPoint ptOffset;
-					GetScrollOffset(ptOffset);
-					GetVirtualRect(wParam, rectItem);
-					SetScrollOffset(ptOffset.x, ptOffset.y + rectItem.Height() + (rectCurSel.Height() - rectCurSelIntersect.Height()) + 2);
-					return 0;
-				}
-			}
-
-			if (rectIntersect.IsRectEmpty())
-			{
-				CPoint ptOffset;
-				GetScrollOffset(ptOffset);
-				GetVirtualRect(wParam, rectItem);
-				SetScrollOffset(ptOffset.x, rectItem.top);
+				::SendMessage(GetHWND(), LB_SETTOPINDEX, wParam, 0);
 				return 0;
 			}
+
+			CPoint ptOffset;
+			GetScrollOffset(ptOffset);
+
+			CRect rectItemNext;
+			GetVirtualRect(wParam, rectItemNext);
+			CRect rectItemNextReal = rectItemNext;
+			GetRealRect(rectItemNextReal);
+
+			CRect rectItemPrev;
+			GetVirtualRect(curSelIndex, rectItemPrev);
+			CRect rectItemPrevReal = rectItemPrev;
+			GetRealRect(rectItemPrevReal);
+
+			CRect rectClient;
+			GetClientRect(GetHWND(), &rectClient);
+
+			CRect rectIntersectNext;
+			rectIntersectNext.IntersectRect(&rectClient, &rectItemNextReal);
+
+			CRect rectIntersectPrev;
+			rectIntersectPrev.IntersectRect(&rectClient, &rectItemPrevReal);
+
+			auto offsetY = 0;
+
+			if (rectIntersectPrev.IsRectEmpty() && rectIntersectNext.IsRectEmpty())
+			{
+				::SendMessage(GetHWND(), LB_SETTOPINDEX, wParam, 0);
+				return 0;
+			}
+
+			if (wParam < (WPARAM)curSelIndex && curSelIndex - wParam == 1)
+			{
+				if (rectIntersectNext.Height() != rectItemNext.Height())
+				{
+					if (rectIntersectPrev.IsRectEmpty())
+					{
+						if (rectIntersectNext.Height() < rectItemNext.Height())
+							offsetY += rectItemNext.Height() - rectIntersectNext.Height();
+					}
+					else
+					{
+						if (rectIntersectPrev.Height() < rectItemPrev.Height())
+							offsetY -= rectItemPrev.Height() - rectIntersectPrev.Height();
+						if (rectIntersectNext.Height() < rectItemNext.Height())
+							offsetY -= rectItemNext.Height() - rectIntersectNext.Height();
+					}
+				}
+			}
+			else if (wParam > (WPARAM)curSelIndex && wParam - curSelIndex == 1)
+			{
+				if (rectIntersectNext.Height() != rectItemNext.Height())
+				{
+					if (rectIntersectPrev.IsRectEmpty())
+					{
+						if (rectIntersectNext.Height() < rectItemNext.Height())
+							offsetY -= rectItemNext.Height() - rectIntersectNext.Height();
+					}
+					else
+					{
+						if (rectIntersectPrev.Height() < rectItemPrev.Height())
+							offsetY += rectItemPrev.Height() - rectIntersectPrev.Height();
+
+						if (rectIntersectNext.Height() < rectItemNext.Height())
+							offsetY += rectItemNext.Height() - rectIntersectNext.Height();
+					}
+				}
+			}
+			else
+				::SendMessage(GetHWND(), LB_SETTOPINDEX, wParam, 0);
+
+			if (offsetY)
+				SetScrollOffset(ptOffset.x, ptOffset.y + offsetY);
 		}
 
 		if (curSelIndex != LB_ERR)
