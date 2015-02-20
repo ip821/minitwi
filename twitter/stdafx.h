@@ -55,7 +55,6 @@
 #include <queue>
 #include <list>
 #include <hash_set>
-#include <mutex>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/condition_variable.hpp>
 
