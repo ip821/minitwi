@@ -47,24 +47,6 @@ STDMETHODIMP CShowMoreSupportService::OnShutdown()
 STDMETHODIMP CShowMoreSupportService::OnStart(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
-	BOOL bEmpty = FALSE;
-	RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
-	if (!bEmpty)
-	{
-		CComVariant vMaxId;
-		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vMaxId));
-		CComPtr<IObjArray> pObjArray;
-		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
-		{
-			UINT uiCount = 0;
-			RETURN_IF_FAILED(pObjArray->GetCount(&uiCount));
-			CComPtr<IVariantObject> pVariantObject;
-			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-			RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
-			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
-			RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&pVariantObject.p, 1));
-		}
-	}
 	return S_OK;
 }
 
@@ -135,6 +117,14 @@ STDMETHODIMP CShowMoreSupportService::OnColumnClick(IColumnsInfoItem* pColumnsIn
 			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 2, __uuidof(IVariantObject), (LPVOID*)&pVariantObjectItem));
 			CComVariant vId;
 			RETURN_IF_FAILED(pVariantObjectItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
+
+			{
+				CComPtr<IVariantObject> pVariantObjectItemShowMore;
+				RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObjectItemShowMore));
+				RETURN_IF_FAILED(pVariantObjectItemShowMore->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
+				RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
+				RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&pVariantObjectItemShowMore.p, 1));
+			}
 
 			CComPtr<IVariantObject> pThreadContext;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pThreadContext));
