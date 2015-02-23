@@ -401,13 +401,35 @@ public:
 
 	LRESULT OnDeleteString(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
+		CRect rectItem;
+		GetVirtualRect(wParam, rectItem);
+
+		CPoint ptOffset;
+		GetScrollOffset(ptOffset);
+
 		m_items.erase(m_items.begin() + wParam);
+
+		CRect rectClient;
+		GetClientRect(GetHWND(), &rectClient);
+
+		auto fullHeight = GetFullHeight();
+		if (ptOffset.y > fullHeight || fullHeight > ptOffset.y + rectClient.Height())
+		{
+			fullHeight -= rectClient.Height();
+			if (fullHeight < 0)
+				fullHeight = 0;
+			UpdateScroll(fullHeight);
+		}
+
+		InvalidateRect(GetHWND(), NULL, TRUE);
 		return 0;
 	}
 
 	LRESULT OnResetContent(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		m_items.clear();
+		UpdateScroll();
+		InvalidateRect(GetHWND(), NULL, TRUE);
 		return 0;
 	}
 
@@ -443,16 +465,22 @@ public:
 		return 0;
 	}
 
+	int GetFullHeight()
+	{
+		int height = 0;
+		for (size_t i = 0; i < m_items.size(); i++)
+		{
+			height += m_items[i].height;
+		}
+		return height;
+	}
+
 	void UpdateScroll(int yOffset = 0)
 	{
 		CRect rect;
 		GetClientRect(GetHWND(), &rect);
 
-		auto height = 0;
-		for (size_t i = 0; i < m_items.size(); i++)
-		{
-			height += m_items[i].height;
-		}
+		int height = GetFullHeight();
 
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
 		SetScrollSize(1, height + 50, true, yOffset);

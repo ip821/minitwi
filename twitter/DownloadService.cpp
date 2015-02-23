@@ -42,6 +42,7 @@ size_t CDownloadService::WriteCallback(char *ptr, size_t size, size_t nmemb, voi
 
 STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 {
+	CComPtr<CDownloadService> pGuard = this;
 	CURL* curl = curl_easy_init();
 	if (!curl)
 		return E_FAIL;
