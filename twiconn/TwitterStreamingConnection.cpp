@@ -4,6 +4,13 @@
 #include "oauthlib.h"
 #include "TwitterConnection.h"
 
+int CTwitterStreamingConnection::ProgressCallback(CTwitterStreamingConnection* pObj, double dltotal, double dlnow, double ultotal, double ulnow)
+{
+	if (!pObj->m_running)
+		return 1;
+	return 0;
+}
+
 size_t CTwitterStreamingConnection::WriteCallback(char *ptr, size_t size, size_t nmemb, CTwitterStreamingConnection* pObj)
 {
 	if (pObj && ptr)
@@ -95,6 +102,9 @@ STDMETHODIMP CTwitterStreamingConnection::StartStream(BSTR bstrKey, BSTR bstrSec
 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, NULL);
 	curl_easy_setopt(curl, CURLOPT_ENCODING, "");
 	curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+	curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, ProgressCallback);
+	curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, this);
+	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
 
 	string dataStrDummy;
 	string oAuthHttpHeader;

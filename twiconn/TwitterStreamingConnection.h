@@ -43,6 +43,7 @@ private:
 	
 	int SaveLastWebResponse(char*& data, size_t size);
 	static size_t WriteCallback(char *ptr, size_t size, size_t nmemb, CTwitterStreamingConnection* pObj);
+	static int ProgressCallback(CTwitterStreamingConnection* pObj, double dltotal, double dlnow, double ultotal, double ulnow);
 	HRESULT Fire_OnMessages(IObjArray* pObjectArray);
 	volatile bool m_running = false;
 
