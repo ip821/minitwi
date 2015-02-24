@@ -413,7 +413,7 @@ public:
 		GetClientRect(GetHWND(), &rectClient);
 
 		auto fullHeight = GetFullHeight();
-		if (ptOffset.y > fullHeight || fullHeight > ptOffset.y + rectClient.Height())
+		if (ptOffset.y > fullHeight || ptOffset.y + rectClient.Height() > fullHeight)
 		{
 			fullHeight -= rectClient.Height();
 			if (fullHeight < 0)
@@ -483,7 +483,7 @@ public:
 		int height = GetFullHeight();
 
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
-		SetScrollSize(1, height + 50, true, yOffset);
+		SetScrollSize(1, height ? height : 1, true, yOffset);
 		SetScrollLine(1, 40);
 	}
 

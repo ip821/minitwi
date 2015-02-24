@@ -89,7 +89,7 @@ using namespace IP;
 #pragma comment (lib,"Winhttp.lib")
 
 #ifdef DEBUG
-#define COUNT_ITEMS 10
+#define COUNT_ITEMS 20
 #else
 #define COUNT_ITEMS 100
 #endif
