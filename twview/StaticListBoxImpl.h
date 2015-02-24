@@ -485,6 +485,7 @@ public:
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
 		SetScrollSize(1, height ? height : 1, true, yOffset);
 		SetScrollLine(1, 40);
+		SetScrollPage(1, 200);
 	}
 
 	LRESULT OnSetItemHeight(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
