@@ -181,10 +181,20 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	CComVariant vId;
 	ASSERT_IF_FAILED(pItemObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 
-	m_pItems->InsertObject(pItemObject, index);
 	CComPtr<IColumnsInfo> pColumnsInfo;
 	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &pColumnsInfo));
-	m_columnsInfo.insert(m_columnsInfo.begin() + index, pColumnsInfo);
+	if (index == -1)
+	{
+		ASSERT_IF_FAILED(m_pItems->AddObject(pItemObject));
+		m_columnsInfo.push_back(pColumnsInfo);
+		index = m_columnsInfo.size() - 1;
+	}
+	else
+	{
+		ASSERT_IF_FAILED(m_pItems->InsertObject(pItemObject, index));
+		m_columnsInfo.insert(m_columnsInfo.begin() + index, pColumnsInfo);
+	}
+	
 
 	SendMessage(LB_INSERTSTRING, index, 0);
 

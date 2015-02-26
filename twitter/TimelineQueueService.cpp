@@ -117,14 +117,6 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 		}
 
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pFilteredCollection, insertIndex));
-
-		if (insertIndex)
-		{
-			if (uiCount)
-			{
-				RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(insertIndex));
-			}
-		}
 	}
 
 	return S_OK;

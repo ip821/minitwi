@@ -436,7 +436,13 @@ public:
 	LRESULT OnInsertString(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		Item item = { 0 };
-		m_items.insert(m_items.begin() + wParam, item);
+		if (wParam == -1)
+		{
+			m_items.push_back(item);
+			wParam = m_items.size() - 1;
+		}
+		else
+			m_items.insert(m_items.begin() + wParam, item);
 
 		T* pT = static_cast<T*>(this);
 

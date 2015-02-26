@@ -201,7 +201,7 @@ STDMETHODIMP CTimelineControl::InsertItems(IObjArray* pObjectArray, UINT uiStart
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(pObjectArray->GetAt(i, IID_IVariantObject, (LPVOID*)&pVariantObject));
 
-		m_listBox.InsertItem(pVariantObject, uiStartIndex + i);
+		m_listBox.InsertItem(pVariantObject, uiStartIndex == -1 ? -1 : uiStartIndex + i);
 	}
 	return S_OK;
 }

@@ -176,7 +176,7 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 
 	CUpdateScope scope(m_pTimelineControl);
 
-	auto insertIndex = 1;
+	auto insertIndex = -1;
 
 	CComVariant vParentTwit;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::ParentResult, &vParentTwit));
@@ -192,8 +192,6 @@ STDMETHODIMP CTwitViewRepliesService::OnFinish(IVariantObject *pResult)
 		RETURN_IF_FAILED(pObjCollection->AddObject(pParentItem));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjCollection)));
 		RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pVariantObject));
-
-		++insertIndex;
 	}
 
 	RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Index, &CComVariant(insertIndex)));
