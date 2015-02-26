@@ -58,6 +58,24 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 
 	boost::lock_guard<boost::mutex> lock(m_mutex);
 
+	CComPtr<IObjArray> pAllItems;
+	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
+
+	hash_set<wstring> existingIds;
+	for (UINT i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pItem;
+		RETURN_IF_FAILED(pAllItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pItem));
+		CComVariant vItemId;
+		RETURN_IF_FAILED(pItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vItemId));
+		if (vItemId.vt != VT_BSTR)
+			continue;
+
+		existingIds.insert(vItemId.bstrVal);
+	}
+
 	CUpdateScope updateScope(m_pTimelineControl);
 	while (!m_queue.empty())
 	{
@@ -72,10 +90,6 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
 		if (vId.vt == VT_BSTR)
 		{
-			CComPtr<IObjArray> pAllItems;
-			RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItems));
-			UINT uiCount = 0;
-			RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
 			if (uiCount)
 				insertIndex = uiCount - 1;
 		}
@@ -87,12 +101,22 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 			insertIndex = vIndex.intVal;
 		}
 
-		UINT uiCurrentTopIndex = 0;
-		RETURN_IF_FAILED(m_pTimelineControl->GetTopVisibleItemIndex(&uiCurrentTopIndex));
-		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pObjectArray, insertIndex));
+		CComPtr<IObjCollection> pFilteredCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pFilteredCollection));
+		UINT uiArrayCount = 0;
+		RETURN_IF_FAILED(pObjectArray->GetCount(&uiArrayCount));
+		for (UINT i = 0; i < uiArrayCount; i++)
+		{
+			CComPtr<IVariantObject> pArrayItem;
+			RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pArrayItem));
+			CComVariant vArrayItemId;
+			RETURN_IF_FAILED(pArrayItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vArrayItemId));
+			if (vArrayItemId.vt == VT_BSTR && existingIds.find(vArrayItemId.bstrVal) != existingIds.end())
+				continue;
+			RETURN_IF_FAILED(pFilteredCollection->AddObject(pArrayItem));
+		}
 
-		UINT uiCount = 0;
-		RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+		RETURN_IF_FAILED(m_pTimelineControl->InsertItems(pFilteredCollection, insertIndex));
 
 		if (insertIndex)
 		{
