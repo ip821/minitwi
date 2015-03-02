@@ -35,7 +35,7 @@ public:
 		m_arrowCursor.LoadSysCursor(IDC_ARROW);
 	}
 
-	virtual ~CCustomTabControl()
+	~CCustomTabControl()
 	{
 		DestroyWindow();
 	}

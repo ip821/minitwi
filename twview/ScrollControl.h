@@ -11,7 +11,7 @@ class CScrollControl :
 public:
 
 	CScrollControl();
-	virtual ~CScrollControl();
+	~CScrollControl();
 
 	BEGIN_MSG_MAP(CScrollControl)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)

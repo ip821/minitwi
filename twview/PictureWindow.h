@@ -31,7 +31,7 @@ class ATL_NO_VTABLE CPictureWindow :
 public:
 	DECLARE_WND_CLASS(L"PictureWindow")
 	CPictureWindow();
-	virtual ~CPictureWindow();
+	~CPictureWindow();
 
 	DECLARE_NO_REGISTRY()
 
