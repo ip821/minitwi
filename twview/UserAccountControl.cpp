@@ -178,6 +178,8 @@ void CUserAccountControl::UpdateRects()
 			}
 		}
 	}
+
+	ASSERT_IF_FAILED(UpdateColumnInfo());
 }
 
 STDMETHODIMP CUserAccountControl::OnActivate()
