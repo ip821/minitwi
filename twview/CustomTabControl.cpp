@@ -489,9 +489,12 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	if (!m_pSkinTabControl)
 		return 0;
 
+	CRect rect;
+	GetClientRect(&rect);
+
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(m_pColumnsInfo, ps.hdc, ps.rcPaint, m_selectedPageIndex);
+	m_pSkinTabControl->DrawHeader(m_pColumnsInfo, ps.hdc, rect, m_selectedPageIndex);
 
 	if (m_cAnimationRefs > 0)
 		m_pSkinTabControl->DrawAnimation(ps.hdc);

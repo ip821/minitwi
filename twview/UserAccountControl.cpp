@@ -124,8 +124,9 @@ LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
 
-	CRect rect = ps.rcPaint;
-	CDC cdc(ps.hdc);
+	CRect rect;
+	GetClientRect(&rect);
+	CDCHandle cdc(ps.hdc);
 
 	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Draw(cdc, &rect, m_pVariantObject, m_pColumnsInfo));
 	EndPaint(&ps);
