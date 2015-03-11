@@ -82,6 +82,7 @@ private:
 	int m_step = 0;
 	BYTE m_alphaAmount = 0;
 	const BYTE STEPS = 25;
+	BOOL m_bInitialMonitorDetection = TRUE;
 
 	HRESULT Fire_OnClosed(HWND hWnd);
 
@@ -100,6 +101,7 @@ private:
 	STDMETHOD(ResetAnimation)();
 	void ResizeWindow(UINT uiWidth, UINT uiHeight);
 	void ResizeToCurrentBitmap();
+	HMONITOR GetHMonitor();
 	STDMETHOD(InitCommandSupport)(int index);
 	void MoveToPicture(BOOL bForward);
 

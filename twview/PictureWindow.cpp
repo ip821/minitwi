@@ -330,7 +330,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	}
 
 	auto pBitmap = make_shared<Bitmap>(pStream);
-	auto hMonitor = MonitorFromWindow(m_hWndParent, MONITOR_DEFAULTTONULL);
+	auto hMonitor = GetHMonitor();
 
 	if (hMonitor)
 	{
@@ -373,9 +373,20 @@ void CPictureWindow::ResizeToCurrentBitmap()
 	ResizeWindow(width, height);
 }
 
+HMONITOR CPictureWindow::GetHMonitor()
+{
+	if (m_bInitialMonitorDetection)
+	{
+		m_bInitialMonitorDetection = FALSE;
+		return MonitorFromWindow(m_hWndParent, MONITOR_DEFAULTTONULL);
+	}
+
+	return MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONULL);
+}
+
 void CPictureWindow::CalcRect(int width, int height, CRect& rect)
 {
-	auto hMonitor = MonitorFromWindow(m_hWndParent, MONITOR_DEFAULTTONULL);
+	auto hMonitor = GetHMonitor();
 
 	if (hMonitor)
 	{
