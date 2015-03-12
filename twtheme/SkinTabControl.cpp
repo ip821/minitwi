@@ -222,15 +222,15 @@ STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect, int selectedPageIndex)
+STDMETHODIMP CSkinTabControl::DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect)
 {
 	CDCHandle cdc(hdc);
 	cdc.SetBkMode(TRANSPARENT);
-	RETURN_IF_FAILED(DrawTabs(pColumnsInfo, cdc, rect, selectedPageIndex));
+	RETURN_IF_FAILED(DrawTabs(pColumnsInfo, cdc, rect));
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect, int selectedPageIndex)
+STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect)
 {
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
@@ -307,7 +307,8 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 		GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
 		rectText.top = rect.top + ((rect.Height() / 2) - sz.cy / 2);
 
-		BOOL bSelected = selectedPageIndex == (int)i;
+		BOOL bSelected = FALSE;
+		pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, &bSelected);
 
 		DWORD dwColor = 0;
 		if (bSelected)

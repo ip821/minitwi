@@ -234,6 +234,7 @@ void CCustomTabControl::OnEndScroll()
 	m_selectedPageIndex = m_nextSelectedPageIndex;
 	m_nextSelectedPageIndex = INVALID_PAGE_INDEX;
 
+	ASSERT_IF_FAILED(UpdateColumnInfo());
 	Invalidate(TRUE);
 }
 
@@ -425,6 +426,20 @@ STDMETHODIMP CCustomTabControl::Save(ISettings* pSettings)
 	return S_OK;
 }
 
+HRESULT CCustomTabControl::UpdateColumnInfo()
+{
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
+
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, m_selectedPageIndex == static_cast<int>(i)));
+	}
+	return S_OK;
+}
+
 void CCustomTabControl::UpdateChildControlAreaRect()
 {
 	m_rectChildControlArea.SetRectEmpty();
@@ -437,6 +452,8 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 	{
 		m_pSkinTabControl->MeasureHeader(m_hWnd, pObjArray, m_pColumnsInfo, &clientRect, &uiHeight);
 		m_pSkinTabControl->GetInfoRect(&m_rectInfoImage);
+
+		ASSERT_IF_FAILED(UpdateColumnInfo());
 	}
 
 	GetClientRect(&m_rectChildControlArea);
@@ -494,7 +511,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(m_pColumnsInfo, ps.hdc, rect, m_selectedPageIndex);
+	m_pSkinTabControl->DrawHeader(m_pColumnsInfo, ps.hdc, rect);
 
 	if (m_cAnimationRefs > 0)
 		m_pSkinTabControl->DrawAnimation(ps.hdc);

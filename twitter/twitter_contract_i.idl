@@ -273,7 +273,7 @@ interface ISkinTabControl : IUnknown
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(HDC hdc);
-	HRESULT DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect, int selectedPageIndex);
+	HRESULT DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
 	HRESULT DrawAnimation(HDC hdc);
 	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
 	HRESULT GetInfoRect(RECT* pRect);

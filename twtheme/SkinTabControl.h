@@ -42,7 +42,7 @@ private:
 	HWND m_hWnd;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
-	STDMETHOD(DrawTabs)(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect, int selectedPageIndex);
+	STDMETHOD(DrawTabs)(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect);
 
 public:
 
@@ -52,7 +52,7 @@ public:
 
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
-	STDMETHOD(DrawHeader)(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect, int selectedPageIndex);
+	STDMETHOD(DrawHeader)(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
 	STDMETHOD(DrawAnimation)(HDC hdc);
 	STDMETHOD(DrawInfoImage)(HDC hdc, BOOL bError, BSTR bstrMessage);
 	STDMETHOD(GetInfoRect)(RECT* pRect);
