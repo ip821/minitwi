@@ -23,6 +23,17 @@ CPictureWindow::~CPictureWindow()
 		DestroyWindow();
 }
 
+STDMETHODIMP CPictureWindow::Load(ISettings *pSettings)
+{
+	CHECK_E_POINTER(pSettings);
+	CComPtr<ISettings> pSubSettings;
+	RETURN_IF_FAILED(pSettings->OpenSubSettings(PICTURE_WINDOW_SETTINGS_PATH, &pSubSettings));
+	CComVariant vDisableMonitorSnap;
+	RETURN_IF_FAILED(pSubSettings->GetVariantValue(PICTURE_WINDOW_SETTINGS_DISABLE_MONITOR_SNAP_KEY, &vDisableMonitorSnap));
+	m_bDisableMonitorSnap = vDisableMonitorSnap.vt == VT_I4 && vDisableMonitorSnap.intVal > 0;
+	return S_OK;
+}
+
 STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
@@ -375,6 +386,12 @@ void CPictureWindow::ResizeToCurrentBitmap()
 
 HMONITOR CPictureWindow::GetHMonitor()
 {
+	if (m_bDisableMonitorSnap)
+	{
+		const POINT ptZero = { 0, 0 };
+		return MonitorFromPoint(ptZero, MONITOR_DEFAULTTOPRIMARY);
+	}
+
 	if (m_bInitialMonitorDetection)
 	{
 		m_bInitialMonitorDetection = FALSE;

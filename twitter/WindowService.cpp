@@ -15,6 +15,15 @@ STDMETHODIMP CWindowService::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CWindowService::OnShutdown()
 {
+	m_pSettings.Release();
+	m_pServiceProvider.Release();
+	return S_OK;
+}
+
+STDMETHODIMP CWindowService::Load(ISettings* pSettings)
+{
+	CHECK_E_POINTER(pSettings);
+	m_pSettings = pSettings;
 	return S_OK;
 }
 
@@ -36,6 +45,7 @@ STDMETHODIMP CWindowService::OpenWindow(HWND hWndParent, REFCLSID clsid, IVarian
 {
 	CComPtr<IWindow> pWindow;
 	RETURN_IF_FAILED(HrCoCreateInstance(clsid, &pWindow));
+	RETURN_IF_FAILED(HrInitializeWithSettings(pWindow, m_pSettings));
 	RETURN_IF_FAILED(pWindow->Show(hWndParent));
 	HWND hWnd = 0;
 	RETURN_IF_FAILED(pWindow->GetHWND(&hWnd));
@@ -48,13 +58,7 @@ STDMETHODIMP CWindowService::OpenWindow(HWND hWndParent, REFCLSID clsid, IVarian
 
 	m_windows[hWnd] = windowData;
 
-	{
-		CComQIPtr<IInitializeWithControl> pInit = pWindow;
-		if (pInit)
-		{
-			RETURN_IF_FAILED(pInit->SetControl(m_pControl));
-		}
-	}
+	RETURN_IF_FAILED(HrInitializeWithControl(pWindow, m_pControl));
 
 	{
 		CComQIPtr<IThemeSupport> pThemeSupport = pWindow;
@@ -68,20 +72,7 @@ STDMETHODIMP CWindowService::OpenWindow(HWND hWndParent, REFCLSID clsid, IVarian
 		}
 	}
 
-	{
-		CComQIPtr<IPluginSupportNotifications> pInit = pWindow;
-		if (pInit)
-		{
-			RETURN_IF_FAILED(pInit->OnInitialized(m_pServiceProvider));
-		}
-	}
-
-	{
-		CComQIPtr<IInitializeWithVariantObject> pInit = pWindow;
-		if (pInit)
-		{
-			RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObject));
-		}
-	}
+	RETURN_IF_FAILED(HrNotifyOnInitialized(pWindow, m_pServiceProvider));
+	RETURN_IF_FAILED(HrInitializeWithVariantObject(pWindow, pVariantObject));
 	return S_OK;
 }

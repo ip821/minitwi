@@ -16,7 +16,8 @@ class ATL_NO_VTABLE CWindowService :
 	public IWindowService,
 	public IInitializeWithControlImpl,
 	public IPluginSupportNotifications,
-	public IWindowEventSink
+	public IWindowEventSink,
+	public IInitializeWithSettings
 {
 public:
 	CWindowService()
@@ -30,6 +31,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IWindowEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 	END_COM_MAP()
 
 private:
@@ -40,6 +42,7 @@ private:
 	};
 
 	CComPtr<IServiceProvider> m_pServiceProvider;
+	CComPtr<ISettings> m_pSettings;
 	map<HWND, WindowData> m_windows;
 
 public:
@@ -50,6 +53,7 @@ public:
 	STDMETHOD(OpenWindow)(HWND hWndParent, REFCLSID clsid, IVariantObject* pVariantObject);
 
 	STDMETHOD(OnClosed)(HWND hWndSelf);
+	STDMETHOD(Load)(ISettings* pSettings);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(WindowService), CWindowService)

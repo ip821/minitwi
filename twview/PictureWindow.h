@@ -11,6 +11,9 @@ using namespace ATL;
 using namespace std;
 using namespace Gdiplus;
 
+#define PICTURE_WINDOW_SETTINGS_PATH L"PictureWindow"
+#define PICTURE_WINDOW_SETTINGS_DISABLE_MONITOR_SNAP_KEY L"DisableMonitorSnap"
+
 // CPictureWindow
 
 class ATL_NO_VTABLE CPictureWindow :
@@ -25,6 +28,7 @@ class ATL_NO_VTABLE CPictureWindow :
 	public IInitializeWithVariantObject,
 	public IDownloadServiceEventSink,
 	public IPluginSupportNotifications,
+	public IInitializeWithSettings,
 	public IConnectionPointContainerImpl<CPictureWindow>,
 	public IConnectionPointImpl<CPictureWindow, &__uuidof(IWindowEventSink)>
 {
@@ -38,6 +42,7 @@ public:
 	BEGIN_COM_MAP(CPictureWindow)
 		COM_INTERFACE_ENTRY(IPictureWindow)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
@@ -83,6 +88,7 @@ private:
 	BYTE m_alphaAmount = 0;
 	const BYTE STEPS = 25;
 	BOOL m_bInitialMonitorDetection = TRUE;
+	BOOL m_bDisableMonitorSnap = FALSE;
 
 	HRESULT Fire_OnClosed(HWND hWnd);
 
@@ -120,6 +126,8 @@ public:
 	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *bResult);
 
 	STDMETHOD(SetTheme)(ITheme* pTheme);
+
+	STDMETHOD(Load)(ISettings *pSettings);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(PictureWindow), CPictureWindow)
