@@ -69,7 +69,7 @@ STDMETHODIMP CShowMoreSupportService::OnFinish(IVariantObject* pResult)
 			CComPtr<IVariantObject> pVariantObject;
 			RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 			RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(false)));
-			RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
+			RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&pVariantObject.p, 1));
 		}
 	}
 
@@ -122,7 +122,7 @@ STDMETHODIMP CShowMoreSupportService::OnColumnClick(IColumnsInfoItem* pColumnsIn
 				CComPtr<IVariantObject> pVariantObjectItemShowMore;
 				RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObjectItemShowMore));
 				RETURN_IF_FAILED(pVariantObjectItemShowMore->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
-				RETURN_IF_FAILED(m_pTimelineControl->RefreshItem(uiCount - 1));
+				RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&pVariantObjectItemShowMore.p, 1));
 				RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&pVariantObjectItemShowMore.p, 1));
 			}
 

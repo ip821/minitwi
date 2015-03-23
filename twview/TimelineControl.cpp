@@ -229,12 +229,6 @@ STDMETHODIMP CTimelineControl::SetSkinTimeline(ISkinTimeline* pSkinTimeline)
 	return S_OK;
 }
 
-STDMETHODIMP CTimelineControl::RefreshItem(UINT uiIndex)
-{
-	m_listBox.RefreshItem(uiIndex);
-	return S_OK;
-}
-
 LRESULT CTimelineControl::OnItemDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);

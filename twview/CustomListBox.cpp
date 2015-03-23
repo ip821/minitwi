@@ -78,11 +78,10 @@ void CCustomListBox::RefreshItem(UINT uiIndex)
 	MEASUREITEMSTRUCT s = { 0 };
 	s.itemID = uiIndex;
 	MeasureItem(&s);
-	{ //SetItemHeight but using PostMessage
+	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::PostMessage(m_hWnd, LB_SETITEMHEIGHT, uiIndex, MAKELONG(s.itemHeight, 0));
+		::SendMessage(m_hWnd, LB_SETITEMHEIGHT, uiIndex, MAKELONG(s.itemHeight, 0));
 	}
-	//SetItemHeight(uiIndex, s.itemHeight);
 }
 
 void CCustomListBox::DoSize(int cx, int cy)

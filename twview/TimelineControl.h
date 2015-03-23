@@ -121,7 +121,6 @@ public:
 	STDMETHOD(GetTopVisibleItemIndex)(UINT* puiIndex);
 	STDMETHOD(GetItemsCount)(UINT* puiCount);
 	STDMETHOD(RemoveItemByIndex)(UINT uiIndex);
-	STDMETHOD(RefreshItem)(UINT uiIndex);
 	STDMETHOD(ScrollToItem)(UINT uiIndex);
 
 	STDMETHOD(OnBeforeCommandInvoke)(REFGUID guidCommand, int iCommandSource, ICommand* pCommand);

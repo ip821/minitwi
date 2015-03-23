@@ -199,7 +199,6 @@ interface ITimelineControl : IControl2
 	HRESULT GetItems(IObjArray** ppObjectArray);
 	HRESULT InsertItem(IVariantObject* pVariantObject, UINT uiIndex);
 	HRESULT InsertItems(IObjArray* pObjectArray, UINT uiStartIndex);
-	HRESULT RefreshItem(UINT uiIndex);
 	HRESULT RefreshItems(IVariantObject** pItemArray, UINT uiCountArray);
 	HRESULT IsEmpty(BOOL* pbIsEmpty);
 	HRESULT InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
