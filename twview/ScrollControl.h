@@ -39,10 +39,6 @@ private:
 	CComPtr<IAnimation> m_pAnimation;
 
 	int m_dx = 0;
-	int m_step = 0;
-	int m_scrollAmount = 0;
-	const int STEPS = 10;
-	BOOL m_bFromRightToLeft = FALSE;
 	DWORD m_dwAdviceAnimation = 0;
 
 	LRESULT OnScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

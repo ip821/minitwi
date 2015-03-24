@@ -70,31 +70,17 @@ STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
 	CRect rect;
 	GetClientRect(&rect);
 
-	m_scrollAmount = rect.Width() / STEPS;
-	m_step = 0;
-
-	if (bFromRightToLeft)
-	{
-		m_dx = 0;
-	}
-	else
-	{
-		m_dx = rect.Width();
-		m_scrollAmount = -m_scrollAmount;
-	}
-	m_bFromRightToLeft = bFromRightToLeft;
-
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(m_pAnimationManagerService->CreateAnimation(CLSID_AccelerateDecelerateAnimation, &m_pAnimation));
 	RETURN_IF_FAILED(AtlAdvise(m_pAnimation, pUnk, __uuidof(IAnimationEventSink), &m_dwAdviceAnimation));
 	if (bFromRightToLeft)
 	{
-		RETURN_IF_FAILED(m_pAnimation->SetParams(0, rect.Width(), 1));
+		RETURN_IF_FAILED(m_pAnimation->SetParams(0, rect.Width(), 0.5));
 	}
 	else
 	{
-		RETURN_IF_FAILED(m_pAnimation->SetParams(rect.Width(), 0, 1));
+		RETURN_IF_FAILED(m_pAnimation->SetParams(rect.Width(), 0, 0.5));
 	}
 	RETURN_IF_FAILED(m_pAnimation->Run());
 
@@ -111,27 +97,15 @@ STDMETHODIMP CScrollControl::OnAnimation()
 	int iValue = 0;
 	RETURN_IF_FAILED(m_pAnimation->GetCurrentIntValue(&iValue));
 
-	m_dx += m_scrollAmount;
-	m_step++;
+	m_dx = iValue;
 	CRect rectUpdate;
 	Invalidate();
 	RedrawWindow(0, 0, RDW_UPDATENOW);
-#ifdef _DEBUG
-	using namespace boost;
-	CString str;
-	str.Format(
-		L"CScrollControl::OnAnimationTimer - rectUpdate = (%s, %s - %s, %s)\n",
-		lexical_cast<wstring>(rectUpdate.left).c_str(),
-		lexical_cast<wstring>(rectUpdate.top).c_str(),
-		lexical_cast<wstring>(rectUpdate.right).c_str(),
-		lexical_cast<wstring>(rectUpdate.bottom).c_str()
-		);
-	OutputDebugString(str);
-#endif
-
 	RedrawWindow(rectUpdate, 0, RDW_UPDATENOW | RDW_NOERASE);
 
-	if (m_step == STEPS)
+	BOOL bComplete = FALSE;
+	RETURN_IF_FAILED(m_pAnimation->IsAnimationComplete(&bComplete));
+	if (bComplete)
 	{
 		RETURN_IF_FAILED(AtlUnadvise(m_pAnimation, __uuidof(IAnimationEventSink), m_dwAdviceAnimation));
 		m_pAnimation.Release();
@@ -139,7 +113,6 @@ STDMETHODIMP CScrollControl::OnAnimation()
 		m_pCustomTabControl->OnEndScroll();
 		return 0;
 	}
-	//StartAnimationTimer(TARGET_INTERVAL);
 	return S_OK;
 }
 
@@ -152,19 +125,6 @@ LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	CDCHandle cdc(BeginPaint(&ps));
 
 	CRect rect = ps.rcPaint;
-#ifdef _DEBUG
-	using namespace boost;
-	CString str;
-	str.Format(
-		L"CScrollControl::OnPaint - ps.rcPaint = (%s, %s - %s, %s)\n",
-		lexical_cast<wstring>(rect.left).c_str(),
-		lexical_cast<wstring>(rect.top).c_str(),
-		lexical_cast<wstring>(rect.right).c_str(),
-		lexical_cast<wstring>(rect.bottom).c_str()
-		);
-	OutputDebugString(str);
-#endif
-
 	CDC cdcBitmap;
 	cdcBitmap.CreateCompatibleDC(cdc);
 	CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, m_bitmap);
