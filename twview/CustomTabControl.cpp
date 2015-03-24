@@ -12,12 +12,12 @@ STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 
 STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
-	HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls);
-	HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo);
-	CRect rect;
-	*hWnd = __super::Create(hWndParent, rect, L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
-	m_wndScroll.Create(m_hWnd, rect, L"", WS_CHILD, WS_EX_COMPOSITED);
-	m_wndScroll.SetTabWindow(this);
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ScrollControl, &m_pScrollControl));
+	*hWnd = __super::Create(hWndParent, 0, L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
+	RETURN_IF_FAILED(m_pScrollControl->CreateEx(m_hWnd, nullptr));
+	RETURN_IF_FAILED(m_pScrollControl->SetTabControl(this));
 	return S_OK;
 }
 
@@ -184,9 +184,11 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		}
 		
 		cdc.SelectBitmap(currentBitmap);
-		m_wndScroll.SetWindowPos(NULL, &m_rectChildControlArea, SWP_SHOWWINDOW);
-		m_wndScroll.SetBitmap(m_scrollBitmap.m_hBitmap);
-		m_wndScroll.Scroll(bRightToLeft);
+		HWND hWnd = 0;
+		m_pScrollControl->GetHWND(&hWnd);
+		::SetWindowPos(hWnd, NULL, m_rectChildControlArea.left, m_rectChildControlArea.top, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), SWP_SHOWWINDOW);
+		m_pScrollControl->SetBitmap(m_scrollBitmap.m_hBitmap);
+		m_pScrollControl->Scroll(bRightToLeft);
 	}
 
 	m_nextSelectedPageIndex = dwIndex;
@@ -197,7 +199,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 	}
 }
 
-void CCustomTabControl::OnEndScroll()
+STDMETHODIMP CCustomTabControl::OnEndScroll()
 {
 	CComPtr<IControl> pNextControl;
 	ASSERT_IF_FAILED(m_pControls->GetAt(m_nextSelectedPageIndex, __uuidof(IControl), (LPVOID*)&pNextControl));
@@ -216,7 +218,7 @@ void CCustomTabControl::OnEndScroll()
 		ASSERT_IF_FAILED(Fire_OnDeactivate(pControl));
 	}
 
-	m_wndScroll.ShowWindow(SW_HIDE);
+	m_pScrollControl->ShowWindow(SW_HIDE);
 	HWND hWnd = 0;
 	ASSERT_IF_FAILED(pNextControl->GetHWND(&hWnd));
 	::ShowWindow(hWnd, SW_SHOW);
@@ -236,6 +238,7 @@ void CCustomTabControl::OnEndScroll()
 
 	ASSERT_IF_FAILED(UpdateColumnInfo());
 	Invalidate(TRUE);
+	return S_OK;
 }
 
 STDMETHODIMP CCustomTabControl::GetCurrentPage(IControl **ppControl)

@@ -17,6 +17,7 @@ class CCustomTabControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CCustomTabControl, &CLSID_CustomTabControl>,
 	public ICustomTabControl,
+	public ICustomTabControlInternal,
 	public IControl,
 	public IInitializeWithControlImpl,
 	public IPersistSettings,
@@ -78,6 +79,7 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
+	CComPtr<IScrollControl> m_pScrollControl;
 	UINT m_cAnimationRefs = 0;
 
 	CRect m_rectChildControlArea;
@@ -90,7 +92,6 @@ private:
 	BOOL m_bInfoImageIsError = FALSE;
 	CComBSTR m_bstrInfoMessage;
 
-	CScrollControl m_wndScroll;
 	CBitmap m_scrollBitmap;
 
 	void SelectPage(DWORD dwIndex);
@@ -116,7 +117,7 @@ private:
 	HRESULT Fire_OnTabHeaderClick(IControl* pControl);
 
 public:
-	void OnEndScroll();
+	STDMETHOD(OnEndScroll)();
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
 	STDMETHOD(CreateEx)(HWND hWndParent, HWND *hWnd);
