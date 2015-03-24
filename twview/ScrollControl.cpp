@@ -17,6 +17,20 @@ CScrollControl::~CScrollControl()
 	DestroyWindow();
 }
 
+STDMETHODIMP CScrollControl::OnInitialized(IServiceProvider* pServiceProvider)
+{
+	CHECK_E_POINTER(pServiceProvider);
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_AnimationManagerService, &m_pAnimationManagerService));
+	return S_OK;
+}
+
+STDMETHODIMP CScrollControl::OnShutdown()
+{
+	m_pAnimationManagerService.Release();
+	m_pCustomTabControl.Release();
+	return S_OK;
+}
+
 STDMETHODIMP CScrollControl::GetHWND(HWND *hWnd)
 {
 	CHECK_E_POINTER(hWnd);
@@ -70,7 +84,20 @@ STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
 	}
 	m_bFromRightToLeft = bFromRightToLeft;
 
-	StartAnimationTimer(TARGET_INTERVAL);
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	RETURN_IF_FAILED(m_pAnimationManagerService->CreateAnimation(CLSID_AccelerateDecelerateAnimation, &m_pAnimation));
+	RETURN_IF_FAILED(AtlAdvise(m_pAnimation, pUnk, __uuidof(IAnimationEventSink), &m_dwAdviceAnimation));
+	if (bFromRightToLeft)
+	{
+		RETURN_IF_FAILED(m_pAnimation->SetParams(0, rect.Width(), 1));
+	}
+	else
+	{
+		RETURN_IF_FAILED(m_pAnimation->SetParams(rect.Width(), 0, 1));
+	}
+	RETURN_IF_FAILED(m_pAnimation->Run());
+
 	return S_OK;
 }
 
@@ -79,8 +106,11 @@ LRESULT CScrollControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lPara
 	return 0;
 }
 
-LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+STDMETHODIMP CScrollControl::OnAnimation()
 {
+	int iValue = 0;
+	RETURN_IF_FAILED(m_pAnimation->GetCurrentIntValue(&iValue));
+
 	m_dx += m_scrollAmount;
 	m_step++;
 	CRect rectUpdate;
@@ -103,11 +133,14 @@ LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	if (m_step == STEPS)
 	{
+		RETURN_IF_FAILED(AtlUnadvise(m_pAnimation, __uuidof(IAnimationEventSink), m_dwAdviceAnimation));
+		m_pAnimation.Release();
+		m_dwAdviceAnimation = 0;
 		m_pCustomTabControl->OnEndScroll();
 		return 0;
 	}
-	StartAnimationTimer(TARGET_INTERVAL);
-	return 0;
+	//StartAnimationTimer(TARGET_INTERVAL);
+	return S_OK;
 }
 
 LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

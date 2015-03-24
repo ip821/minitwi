@@ -367,11 +367,14 @@ STDMETHODIMP CCustomTabControl::OnInitialized(IServiceProvider* pServiceProvider
 		}
 	}
 	m_pServiceProvider = pServiceProvider;
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pScrollControl, m_pServiceProvider));
 	return S_OK;
 }
 
 STDMETHODIMP CCustomTabControl::OnShutdown()
 {
+	HrNotifyOnShutdown(m_pScrollControl);
+	m_pScrollControl.Release();
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
