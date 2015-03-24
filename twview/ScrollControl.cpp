@@ -17,14 +17,41 @@ CScrollControl::~CScrollControl()
 	DestroyWindow();
 }
 
-void CScrollControl::SetBitmap(HBITMAP hBitmap)
+STDMETHODIMP CScrollControl::GetHWND(HWND *hWnd)
+{
+	CHECK_E_POINTER(hWnd);
+	*hWnd = m_hWnd;
+	return S_OK;
+}
+
+STDMETHODIMP CScrollControl::CreateEx(HWND hWndParent, HWND *hWnd)
+{
+	__super::Create(hWndParent, 0, L"", WS_CHILD, WS_EX_COMPOSITED);
+	if (hWnd)
+		*hWnd = m_hWnd;
+	return S_OK;
+}
+
+STDMETHODIMP CScrollControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
+{
+	return S_OK;
+}
+
+STDMETHODIMP CScrollControl::ShowWindow(DWORD dwCommand)
+{
+	CWindowImpl<CScrollControl>::ShowWindow(dwCommand);
+	return S_OK;
+}
+
+STDMETHODIMP CScrollControl::SetBitmap(HBITMAP hBitmap)
 {
 	m_bitmap = hBitmap;
 	Invalidate();
 	RedrawWindow(0, 0, RDW_UPDATENOW);
+	return S_OK;
 }
 
-void CScrollControl::Scroll(BOOL bFromRightToLeft)
+STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
 {
 	CRect rect;
 	GetClientRect(&rect);
@@ -44,6 +71,7 @@ void CScrollControl::Scroll(BOOL bFromRightToLeft)
 	m_bFromRightToLeft = bFromRightToLeft;
 
 	StartAnimationTimer(TARGET_INTERVAL);
+	return S_OK;
 }
 
 LRESULT CScrollControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -114,7 +142,8 @@ LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	return 0;
 }
 
-void CScrollControl::SetTabWindow(CCustomTabControl* pCustomTabControl)
+STDMETHODIMP CScrollControl::SetTabControl(ICustomTabControlInternal* pCustomTabControl)
 {
 	m_pCustomTabControl = pCustomTabControl;
+	return S_OK;
 }

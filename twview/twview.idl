@@ -13,6 +13,28 @@ import "..\model-libs\viewmdl\viewmdl_contract_i.idl";
 import "..\twitter\twitter_contract_i.idl";
 
 [
+	object,
+	uuid(82BBA45A-FEAB-4656-A745-24BFFCEA11F5),
+	pointer_default(unique)
+]
+interface ICustomTabControlInternal : IUnknown
+{
+	HRESULT OnEndScroll();
+};
+[
+	object,
+	uuid(C8567C6E-0BF4-4199-BEA2-9B48D35CDCC9),
+	pointer_default(unique)
+]
+interface IScrollControl : IControl
+{
+	HRESULT SetTabControl(ICustomTabControlInternal* pCustomTabControl);
+	HRESULT Scroll(BOOL bRightToLeft);
+	HRESULT SetBitmap(HBITMAP hBitmap);
+	HRESULT ShowWindow(DWORD dwCommand);
+};
+
+[
 	uuid(C2670317-C208-4C91-A844-75922381F104),
 	version(1.0),
 ]
@@ -137,6 +159,13 @@ library twviewLib
 	coclass ListTimelineControl
 	{
 		[default] interface IListTimelineControl;
+	};
+	[
+		uuid(7C8FE398-09C0-4779-9D0A-C361294CD7BE)
+	]
+	coclass ScrollControl
+	{
+		[default] interface IScrollControl;
 	};
 };
 
