@@ -92,6 +92,9 @@
     <Filter Include="Services\FollowStatusService">
       <UniqueIdentifier>{861279f4-f8b0-43fa-8403-0d1ce20a37a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\AnimationService">
+      <UniqueIdentifier>{b52302d3-e652-4168-8279-3b0cd7940100}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -207,6 +210,9 @@
     </ClCompile>
     <ClCompile Include="FollowStatusService.cpp">
       <Filter>Services\FollowStatusService</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationService.cpp">
+      <Filter>Services\AnimationService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -341,6 +347,9 @@
     </ClInclude>
     <ClInclude Include="FollowStatusService.h">
       <Filter>Services\FollowStatusService</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationService.h">
+      <Filter>Services\AnimationService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

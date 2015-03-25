@@ -191,6 +191,27 @@ interface ITimelineControlEventSink : IUnknown
 
 [
 	object,
+	uuid(26859FBC-C493-41F3-BA23-93399E4A8AD6),
+	pointer_default(unique)
+]
+interface IAnimationService : IUnknown
+{
+	HRESULT SetParams(DWORD dwStart, DWORD dwFinish, DWORD dwSteps, DWORD dwTimerInternal);
+	HRESULT StartAnimationTimer();
+};
+
+[
+	object,
+	uuid(FB87D8C6-B62A-4F99-8F91-097264DB96E5),
+	pointer_default(unique)
+]
+interface IAnimationServiceEventSink : IUnknown
+{
+	HRESULT OnAnimationStep(IAnimationService* pAnimationService, DWORD dwValue, DWORD dwStep);
+};
+
+[
+	object,
 	uuid(304C4130-701C-4951-AF30-2A38A0A51D31),
 	pointer_default(unique)
 ]

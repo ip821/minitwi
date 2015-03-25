@@ -244,6 +244,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationService.cpp" />
     <ClCompile Include="asyncsvc_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -338,6 +339,7 @@
     <ClCompile Include="WindowService.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationService.h" />
     <ClInclude Include="AnimationTimerSupport.h" />
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="ColumnsInfo.h" />
