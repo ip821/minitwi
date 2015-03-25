@@ -47,6 +47,17 @@ STDMETHODIMP CSkinTimeline::SetFontMap(IThemeFontMap* pThemeFontMap)
 	return S_OK;
 }
 
+STDMETHODIMP CSkinTimeline::EraseBackground(HDC hdc, RECT rect)
+{
+	DWORD dwColor = 0;
+	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwColor));
+	CBrush brush;
+	brush.CreateSolidBrush(dwColor);
+	CDCHandle cdc(hdc);
+	cdc.FillRect(&rect, brush);
+	return S_OK;
+}
+
 STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
 	CDCHandle cdcReal = lpdis->lpdi->hDC;
@@ -59,14 +70,14 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInf
 		return S_OK;
 	}
 
-
 	CDC cdc;
 	cdc.CreateCompatibleDC(cdcReal);
-	CDCSelectBitmapManualScope cdcSelectBitmapManualScope;
 
-	shared_ptr<CBitmap> pbitmap = make_shared<CBitmap>();
-	pbitmap->CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
-	cdcSelectBitmapManualScope.SelectBitmap(cdc, pbitmap.get()->m_hBitmap);
+	CBitmap bitmap;
+	bitmap.CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
+	CDCSelectBitmapScope cdcSelectBitmapManualScope(cdc, bitmap);
+
+	EraseBackground(cdc, CRect(0, 0, rect.Width(), rect.Height()));
 
 	lpdis->lpdi->hDC = cdc;
 	lpdis->lpdi->rcItem.left = 0;
@@ -84,6 +95,7 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInf
 	{
 		bf.SourceConstantAlpha = m_steps[lpdis->lpdi->itemID].alpha;
 	}
+
 	cdcReal.AlphaBlend(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, rect.Width(), rect.Height(), bf);
 	RETURN_IF_FAILED(DrawImageColumns(pColumnsInfo, lpdis));
 	return S_OK;
@@ -208,16 +220,6 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pCol
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
 		cdc.FillRect(&(lpdis->lpdi->rcItem), brush);
-	}
-	else
-	{
-		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwColor));
-		CBrush brush;
-		brush.CreateSolidBrush(dwColor);
-		RECT rect = lpdis->lpdi->rcItem;
-		rect.bottom -= COLUMN_Y_SPACING;
-		cdc.FillRect(&rect, brush);
 	}
 
 	if (!bDisabledSelection)

@@ -15,7 +15,7 @@ STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ScrollControl, &m_pScrollControl));
-	*hWnd = __super::Create(hWndParent, 0, L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
+	*hWnd = __super::Create(hWndParent, 0, L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT);
 	RETURN_IF_FAILED(m_pScrollControl->CreateEx(m_hWnd, nullptr));
 	RETURN_IF_FAILED(m_pScrollControl->SetTabControl(this));
 	return S_OK;
@@ -517,13 +517,16 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(m_pColumnsInfo, ps.hdc, rect);
+	{
+		CDoubleBufferScope doubleBuffer(ps.hdc, rect);
+		m_pSkinTabControl->EraseBackground(doubleBuffer.GetHDC());
+		m_pSkinTabControl->DrawHeader(m_pColumnsInfo, doubleBuffer.GetHDC(), rect);
 
-	if (m_cAnimationRefs > 0)
-		m_pSkinTabControl->DrawAnimation(ps.hdc);
-	else if (m_bShowInfoImage)
-		m_pSkinTabControl->DrawInfoImage(ps.hdc, m_bInfoImageIsError, m_bstrInfoMessage);
-
+		if (m_cAnimationRefs > 0)
+			m_pSkinTabControl->DrawAnimation(doubleBuffer.GetHDC());
+		else if (m_bShowInfoImage)
+			m_pSkinTabControl->DrawInfoImage(doubleBuffer.GetHDC(), m_bInfoImageIsError, m_bstrInfoMessage);
+	}
 	EndPaint(&ps);
 
 	return 0;
@@ -531,7 +534,6 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 LRESULT CCustomTabControl::OnEraseBackground(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	m_pSkinTabControl->EraseBackground((HDC)wParam);
 	return 0;
 }
 

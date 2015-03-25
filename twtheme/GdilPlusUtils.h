@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <gdiplus.h>
+#include <atlapp.h>
+#include <atlmisc.h>
 
 using namespace std;
 using namespace Gdiplus;
@@ -128,5 +130,34 @@ public:
 	virtual ~CDCSelectFontScope()
 	{
 		m_cdc.SelectFont(m_oldFont);
+	}
+};
+
+class CDoubleBufferScope
+{
+	HDC m_hdc;
+	CRect m_rect;
+	CDC m_cdc;
+	CBitmap m_bitmap;
+	shared_ptr<CDCSelectBitmapScope> m_scope;
+
+public:
+	CDoubleBufferScope(HDC hdc, CRect& rect)
+	{
+		m_hdc = hdc;
+		m_rect = rect;
+		m_cdc.CreateCompatibleDC(hdc);
+		m_bitmap.CreateCompatibleBitmap(hdc, rect.Width(), rect.Height());
+		m_scope = make_shared<CDCSelectBitmapScope>(m_cdc, m_bitmap);
+	}
+
+	HDC GetHDC()
+	{
+		return m_cdc;
+	}
+
+	~CDoubleBufferScope()
+	{
+		BitBlt(m_hdc, m_rect.left, m_rect.top, m_rect.Width(), m_rect.Height(), m_cdc, 0, 0, SRCCOPY);
 	}
 };

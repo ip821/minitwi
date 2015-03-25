@@ -168,6 +168,7 @@ interface ISkinTimeline : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
 
+	HRESULT EraseBackground(HDC hdc, RECT rect);
 	HRESULT DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdi);
 	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
 

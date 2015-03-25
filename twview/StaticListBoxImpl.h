@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "atlctrls.h"
+#include "../twtheme/GdilPlusUtils.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ private:
 public:
 	BEGIN_MSG_MAP(CStaticListBox<T>)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint);
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground);
 		MESSAGE_HANDLER(WM_PRINTCLIENT, OnPrintClient);
 		MESSAGE_HANDLER(WM_SIZE, OnSize);
 		MESSAGE_HANDLER(LB_GETCOUNT, OnGetCount);
@@ -39,11 +41,11 @@ public:
 		MESSAGE_HANDLER(LB_SETCURSEL, OnSetCurSel);
 		MESSAGE_HANDLER(LB_GETITEMRECT, OnGetItemRect);
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonDown)
-		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
-		MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
-		MESSAGE_HANDLER(WM_SETLISTBOX_SCROLL_MODE, OnSetScrollMode)
-		CHAIN_MSG_MAP(CScrollImpl<T>)
-		CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
+			MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+			MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
+			MESSAGE_HANDLER(WM_SETLISTBOX_SCROLL_MODE, OnSetScrollMode)
+			CHAIN_MSG_MAP(CScrollImpl<T>)
+			CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
 	END_MSG_MAP()
 
 	CStaticListBoxImpl()
@@ -341,11 +343,23 @@ public:
 		return 0;
 	}
 
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		return 0;
+	}
+
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
+		OutputDebugString(L"CStaticListBox::OnPaint\n");
 		PAINTSTRUCT ps = { 0 };
 		BeginPaint(GetHWND(), &ps);
-		OnPaintInternal(ps.hdc, CRect(ps.rcPaint));
+		{
+			CRect rect;
+			GetClientRect(GetHWND(), &rect);
+
+			CDoubleBufferScope doubleBuffer(ps.hdc, rect);
+			OnPaintInternal(doubleBuffer.GetHDC(), rect);
+		}
 		EndPaint(GetHWND(), &ps);
 		return 0;
 	}
@@ -359,11 +373,14 @@ public:
 
 		CDCHandle dc(hdc);
 
+		pT->EraseBackground(dc, rectToPaint);
+
 		CPoint ptViewportOrg;
 		dc.SetViewportOrg(-m_ptOffset.x, -m_ptOffset.y, &ptViewportOrg);
 
 		UINT uiCount = m_items.size();
 		LONG lTop = rect.top;
+		LONG lLastBotom = lTop;
 		for (size_t i = 0; i < uiCount; i++)
 		{
 			CRect rectItem;
@@ -388,9 +405,11 @@ public:
 					di.itemState |= ODS_SELECTED;
 
 				pT->DrawItem(&di);
+				lLastBotom += rectItem.Height();
 			}
 			lTop += rectItem.Height();
 		}
+
 		dc.SetViewportOrg(ptViewportOrg);
 	}
 
@@ -490,7 +509,7 @@ public:
 
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
 		SetScrollSize(1, height ? height : 1, true, yOffset);
-		SetScrollLine(1, 40);
+		SetScrollLine(1, 400);
 		SetScrollPage(1, 200);
 	}
 

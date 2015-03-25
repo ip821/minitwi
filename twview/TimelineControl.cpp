@@ -127,9 +127,6 @@ LRESULT CTimelineControl::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 LRESULT CTimelineControl::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	auto dwExStyle = GetWindowLong(GWL_EXSTYLE);
-	dwExStyle |= WS_EX_COMPOSITED;
-	SetWindowLong(GWL_EXSTYLE, dwExStyle);
 	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
 	m_pPluginSupport->InitializePlugins(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND);
 	CComQIPtr<IInitializeWithControl> pInit = m_pPluginSupport;

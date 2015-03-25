@@ -66,6 +66,7 @@ private:
 	STDMETHOD(DrawImageColumns)(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis);
 public:
 
+	STDMETHOD(EraseBackground)(HDC hdc, RECT rect);
 	STDMETHOD(DrawItem)(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis);
 	STDMETHOD(MeasureItem)(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
 

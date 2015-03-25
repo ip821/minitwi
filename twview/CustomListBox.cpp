@@ -103,6 +103,11 @@ void CCustomListBox::SetSkinTimeline(ISkinTimeline* pSkin)
 	m_pSkinTimeline = pSkin;
 }
 
+void CCustomListBox::EraseBackground(HDC hdc, RECT rect)
+{
+	ASSERT_IF_FAILED(m_pSkinTimeline->EraseBackground(hdc, rect));
+}
+
 void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 {
 	if (lpdi->itemID == (UINT)INVALID_ITEM_INDEX)

@@ -196,7 +196,7 @@ STDMETHODIMP CPictureWindow::Show(HWND hWndParent)
 	m_hWndParent = hWndParent;
 	CRect rect(0, 0, 100, 100);
 	CalcRect(rect.right, rect.bottom, rect);
-	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU, WS_EX_COMPOSITED);
+	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU);
 	return S_OK;
 }
 

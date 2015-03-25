@@ -173,7 +173,7 @@ public:
 	{
 		T* pT = static_cast<T*>(this);
 		CHECK_E_POINTER(hWnd);
-		*hWnd = pT->Create(hWndParent, 0, 0, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
+		*hWnd = pT->Create(hWndParent, 0, 0, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT);
 		return S_OK;
 	}
 

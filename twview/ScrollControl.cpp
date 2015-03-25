@@ -40,7 +40,7 @@ STDMETHODIMP CScrollControl::GetHWND(HWND *hWnd)
 
 STDMETHODIMP CScrollControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
-	__super::Create(hWndParent, 0, L"", WS_CHILD, WS_EX_COMPOSITED);
+	__super::Create(hWndParent, 0, L"", WS_CHILD);
 	if (hWnd)
 		*hWnd = m_hWnd;
 	return S_OK;
