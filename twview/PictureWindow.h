@@ -19,7 +19,6 @@ using namespace Gdiplus;
 class ATL_NO_VTABLE CPictureWindow :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CPictureWindow, &CLSID_PictureWindow>,
-	public CAnimationTimerSupport<CPictureWindow>,
 	public CWindowImpl<CPictureWindow>,
 	public IPictureWindow,
 	public IMsgFilter,
@@ -29,6 +28,7 @@ class ATL_NO_VTABLE CPictureWindow :
 	public IDownloadServiceEventSink,
 	public IPluginSupportNotifications,
 	public IInitializeWithSettings,
+	public IAnimationEventSink,
 	public IConnectionPointContainerImpl<CPictureWindow>,
 	public IConnectionPointImpl<CPictureWindow, &__uuidof(IWindowEventSink)>
 {
@@ -49,6 +49,7 @@ public:
 		COM_INTERFACE_ENTRY(IConnectionPointContainer)
 		COM_INTERFACE_ENTRY(IWindow)
 		COM_INTERFACE_ENTRY(IThemeSupport)
+		COM_INTERFACE_ENTRY(IAnimationEventSink)
 	END_COM_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CPictureWindow)
@@ -63,7 +64,7 @@ public:
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtomUp)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtomUp)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
-		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
+		MESSAGE_HANDLER(WM_START_ANIMATION, OnStartAnimation)
 	END_MSG_MAP()
 
 private:
@@ -74,8 +75,11 @@ private:
 	CComPtr<ICommandSupport> m_pCommandSupport;
 	CComPtr<IMessageLoop> m_pMessageLoop;
 	CComPtr<ITheme> m_pTheme;
+	CComPtr<IAnimation> m_pAnimation;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
+	DWORD m_dwAdviceAnimation = 0;
+	DOUBLE m_dblAlpha = 0;
 	int m_currentBitmapIndex = -1;
 	vector<CComBSTR> m_bitmapsUrls;
 	boost::mutex m_mutex;
@@ -83,10 +87,6 @@ private:
 	HWND m_hWndParent = 0;
 	CString m_strLastErrorMsg;
 
-	BYTE m_alpha = 0;
-	int m_step = 0;
-	BYTE m_alphaAmount = 0;
-	const BYTE STEPS = 25;
 	BOOL m_bInitialMonitorDetection = TRUE;
 	BOOL m_bDisableMonitorSnap = FALSE;
 
@@ -99,11 +99,12 @@ private:
 	LRESULT OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnStartAnimation(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void OnFinalMessage(HWND hWnd);
 	void CalcRect(int width, int height, CRect& rect);
 	STDMETHOD(StartNextDownload)(int index);
+	STDMETHOD(StartAnimation)();
 	STDMETHOD(ResetAnimation)();
 	void ResizeWindow(UINT uiWidth, UINT uiHeight);
 	void ResizeToCurrentBitmap();
@@ -128,6 +129,8 @@ public:
 	STDMETHOD(SetTheme)(ITheme* pTheme);
 
 	STDMETHOD(Load)(ISettings *pSettings);
+
+	STDMETHOD(OnAnimation)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(PictureWindow), CPictureWindow)

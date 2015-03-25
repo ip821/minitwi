@@ -20,13 +20,20 @@ CScrollControl::~CScrollControl()
 STDMETHODIMP CScrollControl::OnInitialized(IServiceProvider* pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
-	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_AnimationManagerService, &m_pAnimationManagerService));
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_AccelerateDecelerateAnimation, &m_pAnimation));
+	RETURN_IF_FAILED(AtlAdvise(m_pAnimation, pUnk, __uuidof(IAnimationEventSink), &m_dwAdviceAnimation));
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pAnimation, pServiceProvider));
 	return S_OK;
 }
 
 STDMETHODIMP CScrollControl::OnShutdown()
 {
-	m_pAnimationManagerService.Release();
+	RETURN_IF_FAILED(HrNotifyOnShutdown(m_pAnimation));
+	RETURN_IF_FAILED(AtlUnadvise(m_pAnimation, __uuidof(IAnimationEventSink), m_dwAdviceAnimation));
+	m_dwAdviceAnimation = 0;
+	m_pAnimation.Release();
 	m_pCustomTabControl.Release();
 	return S_OK;
 }
@@ -69,10 +76,6 @@ STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
 	CRect rect;
 	GetClientRect(&rect);
 
-	CComPtr<IUnknown> pUnk;
-	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(m_pAnimationManagerService->CreateAnimation(CLSID_AccelerateDecelerateAnimation, &m_pAnimation));
-	RETURN_IF_FAILED(AtlAdvise(m_pAnimation, pUnk, __uuidof(IAnimationEventSink), &m_dwAdviceAnimation));
 	if (bFromRightToLeft)
 	{
 		RETURN_IF_FAILED(m_pAnimation->SetParams(0, rect.Width(), AnimationDuration));
@@ -104,9 +107,6 @@ STDMETHODIMP CScrollControl::OnAnimation()
 	RETURN_IF_FAILED(m_pAnimation->IsAnimationComplete(&bComplete));
 	if (bComplete)
 	{
-		RETURN_IF_FAILED(AtlUnadvise(m_pAnimation, __uuidof(IAnimationEventSink), m_dwAdviceAnimation));
-		m_pAnimation.Release();
-		m_dwAdviceAnimation = 0;
 		m_pCustomTabControl->OnEndScroll();
 		return 0;
 	}

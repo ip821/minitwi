@@ -35,7 +35,6 @@ public:
 private:
 	CBitmap m_bitmap;
 	CComPtr<ICustomTabControlInternal> m_pCustomTabControl;
-	CComPtr<IAnimationManagerService> m_pAnimationManagerService;
 	CComPtr<IAnimation> m_pAnimation;
 
 	int m_dx = 0;

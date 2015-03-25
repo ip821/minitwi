@@ -10,9 +10,6 @@
 
 #define IMAGE_PADDING 25
 
-#define TARGET_RESOLUTION 1
-#define TARGET_INTERVAL 15
-
 CPictureWindow::CPictureWindow()
 {
 }
@@ -61,11 +58,16 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	m_pServiceProvider = m_pPluginSupport;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
 
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_AccelerateDecelerateAnimation, &m_pAnimation));
+	RETURN_IF_FAILED(AtlAdvise(m_pAnimation, pUnk, __uuidof(IAnimationEventSink), &m_dwAdviceAnimation));
+
 	return S_OK;
 }
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
+	RETURN_IF_FAILED(AtlUnadvise(m_pAnimation, __uuidof(IAnimationEventSink), m_dwAdviceAnimation));
+	m_pAnimation.Release();
 	RETURN_IF_FAILED(m_pMessageLoop->RemoveMessageFilter(this));
 	m_pMessageLoop.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
@@ -267,27 +269,21 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 	return S_OK;
 }
 
-LRESULT CPictureWindow::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+STDMETHODIMP CPictureWindow::OnAnimation()
 {
 	boost::lock_guard<boost::mutex> lock(m_mutex);
-	m_alpha += m_alphaAmount;
-	m_step++;
 	Invalidate();
-
-	if (m_step == STEPS)
-	{
-		m_alpha = 255;
-		return 0;
-	}
-	StartAnimationTimer(TARGET_INTERVAL);
+	RETURN_IF_FAILED(m_pAnimation->GetCurrentValue(&m_dblAlpha));
+	BOOL bComplete = FALSE;
+	RETURN_IF_FAILED(m_pAnimation->IsAnimationComplete(&bComplete));
+	if (bComplete)
+		m_dblAlpha = 255;
 	return 0;
 }
 
 STDMETHODIMP CPictureWindow::ResetAnimation()
 {
-	m_alpha = 0;
-	m_alphaAmount = (255 / STEPS);
-	m_step = 0;
+	m_dblAlpha = 0;
 	return S_OK;
 }
 
@@ -362,8 +358,21 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		ResizeToCurrentBitmap();
 	}
 
-	StartAnimationTimer(TARGET_INTERVAL);
+	PostMessage(WM_START_ANIMATION);
 	return S_OK;
+}
+
+STDMETHODIMP CPictureWindow::StartAnimation()
+{
+	RETURN_IF_FAILED(m_pAnimation->SetParams(100, 255, 0.2));
+	RETURN_IF_FAILED(m_pAnimation->Run());
+	return S_OK;
+}
+
+LRESULT CPictureWindow::OnStartAnimation(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	StartAnimation();
+	return 0;
 }
 
 void CPictureWindow::ResizeWindow(UINT uiWidth, UINT uiHeight)
@@ -449,7 +458,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	CDCSelectBitmapScope cdcSelectBitmapScopeBufferBitmap(cdc, bufferBitmap);
 
 	int currentBitmapIndex = 0;
-	BYTE alpha = m_alpha;
+	BYTE alpha = (BYTE)m_dblAlpha;
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		currentBitmapIndex = m_currentBitmapIndex;
