@@ -566,7 +566,7 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 	CRect rect;
 	GetClientRect(&rect);
 
-	RedrawWindow(FALSE);
+	SetRedraw(FALSE);
 	BOOL bNeedInvalidate = FALSE;
 	for (size_t i = 0; i < uiCountArray; i++)
 	{
@@ -592,7 +592,7 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 		if (bIntersects)
 			bNeedInvalidate = TRUE;
 	}
-	RedrawWindow();
+	SetRedraw();
 
 	if (bNeedInvalidate && !m_bAnimating)
 	{

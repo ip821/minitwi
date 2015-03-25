@@ -42,7 +42,7 @@ public:
 		MESSAGE_HANDLER(LB_GETITEMRECT, OnGetItemRect);
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLMouseButtonDown)
 			MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
-			MESSAGE_HANDLER(WM_GETDLGCODE, OnKeyDown)
+			MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
 			MESSAGE_HANDLER(WM_SETLISTBOX_SCROLL_MODE, OnSetScrollMode)
 			CHAIN_MSG_MAP(CScrollImpl<T>)
 			CHAIN_MSG_MAP_ALT(CScrollImpl<T>, 1)
@@ -117,7 +117,7 @@ public:
 		return 0;
 	}
 
-	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	LRESULT OnGetDlgCode(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		UINT curSelIndex = SendMessage(GetHWND(), LB_GETCURSEL, 0, 0);
 
@@ -138,6 +138,15 @@ public:
 			else if (curSelIndex > 0)
 				SendMessage(GetHWND(), LB_SETCURSEL, curSelIndex - 1, SCROLL_OPTION_NONE);
 			break;
+		}
+		
+		return 0;
+	}
+
+	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		switch (wParam)
+		{
 		case VK_HOME:
 			SendMessage(GetHWND(), LB_SETCURSEL, 0, SCROLL_OPTION_NONE);
 			break;
@@ -509,8 +518,8 @@ public:
 
 		SetScrollExtendedStyle(SCRL_SMOOTHSCROLL, SCRL_SMOOTHSCROLL);
 		SetScrollSize(1, height ? height : 1, true, yOffset);
-		SetScrollLine(1, 400);
-		SetScrollPage(1, 200);
+		SetScrollLine(1, 200);
+		SetScrollPage(1, 500);
 	}
 
 	LRESULT OnSetItemHeight(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)

@@ -61,7 +61,6 @@ STDMETHODIMP CScrollControl::SetBitmap(HBITMAP hBitmap)
 {
 	m_bitmap = hBitmap;
 	Invalidate();
-	RedrawWindow(0, 0, RDW_UPDATENOW);
 	return S_OK;
 }
 
@@ -76,11 +75,11 @@ STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
 	RETURN_IF_FAILED(AtlAdvise(m_pAnimation, pUnk, __uuidof(IAnimationEventSink), &m_dwAdviceAnimation));
 	if (bFromRightToLeft)
 	{
-		RETURN_IF_FAILED(m_pAnimation->SetParams(0, rect.Width(), 0.5));
+		RETURN_IF_FAILED(m_pAnimation->SetParams(0, rect.Width(), AnimationDuration));
 	}
 	else
 	{
-		RETURN_IF_FAILED(m_pAnimation->SetParams(rect.Width(), 0, 0.5));
+		RETURN_IF_FAILED(m_pAnimation->SetParams(rect.Width(), 0, AnimationDuration));
 	}
 	RETURN_IF_FAILED(m_pAnimation->Run());
 
@@ -100,8 +99,6 @@ STDMETHODIMP CScrollControl::OnAnimation()
 	m_dx = iValue;
 	CRect rectUpdate;
 	Invalidate();
-	RedrawWindow(0, 0, RDW_UPDATENOW);
-	RedrawWindow(rectUpdate, 0, RDW_UPDATENOW | RDW_NOERASE);
 
 	BOOL bComplete = FALSE;
 	RETURN_IF_FAILED(m_pAnimation->IsAnimationComplete(&bComplete));

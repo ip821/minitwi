@@ -40,6 +40,7 @@ private:
 
 	int m_dx = 0;
 	DWORD m_dwAdviceAnimation = 0;
+	const DOUBLE AnimationDuration = 0.25;
 
 	LRESULT OnScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

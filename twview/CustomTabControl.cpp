@@ -114,6 +114,8 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 	if (m_selectedPageIndex == (int)dwIndex)
 		return;
 
+	SetRedraw(FALSE);
+
 	CBitmap bitmap1;
 	CDC cdcBitmap1;
 	CDCSelectBitmapManualScope cdcSelectBitmapManualScope1;
@@ -190,6 +192,8 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		m_pScrollControl->SetBitmap(m_scrollBitmap.m_hBitmap);
 		m_pScrollControl->Scroll(bRightToLeft);
 	}
+
+	SetRedraw();
 
 	m_nextSelectedPageIndex = dwIndex;
 
