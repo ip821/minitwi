@@ -364,7 +364,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 
 STDMETHODIMP CPictureWindow::StartAnimation()
 {
-	RETURN_IF_FAILED(m_pAnimation->SetParams(100, 255, 0.2));
+	RETURN_IF_FAILED(m_pAnimation->SetParams(0, 255, 0.3));
 	RETURN_IF_FAILED(m_pAnimation->Run());
 	return S_OK;
 }
