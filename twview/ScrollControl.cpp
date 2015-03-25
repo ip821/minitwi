@@ -17,6 +17,26 @@ CScrollControl::~CScrollControl()
 	DestroyWindow();
 }
 
+STDMETHODIMP CScrollControl::OnInitialized(IServiceProvider *pServiceProvider)
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_AnimationService, &m_pAnimationService));
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pAnimationService, pServiceProvider));
+	RETURN_IF_FAILED(HrInitializeWithControl(m_pAnimationService, pUnk))
+	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &m_dwAdvice));
+	return S_OK;
+}
+
+STDMETHODIMP CScrollControl::OnShutdown()
+{
+	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), m_dwAdvice))
+	RETURN_IF_FAILED(HrNotifyOnShutdown(m_pAnimationService));
+	m_pAnimationService.Release();
+	return S_OK;
+}
+
 STDMETHODIMP CScrollControl::GetHWND(HWND *hWnd)
 {
 	CHECK_E_POINTER(hWnd);
@@ -35,6 +55,17 @@ STDMETHODIMP CScrollControl::CreateEx(HWND hWndParent, HWND *hWnd)
 STDMETHODIMP CScrollControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 {
 	return S_OK;
+}
+
+LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	CComQIPtr<IMsgHandler> p = m_pAnimationService;
+	if (p)
+	{
+		LRESULT lResult = 0;
+		ASSERT_IF_FAILED(p->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lResult, &bHandled));
+	}
+	return 0;
 }
 
 STDMETHODIMP CScrollControl::ShowWindow(DWORD dwCommand)
@@ -56,21 +87,19 @@ STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
 	CRect rect;
 	GetClientRect(&rect);
 
-	m_scrollAmount = rect.Width() / STEPS;
-	m_step = 0;
-
 	if (bFromRightToLeft)
 	{
 		m_dx = 0;
+		RETURN_IF_FAILED(m_pAnimationService->SetParams(0, rect.Width(), STEPS, TARGET_INTERVAL));
 	}
 	else
 	{
 		m_dx = rect.Width();
-		m_scrollAmount = -m_scrollAmount;
+		RETURN_IF_FAILED(m_pAnimationService->SetParams(rect.Width(), 0, STEPS, TARGET_INTERVAL));
 	}
 	m_bFromRightToLeft = bFromRightToLeft;
 
-	StartAnimationTimer(TARGET_INTERVAL);
+	RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
 	return S_OK;
 }
 
@@ -79,35 +108,24 @@ LRESULT CScrollControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lPara
 	return 0;
 }
 
-LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+STDMETHODIMP CScrollControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
-	m_dx += m_scrollAmount;
-	m_step++;
-	CRect rectUpdate;
-	Invalidate();
-	RedrawWindow(0, 0, RDW_UPDATENOW);
-#ifdef _DEBUG
-	using namespace boost;
-	CString str;
-	str.Format(
-		L"CScrollControl::OnAnimationTimer - rectUpdate = (%s, %s - %s, %s)\n",
-		lexical_cast<wstring>(rectUpdate.left).c_str(),
-		lexical_cast<wstring>(rectUpdate.top).c_str(),
-		lexical_cast<wstring>(rectUpdate.right).c_str(),
-		lexical_cast<wstring>(rectUpdate.bottom).c_str()
-		);
-	OutputDebugString(str);
-#endif
-
-	RedrawWindow(rectUpdate, 0, RDW_UPDATENOW | RDW_NOERASE);
-
-	if (m_step == STEPS)
+	if (pAnimationService == m_pAnimationService)
 	{
-		m_pCustomTabControl->OnEndScroll();
-		return 0;
+		m_dx = dwValue;
+		CRect rectUpdate;
+		Invalidate();
+		RedrawWindow(0, 0, RDW_UPDATENOW);
+		RedrawWindow(rectUpdate, 0, RDW_UPDATENOW | RDW_NOERASE);
+
+		if (dwStep == STEPS)
+		{
+			m_pCustomTabControl->OnEndScroll();
+			return S_OK;
+		}
+		RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
 	}
-	StartAnimationTimer(TARGET_INTERVAL);
-	return 0;
+	return S_OK;
 }
 
 LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

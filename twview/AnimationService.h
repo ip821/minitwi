@@ -1,6 +1,6 @@
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twview_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;
@@ -8,10 +8,11 @@ using namespace IP;
 
 class ATL_NO_VTABLE CAnimationService :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CAnimationService, &CLSID_FormsService>,
+	public CComCoClass<CAnimationService, &CLSID_AnimationService>,
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
 	public IMsgHandler,
+	public IAnimationService,
 	public IConnectionPointContainerImpl<CAnimationService>,
 	public IConnectionPointImpl<CAnimationService, &__uuidof(IAnimationServiceEventSink)>
 {
@@ -32,6 +33,8 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IMsgHandler)
+		COM_INTERFACE_ENTRY(IAnimationService)
+		COM_INTERFACE_ENTRY(IConnectionPointContainer)
 	END_COM_MAP()
 
 private:
@@ -57,7 +60,6 @@ public:
 
 	STDMETHOD(SetParams)(DWORD dwStart, DWORD dwFinish, DWORD dwSteps, DWORD dwTimerInternal);
 	STDMETHOD(StartAnimationTimer)();
-	STDMETHOD(StopAnimationTimer)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(AnimationService), CAnimationService)

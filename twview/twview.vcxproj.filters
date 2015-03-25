@@ -74,6 +74,12 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{d976d64d-35e3-4df1-941a-d44d35f116fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services">
+      <UniqueIdentifier>{ae8df2fa-a0dd-4e81-87a2-4aa628a00f56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\AnimationService">
+      <UniqueIdentifier>{dd99391c-2b17-4916-8237-129ea9d339a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -156,6 +162,9 @@
     </ClCompile>
     <ClCompile Include="viewmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationService.cpp">
+      <Filter>Services\AnimationService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -257,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="StaticListBox.h">
       <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationService.h">
+      <Filter>Services\AnimationService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

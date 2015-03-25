@@ -24,15 +24,6 @@ STDMETHODIMP CAnimationService::SetParams(DWORD dwStart, DWORD dwFinish, DWORD d
 	return S_OK;
 }
 
-STDMETHODIMP CAnimationService::StopAnimationTimer()
-{
-	auto res = timeKillEvent(m_uiTimerId);
-	ATLASSERT(res == MMSYSERR_NOERROR);
-	res = timeEndPeriod(m_wTimerRes);
-	ATLASSERT(res == MMSYSERR_NOERROR);
-	return S_OK;
-}
-
 STDMETHODIMP CAnimationService::StartAnimationTimer()
 {
 	auto res = timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
@@ -51,18 +42,20 @@ void CALLBACK CAnimationService::TimerCallback(UINT wTimerID, UINT msg, DWORD dw
 	auto p = (CAnimationService*)(dwUser);
 	timeKillEvent(p->m_uiTimerId);
 	timeEndPeriod(p->m_wTimerRes);
+	ATLASSERT(p->m_hControlWnd);
 	::SendMessage(p->m_hControlWnd, WM_ANIMATION_TIMER, (WPARAM)p->m_uiTimerId, 0);
 }
 
 STDMETHODIMP CAnimationService::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *plResult, BOOL *bResult)
 {
-	if (hWnd == m_hControlWnd && uMsg == WM_ANIMATION_TIMER && wParam == (WPARAM)this)
+	if (hWnd == m_hControlWnd && uMsg == WM_ANIMATION_TIMER && wParam == (WPARAM)m_uiTimerId)
 	{
-		m_dwValue += (m_dwStart - m_dwFinish) / m_dwSteps;
+		int stepDiff = ((int)m_dwFinish - (int)m_dwStart) / (int)m_dwSteps;
+		m_dwValue = (int)m_dwValue + stepDiff;
+		m_dwStep++;
 		CComPtr<IAnimationService> pThis;
 		RETURN_IF_FAILED(QueryInterface(__uuidof(IAnimationService), (LPVOID*)&pThis));
 		RETURN_IF_FAILED(Fire_OnAnimationTimer(pThis, m_dwValue, m_dwStep));
-		m_dwStep++;
 	}
 	return S_OK;
 }

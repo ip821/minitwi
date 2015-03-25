@@ -219,13 +219,6 @@ library twitterLib
 	{
 		[default] interface IUnknown;
 	};
-	[
-		uuid(B36DFE3E-3536-4E56-A791-AA0ED18B69E7)
-	]
-	coclass AnimationService
-	{
-		[default] interface IUnknown;
-	};
 };
 
 import "shobjidl.idl";

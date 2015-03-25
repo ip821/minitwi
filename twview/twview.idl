@@ -35,6 +35,27 @@ interface IScrollControl : IControl
 };
 
 [
+	object,
+	uuid(26859FBC-C493-41F3-BA23-93399E4A8AD6),
+	pointer_default(unique)
+]
+interface IAnimationService : IUnknown
+{
+	HRESULT SetParams(DWORD dwStart, DWORD dwFinish, DWORD dwSteps, DWORD dwTimerInternal);
+	HRESULT StartAnimationTimer();
+};
+
+[
+	object,
+	uuid(FB87D8C6-B62A-4F99-8F91-097264DB96E5),
+	pointer_default(unique)
+]
+interface IAnimationServiceEventSink : IUnknown
+{
+	HRESULT OnAnimationStep(IAnimationService* pAnimationService, DWORD dwValue, DWORD dwStep);
+};
+
+[
 	uuid(C2670317-C208-4C91-A844-75922381F104),
 	version(1.0),
 ]
@@ -166,6 +187,13 @@ library twviewLib
 	coclass ScrollControl
 	{
 		[default] interface IScrollControl;
+	};
+	[
+		uuid(B36DFE3E-3536-4E56-A791-AA0ED18B69E7)
+	]
+	coclass AnimationService
+	{
+		[default] interface IUnknown;
 	};
 };
 
