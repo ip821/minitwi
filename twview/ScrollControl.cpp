@@ -82,10 +82,35 @@ STDMETHODIMP CScrollControl::SetBitmap(HBITMAP hBitmap)
 	return S_OK;
 }
 
-STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
+STDMETHODIMP CScrollControl::ScrollY(BOOL bFromDownToTop, int distance)
 {
 	CRect rect;
 	GetClientRect(&rect);
+
+	if (!distance)
+		distance = rect.Height();
+
+	if (bFromDownToTop)
+	{
+		RETURN_IF_FAILED(m_pAnimationService->SetParams(0, distance, STEPS, TARGET_INTERVAL));
+	}
+	else
+	{
+		RETURN_IF_FAILED(m_pAnimationService->SetParams(distance, 0, STEPS, TARGET_INTERVAL));
+	}
+	m_bFromDownToTop = bFromDownToTop;
+	m_bVertical = TRUE;
+	RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
+	return S_OK;
+}
+
+STDMETHODIMP CScrollControl::ScrollX(BOOL bFromRightToLeft, int distance)
+{
+	CRect rect;
+	GetClientRect(&rect);
+
+	if (!distance)
+		distance = rect.Width();
 
 	if (bFromRightToLeft)
 	{
@@ -96,7 +121,7 @@ STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
 		RETURN_IF_FAILED(m_pAnimationService->SetParams(rect.Width(), 0, STEPS, TARGET_INTERVAL));
 	}
 	m_bFromRightToLeft = bFromRightToLeft;
-
+	m_bVertical = FALSE;
 	RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
 	return S_OK;
 }
@@ -153,7 +178,10 @@ LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 	DWORD dx = 0;
 	ASSERT_IF_FAILED(m_pAnimationService->GetCurrentValue(&dx));
-	cdc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, dx + rect.left, 0, SRCCOPY);
+	if (m_bVertical)
+		cdc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, rect.left, dx, SRCCOPY);
+	else
+		cdc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, dx + rect.left, 0, SRCCOPY);
 
 	EndPaint(&ps);
 	return 0;

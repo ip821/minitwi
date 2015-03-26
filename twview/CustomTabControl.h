@@ -36,10 +36,7 @@ public:
 		m_arrowCursor.LoadSysCursor(IDC_ARROW);
 	}
 
-	~CCustomTabControl()
-	{
-		DestroyWindow();
-	}
+	~CCustomTabControl();
 
 	DECLARE_NO_REGISTRY()
 

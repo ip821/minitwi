@@ -33,7 +33,8 @@ struct NMITEMREMOVED
 class CCustomListBox :
 	public CWindowImpl<CCustomListBox, CStaticListBox>,
 	public CStaticListBoxImpl<CCustomListBox>,
-	public COwnerDraw <CCustomListBox>
+	public COwnerDraw <CCustomListBox>,
+	public IScrollControlEventSink
 {
 public:
 	DECLARE_WND_CLASS(WINDOW_CLASS)
@@ -70,6 +71,8 @@ private:
 	CAnimationTimerSupport<CCustomListBox> m_animationTimerFade;
 	int m_lastInsertCount = 0;
 	map<IVariantObject*, hash_set<int>> m_animatedColumns;
+	CComPtr<IScrollControl> m_pScrollControl;
+	CBitmap m_scrollBitmap;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
 	void UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
@@ -104,5 +107,9 @@ public:
 	void InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
 	void RefreshItems(IVariantObject** pItemArray, UINT uiCountArray);
 	void EnableAnimation(BOOL bEnable);
+	STDMETHOD(OnEndScroll)();
+	METHOD_EMPTY(STDMETHOD(QueryInterface)(const IID& iid, void** pv));
+	METHOD_EMPTY(ULONG _stdcall AddRef());
+	METHOD_EMPTY(ULONG _stdcall Release());
 };
 

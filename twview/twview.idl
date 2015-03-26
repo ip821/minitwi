@@ -29,7 +29,8 @@ interface IScrollControlEventSink : IUnknown
 interface IScrollControl : IControl
 {
 	HRESULT SetTabControl(IScrollControlEventSink* pCustomTabControl);
-	HRESULT Scroll(BOOL bRightToLeft);
+	HRESULT ScrollX(BOOL bRightToLeft, int distance);
+	HRESULT ScrollY(BOOL bDownToTop, int distance);
 	HRESULT SetBitmap(HBITMAP hBitmap);
 	HRESULT ShowWindow(DWORD dwCommand);
 };

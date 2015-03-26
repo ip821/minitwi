@@ -2,6 +2,7 @@
 #include "CustomListBox.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
+#include "..\twtheme\GdilPlusUtils.h"
 
 #define TARGET_RESOLUTION 1
 
@@ -16,17 +17,23 @@ CCustomListBox::CCustomListBox()
 
 CCustomListBox::~CCustomListBox()
 {
+	ASSERT_IF_FAILED(HrNotifyOnShutdown(m_pScrollControl));
 }
 
 HWND CCustomListBox::Create(HWND hWndParent, ATL::_U_RECT rect, LPCTSTR szWindowName, DWORD dwStyle, DWORD dwExStyle, ATL::_U_MENUorID MenuOrID, LPVOID lpCreateParam)
 {
 	HWND hWnd =  CWindowImpl::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu, lpCreateParam);
-	m_animationTimerFade.SetHWND(hWnd);
 	return hWnd;
 }
 
 LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	m_animationTimerFade.SetHWND(m_hWnd);
+	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ScrollControl, &m_pScrollControl));
+	ASSERT_IF_FAILED(m_pScrollControl->CreateEx(m_hWnd, nullptr));
+	ASSERT_IF_FAILED(m_pScrollControl->ShowWindow(SW_HIDE));
+	ASSERT_IF_FAILED(m_pScrollControl->SetTabControl(this));
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pScrollControl, nullptr));
 	return 0;
 }
 
@@ -503,7 +510,6 @@ void CCustomListBox::EndUpdate()
 	if (m_updateTefCount)
 		return;
 
-	SetRedraw();
 	if (m_bAnimationNeeded)
 	{
 		if (m_bEnableAnimation)
@@ -511,7 +517,10 @@ void CCustomListBox::EndUpdate()
 			StartSlideAnimation();
 		}
 		else
+		{
+			SetRedraw();
 			Invalidate(TRUE);
+		}
 	}
 	m_lastInsertCount = 0;
 	m_bAnimationNeeded = FALSE;
@@ -519,15 +528,46 @@ void CCustomListBox::EndUpdate()
 
 void CCustomListBox::StartSlideAnimation()
 {
-	if (!GetTopIndex())
+	auto count = GetCount();
+	if (!GetTopIndex() && count != m_lastInsertCount && m_scrollBitmap.IsNull())
 	{
 		CRect rectClient;
 		GetClientRect(&rectClient);
 		CRect rectItem;
-		GetVirtualRect(m_lastInsertCount, rectItem);
+		GetVirtualRect(m_lastInsertCount - 1, rectItem);
 		GetRealRect(rectItem);
+
+		CRect rectEmpty(rectItem.left, 0, rectItem.right, min(rectItem.bottom, rectClient.bottom));
+
+		CClientDC cdc(m_hWnd);
+		auto currentBitmap = cdc.GetCurrentBitmap();
+		m_scrollBitmap.CreateCompatibleBitmap(cdc, rectItem.Width(), rectClient.Height() + rectEmpty.Height());
+		CDC cdcBitmap;
+		cdcBitmap.CreateCompatibleDC(cdc);
+		{
+			CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, m_scrollBitmap);
+			BitBlt(cdcBitmap, rectEmpty.left, rectEmpty.Height(), rectItem.Width(), rectClient.Height(), cdc, 0, 0, SRCCOPY);
+			CBrush brush;
+			brush.CreateSolidBrush(Color(ARGB(Color::White)).ToCOLORREF());
+			FillRect(cdcBitmap, rectEmpty, brush);
+		}
+		HWND hWnd = 0;
+		m_pScrollControl->GetHWND(&hWnd);
+		::SetWindowPos(hWnd, NULL, rectClient.left, rectClient.top, rectItem.Width(), rectClient.Height(), SWP_SHOWWINDOW);
+		m_pScrollControl->SetBitmap(m_scrollBitmap.m_hBitmap);
+		m_pScrollControl->ScrollY(FALSE, rectEmpty.Height());
+		return;
 	}
 	StartFadeAnimation();
+}
+
+STDMETHODIMP CCustomListBox::OnEndScroll()
+{
+	m_pScrollControl->ShowWindow(SW_HIDE);
+	m_scrollBitmap.DeleteObject();
+	SetRedraw();
+	StartFadeAnimation();
+	return S_OK;
 }
 
 void CCustomListBox::StartFadeAnimation()

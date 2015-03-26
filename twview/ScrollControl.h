@@ -40,15 +40,18 @@ private:
 
 	const DWORD STEPS = 10;
 	BOOL m_bFromRightToLeft = FALSE;
+	BOOL m_bFromDownToTop = FALSE;
+	BOOL m_bVertical = FALSE;
 	DWORD m_dwAdvice = 0;
 
 	LRESULT OnScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
+	
 public:
-	STDMETHOD(Scroll)(BOOL bFromRightToLeft);
+	STDMETHOD(ScrollX)(BOOL bFromRightToLeft, int distance);
+	STDMETHOD(ScrollY)(BOOL bFromDownToTop, int distance);
 	STDMETHOD(SetBitmap)(HBITMAP hBitmap);
 	STDMETHOD(SetTabControl)(IScrollControlEventSink* pCustomTabControl);
 	STDMETHOD(ShowWindow)(DWORD dwCommand);

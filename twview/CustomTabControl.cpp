@@ -3,6 +3,11 @@
 #include "Plugins.h"
 #include "..\twtheme\GdilPlusUtils.h"
 
+CCustomTabControl::~CCustomTabControl()
+{
+	DestroyWindow();
+}
+
 STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 {
 	CHECK_E_POINTER(hWnd);
@@ -188,7 +193,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 		m_pScrollControl->GetHWND(&hWnd);
 		::SetWindowPos(hWnd, NULL, m_rectChildControlArea.left, m_rectChildControlArea.top, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), SWP_SHOWWINDOW);
 		m_pScrollControl->SetBitmap(m_scrollBitmap.m_hBitmap);
-		m_pScrollControl->Scroll(bRightToLeft);
+		m_pScrollControl->ScrollX(bRightToLeft, 0);
 	}
 
 	m_nextSelectedPageIndex = dwIndex;
