@@ -14,9 +14,15 @@ CCustomListBox::CCustomListBox()
 	HrCoCreateInstance(CLSID_ObjectCollection, &m_pItems);
 }
 
+CCustomListBox::~CCustomListBox()
+{
+}
+
 HWND CCustomListBox::Create(HWND hWndParent, ATL::_U_RECT rect, LPCTSTR szWindowName, DWORD dwStyle, DWORD dwExStyle, ATL::_U_MENUorID MenuOrID, LPVOID lpCreateParam)
 {
-	return CWindowImpl::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu, lpCreateParam);
+	HWND hWnd =  CWindowImpl::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu, lpCreateParam);
+	m_animationTimerFade.SetHWND(hWnd);
+	return hWnd;
 }
 
 LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -202,6 +208,10 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, NULL, INVALID_COLUMN_INDEX));
 	}
 	UpdateAnimatedColumns(pColumnsInfo, index, pItemObject, TRUE);
+	if (m_updateTefCount)
+	{
+		m_lastInsertedIndexes.push_back(index);
+	}
 	m_bAnimationNeeded = TRUE;
 }
 
@@ -497,48 +507,54 @@ void CCustomListBox::EndUpdate()
 	if (m_bAnimationNeeded)
 	{
 		if (m_bEnableAnimation)
-			StartAnimation();
+		{
+			StartFadeAnimation();
+		}
 		else
 			Invalidate(TRUE);
 	}
+	m_lastInsertedIndexes.clear();
 	m_bAnimationNeeded = FALSE;
 }
 
-void CCustomListBox::StartAnimation()
+void CCustomListBox::StartFadeAnimation()
 {
 	m_bAnimating = TRUE;
 	UINT uiInterval = 0;
 	ASSERT_IF_FAILED(m_pSkinTimeline->AnimationGetParams(&uiInterval));
-	StartAnimationTimer(uiInterval);
+	m_animationTimerFade.StartAnimationTimer(uiInterval);
 }
 
 LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	BOOL bContinueAnimation = FALSE;
-	ASSERT_IF_FAILED(m_pSkinTimeline->AnimationNextFrame(&bContinueAnimation));
-
-	if (bContinueAnimation)
+	if (wParam == (WPARAM)&m_animationTimerFade)
 	{
-		SetRedraw(FALSE);
+		BOOL bContinueAnimation = FALSE;
+		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationNextFrame(&bContinueAnimation));
 
-		UINT uiCount = 0;
-		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationGetIndexes(NULL, &uiCount));
-		vector<UINT> vIndexes(uiCount);
-		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationGetIndexes(&vIndexes[0], &uiCount));
+		if (bContinueAnimation)
+		{
+			SetRedraw(FALSE);
 
-		StartAnimation();
-		SetRedraw();
+			UINT uiCount = 0;
+			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationGetIndexes(NULL, &uiCount));
+			vector<UINT> vIndexes(uiCount);
+			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationGetIndexes(&vIndexes[0], &uiCount));
 
-		if (vIndexes.size())
+			StartFadeAnimation();
+			SetRedraw();
+
+			if (vIndexes.size())
+				Invalidate();
+
+			return 0;
+		}
+		else if (m_bAnimating)
+		{
 			Invalidate();
-
-		return 0;
+		}
+		m_bAnimating = FALSE;
 	}
-	else if (m_bAnimating)
-	{
-		Invalidate();
-	}
-	m_bAnimating = FALSE;
 	return 0;
 }
 
@@ -592,7 +608,7 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 	if (bNeedInvalidate && !m_bAnimating)
 	{
 		if (m_bEnableAnimation)
-			StartAnimation();
+			StartFadeAnimation();
 		else
 			Invalidate(TRUE);
 	}

@@ -33,8 +33,7 @@ struct NMITEMREMOVED
 class CCustomListBox :
 	public CWindowImpl<CCustomListBox, CStaticListBox>,
 	public CStaticListBoxImpl<CCustomListBox>,
-	public COwnerDraw <CCustomListBox>,
-	public CAnimationTimerSupport<CCustomListBox>
+	public COwnerDraw <CCustomListBox>
 {
 public:
 	DECLARE_WND_CLASS(WINDOW_CLASS)
@@ -52,6 +51,7 @@ public:
 	END_MSG_MAP()
 
 	CCustomListBox();
+	~CCustomListBox();
 
 private:
 	CComPtr<IObjCollection> m_pItems;
@@ -67,12 +67,14 @@ private:
 	BOOL m_bAnimating = FALSE;
 	BOOL m_bEnableAnimation;
 	atomic<int> m_updateTefCount = 0;
+	CAnimationTimerSupport<CCustomListBox> m_animationTimerFade;
+	vector<int> m_lastInsertedIndexes;
 
 	map<IVariantObject*, hash_set<int>> m_animatedColumns;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
 	void UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
-	void StartAnimation();
+	void StartFadeAnimation();
 
 public:
 	HWND Create(HWND hWndParent, ATL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL, DWORD dwStyle = 0, DWORD dwExStyle = 0, ATL::_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL);
