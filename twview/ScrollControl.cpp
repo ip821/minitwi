@@ -159,7 +159,7 @@ LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	return 0;
 }
 
-STDMETHODIMP CScrollControl::SetTabControl(ICustomTabControlInternal* pCustomTabControl)
+STDMETHODIMP CScrollControl::SetTabControl(IScrollControlEventSink* pCustomTabControl)
 {
 	m_pCustomTabControl = pCustomTabControl;
 	return S_OK;

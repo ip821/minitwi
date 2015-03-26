@@ -68,12 +68,12 @@ private:
 	BOOL m_bEnableAnimation;
 	atomic<int> m_updateTefCount = 0;
 	CAnimationTimerSupport<CCustomListBox> m_animationTimerFade;
-	vector<int> m_lastInsertedIndexes;
-
+	int m_lastInsertCount = 0;
 	map<IVariantObject*, hash_set<int>> m_animatedColumns;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
 	void UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
+	void StartSlideAnimation();
 	void StartFadeAnimation();
 
 public:

@@ -210,7 +210,7 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 	UpdateAnimatedColumns(pColumnsInfo, index, pItemObject, TRUE);
 	if (m_updateTefCount)
 	{
-		m_lastInsertedIndexes.push_back(index);
+		++m_lastInsertCount;
 	}
 	m_bAnimationNeeded = TRUE;
 }
@@ -508,13 +508,26 @@ void CCustomListBox::EndUpdate()
 	{
 		if (m_bEnableAnimation)
 		{
-			StartFadeAnimation();
+			StartSlideAnimation();
 		}
 		else
 			Invalidate(TRUE);
 	}
-	m_lastInsertedIndexes.clear();
+	m_lastInsertCount = 0;
 	m_bAnimationNeeded = FALSE;
+}
+
+void CCustomListBox::StartSlideAnimation()
+{
+	if (!GetTopIndex())
+	{
+		CRect rectClient;
+		GetClientRect(&rectClient);
+		CRect rectItem;
+		GetVirtualRect(m_lastInsertCount, rectItem);
+		GetRealRect(rectItem);
+	}
+	StartFadeAnimation();
 }
 
 void CCustomListBox::StartFadeAnimation()

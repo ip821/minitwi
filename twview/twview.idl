@@ -17,7 +17,7 @@ import "..\twitter\twitter_contract_i.idl";
 	uuid(82BBA45A-FEAB-4656-A745-24BFFCEA11F5),
 	pointer_default(unique)
 ]
-interface ICustomTabControlInternal : IUnknown
+interface IScrollControlEventSink : IUnknown
 {
 	HRESULT OnEndScroll();
 };
@@ -28,7 +28,7 @@ interface ICustomTabControlInternal : IUnknown
 ]
 interface IScrollControl : IControl
 {
-	HRESULT SetTabControl(ICustomTabControlInternal* pCustomTabControl);
+	HRESULT SetTabControl(IScrollControlEventSink* pCustomTabControl);
 	HRESULT Scroll(BOOL bRightToLeft);
 	HRESULT SetBitmap(HBITMAP hBitmap);
 	HRESULT ShowWindow(DWORD dwCommand);

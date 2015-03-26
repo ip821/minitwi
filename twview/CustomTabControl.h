@@ -17,7 +17,7 @@ class CCustomTabControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CCustomTabControl, &CLSID_CustomTabControl>,
 	public ICustomTabControl,
-	public ICustomTabControlInternal,
+	public IScrollControlEventSink,
 	public IControl,
 	public IInitializeWithControlImpl,
 	public IPersistSettings,

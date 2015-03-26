@@ -35,7 +35,7 @@ public:
 
 private:
 	CBitmap m_bitmap;
-	CComPtr<ICustomTabControlInternal> m_pCustomTabControl;
+	CComPtr<IScrollControlEventSink> m_pCustomTabControl;
 	CComPtr<IAnimationService> m_pAnimationService;
 
 	const DWORD STEPS = 10;
@@ -50,7 +50,7 @@ private:
 public:
 	STDMETHOD(Scroll)(BOOL bFromRightToLeft);
 	STDMETHOD(SetBitmap)(HBITMAP hBitmap);
-	STDMETHOD(SetTabControl)(ICustomTabControlInternal* pCustomTabControl);
+	STDMETHOD(SetTabControl)(IScrollControlEventSink* pCustomTabControl);
 	STDMETHOD(ShowWindow)(DWORD dwCommand);
 
 	STDMETHOD(GetHWND)(HWND *hWnd);
