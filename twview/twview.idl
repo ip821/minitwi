@@ -43,6 +43,7 @@ interface IAnimationService : IUnknown
 {
 	HRESULT SetParams(DWORD dwStart, DWORD dwFinish, DWORD dwSteps, DWORD dwTimerInternal);
 	HRESULT StartAnimationTimer();
+	HRESULT GetCurrentValue(DWORD* pdwValue);
 };
 
 [

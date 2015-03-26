@@ -38,7 +38,6 @@ private:
 	CComPtr<ICustomTabControlInternal> m_pCustomTabControl;
 	CComPtr<IAnimationService> m_pAnimationService;
 
-	int m_dx = 0;
 	const DWORD STEPS = 10;
 	BOOL m_bFromRightToLeft = FALSE;
 	DWORD m_dwAdvice = 0;

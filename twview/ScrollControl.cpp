@@ -89,12 +89,10 @@ STDMETHODIMP CScrollControl::Scroll(BOOL bFromRightToLeft)
 
 	if (bFromRightToLeft)
 	{
-		m_dx = 0;
 		RETURN_IF_FAILED(m_pAnimationService->SetParams(0, rect.Width(), STEPS, TARGET_INTERVAL));
 	}
 	else
 	{
-		m_dx = rect.Width();
 		RETURN_IF_FAILED(m_pAnimationService->SetParams(rect.Width(), 0, STEPS, TARGET_INTERVAL));
 	}
 	m_bFromRightToLeft = bFromRightToLeft;
@@ -112,7 +110,6 @@ STDMETHODIMP CScrollControl::OnAnimationStep(IAnimationService *pAnimationServic
 {
 	if (pAnimationService == m_pAnimationService)
 	{
-		m_dx = dwValue;
 		CRect rectUpdate;
 		Invalidate();
 		RedrawWindow(0, 0, RDW_UPDATENOW);
@@ -154,7 +151,9 @@ LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	cdcBitmap.CreateCompatibleDC(cdc);
 	CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, m_bitmap);
 
-	cdc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, m_dx + rect.left, 0, SRCCOPY);
+	DWORD dx = 0;
+	ASSERT_IF_FAILED(m_pAnimationService->GetCurrentValue(&dx));
+	cdc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, dx + rect.left, 0, SRCCOPY);
 
 	EndPaint(&ps);
 	return 0;

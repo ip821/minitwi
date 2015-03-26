@@ -53,10 +53,19 @@ STDMETHODIMP CAnimationService::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARA
 		int stepDiff = ((int)m_dwFinish - (int)m_dwStart) / (int)m_dwSteps;
 		m_dwValue = (int)m_dwValue + stepDiff;
 		m_dwStep++;
+		if (m_dwStep == m_dwSteps && m_dwValue != m_dwFinish)
+			m_dwValue = m_dwFinish;
 		CComPtr<IAnimationService> pThis;
 		RETURN_IF_FAILED(QueryInterface(__uuidof(IAnimationService), (LPVOID*)&pThis));
 		RETURN_IF_FAILED(Fire_OnAnimationTimer(pThis, m_dwValue, m_dwStep));
 	}
+	return S_OK;
+}
+
+STDMETHODIMP CAnimationService::GetCurrentValue(DWORD* pdwValue)
+{
+	CHECK_E_POINTER(pdwValue);
+	*pdwValue = m_dwValue;
 	return S_OK;
 }
 

@@ -53,20 +53,21 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	m_pCommandSupport->SetMenu(m_popupMenu);
 	m_pCommandSupport->InstallCommands(m_pPluginSupport);
 
-	CComQIPtr<IMainWindow> pMainWindow = m_pControl;
-	ATLASSERT(pMainWindow);
-	RETURN_IF_FAILED(pMainWindow->GetMessageLoop(&m_pMessageLoop));
-	RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
-
 	m_pServiceProvider = m_pPluginSupport;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
+
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_AnimationService, &m_pAnimationService));
+	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &m_dwAdviceAnimationService));
+
+	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, pUnk));
 
 	return S_OK;
 }
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
-	RETURN_IF_FAILED(m_pMessageLoop->RemoveMessageFilter(this));
+	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), m_dwAdviceAnimationService));
+	m_pAnimationService.Release();
 	m_pMessageLoop.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	m_pDownloadService.Release();
@@ -83,6 +84,24 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 
 LRESULT CPictureWindow::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	return 0;
+}
+
+LRESULT CPictureWindow::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if (m_pPluginSupport)
+	{
+		CComQIPtr<IMsgHandler> pMsgHandler = m_pPluginSupport;
+		if (pMsgHandler)
+		{
+			LRESULT lResult = 0;
+			BOOL bResult = FALSE;
+			ASSERT_IF_FAILED(pMsgHandler->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lResult, &bResult));
+			if (bResult)
+				return bResult;
+		}
+	}
+
 	return 0;
 }
 
@@ -133,8 +152,6 @@ void CPictureWindow::MoveToPicture(BOOL bForward)
 			Invalidate();
 			return;
 		}
-
-		ASSERT_IF_FAILED(ResetAnimation());
 
 		ASSERT_IF_FAILED(StartNextDownload(m_currentBitmapIndex));
 		m_currentBitmapIndex = -1;
@@ -191,12 +208,20 @@ STDMETHODIMP CPictureWindow::GetHWND(HWND* phWnd)
 	return S_OK;
 }
 
-STDMETHODIMP CPictureWindow::Show(HWND hWndParent)
+STDMETHODIMP CPictureWindow::CreateEx(HWND hWndParent, HWND *hWnd)
 {
-	m_hWndParent = hWndParent;
 	CRect rect(0, 0, 100, 100);
 	CalcRect(rect.right, rect.bottom, rect);
 	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU, WS_EX_COMPOSITED);
+	if (hWnd)
+		*hWnd = m_hWnd;
+	return S_OK;
+}
+
+STDMETHODIMP CPictureWindow::Show(HWND hWndParent)
+{
+	m_hWndParent = hWndParent;
+	RETURN_IF_FAILED(CreateEx(nullptr, nullptr));
 	return S_OK;
 }
 
@@ -267,28 +292,17 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 	return S_OK;
 }
 
-LRESULT CPictureWindow::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+STDMETHODIMP CPictureWindow::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
-	boost::lock_guard<boost::mutex> lock(m_mutex);
-	m_alpha += m_alphaAmount;
-	m_step++;
 	Invalidate();
 
-	if (m_step == STEPS)
+	if (dwStep == STEPS)
 	{
-		m_alpha = 255;
-		return 0;
+		return S_OK;
 	}
-	StartAnimationTimer(TARGET_INTERVAL);
-	return 0;
-}
 
-STDMETHODIMP CPictureWindow::ResetAnimation()
-{
-	m_alpha = 0;
-	m_alphaAmount = (255 / STEPS);
-	m_step = 0;
-	return S_OK;
+	RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
+	return 0;
 }
 
 STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
@@ -358,11 +372,11 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
-		RETURN_IF_FAILED(ResetAnimation());
 		ResizeToCurrentBitmap();
 	}
 
-	StartAnimationTimer(TARGET_INTERVAL);
+	RETURN_IF_FAILED(m_pAnimationService->SetParams(0, 255, STEPS, TARGET_INTERVAL));
+	RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
 	return S_OK;
 }
 
@@ -449,7 +463,6 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	CDCSelectBitmapScope cdcSelectBitmapScopeBufferBitmap(cdc, bufferBitmap);
 
 	int currentBitmapIndex = 0;
-	BYTE alpha = m_alpha;
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		currentBitmapIndex = m_currentBitmapIndex;
@@ -500,6 +513,8 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	}
 	else
 	{
+		DWORD dwAlpha = 0;
+		ASSERT_IF_FAILED(m_pAnimationService->GetCurrentValue(&dwAlpha));
 		TBITMAP tBitmap = { 0 };
 		ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bitmapsUrls[currentBitmapIndex], &tBitmap));
 		auto width = tBitmap.Width;
@@ -514,7 +529,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
 		BLENDFUNCTION bf = { 0 };
 		bf.BlendOp = AC_SRC_OVER;
-		bf.SourceConstantAlpha = alpha;
+		bf.SourceConstantAlpha = (BYTE)dwAlpha;
 		cdc.AlphaBlend(x, y, width, height, cdcBitmap, 0, 0, width, height, bf);
 	}
 

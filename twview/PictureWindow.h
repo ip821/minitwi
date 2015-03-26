@@ -19,16 +19,15 @@ using namespace Gdiplus;
 class ATL_NO_VTABLE CPictureWindow :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CPictureWindow, &CLSID_PictureWindow>,
-	public CAnimationTimerSupport<CPictureWindow>,
 	public CWindowImpl<CPictureWindow>,
 	public IPictureWindow,
-	public IMsgFilter,
 	public IThemeSupport,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
 	public IDownloadServiceEventSink,
 	public IPluginSupportNotifications,
 	public IInitializeWithSettings,
+	public IAnimationServiceEventSink,
 	public IConnectionPointContainerImpl<CPictureWindow>,
 	public IConnectionPointImpl<CPictureWindow, &__uuidof(IWindowEventSink)>
 {
@@ -48,7 +47,9 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IConnectionPointContainer)
 		COM_INTERFACE_ENTRY(IWindow)
+		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IThemeSupport)
+		COM_INTERFACE_ENTRY(IAnimationServiceEventSink)
 	END_COM_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CPictureWindow)
@@ -63,7 +64,7 @@ public:
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtomUp)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtomUp)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
-		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
+		DEFAULT_MESSAGE_HANDLER(OnMessage)
 	END_MSG_MAP()
 
 private:
@@ -74,8 +75,10 @@ private:
 	CComPtr<ICommandSupport> m_pCommandSupport;
 	CComPtr<IMessageLoop> m_pMessageLoop;
 	CComPtr<ITheme> m_pTheme;
+	CComPtr<IAnimationService> m_pAnimationService;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
+	DWORD m_dwAdviceAnimationService = 0;
 	int m_currentBitmapIndex = -1;
 	vector<CComBSTR> m_bitmapsUrls;
 	boost::mutex m_mutex;
@@ -83,10 +86,7 @@ private:
 	HWND m_hWndParent = 0;
 	CString m_strLastErrorMsg;
 
-	BYTE m_alpha = 0;
-	int m_step = 0;
-	BYTE m_alphaAmount = 0;
-	const BYTE STEPS = 25;
+	const DWORD STEPS = 25;
 	BOOL m_bInitialMonitorDetection = TRUE;
 	BOOL m_bDisableMonitorSnap = FALSE;
 
@@ -99,12 +99,11 @@ private:
 	LRESULT OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void OnFinalMessage(HWND hWnd);
 	void CalcRect(int width, int height, CRect& rect);
 	STDMETHOD(StartNextDownload)(int index);
-	STDMETHOD(ResetAnimation)();
 	void ResizeWindow(UINT uiWidth, UINT uiHeight);
 	void ResizeToCurrentBitmap();
 	HMONITOR GetHMonitor();
@@ -112,10 +111,11 @@ private:
 	void MoveToPicture(BOOL bForward);
 
 public:
-	void OnMMTimer();
-
 	STDMETHOD(Show)(HWND hWndParent);
+
 	STDMETHOD(GetHWND)(HWND* phWnd);
+	STDMETHOD(CreateEx)(HWND hWndParent, HWND *hWnd);
+	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *bResult);
 
 	STDMETHOD(SetVariantObject)(IVariantObject *pVariantObject);
 	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
@@ -123,11 +123,11 @@ public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
-	STDMETHOD(PreTranslateMessage)(MSG *pMsg, BOOL *bResult);
-
 	STDMETHOD(SetTheme)(ITheme* pTheme);
 
 	STDMETHOD(Load)(ISettings *pSettings);
+
+	STDMETHOD(OnAnimationStep)(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(PictureWindow), CPictureWindow)

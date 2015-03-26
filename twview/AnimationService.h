@@ -60,6 +60,7 @@ public:
 
 	STDMETHOD(SetParams)(DWORD dwStart, DWORD dwFinish, DWORD dwSteps, DWORD dwTimerInternal);
 	STDMETHOD(StartAnimationTimer)();
+	STDMETHOD(GetCurrentValue)(DWORD* pdwValue);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(AnimationService), CAnimationService)

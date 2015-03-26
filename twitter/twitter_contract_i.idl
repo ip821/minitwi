@@ -433,10 +433,9 @@ interface IWindowEventSink : IUnknown
 	uuid(2620EF14-88EB-44D8-9ACA-56E0866E3A09),
 	pointer_default(unique)
 ]
-interface IWindow : IUnknown
+interface IWindow : IControl
 {
 	HRESULT Show(HWND hWndParent);
-	HRESULT GetHWND(HWND* phWnd);
 };
 
 [
