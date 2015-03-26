@@ -30,7 +30,7 @@ public:
 	BEGIN_MSG_MAP(CScrollControl)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
-		MESSAGE_HANDLER(WM_ANIMATION_TIMER, OnAnimationTimer)
+		DEFAULT_MESSAGE_HANDLER(OnMessage)
 	END_MSG_MAP()
 
 private:
@@ -45,7 +45,7 @@ private:
 	LRESULT OnScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 public:
 	STDMETHOD(Scroll)(BOOL bFromRightToLeft);

@@ -57,7 +57,7 @@ STDMETHODIMP CScrollControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 	return S_OK;
 }
 
-LRESULT CScrollControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CScrollControl::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	CComQIPtr<IMsgHandler> p = m_pAnimationService;
 	if (p)
