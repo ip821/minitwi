@@ -4,6 +4,7 @@
 
 #define OFFSET_X 10
 #define OFFSET_Y 20
+#define TARGET_INTERVAL 15
 
 HRESULT CUserAccountControl::FinalConstruct()
 {
@@ -26,12 +27,14 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_WindowService, &m_pWindowService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pFollowThreadService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_STATUS_THREAD, &m_pFollowStatusThreadService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_AnimationService, &m_pAnimationService));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &dw_mAdviceDownloadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pFollowThreadService, pUnk, __uuidof(IThreadServiceEventSink), &dw_mAdviceFollowService));
 	RETURN_IF_FAILED(AtlAdvise(m_pFollowStatusThreadService, pUnk, __uuidof(IThreadServiceEventSink), &dw_mAdviceFollowStatusService));
+	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &dw_mAdviceAnimationService));
 
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
@@ -41,10 +44,12 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 
 STDMETHODIMP CUserAccountControl::OnShutdown()
 {
+	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), dw_mAdviceAnimationService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), dw_mAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pFollowThreadService, __uuidof(IThreadServiceEventSink), dw_mAdviceFollowService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pFollowStatusThreadService, __uuidof(IThreadServiceEventSink), dw_mAdviceFollowStatusService));
 
+	m_pAnimationService.Release();
 	m_pTheme.Release();
 	m_pSkinCommonControl.Release();
 	m_pSkinUserAccountControl.Release();
@@ -79,6 +84,18 @@ STDMETHODIMP CUserAccountControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 	return S_OK;
 }
 
+LRESULT CUserAccountControl::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	CComQIPtr<IMsgHandler> p = m_pAnimationService;
+	if (p)
+	{
+		LRESULT lRes = 0;
+		BOOL bH = FALSE;
+		ASSERT_IF_FAILED(p->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lRes, &bH));
+	}
+	return S_OK;
+}
+
 STDMETHODIMP CUserAccountControl::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
@@ -104,7 +121,7 @@ LRESULT CUserAccountControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM 
 	GetClientRect(&rect);
 	if (m_pVariantObject)
 		m_pSkinUserAccountControl->EraseBackground((HDC)wParam, &rect, m_pVariantObject);
-	
+
 	return 0;
 }
 
@@ -254,7 +271,6 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 
 	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserBanner && vUrl.vt == VT_BSTR && m_bstrBannerUrl == vUrl.bstrVal)
 	{
-		RETURN_IF_FAILED(m_pSkinUserAccountControl->AnimationStart());
 		BOOL bContains = FALSE;
 		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
 		if (!bContains)
@@ -268,19 +284,17 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 
 void CUserAccountControl::StartAnimation()
 {
-	UINT uiInterval = 0;
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationGetParams(&uiInterval));
-	StartAnimationTimer(uiInterval);
+	ASSERT_IF_FAILED(m_pAnimationService->SetParams(0, 255, STEPS, TARGET_INTERVAL));
+	ASSERT_IF_FAILED(m_pAnimationService->StartAnimationTimer());
 }
 
-LRESULT CUserAccountControl::OnAnimationTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+STDMETHODIMP CUserAccountControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
-	BOOL bContinueAnimation = FALSE;
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationNextFrame(&bContinueAnimation));
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationSetValue(dwValue));
 	Invalidate();
-	if (bContinueAnimation)
+	if (dwStep != STEPS)
 	{
-		StartAnimation();
+		ASSERT_IF_FAILED(m_pAnimationService->StartAnimationTimer());
 	}
 	return 0;
 }

@@ -31,10 +31,7 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 
-	const BYTE STEPS = 25;
-	BYTE m_alpha = 0;
-	BYTE m_step = 0;
-	BYTE m_alphaAmount = 255 / STEPS;
+	DWORD m_alpha = 0;
 
 	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
 	HRESULT MeasureInternal(HDC hdc, RECT clientRect, IVariantObject* pVariantObject, LPRECT lpRectScreenName, LPRECT lpRectDisplayName, LPRECT lpRectUserImage, LPRECT lpRectFollowButton);
@@ -49,9 +46,7 @@ public:
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(EraseBackground)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
 	STDMETHOD(Draw)(HDC hdc, LPRECT lpRect, IVariantObject* pObject, IColumnsInfo* pColumnsInfo);
-	STDMETHOD(AnimationStart)();
-	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
-	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);
+	STDMETHOD(AnimationSetValue)(DWORD dwValue);
 	STDMETHOD(Measure)(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
 };
 
