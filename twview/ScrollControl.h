@@ -50,8 +50,8 @@ private:
 	LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	
 public:
-	STDMETHOD(ScrollX)(BOOL bFromRightToLeft, int distance);
-	STDMETHOD(ScrollY)(BOOL bFromDownToTop, int distance);
+	STDMETHOD(ScrollX)(BOOL bFromRightToLeft, DWORD distance, DWORD steps, DWORD timerInterval);
+	STDMETHOD(ScrollY)(BOOL bFromDownToTop, DWORD distance, DWORD steps, DWORD timerInterval);
 	STDMETHOD(SetBitmap)(HBITMAP hBitmap);
 	STDMETHOD(SetTabControl)(IScrollControlEventSink* pCustomTabControl);
 	STDMETHOD(ShowWindow)(DWORD dwCommand);

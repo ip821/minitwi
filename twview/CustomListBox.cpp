@@ -555,7 +555,19 @@ void CCustomListBox::StartSlideAnimation()
 		m_pScrollControl->GetHWND(&hWnd);
 		::SetWindowPos(hWnd, NULL, rectClient.left, rectClient.top, rectItem.Width(), rectClient.Height(), SWP_SHOWWINDOW);
 		m_pScrollControl->SetBitmap(m_scrollBitmap.m_hBitmap);
-		m_pScrollControl->ScrollY(FALSE, rectEmpty.Height());
+		DWORD dwSteps = 0;
+		DWORD dwTimerInterval = 0;
+		//if (rectEmpty.bottom < 100)
+		{
+			dwSteps = 20;
+			dwTimerInterval = 20;
+		}
+		//else
+		//{
+		//	dwSteps = 20;
+		//	dwTimerInterval = 20;
+		//}
+		m_pScrollControl->ScrollY(FALSE, rectEmpty.Height(), dwSteps, dwTimerInterval);
 		return;
 	}
 	StartFadeAnimation();

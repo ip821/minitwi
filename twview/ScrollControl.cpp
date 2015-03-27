@@ -83,13 +83,19 @@ STDMETHODIMP CScrollControl::SetBitmap(HBITMAP hBitmap)
 	return S_OK;
 }
 
-STDMETHODIMP CScrollControl::ScrollY(BOOL bFromDownToTop, int distance)
+STDMETHODIMP CScrollControl::ScrollY(BOOL bFromDownToTop, DWORD distance, DWORD steps, DWORD timerInterval)
 {
 	CRect rect;
 	GetClientRect(&rect);
 
 	if (!distance)
 		distance = rect.Height();
+
+	if (!steps)
+		steps = STEPS;
+
+	if (!timerInterval)
+		timerInterval = TARGET_INTERVAL;
 
 	if (bFromDownToTop)
 	{
@@ -105,13 +111,19 @@ STDMETHODIMP CScrollControl::ScrollY(BOOL bFromDownToTop, int distance)
 	return S_OK;
 }
 
-STDMETHODIMP CScrollControl::ScrollX(BOOL bFromRightToLeft, int distance)
+STDMETHODIMP CScrollControl::ScrollX(BOOL bFromRightToLeft, DWORD distance, DWORD steps, DWORD timerInterval)
 {
 	CRect rect;
 	GetClientRect(&rect);
 
 	if (!distance)
-		distance = rect.Width();
+		distance = rect.Height();
+
+	if (!steps)
+		steps = STEPS;
+
+	if (!timerInterval)
+		timerInterval = TARGET_INTERVAL;
 
 	if (bFromRightToLeft)
 	{
