@@ -687,6 +687,16 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &CComVariant(shortUrl.c_str())));
 		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(url.c_str())));
 		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &CComVariant((url + L":small").c_str())));
+
+		if (mediaObj.find(L"sizes") != mediaObj.end())
+		{
+			auto sizesObj = mediaObj[L"sizes"]->AsObject();
+			auto smallSizeObj = sizesObj[L"small"]->AsObject();
+			auto height = static_cast<int>(smallSizeObj[L"h"]->AsNumber());
+			auto width = static_cast<int>(smallSizeObj[L"w"]->AsNumber());
+			RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &CComVariant(width)));
+			RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &CComVariant(height)));
+		}
 	}
 	return S_OK;
 }

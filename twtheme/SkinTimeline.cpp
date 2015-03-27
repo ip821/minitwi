@@ -726,7 +726,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
 						TBITMAP tBitmap = { 0 };
-						m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
+						if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
+						{
+							CComVariant vHeight;
+							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
+							CComVariant vWidth;
+							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
+							tBitmap.Width = vWidth.intVal;
+							tBitmap.Height = vHeight.intVal;
+						}
 						totalImageWidth += tBitmap.Width;
 					}
 
@@ -749,7 +757,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
 						TBITMAP tBitmap = { 0 };
-						m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap);
+						if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
+						{
+							CComVariant vHeight;
+							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
+							CComVariant vWidth;
+							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
+							tBitmap.Width = vWidth.intVal;
+							tBitmap.Height = vHeight.intVal;
+						}
 
 						const int oneImageWidth = min(oneImageWidthMax, tBitmap.Width);
 
