@@ -497,6 +497,8 @@ void CCustomListBox::EndUpdate()
 	if (m_updateTefCount)
 		return;
 
+	SetRedraw();
+
 	if (m_bAnimationNeeded)
 	{
 		StartFadeAnimation();

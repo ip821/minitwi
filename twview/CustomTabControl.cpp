@@ -228,6 +228,9 @@ STDMETHODIMP CCustomTabControl::OnEndScroll()
 	ASSERT_IF_FAILED(pNextControl->GetHWND(&hWnd));
 	::ShowWindow(hWnd, SW_SHOW);
 
+	if (!m_scrollBitmap.IsNull())
+		m_scrollBitmap.DeleteObject();
+
 	ASSERT_IF_FAILED(Fire_OnActivate(pNextControl));
 	CComQIPtr<IControl2> pControl2 = pNextControl;
 	if (pControl2)
