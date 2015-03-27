@@ -25,7 +25,6 @@ STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 	{
 		CUpdateScope scope(m_pTimelineControl);
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pVariantObjectCopy, 0));
-		RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&pVariantObjectCopy.p, 1));
 	}
 
 	CComPtr<IThreadService> pTimelineThread;
