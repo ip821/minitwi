@@ -13,15 +13,21 @@ STDMETHODIMP CTwitViewControl::GetVariantObject(IVariantObject** ppVariantObject
 STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
+	m_pVariantObject = pVariantObject;
+	return S_OK;
+}
+
+HRESULT CTwitViewControl::OnActivateInternal()
+{
 	CComQIPtr<IInitializeWithVariantObject> pInit = m_pTimelineService;
 	ATLASSERT(pInit);
 	CComPtr<IVariantObject> pVariantObjectCopy;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObjectCopy));
+	RETURN_IF_FAILED(m_pVariantObject->CopyTo(pVariantObjectCopy));
 	m_pVariantObject = pVariantObjectCopy;
-	RETURN_IF_FAILED(pVariantObject->CopyTo(pVariantObjectCopy));
 	RETURN_IF_FAILED(pVariantObjectCopy->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &CComVariant(true)));
 	RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObjectCopy));
-	
+
 	{
 		CUpdateScope scope(m_pTimelineControl);
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pVariantObjectCopy, 0));
@@ -30,7 +36,6 @@ STDMETHODIMP CTwitViewControl::SetVariantObject(IVariantObject* pVariantObject)
 	CComPtr<IThreadService> pTimelineThread;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pTimelineThread));
 	RETURN_IF_FAILED(pTimelineThread->Run());
-
 	return S_OK;
 }
 
