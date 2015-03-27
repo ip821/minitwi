@@ -5,11 +5,13 @@
 
 STDMETHODIMP CAnimationService::OnInitialized(IServiceProvider *pServiceProvider)
 {
+	m_animationTimer.SetHWND(m_hControlWnd);
 	return S_OK;
 }
 
 STDMETHODIMP CAnimationService::OnShutdown()
 {
+	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	return S_OK;
 }
 
@@ -26,29 +28,13 @@ STDMETHODIMP CAnimationService::SetParams(DWORD dwStart, DWORD dwFinish, DWORD d
 
 STDMETHODIMP CAnimationService::StartAnimationTimer()
 {
-	auto res = timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
-	ATLASSERT(res == MMSYSERR_NOERROR);
-	m_wTimerRes = min(max(m_tc.wPeriodMin, TARGET_RESOLUTION), m_tc.wPeriodMax);
-	res = timeBeginPeriod(m_wTimerRes);
-	ATLASSERT(res == MMSYSERR_NOERROR);
-
-	m_uiTimerId = timeSetEvent(m_dwTimerInternal, m_wTimerRes, CAnimationService::TimerCallback, (DWORD_PTR)this, TIME_ONESHOT);
-	ATLASSERT(m_uiTimerId != 0);
+	m_animationTimer.StartAnimationTimer(m_dwTimerInternal);
 	return S_OK;
-}
-
-void CALLBACK CAnimationService::TimerCallback(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
-{
-	auto p = (CAnimationService*)(dwUser);
-	timeKillEvent(p->m_uiTimerId);
-	timeEndPeriod(p->m_wTimerRes);
-	ATLASSERT(p->m_hControlWnd);
-	::SendMessage(p->m_hControlWnd, WM_ANIMATION_TIMER, (WPARAM)p->m_uiTimerId, 0);
 }
 
 STDMETHODIMP CAnimationService::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT *plResult, BOOL *bResult)
 {
-	if (hWnd == m_hControlWnd && uMsg == WM_ANIMATION_TIMER && wParam == (WPARAM)m_uiTimerId)
+	if (hWnd == m_hControlWnd && uMsg == WM_ANIMATION_TIMER && wParam == (WPARAM)&m_animationTimer)
 	{
 		int stepDiff = ((int)m_dwFinish - (int)m_dwStart) / (int)m_dwSteps;
 		m_dwValue = (int)m_dwValue + stepDiff;

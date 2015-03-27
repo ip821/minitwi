@@ -46,12 +46,6 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
 	m_pPluginSupport->InitializePlugins(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_WINDOW_SERVICE);
 	m_pPluginSupport->InitializePlugins(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_COMMAND);
-	m_pPluginSupport->OnInitialized();
-
-	m_popupMenu.CreatePopupMenu();
-	HrCoCreateInstance(CLSID_CommandSupport, &m_pCommandSupport);
-	m_pCommandSupport->SetMenu(m_popupMenu);
-	m_pCommandSupport->InstallCommands(m_pPluginSupport);
 
 	m_pServiceProvider = m_pPluginSupport;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
@@ -60,6 +54,12 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &m_dwAdviceAnimationService));
 
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, pUnk));
+	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
+
+	m_popupMenu.CreatePopupMenu();
+	HrCoCreateInstance(CLSID_CommandSupport, &m_pCommandSupport);
+	m_pCommandSupport->SetMenu(m_popupMenu);
+	m_pCommandSupport->InstallCommands(m_pPluginSupport);
 
 	return S_OK;
 }

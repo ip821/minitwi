@@ -23,6 +23,7 @@ STDMETHODIMP CScrollControl::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_AnimationService, &m_pAnimationService));
+	RETURN_IF_FAILED(HrInitializeWithControl(m_pAnimationService, pUnk));
 	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pAnimationService, pServiceProvider));
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pAnimationService, pUnk))
 	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &m_dwAdvice));

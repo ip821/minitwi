@@ -37,15 +37,7 @@ public:
 		::SendMessage(p->m_hWnd, WM_ANIMATION_TIMER, (WPARAM)p, 0);
 	}
 
-	void StopAnimationTimer()
-	{
-		auto res = timeKillEvent(m_uiTimerId);
-		ATLASSERT(res == MMSYSERR_NOERROR);
-		res = timeEndPeriod(m_wTimerRes);
-		ATLASSERT(res == MMSYSERR_NOERROR); CMenuItemInfo; MENUITEMINFO
-	}
-
-	void StartAnimationTimer(/*HWND hWnd, */UINT uiInterval)
+	void StartAnimationTimer(UINT uiInterval)
 	{
 		auto res = timeGetDevCaps(&m_tc, sizeof(TIMECAPS));
 		ATLASSERT(res == MMSYSERR_NOERROR);
