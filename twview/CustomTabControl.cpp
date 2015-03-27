@@ -372,6 +372,7 @@ STDMETHODIMP CCustomTabControl::OnInitialized(IServiceProvider* pServiceProvider
 		}
 	}
 	m_pServiceProvider = pServiceProvider;
+	RETURN_IF_FAILED(HrInitializeWithSettings(m_pScrollControl, m_pSettings));
 	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pScrollControl, m_pServiceProvider));
 	return S_OK;
 }

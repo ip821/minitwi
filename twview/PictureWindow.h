@@ -22,10 +22,10 @@ class ATL_NO_VTABLE CPictureWindow :
 	public IPictureWindow,
 	public IThemeSupport,
 	public IInitializeWithControlImpl,
+	public IInitializeWithSettings,
 	public IInitializeWithVariantObject,
 	public IDownloadServiceEventSink,
 	public IPluginSupportNotifications,
-	public IInitializeWithSettings,
 	public IAnimationServiceEventSink,
 	public IConnectionPointContainerImpl<CPictureWindow>,
 	public IConnectionPointImpl<CPictureWindow, &__uuidof(IWindowEventSink)>
@@ -75,6 +75,7 @@ private:
 	CComPtr<IMessageLoop> m_pMessageLoop;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<IAnimationService> m_pAnimationService;
+	CComPtr<ISettings> m_pSettings;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
 	DWORD m_dwAdviceAnimationService = 0;

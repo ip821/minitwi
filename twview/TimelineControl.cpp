@@ -409,10 +409,6 @@ STDMETHODIMP CTimelineControl::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
 	m_pSettings = pSettings;
-	CComPtr<ISettings> pTimelineSettings;
-	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathTimeline, &pTimelineSettings));
-	CComVariant vDisableAnimation;
-	RETURN_IF_FAILED(pTimelineSettings->GetVariantValue(Twitter::Metadata::Settings::Timeline::DisableAnimation, &vDisableAnimation));
-	m_listBox.EnableAnimation(vDisableAnimation.vt != VT_I4 || (!vDisableAnimation.intVal));
+	m_listBox.SetSettings(pSettings);
 	return S_OK;
 }

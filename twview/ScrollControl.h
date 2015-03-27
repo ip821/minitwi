@@ -9,6 +9,7 @@ class CScrollControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CScrollControl, &CLSID_ScrollControl>,
 	public IScrollControl,
+	public IInitializeWithSettings,
 	public IPluginSupportNotifications,
 	public IAnimationServiceEventSink
 {
@@ -24,6 +25,7 @@ public:
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IAnimationServiceEventSink)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CScrollControl)
@@ -43,6 +45,7 @@ private:
 	BOOL m_bFromDownToTop = FALSE;
 	BOOL m_bVertical = FALSE;
 	DWORD m_dwAdvice = 0;
+	CComPtr<ISettings> m_pSettings;
 
 	LRESULT OnScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -64,6 +67,8 @@ public:
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(OnAnimationStep)(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep);
+
+	STDMETHOD(Load)(ISettings* pSettings);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ScrollControl), CScrollControl)

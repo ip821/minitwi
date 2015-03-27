@@ -25,6 +25,7 @@ CPictureWindow::~CPictureWindow()
 STDMETHODIMP CPictureWindow::Load(ISettings *pSettings)
 {
 	CHECK_E_POINTER(pSettings);
+	m_pSettings = pSettings;
 	CComPtr<ISettings> pSubSettings;
 	RETURN_IF_FAILED(pSettings->OpenSubSettings(PICTURE_WINDOW_SETTINGS_PATH, &pSubSettings));
 	CComVariant vDisableMonitorSnap;
@@ -53,6 +54,7 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &m_dwAdviceAnimationService));
 
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, pUnk));
+	RETURN_IF_FAILED(HrInitializeWithSettings(m_pPluginSupport, m_pSettings));
 	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
 
 	m_popupMenu.CreatePopupMenu();
@@ -65,6 +67,7 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
+	m_pSettings.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), m_dwAdviceAnimationService));
 	m_pAnimationService.Release();
 	m_pMessageLoop.Release();

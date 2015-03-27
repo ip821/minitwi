@@ -57,6 +57,7 @@ private:
 	CComPtr<IObjCollection> m_pItems;
 	vector<CComPtr<IColumnsInfo>> m_columnsInfo;
 	CComPtr<ISkinTimeline> m_pSkinTimeline;
+	CComPtr<ISettings> m_pSettings;
 	int m_prevX = 0;
 	int m_prevY = 0;
 	int m_HoveredItemIndex = INVALID_ITEM_INDEX;
@@ -68,7 +69,6 @@ private:
 	BOOL m_bEnableAnimation;
 	atomic<int> m_updateTefCount = 0;
 	CAnimationTimer<CCustomListBox> m_animationTimerFade;
-	int m_lastInsertCount = 0;
 	map<IVariantObject*, hash_set<int>> m_animatedColumns;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
@@ -102,6 +102,6 @@ public:
 	void EndUpdate();
 	void InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
 	void RefreshItems(IVariantObject** pItemArray, UINT uiCountArray);
-	void EnableAnimation(BOOL bEnable);
+	void SetSettings(ISettings* pSettings);
 };
 

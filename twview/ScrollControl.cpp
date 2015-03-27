@@ -22,15 +22,16 @@ STDMETHODIMP CScrollControl::OnInitialized(IServiceProvider *pServiceProvider)
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_AnimationService, &m_pAnimationService));
-	RETURN_IF_FAILED(HrInitializeWithControl(m_pAnimationService, pUnk));
-	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pAnimationService, pServiceProvider));
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pAnimationService, pUnk))
+	RETURN_IF_FAILED(HrInitializeWithSettings(m_pAnimationService, m_pSettings));
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pAnimationService, pServiceProvider));
 	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &m_dwAdvice));
 	return S_OK;
 }
 
 STDMETHODIMP CScrollControl::OnShutdown()
 {
+	m_pSettings.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), m_dwAdvice))
 	RETURN_IF_FAILED(HrNotifyOnShutdown(m_pAnimationService));
 	m_pAnimationService.Release();
@@ -206,5 +207,11 @@ LRESULT CScrollControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 STDMETHODIMP CScrollControl::SetTabControl(IScrollControlEventSink* pCustomTabControl)
 {
 	m_pCustomTabControl = pCustomTabControl;
+	return S_OK;
+}
+
+STDMETHODIMP CScrollControl::Load(ISettings* pSettings)
+{
+	m_pSettings = pSettings;
 	return S_OK;
 }

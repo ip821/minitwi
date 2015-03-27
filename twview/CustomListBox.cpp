@@ -184,6 +184,7 @@ void CCustomListBox::OnItemsUpdated()
 
 void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 {
+	ATLASSERT(m_pSettings);
 	CComVariant vId;
 	ASSERT_IF_FAILED(pItemObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 
@@ -201,18 +202,10 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 		m_columnsInfo.insert(m_columnsInfo.begin() + index, pColumnsInfo);
 	}
 	
-
 	SendMessage(LB_INSERTSTRING, index, 0);
 
-	if (m_bEnableAnimation)
-	{
-		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, NULL, INVALID_COLUMN_INDEX));
-	}
+	ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, NULL, INVALID_COLUMN_INDEX));
 	UpdateAnimatedColumns(pColumnsInfo, index, pItemObject, TRUE);
-	if (m_updateTefCount)
-	{
-		++m_lastInsertCount;
-	}
 	m_bAnimationNeeded = TRUE;
 }
 
@@ -246,7 +239,7 @@ void CCustomListBox::UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemI
 			continue;
 
 		m_animatedColumns[pVariantObject].insert(i);
-		if (bRegisterForAnimation && m_bEnableAnimation)
+		if (bRegisterForAnimation)
 		{
 			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(itemIndex, pColumnsInfoItem, i));
 		}
@@ -506,17 +499,8 @@ void CCustomListBox::EndUpdate()
 
 	if (m_bAnimationNeeded)
 	{
-		if (m_bEnableAnimation)
-		{
-			StartFadeAnimation();
-		}
-		else
-		{
-			SetRedraw();
-			Invalidate(TRUE);
-		}
+		StartFadeAnimation();
 	}
-	m_lastInsertCount = 0;
 	m_bAnimationNeeded = FALSE;
 }
 
@@ -547,7 +531,7 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 			StartFadeAnimation();
 			SetRedraw();
 
-			if (vIndexes.size())
+			if (vIndexes.size() && m_bEnableAnimation)
 				Invalidate();
 
 			return 0;
@@ -610,14 +594,17 @@ void CCustomListBox::InvalidateItems(IVariantObject** pItemArray, UINT uiCountAr
 
 	if (bNeedInvalidate && !m_bAnimating)
 	{
-		if (m_bEnableAnimation)
-			StartFadeAnimation();
-		else
-			Invalidate(TRUE);
+		StartFadeAnimation();
 	}
 }
 
-void CCustomListBox::EnableAnimation(BOOL bEnable)
+void CCustomListBox::SetSettings(ISettings* pSettings)
 {
-	m_bEnableAnimation = bEnable;
+	ATLASSERT(pSettings);
+	m_pSettings = pSettings;
+	CComPtr<ISettings> pTimelineSettings;
+	ASSERT_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathTimeline, &pTimelineSettings));
+	CComVariant vDisableAnimation;
+	ASSERT_IF_FAILED(pTimelineSettings->GetVariantValue(Twitter::Metadata::Settings::Timeline::DisableAnimation, &vDisableAnimation));
+	m_bEnableAnimation = (vDisableAnimation.vt != VT_I4 || (!vDisableAnimation.intVal));
 }

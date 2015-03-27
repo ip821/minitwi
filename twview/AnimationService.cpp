@@ -30,16 +30,7 @@ STDMETHODIMP CAnimationService::SetParams(DWORD dwStart, DWORD dwFinish, DWORD d
 
 STDMETHODIMP CAnimationService::StartAnimationTimer()
 {
-	if (m_bDisableAnimation)
-	{
-		CComPtr<IAnimationService> pThis;
-		RETURN_IF_FAILED(QueryInterface(__uuidof(IAnimationService), (LPVOID*)&pThis));
-		RETURN_IF_FAILED(Fire_OnAnimationTimer(pThis, m_dwFinish, m_dwSteps));
-	}
-	else
-	{
-		m_animationTimer.StartAnimationTimer(m_dwTimerInternal);
-	}
+	m_animationTimer.StartAnimationTimer(m_dwTimerInternal);
 	return S_OK;
 }
 
@@ -47,11 +38,19 @@ STDMETHODIMP CAnimationService::ProcessWindowMessage(HWND hWnd, UINT uMsg, WPARA
 {
 	if (hWnd == m_hControlWnd && uMsg == WM_ANIMATION_TIMER && wParam == (WPARAM)&m_animationTimer)
 	{
-		int stepDiff = ((int)m_dwFinish - (int)m_dwStart) / (int)m_dwSteps;
-		m_dwValue = (int)m_dwValue + stepDiff;
-		m_dwStep++;
-		if (m_dwStep == m_dwSteps && m_dwValue != m_dwFinish)
+		if (m_bDisableAnimation)
+		{
 			m_dwValue = m_dwFinish;
+			m_dwStep = m_dwSteps;
+		}
+		else
+		{
+			int stepDiff = ((int)m_dwFinish - (int)m_dwStart) / (int)m_dwSteps;
+			m_dwValue = (int)m_dwValue + stepDiff;
+			m_dwStep++;
+			if (m_dwStep == m_dwSteps && m_dwValue != m_dwFinish)
+				m_dwValue = m_dwFinish;
+		}
 		CComPtr<IAnimationService> pThis;
 		RETURN_IF_FAILED(QueryInterface(__uuidof(IAnimationService), (LPVOID*)&pThis));
 		RETURN_IF_FAILED(Fire_OnAnimationTimer(pThis, m_dwValue, m_dwStep));
@@ -98,6 +97,6 @@ STDMETHODIMP CAnimationService::Load(ISettings* pSettings)
 	RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathTimeline, &pTimelineSettings));
 	CComVariant vDisableAnimation;
 	RETURN_IF_FAILED(pTimelineSettings->GetVariantValue(Twitter::Metadata::Settings::Timeline::DisableAnimation, &vDisableAnimation));
-	m_bDisableAnimation = vDisableAnimation.vt != VT_I4 || (!vDisableAnimation.intVal);
+	m_bDisableAnimation = vDisableAnimation.vt == VT_I4 && vDisableAnimation.intVal;
 	return S_OK;
 }
