@@ -10,7 +10,6 @@
 
 #define IMAGE_PADDING 25
 
-#define TARGET_RESOLUTION 1
 #define TARGET_INTERVAL 15
 
 CPictureWindow::CPictureWindow()

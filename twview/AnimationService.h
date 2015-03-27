@@ -2,7 +2,7 @@
 #include "resource.h"       // main symbols
 #include "twview_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
-#include "AnimationTimerSupport.h"
+#include "AnimationTimer.h"
 
 using namespace ATL;
 using namespace IP;
@@ -14,6 +14,7 @@ class ATL_NO_VTABLE CAnimationService :
 	public IInitializeWithControlImpl,
 	public IMsgHandler,
 	public IAnimationService,
+	public IInitializeWithSettings,
 	public IConnectionPointContainerImpl<CAnimationService>,
 	public IConnectionPointImpl<CAnimationService, &__uuidof(IAnimationServiceEventSink)>
 {
@@ -36,6 +37,7 @@ public:
 		COM_INTERFACE_ENTRY(IAnimationService)
 		COM_INTERFACE_ENTRY(IConnectionPointContainer)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
+		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 	END_COM_MAP()
 
 private:
@@ -45,7 +47,9 @@ private:
 	DWORD m_dwFinish = 0;
 	DWORD m_dwSteps = 0;
 	DWORD m_dwTimerInternal = 0;
-	CAnimationTimerSupport<CAnimationService> m_animationTimer;
+	CAnimationTimer<CAnimationService> m_animationTimer;
+	BOOL m_bDisableAnimation = FALSE;
+	CComPtr<ISettings> m_pSettings;
 
 	HRESULT Fire_OnAnimationTimer(IAnimationService* pAnimationService, DWORD dwValue, DWORD dwStep);
 
@@ -58,6 +62,8 @@ public:
 	STDMETHOD(SetParams)(DWORD dwStart, DWORD dwFinish, DWORD dwSteps, DWORD dwTimerInternal);
 	STDMETHOD(StartAnimationTimer)();
 	STDMETHOD(GetCurrentValue)(DWORD* pdwValue);
+
+	STDMETHOD(Load)(ISettings* pSettings);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(AnimationService), CAnimationService)

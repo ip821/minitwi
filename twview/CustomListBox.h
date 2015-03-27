@@ -3,7 +3,7 @@
 #include <atomic>
 #include "atlctrls.h"
 #include "twview_i.h"
-#include "AnimationTimerSupport.h"
+#include "AnimationTimer.h"
 #include "StaticListBoxImpl.h"
 #include "StaticListBox.h"
 
@@ -33,8 +33,7 @@ struct NMITEMREMOVED
 class CCustomListBox :
 	public CWindowImpl<CCustomListBox, CStaticListBox>,
 	public CStaticListBoxImpl<CCustomListBox>,
-	public COwnerDraw <CCustomListBox>,
-	public IScrollControlEventSink
+	public COwnerDraw <CCustomListBox>
 {
 public:
 	DECLARE_WND_CLASS(WINDOW_CLASS)
@@ -68,15 +67,12 @@ private:
 	BOOL m_bAnimating = FALSE;
 	BOOL m_bEnableAnimation;
 	atomic<int> m_updateTefCount = 0;
-	CAnimationTimerSupport<CCustomListBox> m_animationTimerFade;
+	CAnimationTimer<CCustomListBox> m_animationTimerFade;
 	int m_lastInsertCount = 0;
 	map<IVariantObject*, hash_set<int>> m_animatedColumns;
-	CComPtr<IScrollControl> m_pScrollControl;
-	CBitmap m_scrollBitmap;
 
 	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
 	void UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
-	void StartSlideAnimation();
 	void StartFadeAnimation();
 
 public:
@@ -107,9 +103,5 @@ public:
 	void InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
 	void RefreshItems(IVariantObject** pItemArray, UINT uiCountArray);
 	void EnableAnimation(BOOL bEnable);
-	STDMETHOD(OnEndScroll)();
-	METHOD_EMPTY(STDMETHOD(QueryInterface)(const IID& iid, void** pv));
-	METHOD_EMPTY(ULONG _stdcall AddRef());
-	METHOD_EMPTY(ULONG _stdcall Release());
 };
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "twview_i.h"
-#include "AnimationTimerSupport.h"
 
 class CCustomTabControl;
 

@@ -311,7 +311,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationService.h" />
-    <ClInclude Include="AnimationTimerSupport.h" />
+    <ClInclude Include="AnimationTimer.h" />
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="BaseTimeLineControl.h" />
     <ClInclude Include="CustomListBox.h" />

@@ -246,9 +246,6 @@
     <ClInclude Include="PluginTable.h">
       <Filter>PluginTable</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationTimerSupport.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="asyncsvc_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
@@ -269,6 +266,9 @@
     </ClInclude>
     <ClInclude Include="AnimationService.h">
       <Filter>Services\AnimationService</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTimer.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,6 @@
 
 #include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
-#include "AnimationTimerSupport.h"
 #include "..\twiconn\Plugins.h"
 #include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"
 

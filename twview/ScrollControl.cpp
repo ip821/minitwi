@@ -5,7 +5,6 @@
 #include "..\twtheme\GdilPlusUtils.h"
 #pragma comment(lib, "Winmm.lib")
 
-#define TARGET_RESOLUTION 1
 #define TARGET_INTERVAL 12
 
 CScrollControl::CScrollControl()

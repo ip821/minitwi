@@ -4,7 +4,6 @@
 #include "resource.h"       // main symbols
 #include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
-#include "AnimationTimerSupport.h"
 #include "Plugins.h"
 
 using namespace ATL;

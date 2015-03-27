@@ -5,12 +5,14 @@
 
 STDMETHODIMP CAnimationService::OnInitialized(IServiceProvider *pServiceProvider)
 {
+	ATLASSERT(m_pSettings);
 	m_animationTimer.SetHWND(m_hControlWnd);
 	return S_OK;
 }
 
 STDMETHODIMP CAnimationService::OnShutdown()
 {
+	m_pSettings.Release();
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	return S_OK;
 }
@@ -28,7 +30,16 @@ STDMETHODIMP CAnimationService::SetParams(DWORD dwStart, DWORD dwFinish, DWORD d
 
 STDMETHODIMP CAnimationService::StartAnimationTimer()
 {
-	m_animationTimer.StartAnimationTimer(m_dwTimerInternal);
+	if (m_bDisableAnimation)
+	{
+		CComPtr<IAnimationService> pThis;
+		RETURN_IF_FAILED(QueryInterface(__uuidof(IAnimationService), (LPVOID*)&pThis));
+		RETURN_IF_FAILED(Fire_OnAnimationTimer(pThis, m_dwFinish, m_dwSteps));
+	}
+	else
+	{
+		m_animationTimer.StartAnimationTimer(m_dwTimerInternal);
+	}
 	return S_OK;
 }
 
@@ -77,4 +88,16 @@ HRESULT CAnimationService::Fire_OnAnimationTimer(IAnimationService* pAnimationSe
 		}
 	}
 	return hr;
+}
+
+STDMETHODIMP CAnimationService::Load(ISettings* pSettings)
+{
+	CHECK_E_POINTER(pSettings);
+	m_pSettings = pSettings;
+	CComPtr<ISettings> pTimelineSettings;
+	RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathTimeline, &pTimelineSettings));
+	CComVariant vDisableAnimation;
+	RETURN_IF_FAILED(pTimelineSettings->GetVariantValue(Twitter::Metadata::Settings::Timeline::DisableAnimation, &vDisableAnimation));
+	m_bDisableAnimation = vDisableAnimation.vt != VT_I4 || (!vDisableAnimation.intVal);
+	return S_OK;
 }
