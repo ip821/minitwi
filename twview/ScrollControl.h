@@ -38,7 +38,8 @@ private:
 	CComPtr<IScrollControlEventSink> m_pCustomTabControl;
 	CComPtr<IAnimationService> m_pAnimationService;
 
-	const DWORD STEPS = 10;
+	const DWORD STEPS_DEFAULT = 10;
+	DWORD m_dwSteps = 0;
 	BOOL m_bFromRightToLeft = FALSE;
 	BOOL m_bFromDownToTop = FALSE;
 	BOOL m_bVertical = FALSE;

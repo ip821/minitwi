@@ -30,7 +30,7 @@ LRESULT CCustomListBox::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 {
 	m_animationTimerFade.SetHWND(m_hWnd);
 	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_ScrollControl, &m_pScrollControl));
-	ASSERT_IF_FAILED(m_pScrollControl->CreateEx(m_hWnd, nullptr));
+	ASSERT_IF_FAILED(m_pScrollControl->CreateEx(GetParent(), nullptr));
 	ASSERT_IF_FAILED(m_pScrollControl->ShowWindow(SW_HIDE));
 	ASSERT_IF_FAILED(m_pScrollControl->SetTabControl(this));
 	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pScrollControl, nullptr));
@@ -494,7 +494,7 @@ LRESULT CCustomListBox::OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 void CCustomListBox::BeginUpdate()
 {
 	if (!m_updateTefCount)
-		SetRedraw(FALSE);
+		//SetRedraw(FALSE);
 	++m_updateTefCount;
 }
 
@@ -518,7 +518,7 @@ void CCustomListBox::EndUpdate()
 		}
 		else
 		{
-			SetRedraw();
+			//SetRedraw();
 			Invalidate(TRUE);
 		}
 	}
@@ -532,7 +532,7 @@ void CCustomListBox::StartSlideAnimation()
 	if (!GetTopIndex() && count != m_lastInsertCount && m_scrollBitmap.IsNull())
 	{
 		CRect rectClient;
-		GetClientRect(&rectClient);
+		::GetClientRect(GetParent(), &rectClient);
 		CRect rectItem;
 		GetVirtualRect(m_lastInsertCount - 1, rectItem);
 		GetRealRect(rectItem);
@@ -551,22 +551,19 @@ void CCustomListBox::StartSlideAnimation()
 			brush.CreateSolidBrush(Color(ARGB(Color::White)).ToCOLORREF());
 			FillRect(cdcBitmap, rectEmpty, brush);
 		}
+		
 		HWND hWnd = 0;
 		m_pScrollControl->GetHWND(&hWnd);
-		::SetWindowPos(hWnd, NULL, rectClient.left, rectClient.top, rectItem.Width(), rectClient.Height(), SWP_SHOWWINDOW);
+		::SetWindowPos(hWnd, HWND_TOPMOST, rectClient.left, rectClient.top, rectItem.Width(), rectClient.Height(), SWP_SHOWWINDOW);
 		m_pScrollControl->SetBitmap(m_scrollBitmap.m_hBitmap);
+
 		DWORD dwSteps = 0;
 		DWORD dwTimerInterval = 0;
 		//if (rectEmpty.bottom < 100)
 		{
-			dwSteps = 20;
-			dwTimerInterval = 20;
+			dwSteps = 10;
+			dwTimerInterval = 30;
 		}
-		//else
-		//{
-		//	dwSteps = 20;
-		//	dwTimerInterval = 20;
-		//}
 		m_pScrollControl->ScrollY(FALSE, rectEmpty.Height(), dwSteps, dwTimerInterval);
 		return;
 	}
@@ -575,9 +572,9 @@ void CCustomListBox::StartSlideAnimation()
 
 STDMETHODIMP CCustomListBox::OnEndScroll()
 {
+	//SetRedraw();
 	m_pScrollControl->ShowWindow(SW_HIDE);
 	m_scrollBitmap.DeleteObject();
-	SetRedraw();
 	StartFadeAnimation();
 	return S_OK;
 }
@@ -599,7 +596,7 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 
 		if (bContinueAnimation)
 		{
-			SetRedraw(FALSE);
+			//SetRedraw(FALSE);
 
 			UINT uiCount = 0;
 			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationGetIndexes(NULL, &uiCount));
@@ -607,7 +604,7 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationGetIndexes(&vIndexes[0], &uiCount));
 
 			StartFadeAnimation();
-			SetRedraw();
+			//SetRedraw();
 
 			if (vIndexes.size())
 				Invalidate();

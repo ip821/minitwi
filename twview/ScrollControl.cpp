@@ -92,18 +92,20 @@ STDMETHODIMP CScrollControl::ScrollY(BOOL bFromDownToTop, DWORD distance, DWORD 
 		distance = rect.Height();
 
 	if (!steps)
-		steps = STEPS;
+		steps = STEPS_DEFAULT;
 
 	if (!timerInterval)
 		timerInterval = TARGET_INTERVAL;
 
+	m_dwSteps = steps;
+
 	if (bFromDownToTop)
 	{
-		RETURN_IF_FAILED(m_pAnimationService->SetParams(0, distance, STEPS, TARGET_INTERVAL));
+		RETURN_IF_FAILED(m_pAnimationService->SetParams(0, distance, m_dwSteps, timerInterval));
 	}
 	else
 	{
-		RETURN_IF_FAILED(m_pAnimationService->SetParams(distance, 0, STEPS, TARGET_INTERVAL));
+		RETURN_IF_FAILED(m_pAnimationService->SetParams(distance, 0, m_dwSteps, timerInterval));
 	}
 	m_bFromDownToTop = bFromDownToTop;
 	m_bVertical = TRUE;
@@ -120,18 +122,20 @@ STDMETHODIMP CScrollControl::ScrollX(BOOL bFromRightToLeft, DWORD distance, DWOR
 		distance = rect.Height();
 
 	if (!steps)
-		steps = STEPS;
+		steps = STEPS_DEFAULT;
 
 	if (!timerInterval)
 		timerInterval = TARGET_INTERVAL;
 
+	m_dwSteps = steps;
+
 	if (bFromRightToLeft)
 	{
-		RETURN_IF_FAILED(m_pAnimationService->SetParams(0, rect.Width(), STEPS, TARGET_INTERVAL));
+		RETURN_IF_FAILED(m_pAnimationService->SetParams(0, rect.Width(), m_dwSteps, timerInterval));
 	}
 	else
 	{
-		RETURN_IF_FAILED(m_pAnimationService->SetParams(rect.Width(), 0, STEPS, TARGET_INTERVAL));
+		RETURN_IF_FAILED(m_pAnimationService->SetParams(rect.Width(), 0, m_dwSteps, timerInterval));
 	}
 	m_bFromRightToLeft = bFromRightToLeft;
 	m_bVertical = FALSE;
@@ -153,7 +157,7 @@ STDMETHODIMP CScrollControl::OnAnimationStep(IAnimationService *pAnimationServic
 		RedrawWindow(0, 0, RDW_UPDATENOW);
 		RedrawWindow(rectUpdate, 0, RDW_UPDATENOW | RDW_NOERASE);
 
-		if (dwStep == STEPS)
+		if (dwStep == m_dwSteps)
 		{
 			m_pCustomTabControl->OnEndScroll();
 			return S_OK;
