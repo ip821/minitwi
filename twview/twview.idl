@@ -197,5 +197,12 @@ library twviewLib
 	{
 		[default] interface IUnknown;
 	};
+	[
+		uuid(B79A41E2-6BAC-4601-9D05-B7308D6664E3)
+	]
+	coclass SimplePictureControl
+	{
+		[default] interface IControl;
+	};
 };
 
