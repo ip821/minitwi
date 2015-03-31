@@ -259,6 +259,7 @@
     <ClCompile Include="SearchControl.cpp" />
     <ClCompile Include="SearchTimelineControl.cpp" />
     <ClCompile Include="SettingsControl.cpp" />
+    <ClCompile Include="SimplePictureControl.cpp" />
     <ClCompile Include="TimelineControl.cpp" />
     <ClCompile Include="TimelineControlCopyCommand.cpp" />
     <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp" />
@@ -328,6 +329,7 @@
     <ClInclude Include="SearchControl.h" />
     <ClInclude Include="SearchTimelineControl.h" />
     <ClInclude Include="SettingsControl.h" />
+    <ClInclude Include="SimplePictureControl.h" />
     <ClInclude Include="StaticListBoxImpl.h" />
     <ClInclude Include="StaticListBox.h" />
     <ClInclude Include="TimelineControl.h" />

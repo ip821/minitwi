@@ -80,6 +80,9 @@
     <Filter Include="Services\AnimationService">
       <UniqueIdentifier>{dd99391c-2b17-4916-8237-129ea9d339a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\PictureWindow\SimplePictureControl">
+      <UniqueIdentifier>{3ef11937-2a9e-4cfe-8e94-29c15aa0e113}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -165,6 +168,9 @@
     </ClCompile>
     <ClCompile Include="AnimationService.cpp">
       <Filter>Services\AnimationService</Filter>
+    </ClCompile>
+    <ClCompile Include="SimplePictureControl.cpp">
+      <Filter>Controls\PictureWindow\SimplePictureControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -269,6 +275,9 @@
     </ClInclude>
     <ClInclude Include="AnimationTimer.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SimplePictureControl.h">
+      <Filter>Controls\PictureWindow\SimplePictureControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
