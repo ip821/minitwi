@@ -11,6 +11,7 @@ namespace IP
 				namespace MediaObject
 				{
 					const static CComBSTR MediaUrl(L"VAR_TWITTER_MEDIAURL");
+					const static CComBSTR MediaVideoUrl(L"VAR_TWITTER_MEDIAVIDEOURL");
 					const static CComBSTR MediaUrlShort(L"VAR_TWITTER_MEDIAURL_SHORT");
 					const static CComBSTR MediaUrlThumb(L"VAR_TWITTER_MEDIAURL_THUMB");
 					const static CComBSTR MediaThumbHeight(L"VAR_TWITTER_MEDIAURL_THUMB_HEIGHT");

@@ -753,6 +753,9 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						CComVariant vMediaUrl;
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
 
+						CComVariant vMediaVideoUrl;
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
+
 						CComVariant vMediaUrlThumb;
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
@@ -784,6 +787,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, vMediaUrlThumb.bstrVal));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, vMediaVideoUrl.bstrVal));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
 						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
 					}

@@ -13,7 +13,8 @@ class ATL_NO_VTABLE COpenUrlService :
 	public IOpenUrlService,
 	public IPluginSupportNotifications,
 	public IInitializeWithControlImpl,
-	public ITimelineControlEventSink
+	public ITimelineControlEventSink,
+	public IDownloadServiceEventSink
 {
 public:
 
@@ -28,6 +29,7 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ITimelineControlEventSink)
+		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
 	END_COM_MAP()
 
 private:
@@ -36,8 +38,10 @@ private:
 	CComPtr<ITimelineControl> m_pTimelineControl;
 	CComPtr<IFormsService> m_pFormsService;
 	CComPtr<IFormManager> m_pFormManager;
+	CComPtr<IDownloadService> m_pDownloadService;
 
 	DWORD m_dwAdviceTimelineControl = 0;
+	DWORD m_dwAdviceDownloadService = 0;
 
 	STDMETHOD(OpenTwitViewForm)(IVariantObject* pVariantObject);
 	STDMETHOD(OpenUserInfoForm)(IVariantObject* pVariantObject);
@@ -49,6 +53,8 @@ public:
 	METHOD_EMPTY(STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject));
 	STDMETHOD(OnColumnClick)(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject);
 	STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject);
+
+	STDMETHOD(OnDownloadComplete)(IVariantObject *pResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(OpenUrlService), COpenUrlService)

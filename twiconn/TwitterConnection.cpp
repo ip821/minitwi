@@ -452,10 +452,15 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 		strUserId = CW2A(bstrUserId);
 	}
 
+#define USE_TEST_DATA
 	bool bRes = false;
 	if (strUserId.empty())
 	{
+#ifdef USE_TEST_DATA
+		bRes = true;
+#else
 		bRes = m_pTwitObj->timelineHomeGet(strId, strSinceId, strMaxCount);
+#endif
 	}
 	else
 	{
@@ -476,7 +481,23 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 	}
 
 	string strResponse;
+#ifdef USE_TEST_DATA
+	{
+		//test data from disk
+		std::wfstream fs(L"..\\twiconn\\TestData\\test.json", std::ios::in | std::ios::binary);
+		const auto bufSize = 1024;
+		CString strText;
+		TCHAR buffer[bufSize] = { 0 };
+		while (auto cbRead = fs.rdbuf()->sgetn(buffer, bufSize))
+		{
+			strText.Append(buffer, (int)cbRead);
+		}
+		fs.close();
+		strResponse = W2A(strText);
+	}
+#else
 	m_pTwitObj->getLastWebResponse(strResponse);
+#endif
 
 	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
 	auto hr = HandleError(value.get());
@@ -563,7 +584,6 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	auto entities = itemObject[L"entities"]->AsObject();
 	auto urls = entities[L"urls"]->AsArray();
 
-	//CString strText = L"test\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\n";
 	CString strText = text.c_str();
 	hash_set<wstring> urlsHashSet;
 
@@ -582,8 +602,9 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 
 	hash_set<wstring> processedMediaUrls;
 
+	if (itemObject.find(L"extended_entities") != itemObject.end())
 	{
-		auto entitiesObj = itemObject[L"entities"]->AsObject();
+		auto entitiesObj = itemObject[L"extended_entities"]->AsObject();
 		if (entitiesObj.find(L"media") != entitiesObj.end())
 		{
 			auto mediaArray = entitiesObj[L"media"]->AsArray();
@@ -591,9 +612,9 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		}
 	}
 
-	if (itemObject.find(L"extended_entities") != itemObject.end())
+	if (itemObject.find(L"entities") != itemObject.end())
 	{
-		auto entitiesObj = itemObject[L"extended_entities"]->AsObject();
+		auto entitiesObj = itemObject[L"entities"]->AsObject();
 		if (entitiesObj.find(L"media") != entitiesObj.end())
 		{
 			auto mediaArray = entitiesObj[L"media"]->AsArray();
@@ -687,6 +708,15 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &CComVariant(shortUrl.c_str())));
 		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(url.c_str())));
 		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &CComVariant((url + L":small").c_str())));
+
+		if (mediaObj.find(L"video_info") != mediaObj.end())
+		{
+			auto videoObj = mediaObj[L"video_info"]->AsObject();
+			auto videoVariantsArray = videoObj[L"variants"]->AsArray();
+			auto firstVariantObj = videoVariantsArray[0]->AsObject();
+			auto strVideoUrl = firstVariantObj[L"url"]->AsString();
+			RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVariant(strVideoUrl.c_str())));
+		}
 
 		if (mediaObj.find(L"sizes") != mediaObj.end())
 		{

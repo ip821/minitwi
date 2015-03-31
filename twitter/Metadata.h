@@ -30,6 +30,7 @@ namespace IP
 			namespace Types
 			{
 				const static CComBSTR Image(L"TYPE_IMAGE");
+				const static CComBSTR Video(L"TYPE_VIDEO");
 				const static CComBSTR ImagePictureWindow(L"TYPE_IMAGE_PICTURE_WINDOW");
 				const static CComBSTR ImageUserBanner(L"TYPE_IMAGE_USER_BANNER");
 				const static CComBSTR ImageUserImage(L"TYPE_IMAGE_USER_IMAGE");
