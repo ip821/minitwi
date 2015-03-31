@@ -50,9 +50,6 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 	m_pServiceProvider = m_pPluginSupport;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_ImageManagerService, &m_pImageManagerService));
 
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_AnimationService, &m_pAnimationService));
-	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &m_dwAdviceAnimationService));
-
 	RETURN_IF_FAILED(HrInitializeWithControl(m_pPluginSupport, pUnk));
 	RETURN_IF_FAILED(HrInitializeWithSettings(m_pPluginSupport, m_pSettings));
 	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
@@ -68,8 +65,6 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
 	m_pSettings.Release();
-	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), m_dwAdviceAnimationService));
-	m_pAnimationService.Release();
 	m_pMessageLoop.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	m_pDownloadService.Release();
@@ -294,19 +289,6 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 	return S_OK;
 }
 
-STDMETHODIMP CPictureWindow::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
-{
-	Invalidate();
-
-	if (dwStep == STEPS)
-	{
-		return S_OK;
-	}
-
-	RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
-	return 0;
-}
-
 STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
@@ -377,8 +359,6 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		ResizeToCurrentBitmap();
 	}
 
-	RETURN_IF_FAILED(m_pAnimationService->SetParams(0, 255, STEPS, TARGET_INTERVAL));
-	RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
 	return S_OK;
 }
 

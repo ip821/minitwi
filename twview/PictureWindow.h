@@ -48,7 +48,6 @@ public:
 		COM_INTERFACE_ENTRY(IWindow)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IThemeSupport)
-		COM_INTERFACE_ENTRY(IAnimationServiceEventSink)
 	END_COM_MAP()
 
 	BEGIN_CONNECTION_POINT_MAP(CPictureWindow)
@@ -74,7 +73,6 @@ private:
 	CComPtr<ICommandSupport> m_pCommandSupport;
 	CComPtr<IMessageLoop> m_pMessageLoop;
 	CComPtr<ITheme> m_pTheme;
-	CComPtr<IAnimationService> m_pAnimationService;
 	CComPtr<ISettings> m_pSettings;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
@@ -86,7 +84,6 @@ private:
 	HWND m_hWndParent = 0;
 	CString m_strLastErrorMsg;
 
-	const DWORD STEPS = 25;
 	BOOL m_bInitialMonitorDetection = TRUE;
 	BOOL m_bDisableMonitorSnap = FALSE;
 
@@ -126,8 +123,6 @@ public:
 	STDMETHOD(SetTheme)(ITheme* pTheme);
 
 	STDMETHOD(Load)(ISettings *pSettings);
-
-	STDMETHOD(OnAnimationStep)(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(PictureWindow), CPictureWindow)
