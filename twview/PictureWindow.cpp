@@ -63,6 +63,10 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
+	for (auto& it : m_videoFilePaths)
+	{
+		DeleteFile(it);
+	}
 	RETURN_IF_FAILED(ShutdownViewControl());
 	m_pSettings.Release();
 	m_pMessageLoop.Release();
@@ -174,7 +178,6 @@ STDMETHODIMP CPictureWindow::LoadViewControl()
 
 	CComPtr<IVariantObject> pVariantObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(m_bitmapsUrls[m_currentBitmapIndex])));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
@@ -182,10 +185,12 @@ STDMETHODIMP CPictureWindow::LoadViewControl()
 	if (m_videoUrls[m_currentBitmapIndex] == L"")
 	{
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ImageViewControl, &m_pViewControl));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(m_bitmapsUrls[m_currentBitmapIndex])));
 	}
 	else
 	{
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VideoViewControl, &m_pViewControl));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::File::Path, &CComVariant(m_videoFilePaths[m_currentBitmapIndex])));
 	}
 
 	CComQIPtr<IThemeSupport> pThemeSupport = m_pViewControl;
@@ -298,6 +303,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 		RETURN_IF_FAILED(pMediaUrls->GetCount(&uiCount));
 		m_bitmapsUrls.resize(uiCount);
 		m_videoUrls.resize(uiCount);
+		m_videoFilePaths.resize(uiCount);
 		for (size_t i = 0; i < uiCount; ++i)
 		{
 			CComPtr<IVariantObject> pMediaUrlObject;
@@ -309,6 +315,13 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 			CComVariant vVideoUrlForObject;
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vVideoUrlForObject));
 			m_videoUrls[i] = vVideoUrlForObject.bstrVal;
+
+			CComVariant vHeight;
+			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaHeight, &vHeight));
+			CComVariant vWidth;
+			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaHeight, &vWidth));
+			ATLASSERT(vHeight.vt == VT_I4 && vWidth.vt == VT_I4);
+			m_sizes[i] = CSize(vWidth.intVal, vHeight.intVal);
 
 			if (CComBSTR(vMediaUrlForObject.bstrVal) == CComBSTR(vMediaUrl.bstrVal))
 				currentBitmapIndex = i;
@@ -330,11 +343,23 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 	m_strLastErrorMsg = L"";
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-	auto str = m_bitmapsUrls[index];
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(str)));
+
+	auto strImageUrl = m_bitmapsUrls[index];
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(strImageUrl)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant((INT64)m_hWnd)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &CComVariant(index)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::ImagePictureWindow)));
+
+	auto strVideoUrl = m_videoUrls[index];
+	if (strVideoUrl != L"")
+	{
+		auto lpszExt = PathFindExtension(strVideoUrl);
+		RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(strVideoUrl)));
+		RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::VideoPictureWindow)));
+		RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::Extension, &CComVariant(lpszExt)));
+		RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::KeepFileFlag, &CComVariant(true)));
+	}
+
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 
 	return S_OK;
@@ -347,7 +372,15 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
-	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::ImagePictureWindow)
+	if (
+		vType.vt != VT_BSTR 
+		|| 
+			(
+				CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::ImagePictureWindow
+				||
+				CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::VideoPictureWindow
+			)
+		)
 		return S_OK;
 
 	CComVariant vHr;
@@ -375,10 +408,6 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	CComVariant vIndex;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &vIndex));
 
-	CComVariant vStream;
-	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
-	CComQIPtr<IStream> pStream = vStream.punkVal;
-
 	int currentBitmapIndex = 0;
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
@@ -386,21 +415,35 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		currentBitmapIndex = m_currentBitmapIndex;
 	}
 
-	auto pBitmap = make_shared<Bitmap>(pStream);
-	auto hMonitor = GetHMonitor();
-
-	if (hMonitor)
+	if (CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImagePictureWindow)
 	{
-		MONITORINFO mi = { 0 };
-		mi.cbSize = sizeof(MONITORINFO);
-		GetMonitorInfo(hMonitor, &mi);
-		CRect rectMonitor(mi.rcWork);
-		ResizeDownImage(pBitmap, rectMonitor.Height() - 100);
-	}
+		CComVariant vStream;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
+		CComQIPtr<IStream> pStream = vStream.punkVal;
 
-	CBitmap bmp;
-	pBitmap->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
-	ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[currentBitmapIndex], bmp));
+		auto pBitmap = make_shared<Bitmap>(pStream);
+		auto hMonitor = GetHMonitor();
+
+		if (hMonitor)
+		{
+			MONITORINFO mi = { 0 };
+			mi.cbSize = sizeof(MONITORINFO);
+			GetMonitorInfo(hMonitor, &mi);
+			CRect rectMonitor(mi.rcWork);
+			ResizeDownImage(pBitmap, rectMonitor.Height() - 100);
+		}
+
+		CBitmap bmp;
+		pBitmap->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
+		ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[currentBitmapIndex], bmp));
+	}
+	else if (CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::VideoPictureWindow)
+	{
+		CComVariant vFilePath;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
+		ATLASSERT(vFilePath.vt == VT_BSTR);
+		m_videoFilePaths[currentBitmapIndex] = vFilePath.bstrVal;
+	}
 
 	ResizeToCurrentBitmap();
 	SendMessage(WM_UPDATE_VIEW_CONTROL);
@@ -443,9 +486,18 @@ void CPictureWindow::ResizeWindow(UINT uiWidth, UINT uiHeight)
 void CPictureWindow::ResizeToCurrentBitmap()
 {
 	TBITMAP tBitmap = { 0 };
-	ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bitmapsUrls[m_currentBitmapIndex], &tBitmap));
-	auto width = tBitmap.Width;
-	auto height = tBitmap.Height;
+	UINT width = 0;
+	UINT height = 0;
+	if (m_pImageManagerService->GetImageInfo(m_bitmapsUrls[m_currentBitmapIndex], &tBitmap) == S_OK)
+	{
+		width = tBitmap.Width;
+		height = tBitmap.Height;
+	}
+	else
+	{
+		width = m_sizes[m_currentBitmapIndex].cx;
+		height = m_sizes[m_currentBitmapIndex].cy;
+	}
 	ResizeWindow(width, height);
 }
 

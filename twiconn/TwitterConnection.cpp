@@ -722,11 +722,20 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 		if (mediaObj.find(L"sizes") != mediaObj.end())
 		{
 			auto sizesObj = mediaObj[L"sizes"]->AsObject();
-			auto smallSizeObj = sizesObj[L"small"]->AsObject();
-			auto height = static_cast<int>(smallSizeObj[L"h"]->AsNumber());
-			auto width = static_cast<int>(smallSizeObj[L"w"]->AsNumber());
-			RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &CComVariant(width)));
-			RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &CComVariant(height)));
+			{
+				auto sizeObj = sizesObj[L"small"]->AsObject();
+				auto height = static_cast<int>(sizeObj[L"h"]->AsNumber());
+				auto width = static_cast<int>(sizeObj[L"w"]->AsNumber());
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &CComVariant(width)));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &CComVariant(height)));
+			}
+			{
+				auto sizeObj = sizesObj[L"large"]->AsObject();
+				auto height = static_cast<int>(sizeObj[L"h"]->AsNumber());
+				auto width = static_cast<int>(sizeObj[L"w"]->AsNumber());
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaWidth, &CComVariant(width)));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaHeight, &CComVariant(height)));
+			}
 		}
 	}
 	return S_OK;

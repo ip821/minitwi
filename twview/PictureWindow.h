@@ -80,6 +80,8 @@ private:
 	int m_currentBitmapIndex = -1;
 	vector<CComBSTR> m_bitmapsUrls;
 	vector<CComBSTR> m_videoUrls;
+	vector<CComBSTR> m_videoFilePaths;
+	vector<CSize> m_sizes;
 	boost::mutex m_mutex;
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
