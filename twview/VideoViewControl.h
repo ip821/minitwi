@@ -5,6 +5,7 @@
 #include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "Plugins.h"
+#include "VideoPlayerProcess.h"
 
 using namespace ATL;
 using namespace std;
@@ -42,20 +43,24 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnForwardMessage)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnForwardMessage)
+		MESSAGE_HANDLER(WM_PLAYER_STARTED, OnPlayerStarted)
 	END_MSG_MAP()
 
 private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IVariantObject> m_pVariantObject;
 	CComPtr<ITheme> m_pTheme;
-	CComBSTR m_bstrUrl;
+	CComBSTR m_bstrPath;
 
 	CString m_strLastErrorMsg;
+	CVideoPlayerProcess m_videoPlayProcess;
+	BOOL m_bPlayerStarted = FALSE;
 
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnPlayerStarted(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 public:
 	STDMETHOD(GetHWND)(HWND* phWnd);

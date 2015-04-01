@@ -75,7 +75,6 @@
 
 #include "..\twitter\Plugins.h"
 #include "..\twitter\Metadata.h"
-#include "Plugins.h"
 
 using namespace IP;
 

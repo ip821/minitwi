@@ -45,10 +45,10 @@ STDMETHODIMP CVideoViewControl::SetVariantObject(IVariantObject *pVariantObject)
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
 
-	CComVariant vUrl;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
-	ATLASSERT(vUrl.vt == VT_BSTR);
-	m_bstrUrl = vUrl.bstrVal;
+	CComVariant vPath;
+	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Metadata::File::Path, &vPath));
+	ATLASSERT(vPath.vt == VT_BSTR);
+	m_bstrPath = vPath.bstrVal;
 
 	return S_OK;
 }
@@ -61,10 +61,22 @@ STDMETHODIMP CVideoViewControl::OnInitialized(IServiceProvider *pServiceProvider
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
+	m_videoPlayProcess.Start(m_hWnd);
+
 	return S_OK;
 }
+
+LRESULT CVideoViewControl::OnPlayerStarted(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	m_bPlayerStarted = TRUE;
+	m_videoPlayProcess.SetProcessData((HINSTANCE)wParam, (HWND)lParam);
+	m_videoPlayProcess.Play(CString(m_bstrPath));
+	return 0;
+}
+
 STDMETHODIMP CVideoViewControl::OnShutdown()
 {
+	m_videoPlayProcess.Shutdown();
 	IInitializeWithControlImpl::OnShutdown();
 	m_pVariantObject.Release();
 	m_pServiceProvider.Release();
@@ -79,6 +91,9 @@ LRESULT CVideoViewControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lP
 
 LRESULT CVideoViewControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if (m_bPlayerStarted)
+		return 0;
+
 	PAINTSTRUCT ps = { 0 };
 	CDCHandle cdc(BeginPaint(&ps));
 

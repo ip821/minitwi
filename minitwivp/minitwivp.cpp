@@ -9,6 +9,11 @@ using namespace std;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOW)
 {
+	if (!lpstrCmdLine)
+	{
+		MessageBox(NULL, L"Empty cmd line is not allowed", L"minitwivp", MB_OK);
+		return 1;
+	}
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 

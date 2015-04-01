@@ -165,9 +165,11 @@ void CPictureWindow::MoveToPicture(BOOL bForward)
 
 STDMETHODIMP CPictureWindow::ShutdownViewControl()
 {
-	ATLASSERT(m_pViewControl);
-	RETURN_IF_FAILED(HrNotifyOnShutdown(m_pViewControl));
-	m_pViewControl.Release();
+	if (m_pViewControl)
+	{
+		RETURN_IF_FAILED(HrNotifyOnShutdown(m_pViewControl));
+		m_pViewControl.Release();
+	}
 	m_hWndViewControl = 0;
 	return S_OK;
 }
@@ -304,6 +306,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 		m_bitmapsUrls.resize(uiCount);
 		m_videoUrls.resize(uiCount);
 		m_videoFilePaths.resize(uiCount);
+		m_sizes.resize(uiCount);
 		for (size_t i = 0; i < uiCount; ++i)
 		{
 			CComPtr<IVariantObject> pMediaUrlObject;
@@ -377,7 +380,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		|| 
 			(
 				CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::ImagePictureWindow
-				||
+				&&
 				CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::VideoPictureWindow
 			)
 		)
