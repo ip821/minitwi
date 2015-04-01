@@ -26,7 +26,6 @@ class ATL_NO_VTABLE CPictureWindow :
 	public IInitializeWithVariantObject,
 	public IDownloadServiceEventSink,
 	public IPluginSupportNotifications,
-	public IAnimationServiceEventSink,
 	public IConnectionPointContainerImpl<CPictureWindow>,
 	public IConnectionPointImpl<CPictureWindow, &__uuidof(IWindowEventSink)>
 {
@@ -62,6 +61,7 @@ public:
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtomUp)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtomUp)
 		MESSAGE_HANDLER(WM_COMMAND, OnCommand)
+		MESSAGE_HANDLER(WM_UPDATE_VIEW_CONTROL, OnUpdateViewControl)
 		DEFAULT_MESSAGE_HANDLER(OnMessage)
 	END_MSG_MAP()
 
@@ -74,14 +74,15 @@ private:
 	CComPtr<IMessageLoop> m_pMessageLoop;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ISettings> m_pSettings;
+	CComPtr<IControl> m_pViewControl;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
-	DWORD m_dwAdviceAnimationService = 0;
 	int m_currentBitmapIndex = -1;
 	vector<CComBSTR> m_bitmapsUrls;
 	boost::mutex m_mutex;
 	CIcon m_icon;
 	HWND m_hWndParent = 0;
+	HWND m_hWndViewControl = 0;
 	CString m_strLastErrorMsg;
 
 	BOOL m_bInitialMonitorDetection = TRUE;
@@ -96,6 +97,7 @@ private:
 	LRESULT OnRButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnUpdateViewControl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void OnFinalMessage(HWND hWnd);
@@ -105,7 +107,10 @@ private:
 	void ResizeToCurrentBitmap();
 	HMONITOR GetHMonitor();
 	STDMETHOD(InitCommandSupport)(int index);
+	STDMETHOD(ShutdownViewControl());
+	STDMETHOD(LoadViewControl());
 	void MoveToPicture(BOOL bForward);
+	void AdjustSize();
 
 public:
 	STDMETHOD(Show)(HWND hWndParent);

@@ -20,7 +20,8 @@ class ATL_NO_VTABLE CSimplePictureControl :
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
 	public IPluginSupportNotifications,
-	public IAnimationServiceEventSink
+	public IAnimationServiceEventSink,
+	public IThemeSupport
 {
 public:
 	DECLARE_WND_CLASS(L"SimplePictureControl")
@@ -35,19 +36,23 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IControl)
 		COM_INTERFACE_ENTRY(IAnimationServiceEventSink)
+		COM_INTERFACE_ENTRY(IThemeSupport)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CSimplePictureControl)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		MESSAGE_HANDLER(WM_RBUTTONUP, OnForwardMessage)
+		MESSAGE_HANDLER(WM_LBUTTONUP, OnForwardMessage)
 	END_MSG_MAP()
 
 private:
- 	CComQIPtr<IServiceProvider> m_pServiceProvider;
+ 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 	CComPtr<IVariantObject> m_pVariantObject;
 	CComPtr<IAnimationService> m_pAnimationService;
+	CComPtr<ITheme> m_pTheme;
+	CComBSTR m_bstrUrl;
 
 	CString m_strLastErrorMsg;
 
@@ -59,6 +64,7 @@ private:
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 public:
 	STDMETHOD(GetHWND)(HWND* phWnd);
@@ -71,6 +77,8 @@ public:
 	STDMETHOD(OnShutdown)();
 
 	STDMETHOD(OnAnimationStep)(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep);
+
+	STDMETHOD(SetTheme)(ITheme *pTheme);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SimplePictureControl), CSimplePictureControl)

@@ -10,6 +10,8 @@
 
 // CTwitterConnection
 
+//#define USE_TEST_DATA
+
 STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 {
 	if (value == nullptr)
@@ -452,7 +454,6 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 		strUserId = CW2A(bstrUserId);
 	}
 
-#define USE_TEST_DATA
 	bool bRes = false;
 	if (strUserId.empty())
 	{

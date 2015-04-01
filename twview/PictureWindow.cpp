@@ -9,8 +9,7 @@
 // CPictureWindow
 
 #define IMAGE_PADDING 25
-
-#define TARGET_INTERVAL 15
+#define BOTTOM_PANEL_HEIGHT 50
 
 CPictureWindow::CPictureWindow()
 {
@@ -64,6 +63,7 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
+	RETURN_IF_FAILED(ShutdownViewControl());
 	m_pSettings.Release();
 	m_pMessageLoop.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
@@ -121,6 +121,8 @@ void CPictureWindow::MoveToPicture(BOOL bForward)
 		if (m_bitmapsUrls.size() == 1)
 			return;
 
+		ASSERT_IF_FAILED(ShutdownViewControl());
+
 		if (bForward)
 			++m_currentBitmapIndex;
 		else
@@ -140,21 +142,57 @@ void CPictureWindow::MoveToPicture(BOOL bForward)
 	BOOL bContains = FALSE;
 	ASSERT_IF_FAILED(m_pImageManagerService->ContainsImageKey(m_bitmapsUrls[currentBitmapIndex], &bContains));
 
+	if (bContains)
+	{
+		ResizeToCurrentBitmap();
+		ASSERT_IF_FAILED(LoadViewControl());
+		return;
+	}
+
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
-
-		if (bContains)
-		{
-			ResizeToCurrentBitmap();
-			Invalidate();
-			return;
-		}
 
 		ASSERT_IF_FAILED(StartNextDownload(m_currentBitmapIndex));
 		m_currentBitmapIndex = -1;
 	}
 
 	Invalidate();
+}
+
+STDMETHODIMP CPictureWindow::ShutdownViewControl()
+{
+	ATLASSERT(m_pViewControl);
+	RETURN_IF_FAILED(HrNotifyOnShutdown(m_pViewControl));
+	m_pViewControl.Release();
+	m_hWndViewControl = 0;
+	return S_OK;
+}
+
+STDMETHODIMP CPictureWindow::LoadViewControl()
+{
+	ATLASSERT(!m_pViewControl);
+
+	CComPtr<IVariantObject> pVariantObject;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(m_bitmapsUrls[m_currentBitmapIndex])));
+
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SimplePictureControl, &m_pViewControl));
+	CComQIPtr<IThemeSupport> pThemeSupport = m_pViewControl;
+	if (pThemeSupport)
+	{
+		RETURN_IF_FAILED(pThemeSupport->SetTheme(m_pTheme));
+	}
+	RETURN_IF_FAILED(HrInitializeWithControl(m_pViewControl, pUnk));
+	RETURN_IF_FAILED(HrInitializeWithSettings(m_pViewControl, m_pSettings));
+	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pViewControl, pVariantObject));
+	RETURN_IF_FAILED(m_pViewControl->CreateEx(m_hWnd, &m_hWndViewControl));
+	AdjustSize();
+	RETURN_IF_FAILED(HrNotifyOnInitialized(m_pViewControl, m_pServiceProvider));
+	Invalidate();
+	return S_OK;
 }
 
 LRESULT CPictureWindow::OnLButtomUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -209,7 +247,7 @@ STDMETHODIMP CPictureWindow::CreateEx(HWND hWndParent, HWND *hWnd)
 {
 	CRect rect(0, 0, 100, 100);
 	CalcRect(rect.right, rect.bottom, rect);
-	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU, WS_EX_COMPOSITED);
+	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU, WS_EX_CONTROLPARENT);
 	if (hWnd)
 		*hWnd = m_hWnd;
 	return S_OK;
@@ -310,10 +348,7 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 			bstrMsg = vDesc.bstrVal;
 
 		m_strLastErrorMsg = bstrMsg;
-		{
-			boost::lock_guard<boost::mutex> lock(m_mutex);
-			ResizeWindow(200, 200);
-		}
+		ResizeWindow(200, 200);
 		Invalidate();
 		return S_OK;
 	}
@@ -354,12 +389,28 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	pBitmap->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
 	ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[currentBitmapIndex], bmp));
 
-	{
-		boost::lock_guard<boost::mutex> lock(m_mutex);
-		ResizeToCurrentBitmap();
-	}
+	ResizeToCurrentBitmap();
+	SendMessage(WM_UPDATE_VIEW_CONTROL);
 
 	return S_OK;
+}
+
+LRESULT CPictureWindow::OnUpdateViewControl(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	ASSERT_IF_FAILED(LoadViewControl());
+	return 0;
+}
+
+void CPictureWindow::AdjustSize()
+{
+	if (m_hWndViewControl)
+	{
+		CRect clientRect;
+		GetClientRect(&clientRect);
+		if (m_bitmapsUrls.size() > 1)
+			clientRect.bottom -= BOTTOM_PANEL_HEIGHT;
+		::SetWindowPos(m_hWndViewControl, 0, 0, 0, clientRect.Width(), clientRect.Height(), 0);
+	}
 }
 
 void CPictureWindow::ResizeWindow(UINT uiWidth, UINT uiHeight)
@@ -368,7 +419,12 @@ void CPictureWindow::ResizeWindow(UINT uiWidth, UINT uiHeight)
 	GetWindowRect(&rect);
 
 	CalcRect(uiWidth, uiHeight, rect);
+	if (m_bitmapsUrls.size() > 1)
+	{
+		rect.bottom += BOTTOM_PANEL_HEIGHT;
+	}
 	SetWindowPos(NULL, &rect, SWP_NOZORDER);
+	AdjustSize();
 }
 
 void CPictureWindow::ResizeToCurrentBitmap()
@@ -432,17 +488,11 @@ void CPictureWindow::OnFinalMessage(HWND hWnd)
 LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	PAINTSTRUCT ps = { 0 };
-	CDCHandle cdcReal(BeginPaint(&ps));
+	BeginPaint(&ps);
+	CDCHandle cdcReal(ps.hdc);
 
 	CRect rect;
 	GetClientRect(&rect);
-
-	CBitmap bufferBitmap;
-	bufferBitmap.CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
-
-	CDC cdc;
-	cdc.CreateCompatibleDC(cdcReal);
-	CDCSelectBitmapScope cdcSelectBitmapScopeBufferBitmap(cdc, bufferBitmap);
 
 	int currentBitmapIndex = 0;
 	{
@@ -467,14 +517,15 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		ASSERT_IF_FAILED(m_pTheme->GetFontMap(&pThemeFontMap));
 		ASSERT_IF_FAILED(pThemeFontMap->GetFont(Twitter::Metadata::Drawing::PictureWindowText, &font));
 	}
-	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
-	cdc.SetBkMode(TRANSPARENT);
-	cdc.SetTextColor(dwTextColor);
+	CDCSelectFontScope cdcSelectFontScope(cdcReal, font);
 
-	cdc.FillSolidRect(&rect, dwBrushColor);
+	cdcReal.SetBkMode(TRANSPARENT);
+	cdcReal.SetTextColor(dwTextColor);
 
-	if (currentBitmapIndex == -1)
+	cdcReal.FillSolidRect(&rect, dwBrushColor);
+
+	if (!m_pViewControl)
 	{
 		CComBSTR str = L"Downloading...";
 		if (!m_strLastErrorMsg.IsEmpty())
@@ -482,7 +533,7 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 		CSize size;
 		CRect rect1 = rect;
-		cdc.DrawTextEx(str, str.Length(), &rect1, DT_WORDBREAK | DT_CENTER | DT_CALCRECT, NULL);
+		cdcReal.DrawTextEx(str, str.Length(), &rect1, DT_WORDBREAK | DT_CENTER | DT_CALCRECT, NULL);
 		size.cx = rect1.Width();
 		size.cy = rect1.Height();
 
@@ -490,29 +541,8 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
 
 		CRect rectText(x, y, x + size.cx, y + size.cy);
-		DrawRoundedRect(CDCHandle(cdc), rectText, false);
-		cdc.DrawTextEx(str, str.Length(), &rectText, DT_WORDBREAK | DT_CENTER, NULL);
-	}
-	else
-	{
-		DWORD dwAlpha = 0;
-		ASSERT_IF_FAILED(m_pAnimationService->GetCurrentValue(&dwAlpha));
-		TBITMAP tBitmap = { 0 };
-		ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bitmapsUrls[currentBitmapIndex], &tBitmap));
-		auto width = tBitmap.Width;
-		auto height = tBitmap.Height;
-		auto x = (rect.right - rect.left) / 2 - (width / 2);
-		auto y = (rect.bottom - rect.top) / 2 - (height / 2);
-
-		CBitmap bitmap;
-		ASSERT_IF_FAILED(m_pImageManagerService->CreateImageBitmap(m_bitmapsUrls[currentBitmapIndex], &bitmap.m_hBitmap));
-		CDC cdcBitmap;
-		cdcBitmap.CreateCompatibleDC(cdc);
-		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
-		BLENDFUNCTION bf = { 0 };
-		bf.BlendOp = AC_SRC_OVER;
-		bf.SourceConstantAlpha = (BYTE)dwAlpha;
-		cdc.AlphaBlend(x, y, width, height, cdcBitmap, 0, 0, width, height, bf);
+		DrawRoundedRect(cdcReal, rectText, false);
+		cdcReal.DrawTextEx(str, str.Length(), &rectText, DT_WORDBREAK | DT_CENTER, NULL);
 	}
 
 	if (m_bitmapsUrls.size() > 1 && m_currentBitmapIndex >= 0)
@@ -520,17 +550,15 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		CString str;
 		str.Format(L"%u / %u", (UINT)currentBitmapIndex + 1, m_bitmapsUrls.size());
 		CSize sz;
-		cdc.GetTextExtent(str, str.GetLength(), &sz);
+		cdcReal.GetTextExtent(str, str.GetLength(), &sz);
 
 		auto x = rect.Width() / 2;
-		auto y = rect.bottom - sz.cy - IMAGE_PADDING * 2;
+		auto y = rect.bottom - BOTTOM_PANEL_HEIGHT / 2 - sz.cy / 2;
 
 		CRect rectText(x, y, x + sz.cx, y + sz.cy);
-		DrawRoundedRect(CDCHandle(cdc), rectText, false);
-		cdc.DrawText(str, str.GetLength(), rectText, 0);
+		DrawRoundedRect(cdcReal, rectText, false);
+		cdcReal.DrawText(str, str.GetLength(), rectText, 0);
 	}
-
-	cdcReal.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, SRCCOPY);
 
 	EndPaint(&ps);
 	return 0;
