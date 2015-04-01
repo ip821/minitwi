@@ -79,6 +79,7 @@ private:
 	DWORD m_dwAdviceDownloadService = 0;
 	int m_currentBitmapIndex = -1;
 	vector<CComBSTR> m_bitmapsUrls;
+	vector<CComBSTR> m_videoUrls;
 	boost::mutex m_mutex;
 	CIcon m_icon;
 	HWND m_hWndParent = 0;

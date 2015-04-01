@@ -179,7 +179,15 @@ STDMETHODIMP CPictureWindow::LoadViewControl()
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SimplePictureControl, &m_pViewControl));
+	if (m_videoUrls[m_currentBitmapIndex] == L"")
+	{
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ImageViewControl, &m_pViewControl));
+	}
+	else
+	{
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VideoViewControl, &m_pViewControl));
+	}
+
 	CComQIPtr<IThemeSupport> pThemeSupport = m_pViewControl;
 	if (pThemeSupport)
 	{
@@ -289,6 +297,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 		UINT uiCount = 0;
 		RETURN_IF_FAILED(pMediaUrls->GetCount(&uiCount));
 		m_bitmapsUrls.resize(uiCount);
+		m_videoUrls.resize(uiCount);
 		for (size_t i = 0; i < uiCount; ++i)
 		{
 			CComPtr<IVariantObject> pMediaUrlObject;
@@ -296,6 +305,10 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 			CComVariant vMediaUrlForObject;
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrlForObject));
 			m_bitmapsUrls[i] = vMediaUrlForObject.bstrVal;
+			
+			CComVariant vVideoUrlForObject;
+			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vVideoUrlForObject));
+			m_videoUrls[i] = vVideoUrlForObject.bstrVal;
 
 			if (CComBSTR(vMediaUrlForObject.bstrVal) == CComBSTR(vMediaUrl.bstrVal))
 				currentBitmapIndex = i;

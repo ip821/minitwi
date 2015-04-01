@@ -12,7 +12,8 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_ListTimelineControl, L"List timeline control object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ScrollControl, L"Scroll control"));
 	RETURN_IF_FAILED(AddObject(CLSID_AnimationService, L"Animation service"));
-	RETURN_IF_FAILED(AddObject(CLSID_SimplePictureControl, L"Simple picture control"));
+	RETURN_IF_FAILED(AddObject(CLSID_ImageViewControl, L"Image view control"));
+	RETURN_IF_FAILED(AddObject(CLSID_VideoViewControl, L"Video view control"));
 
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PVIEWTYPE_CONTAINERWINDOW, CONTROL_TABCONTAINER, CLSID_CustomTabControl, _T("Skin tab control")));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_HOSTFORM, PVIEWTYPE_INPLACE_CONTROL, CLSID_HomeTimeLineControl, CLSID_HomeTimeLineControl, L"Home timeline control"));

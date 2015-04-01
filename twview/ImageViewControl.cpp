@@ -1,28 +1,28 @@
 #include "stdafx.h"
-#include "SimplePictureControl.h"
+#include "ImageViewControl.h"
 #include "..\twtheme\GdilPlusUtils.h"
 
 #define TARGET_INTERVAL 15
 
-CSimplePictureControl::CSimplePictureControl()
+CImageViewControl::CImageViewControl()
 {
 
 }
 
-CSimplePictureControl::~CSimplePictureControl()
+CImageViewControl::~CImageViewControl()
 {
 	if (IsWindow())
 		DestroyWindow();
 }
 
-STDMETHODIMP CSimplePictureControl::GetHWND(HWND* phWnd)
+STDMETHODIMP CImageViewControl::GetHWND(HWND* phWnd)
 {
 	CHECK_E_POINTER(phWnd);
 	*phWnd = m_hWnd;
 	return S_OK;
 }
 
-STDMETHODIMP CSimplePictureControl::CreateEx(HWND hWndParent, HWND *hWnd)
+STDMETHODIMP CImageViewControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
 	m_hWnd = __super::Create(hWndParent, 0, 0, WS_VISIBLE | WS_CHILD);
 	if (hWnd)
@@ -30,17 +30,17 @@ STDMETHODIMP CSimplePictureControl::CreateEx(HWND hWndParent, HWND *hWnd)
 	return S_OK;
 }
 
-STDMETHODIMP CSimplePictureControl::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
+STDMETHODIMP CImageViewControl::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 {
 	return S_OK;
 }
 
-LRESULT CSimplePictureControl::OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CImageViewControl::OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return GetParent().PostMessage(uMsg, wParam, lParam);
 }
 
-STDMETHODIMP CSimplePictureControl::SetVariantObject(IVariantObject *pVariantObject)
+STDMETHODIMP CImageViewControl::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
@@ -53,7 +53,7 @@ STDMETHODIMP CSimplePictureControl::SetVariantObject(IVariantObject *pVariantObj
 	return S_OK;
 }
 
-STDMETHODIMP CSimplePictureControl::OnInitialized(IServiceProvider *pServiceProvider)
+STDMETHODIMP CImageViewControl::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
 	m_pServiceProvider = pServiceProvider;
@@ -70,7 +70,7 @@ STDMETHODIMP CSimplePictureControl::OnInitialized(IServiceProvider *pServiceProv
 
 	return S_OK;
 }
-STDMETHODIMP CSimplePictureControl::OnShutdown()
+STDMETHODIMP CImageViewControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), m_dwAdviceAnimationService));
 	IInitializeWithControlImpl::OnShutdown();
@@ -82,7 +82,7 @@ STDMETHODIMP CSimplePictureControl::OnShutdown()
 	return S_OK;
 }
 
-STDMETHODIMP CSimplePictureControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
+STDMETHODIMP CImageViewControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
 	Invalidate();
 
@@ -95,12 +95,12 @@ STDMETHODIMP CSimplePictureControl::OnAnimationStep(IAnimationService *pAnimatio
 	return 0;
 }
 
-LRESULT CSimplePictureControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CImageViewControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return 0;
 }
 
-LRESULT CSimplePictureControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CImageViewControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	PAINTSTRUCT ps = { 0 };
 	CDCHandle cdcReal(BeginPaint(&ps));
@@ -155,7 +155,7 @@ LRESULT CSimplePictureControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	return 0;
 }
 
-STDMETHODIMP CSimplePictureControl::SetTheme(ITheme *pTheme)
+STDMETHODIMP CImageViewControl::SetTheme(ITheme *pTheme)
 {
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;

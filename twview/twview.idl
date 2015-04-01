@@ -200,7 +200,14 @@ library twviewLib
 	[
 		uuid(B79A41E2-6BAC-4601-9D05-B7308D6664E3)
 	]
-	coclass SimplePictureControl
+	coclass ImageViewControl
+	{
+		[default] interface IControl;
+	};
+	[
+		uuid(AF0AE497-0FE0-4C5B-9E54-B8968B3BD5A7)
+	]
+	coclass VideoViewControl
 	{
 		[default] interface IControl;
 	};

@@ -80,8 +80,11 @@
     <Filter Include="Services\AnimationService">
       <UniqueIdentifier>{dd99391c-2b17-4916-8237-129ea9d339a0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Controls\PictureWindow\SimplePictureControl">
+    <Filter Include="Controls\PictureWindow\ImageViewControl">
       <UniqueIdentifier>{3ef11937-2a9e-4cfe-8e94-29c15aa0e113}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls\PictureWindow\VideoViewControl">
+      <UniqueIdentifier>{29f51740-8659-43ab-9fbc-63f51c95d284}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -169,8 +172,11 @@
     <ClCompile Include="AnimationService.cpp">
       <Filter>Services\AnimationService</Filter>
     </ClCompile>
-    <ClCompile Include="SimplePictureControl.cpp">
-      <Filter>Controls\PictureWindow\SimplePictureControl</Filter>
+    <ClCompile Include="ImageViewControl.cpp">
+      <Filter>Controls\PictureWindow\ImageViewControl</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoViewControl.cpp">
+      <Filter>Controls\PictureWindow\VideoViewControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -276,8 +282,11 @@
     <ClInclude Include="AnimationTimer.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="SimplePictureControl.h">
-      <Filter>Controls\PictureWindow\SimplePictureControl</Filter>
+    <ClInclude Include="ImageViewControl.h">
+      <Filter>Controls\PictureWindow\ImageViewControl</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoViewControl.h">
+      <Filter>Controls\PictureWindow\VideoViewControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

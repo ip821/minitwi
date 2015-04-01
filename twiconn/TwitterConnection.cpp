@@ -10,7 +10,7 @@
 
 // CTwitterConnection
 
-//#define USE_TEST_DATA
+#define USE_TEST_DATA
 
 STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
 {

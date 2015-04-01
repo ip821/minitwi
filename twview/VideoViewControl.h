@@ -1,4 +1,4 @@
-// SimplePictureControl.h : Declaration of the CSimplePictureControl
+// VideoViewControl.h : Declaration of the CVideoViewControl
 
 #pragma once
 #include "resource.h"       // main symbols
@@ -10,36 +10,34 @@ using namespace ATL;
 using namespace std;
 using namespace Gdiplus;
 
-// CSimplePictureControl
+// CVideoViewControl
 
-class ATL_NO_VTABLE CSimplePictureControl :
+class ATL_NO_VTABLE CVideoViewControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CSimplePictureControl, &CLSID_SimplePictureControl>,
-	public CWindowImpl<CSimplePictureControl>,
+	public CComCoClass<CVideoViewControl, &CLSID_VideoViewControl>,
+	public CWindowImpl<CVideoViewControl>,
 	public IControl,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject,
 	public IPluginSupportNotifications,
-	public IAnimationServiceEventSink,
 	public IThemeSupport
 {
 public:
-	DECLARE_WND_CLASS(L"SimplePictureControl")
-	CSimplePictureControl();
-	~CSimplePictureControl();
+	DECLARE_WND_CLASS(L"VideoViewControl")
+	CVideoViewControl();
+	~CVideoViewControl();
 
 	DECLARE_NO_REGISTRY()
 
-	BEGIN_COM_MAP(CSimplePictureControl)
+	BEGIN_COM_MAP(CVideoViewControl)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IControl)
-		COM_INTERFACE_ENTRY(IAnimationServiceEventSink)
 		COM_INTERFACE_ENTRY(IThemeSupport)
 	END_COM_MAP()
 
-	BEGIN_MSG_MAP(CSimplePictureControl)
+	BEGIN_MSG_MAP(CVideoViewControl)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnForwardMessage)
@@ -47,19 +45,12 @@ public:
 	END_MSG_MAP()
 
 private:
- 	CComPtr<IServiceProvider> m_pServiceProvider;
-	CComPtr<IImageManagerService> m_pImageManagerService;
+	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<IVariantObject> m_pVariantObject;
-	CComPtr<IAnimationService> m_pAnimationService;
 	CComPtr<ITheme> m_pTheme;
 	CComBSTR m_bstrUrl;
 
 	CString m_strLastErrorMsg;
-
-	const DWORD STEPS = 25;
-	DWORD m_dwAdviceAnimationService = 0;
-
-	HRESULT Fire_OnClosed(HWND hWnd);
 
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -76,9 +67,7 @@ public:
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
 	STDMETHOD(OnShutdown)();
 
-	STDMETHOD(OnAnimationStep)(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep);
-
 	STDMETHOD(SetTheme)(ITheme *pTheme);
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(SimplePictureControl), CSimplePictureControl)
+OBJECT_ENTRY_AUTO(__uuidof(VideoViewControl), CVideoViewControl)
