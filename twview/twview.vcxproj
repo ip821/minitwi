@@ -325,6 +325,7 @@
     <ClInclude Include="PictureWindow.h" />
     <ClInclude Include="PictureWindowCopyCommand.h" />
     <ClInclude Include="PictureWindowSaveCommand.h" />
+    <ClInclude Include="Plugins.h" />
     <ClInclude Include="PluginTable.h" />
     <ClInclude Include="ScrollControl.h" />
     <ClInclude Include="SearchControl.h" />

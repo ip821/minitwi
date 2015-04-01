@@ -86,6 +86,9 @@
     <Filter Include="Controls\PictureWindow\VideoViewControl">
       <UniqueIdentifier>{29f51740-8659-43ab-9fbc-63f51c95d284}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{009c63e8-5a18-49c0-b1a6-5137020d3bd0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -287,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="VideoViewControl.h">
       <Filter>Controls\PictureWindow\VideoViewControl</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
