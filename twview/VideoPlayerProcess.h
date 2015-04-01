@@ -3,7 +3,7 @@
 class CVideoPlayerProcess
 {
 private:
-	HANDLE m_hInstance = 0;
+	HANDLE m_hProcess = 0;
 	HWND m_hWndPlayer = 0;
 	HWND m_hWndVideo = 0;
 

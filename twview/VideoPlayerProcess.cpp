@@ -23,8 +23,9 @@ void CVideoPlayerProcess::Start(HWND hWndVideo)
 		NULL,
 		&si,
 		&pi
-		); res;
-	m_hInstance = pi.hProcess;
+		); 
+	res;
+	m_hProcess = pi.hProcess;
 }
 
 void CVideoPlayerProcess::SetProcessData(HINSTANCE hProcess, HWND hWndPlayer)
@@ -46,5 +47,6 @@ void CVideoPlayerProcess::Play(CString& strPath)
 
 void CVideoPlayerProcess::Shutdown()
 {
-
+	::SendMessage(m_hWndPlayer, WM_PLAYER_CLOSE, 0, 0);
+	::WaitForSingleObject(m_hProcess, INFINITE);
 }

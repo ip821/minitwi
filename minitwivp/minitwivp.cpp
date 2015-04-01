@@ -36,6 +36,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOW)
 	window.SendMessage(WM_SET_VIDEO_HWND, (WPARAM)hWndVideo);
 
 	int nRet = theLoop.Run();
+	window.DestroyWindow();
 	_Module.RemoveMessageLoop();
 	return nRet;
 }
