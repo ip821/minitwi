@@ -44,6 +44,7 @@ public:
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnForwardMessage)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnForwardMessage)
 		MESSAGE_HANDLER(WM_PLAYER_STARTED, OnPlayerStarted)
+		MESSAGE_HANDLER(WM_PLAYER_FINISHED, OnPlayerFinished)
 	END_MSG_MAP()
 
 private:
@@ -55,12 +56,14 @@ private:
 	CString m_strLastErrorMsg;
 	CVideoPlayerProcess m_videoPlayProcess;
 	BOOL m_bPlayerStarted = FALSE;
+	BOOL m_bPlaying = TRUE;
 
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPlayerStarted(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnPlayerFinished(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 public:
 	STDMETHOD(GetHWND)(HWND* phWnd);

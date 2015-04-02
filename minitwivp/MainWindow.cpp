@@ -77,9 +77,11 @@ void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventH
 	
 	case MFP_EVENT_TYPE_MEDIAITEM_SET:
 		SetTimer(1, 1000);
+		m_pPlayer->Play();
+		break;
 
 	case MFP_EVENT_TYPE_PLAYBACK_ENDED:
-		m_bPlaying = TRUE;
+		m_bPlaying = FALSE;
 		::SendMessage(m_hWndVideo, WM_PLAYER_FINISHED, 0, 0);
 		break;
 	}
