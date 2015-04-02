@@ -184,7 +184,7 @@ STDMETHODIMP CPictureWindow::LoadViewControl()
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
-	if (m_videoUrls[m_currentBitmapIndex] == L"")
+	if (!m_videoUrls.size() || m_videoUrls[m_currentBitmapIndex] == L"")
 	{
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ImageViewControl, &m_pViewControl));
 		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(m_bitmapsUrls[m_currentBitmapIndex])));
@@ -353,14 +353,17 @@ STDMETHODIMP CPictureWindow::StartNextDownload(int index)
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &CComVariant(index)));
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::ImagePictureWindow)));
 
-	auto strVideoUrl = m_videoUrls[index];
-	if (strVideoUrl != L"")
+	if (m_videoUrls.size())
 	{
-		auto lpszExt = PathFindExtension(strVideoUrl);
-		RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(strVideoUrl)));
-		RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::VideoPictureWindow)));
-		RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::Extension, &CComVariant(lpszExt)));
-		RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::KeepFileFlag, &CComVariant(true)));
+		auto strVideoUrl = m_videoUrls[index];
+		if (strVideoUrl != L"")
+		{
+			auto lpszExt = PathFindExtension(strVideoUrl);
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(strVideoUrl)));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::VideoPictureWindow)));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::Extension, &CComVariant(lpszExt)));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::KeepFileFlag, &CComVariant(true)));
+		}
 	}
 
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));

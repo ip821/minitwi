@@ -12,4 +12,5 @@ public:
 	void SetProcessData(HINSTANCE hProcess, HWND hWndPlayer);
 	void Play(CString& strPath);
 	void Shutdown();
+	void UpdateVideo();
 };

@@ -50,3 +50,8 @@ void CVideoPlayerProcess::Shutdown()
 	::SendMessage(m_hWndPlayer, WM_PLAYER_CLOSE, 0, 0);
 	::WaitForSingleObject(m_hProcess, INFINITE);
 }
+
+void CVideoPlayerProcess::UpdateVideo()
+{
+	::SendMessage(m_hWndPlayer, WM_PLAYER_UPDATE, 0, 0);
+}

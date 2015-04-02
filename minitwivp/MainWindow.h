@@ -13,12 +13,14 @@ public:
 		MESSAGE_HANDLER(WM_COPYDATA, OnCopyData)
 		MESSAGE_HANDLER(WM_PLAYER_PLAY, OnPlayerPlay)
 		MESSAGE_HANDLER(WM_PLAYER_CLOSE, OnPlayerClose)
+		MESSAGE_HANDLER(WM_PLAYER_UPDATE, OnPlayerUpdate)
 	END_MSG_MAP()
 
 private:
 	HWND m_hWndVideo = 0;
 	CString m_strPath;
 	CComPtr<IMFPMediaPlayer> m_pPlayer;
+	BOOL m_bPlaying = FALSE;
 
 	long m_cRef = 1;
 
@@ -34,5 +36,6 @@ private:
 	LRESULT OnCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnPlayerPlay(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnPlayerClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnPlayerUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 };
 

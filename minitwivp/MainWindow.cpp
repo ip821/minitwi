@@ -35,9 +35,6 @@ LRESULT CMainWindow::OnCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 LRESULT CMainWindow::OnPlayerPlay(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	HRESULT hr = m_pPlayer->Play();
-	ATLVERIFY(hr == S_OK); 
-	hr;
 	return 0;
 }
 
@@ -102,5 +99,14 @@ void CMainWindow::OnMediaItemCreated(MFP_MEDIAITEM_CREATED_EVENT *pEvent)
 void CMainWindow::OnMediaItemSet(MFP_MEDIAITEM_SET_EVENT * /*pEvent*/)
 {
 	HRESULT hr = S_OK;
+	hr = m_pPlayer->Stop();
 	hr = m_pPlayer->Play();
+	m_bPlaying = TRUE;
+}
+
+LRESULT CMainWindow::OnPlayerUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if (m_pPlayer && m_bPlaying)
+		m_pPlayer->UpdateVideo();
+	return 0;
 }

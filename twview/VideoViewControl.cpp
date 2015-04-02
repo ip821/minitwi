@@ -91,47 +91,50 @@ LRESULT CVideoViewControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lP
 
 LRESULT CVideoViewControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if (m_bPlayerStarted)
-		return 0;
-
 	PAINTSTRUCT ps = { 0 };
 	CDCHandle cdc(BeginPaint(&ps));
 
-	CRect rect;
-	GetClientRect(&rect);
-
-	static DWORD dwBrushColor = 0;
-	static DWORD dwTextColor = 0;
-	if (!dwBrushColor)
+	if (m_bPlayerStarted)
 	{
-		CComPtr<IThemeColorMap> pThemeColorMap;
-		ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
-		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwBrushColor));
-		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::PictureWindowText, &dwTextColor));
+		m_videoPlayProcess.UpdateVideo();
 	}
+	else
+	{
+		CRect rect;
+		GetClientRect(&rect);
 
-	cdc.SetBkMode(TRANSPARENT);
-	cdc.SetTextColor(dwTextColor);
+		static DWORD dwBrushColor = 0;
+		static DWORD dwTextColor = 0;
+		if (!dwBrushColor)
+		{
+			CComPtr<IThemeColorMap> pThemeColorMap;
+			ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
+			ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwBrushColor));
+			ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::PictureWindowText, &dwTextColor));
+		}
 
-	cdc.FillSolidRect(&rect, dwBrushColor);
+		cdc.SetBkMode(TRANSPARENT);
+		cdc.SetTextColor(dwTextColor);
 
-	CComBSTR str = L"Launching video player...";
-	if (!m_strLastErrorMsg.IsEmpty())
-		str = m_strLastErrorMsg;
+		cdc.FillSolidRect(&rect, dwBrushColor);
 
-	CSize size;
-	CRect rect1 = rect;
-	cdc.DrawTextEx(str, str.Length(), &rect1, DT_WORDBREAK | DT_CENTER | DT_CALCRECT, NULL);
-	size.cx = rect1.Width();
-	size.cy = rect1.Height();
+		CComBSTR str = L"Launching video player...";
+		if (!m_strLastErrorMsg.IsEmpty())
+			str = m_strLastErrorMsg;
 
-	auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
-	auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
+		CSize size;
+		CRect rect1 = rect;
+		cdc.DrawTextEx(str, str.Length(), &rect1, DT_WORDBREAK | DT_CENTER | DT_CALCRECT, NULL);
+		size.cx = rect1.Width();
+		size.cy = rect1.Height();
 
-	CRect rectText(x, y, x + size.cx, y + size.cy);
-	DrawRoundedRect(cdc, rectText, false);
-	cdc.DrawTextEx(str, str.Length(), &rectText, DT_WORDBREAK | DT_CENTER, NULL);
+		auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
+		auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
 
+		CRect rectText(x, y, x + size.cx, y + size.cy);
+		DrawRoundedRect(cdc, rectText, false);
+		cdc.DrawTextEx(str, str.Length(), &rectText, DT_WORDBREAK | DT_CENTER, NULL);
+	}
 	EndPaint(&ps);
 	return 0;
 }
