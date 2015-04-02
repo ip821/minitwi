@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Player.h"
+
 class CMainWindow :
 	public CWindowImpl<CMainWindow>,
 	public IMFPMediaPlayerCallback
@@ -15,14 +17,15 @@ public:
 		MESSAGE_HANDLER(WM_PLAYER_CLOSE, OnPlayerClose)
 		MESSAGE_HANDLER(WM_PLAYER_UPDATE, OnPlayerUpdate)
 		MESSAGE_HANDLER(WM_TIMER, OnTimer)
+		MESSAGE_HANDLER(WM_APP_PLAYER_EVENT, OnPlayerEvent)
 	END_MSG_MAP()
 
 private:
 	HWND m_hWndVideo = 0;
 	CString m_strPath;
-	CComPtr<IMFPMediaPlayer> m_pPlayer;
+	//CComPtr<IMFPMediaPlayer> m_pPlayer;
 	BOOL m_bPlaying = FALSE;
-
+	CPlayer* m_pPlayer;
 	long m_cRef = 1;
 
 	STDMETHOD(QueryInterface)(REFIID riid, void** ppv);
@@ -37,5 +40,6 @@ private:
 	LRESULT OnPlayerClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnPlayerUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnPlayerEvent(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 };
 

@@ -36,6 +36,9 @@
     <ClInclude Include="MainWindow.h">
       <Filter>MainWindow</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>MainWindow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -45,6 +48,9 @@
       <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MainWindow.cpp">
+      <Filter>MainWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
       <Filter>MainWindow</Filter>
     </ClCompile>
   </ItemGroup>
