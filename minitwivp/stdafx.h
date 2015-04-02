@@ -63,8 +63,3 @@ extern CAppModule _Module;
 #endif
 
 #pragma comment(lib, "Mfplay.lib")
-#pragma comment(lib, "Mf.lib")
-#pragma comment(lib, "Mfplat.lib")
-#pragma comment(lib, "strmiids.lib")
-
-
