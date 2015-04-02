@@ -9,16 +9,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 LRESULT CMainWindow::OnSetVideoHwnd(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_hWndVideo = (HWND)wParam;
-	HRESULT hr =  MFPCreateMediaPlayer(
-		NULL,
-		FALSE,
-		0,
-		this,
-		m_hWndVideo,
-		&m_pPlayer
-		);
-	ATLVERIFY(hr == S_OK);
-	hr;
+	MFPCreateMediaPlayer(NULL, FALSE, 0, this, m_hWndVideo, &m_pPlayer);
 	::SendMessage(m_hWndVideo, WM_PLAYER_STARTED, (WPARAM)_Module.GetModuleInstance(), (LPARAM)m_hWnd);
 	return 0;
 }
@@ -29,7 +20,7 @@ LRESULT CMainWindow::OnCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	TCHAR path[MAX_PATH] = { 0 };
 	wcscpy_s(&path[0], MAX_PATH, (TCHAR*)pcds->lpData);
 	m_strPath = path;
-	HRESULT hr = m_pPlayer->CreateMediaItemFromURL(m_strPath, FALSE, 0, NULL);
+	m_pPlayer->CreateMediaItemFromURL(m_strPath, FALSE, 0, NULL);
 	return 0;
 }
 
@@ -80,33 +71,29 @@ void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventH
 	switch (pEventHeader->eEventType)
 	{
 	case MFP_EVENT_TYPE_MEDIAITEM_CREATED:
-		OnMediaItemCreated(MFP_GET_MEDIAITEM_CREATED_EVENT(pEventHeader));
+		m_pPlayer->SetMediaItem(MFP_GET_MEDIAITEM_CREATED_EVENT(pEventHeader)->pMediaItem);
 		break;
-
+	
 	case MFP_EVENT_TYPE_MEDIAITEM_SET:
+		SetTimer(1, 1000);
+
 	case MFP_EVENT_TYPE_PLAYBACK_ENDED:
-		OnMediaItemSet(MFP_GET_MEDIAITEM_SET_EVENT(pEventHeader));
+		m_bPlaying = TRUE;
+		m_pPlayer->Play();
 		break;
 	}
-}
-
-void CMainWindow::OnMediaItemCreated(MFP_MEDIAITEM_CREATED_EVENT *pEvent)
-{
-	HRESULT hr = S_OK;
-	hr = m_pPlayer->SetMediaItem(pEvent->pMediaItem);
-}
-
-void CMainWindow::OnMediaItemSet(MFP_MEDIAITEM_SET_EVENT * /*pEvent*/)
-{
-	HRESULT hr = S_OK;
-	hr = m_pPlayer->Stop();
-	hr = m_pPlayer->Play();
-	m_bPlaying = TRUE;
 }
 
 LRESULT CMainWindow::OnPlayerUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	if (m_pPlayer && m_bPlaying)
 		m_pPlayer->UpdateVideo();
+	return 0;
+}
+
+LRESULT CMainWindow::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if (!::IsWindow(m_hWndVideo))
+		PostQuitMessage(0);
 	return 0;
 }

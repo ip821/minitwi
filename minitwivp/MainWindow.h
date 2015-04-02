@@ -14,6 +14,7 @@ public:
 		MESSAGE_HANDLER(WM_PLAYER_PLAY, OnPlayerPlay)
 		MESSAGE_HANDLER(WM_PLAYER_CLOSE, OnPlayerClose)
 		MESSAGE_HANDLER(WM_PLAYER_UPDATE, OnPlayerUpdate)
+		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 	END_MSG_MAP()
 
 private:
@@ -28,8 +29,6 @@ private:
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 	void STDMETHODCALLTYPE OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventHeader);
-	void OnMediaItemCreated(MFP_MEDIAITEM_CREATED_EVENT *pEvent);
-	void OnMediaItemSet(MFP_MEDIAITEM_SET_EVENT * /*pEvent*/);
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSetVideoHwnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -37,5 +36,6 @@ private:
 	LRESULT OnPlayerPlay(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnPlayerClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnPlayerUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 };
 
