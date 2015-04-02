@@ -10,7 +10,8 @@ private:
 public:
 	void Start(HWND hWndVideo);
 	void SetProcessData(HINSTANCE hProcess, HWND hWndPlayer);
-	void Play(CString& strPath);
+	void SetFilePath(CString& strPath);
+	void Play();
 	void Shutdown();
 	void UpdateVideo();
 };

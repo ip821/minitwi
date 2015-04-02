@@ -37,6 +37,11 @@ STDMETHODIMP CVideoViewControl::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 
 LRESULT CVideoViewControl::OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if (uMsg == WM_LBUTTONUP && !m_bPlayerStarted)
+	{
+		m_videoPlayProcess.Play();
+		return 0;
+	}
 	return GetParent().PostMessage(uMsg, wParam, lParam);
 }
 
@@ -70,7 +75,7 @@ LRESULT CVideoViewControl::OnPlayerStarted(UINT uMsg, WPARAM wParam, LPARAM lPar
 {
 	m_bPlayerStarted = TRUE;
 	m_videoPlayProcess.SetProcessData((HINSTANCE)wParam, (HWND)lParam);
-	m_videoPlayProcess.Play(CString(m_bstrPath));
+	m_videoPlayProcess.SetFilePath(CString(m_bstrPath));
 	return 0;
 }
 

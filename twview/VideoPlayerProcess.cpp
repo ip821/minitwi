@@ -33,7 +33,12 @@ void CVideoPlayerProcess::SetProcessData(HINSTANCE hProcess, HWND hWndPlayer)
 	m_hWndPlayer = hWndPlayer;
 }
 
-void CVideoPlayerProcess::Play(CString& strPath)
+void CVideoPlayerProcess::Play()
+{
+	::SendMessage(m_hWndPlayer, WM_PLAYER_PLAY, 0, 0);
+}
+
+void CVideoPlayerProcess::SetFilePath(CString& strPath)
 {
 	TCHAR path[MAX_PATH] = { 0 };
 	wcscpy(path, strPath);
@@ -42,7 +47,6 @@ void CVideoPlayerProcess::Play(CString& strPath)
 	cds.dwData = (ULONG_PTR)&path[0];
 	cds.lpData = &path[0];
 	::SendMessage(m_hWndPlayer, WM_COPYDATA, (WPARAM)m_hWndVideo, (LPARAM)&cds);
-	::SendMessage(m_hWndPlayer, WM_PLAYER_PLAY, 0, 0);
 }
 
 void CVideoPlayerProcess::Shutdown()

@@ -26,6 +26,7 @@ LRESULT CMainWindow::OnCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 LRESULT CMainWindow::OnPlayerPlay(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	m_pPlayer->Play();
 	return 0;
 }
 
@@ -79,7 +80,7 @@ void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventH
 
 	case MFP_EVENT_TYPE_PLAYBACK_ENDED:
 		m_bPlaying = TRUE;
-		m_pPlayer->Play();
+		::SendMessage(m_hWndVideo, WM_PLAYER_FINISHED, 0, 0);
 		break;
 	}
 }
