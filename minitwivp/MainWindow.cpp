@@ -9,8 +9,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 LRESULT CMainWindow::OnSetVideoHwnd(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_hWndVideo = (HWND)wParam;
-	//MFPCreateMediaPlayer(NULL, FALSE, 0, this, m_hWndVideo, &m_pPlayer);
-	CPlayer::CreateInstance(m_hWndVideo, m_hWnd, &m_pPlayer);
 	::SendMessage(m_hWndVideo, WM_PLAYER_STARTED, (WPARAM)_Module.GetModuleInstance(), (LPARAM)m_hWnd);
 	return 0;
 }
@@ -21,9 +19,9 @@ LRESULT CMainWindow::OnCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	TCHAR path[MAX_PATH] = { 0 };
 	wcscpy_s(&path[0], MAX_PATH, (TCHAR*)pcds->lpData);
 	m_strPath = path;
+	CPlayer::CreateInstance(m_hWndVideo, m_hWnd, &m_pPlayer);
 	m_pPlayer->OpenURL(m_strPath);
 	m_pPlayer->Play();
-	//m_pPlayer->CreateMediaItemFromURL(m_strPath, FALSE, 0, NULL);
 	return 0;
 }
 

@@ -381,6 +381,7 @@ HRESULT CPlayer::HandleEvent(UINT_PTR pEventPtr)
 
 	case MEEndOfPresentation:
 		hr = OnPresentationEnded(pEvent);
+		Play();
 		break;
 
 	case MENewPresentation:
