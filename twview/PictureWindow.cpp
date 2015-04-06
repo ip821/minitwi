@@ -306,7 +306,9 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 		UINT uiCount = 0;
 		RETURN_IF_FAILED(pMediaUrls->GetCount(&uiCount));
 		m_bitmapsUrls.resize(uiCount);
+#ifndef __WINXP__
 		m_videoUrls.resize(uiCount);
+#endif
 		m_videoFilePaths.resize(uiCount);
 		m_sizes.resize(uiCount);
 		for (size_t i = 0; i < uiCount; ++i)
@@ -317,10 +319,11 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrlForObject));
 			m_bitmapsUrls[i] = vMediaUrlForObject.bstrVal;
 			
+#ifndef __WINXP__
 			CComVariant vVideoUrlForObject;
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vVideoUrlForObject));
 			m_videoUrls[i] = vVideoUrlForObject.bstrVal;
-
+#endif
 			CComVariant vHeight;
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaHeight, &vHeight));
 			CComVariant vWidth;

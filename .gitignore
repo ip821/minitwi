@@ -388,3 +388,8 @@
 /twview/twview.aps
 /twview/twview_p.c
 /minitwivp/Debug
+/curl/build/Win32/VC12/Debug_XP/lib/libcurl.log
+/minitwivp/Release/minitwivp.log
+/twiconn/Release_XP/twiconn.vcxprojResolveAssemblyReference.cache
+/twtheme/Debug_XP/twtheme.log
+/twview/Debug_XP/twview.log

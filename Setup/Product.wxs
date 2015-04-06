@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="MiniTwi" Language="1033" Version="2.5.5.0" Manufacturer="IP" UpgradeCode="b3966128-f26b-4da9-8b0c-789798ac020d">
+  <Product Id="*" Name="MiniTwi" Language="1033" Version="2.6.0.0" Manufacturer="IP" UpgradeCode="b3966128-f26b-4da9-8b0c-789798ac020d">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
@@ -17,7 +17,7 @@
     </InstallExecuteSequence>
 
     <CustomAction Id="LaunchApp" Directory="INSTALLFOLDER" ExeCommand="[INSTALLFOLDER]minitwi.exe" Return="asyncNoWait"/>
-  
+
   </Product>
 
   <Fragment>
@@ -76,6 +76,12 @@
       <Component Id="viewmdl.dll" Guid="55334DBF-F656-486F-A6C7-1D70E1E4231C">
         <File Id="viewmdl.dll" KeyPath="yes" Source="$(var.viewmdl.TargetPath)" />
       </Component>
+
+      <?ifndef __WINXP__?>
+      <Component Id="minitwivp.exe" Guid="94C30F0F-9EA0-4BB4-8E29-5017DABFC0CB">
+        <File Id="minitwivp.exe" KeyPath="yes" Source="$(var.minitwivp.TargetPath)" />
+      </Component>
+      <?endif?>
 
     </ComponentGroup>
   </Fragment>
