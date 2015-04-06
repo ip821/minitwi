@@ -3,6 +3,7 @@
 
 LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	SetTimer(1, 1000);
 	return 0;
 }
 
@@ -36,32 +37,6 @@ LRESULT CMainWindow::OnPlayerClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	return 0;
 }
 
-STDMETHODIMP CMainWindow::QueryInterface(REFIID riid, void** ppv)
-{
-	static const QITAB qit[] =
-	{
-		QITABENT(CMainWindow, IMFPMediaPlayerCallback),
-		{ 0 },
-	};
-	return QISearch(this, qit, riid, ppv);
-}
-
-STDMETHODIMP_(ULONG) CMainWindow::AddRef()
-{
-	return InterlockedIncrement(&m_cRef);
-}
-
-STDMETHODIMP_(ULONG) CMainWindow::Release()
-{
-	ULONG count = InterlockedDecrement(&m_cRef);
-	if (count == 0)
-	{
-		delete this;
-		return 0;
-	}
-	return count;
-}
-
 void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventHeader)
 {
 	if (FAILED(pEventHeader->hrEvent))
@@ -76,7 +51,6 @@ void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventH
 		break;
 	
 	case MFP_EVENT_TYPE_MEDIAITEM_SET:
-		SetTimer(1, 1000);
 		m_pPlayer->Play();
 		break;
 

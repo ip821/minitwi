@@ -28,15 +28,17 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOW)
 		hWndVideo = (HWND)wcstoll(lpstrCmdLine, nullptr, 10);
 	}
 
-	CMainWindow window;
-	HWND hWnd = window.Create(NULL, 0, 0, WS_BORDER);
+	CComObject<CMainWindow>* pMainWindow;
+	CComObject<CMainWindow>::CreateInstance(&pMainWindow);
+	HWND hWnd = pMainWindow->Create(NULL, 0, 0, WS_BORDER);
 	auto err = GetLastError();
-	window.ShowWindow(SW_HIDE);
-
-	window.SendMessage(WM_SET_VIDEO_HWND, (WPARAM)hWndVideo);
+	pMainWindow->ShowWindow(SW_HIDE);
+	pMainWindow->SendMessage(WM_SET_VIDEO_HWND, (WPARAM)hWndVideo);
 
 	int nRet = theLoop.Run();
-	window.DestroyWindow();
+
+	pMainWindow->DestroyWindow();
+
 	_Module.RemoveMessageLoop();
 	return nRet;
 }
