@@ -75,6 +75,7 @@ private:
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IControl> m_pViewControl;
+	CComPtr<IVariantObject> m_pVariantObject;
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
 	int m_currentBitmapIndex = -1;

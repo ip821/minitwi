@@ -166,6 +166,19 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 
 		CComPtr<IVariantObject> pUrlObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
+
+		CComVariant vObjectType;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
+		if (vObjectType.vt == VT_BSTR && CComBSTR(vObjectType.bstrVal) == Twitter::Connection::Metadata::TweetObject::TypeId)
+		{
+			CComVariant vUserName;
+			RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
+			CComVariant vId;
+			RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
+			auto strUrl = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(vId.bstrVal);
+			RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(strUrl)));
+		}
+
 		RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(bstr)));
 
 		CComVariant vMediaUrls;

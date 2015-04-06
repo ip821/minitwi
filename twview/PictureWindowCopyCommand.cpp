@@ -35,10 +35,20 @@ STDMETHODIMP CPictureWindowCopyCommand::Invoke(REFGUID guidCommand)
 		{
 			std::wstring str;
 
-			CComVariant vMediaUrl;
-			RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl));
+			CComVariant vUrl;
+			RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 
-			str = vMediaUrl.bstrVal;
+			if (vUrl.vt == VT_BSTR)
+			{
+				str = vUrl.bstrVal;
+			}
+
+			if (str.empty())
+			{
+				CComVariant vMediaUrl;
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl));
+				str = vMediaUrl.bstrVal;
+			}
 
 			size_t nLength = _tcslen(str.c_str());
 			size_t nByteOfBuffer = (nLength + 1) * sizeof(TCHAR);

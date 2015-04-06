@@ -70,6 +70,7 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 		DeleteFile(it);
 	}
 
+	m_pVariantObject.Release();
 	m_pSettings.Release();
 	m_pMessageLoop.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
@@ -285,6 +286,13 @@ STDMETHODIMP CPictureWindow::InitCommandSupport(int index)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(m_bitmapsUrls[index])));
 
+	if (m_videoUrls.size() && m_videoUrls[index] != L"")
+	{
+		CComVariant vTwitUrl;
+		RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Metadata::Object::Url, &vTwitUrl));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Url, &vTwitUrl));
+	}
+
 	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
 	ATLASSERT(pInitializeWithVariantObject);
 	RETURN_IF_FAILED(pInitializeWithVariantObject->SetVariantObject(pVariantObject));
@@ -294,6 +302,8 @@ STDMETHODIMP CPictureWindow::InitCommandSupport(int index)
 STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
+
+	m_pVariantObject = pVariantObject;
 
 	CComVariant vMediaUrl;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl));
@@ -327,7 +337,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 			CComVariant vHeight;
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaHeight, &vHeight));
 			CComVariant vWidth;
-			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaHeight, &vWidth));
+			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaWidth, &vWidth));
 			ATLASSERT(vHeight.vt == VT_I4 && vWidth.vt == VT_I4);
 			m_sizes[i] = CSize(vWidth.intVal, vHeight.intVal);
 
