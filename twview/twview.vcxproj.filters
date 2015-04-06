@@ -181,9 +181,6 @@
     <ClCompile Include="VideoViewControl.cpp">
       <Filter>Controls\PictureWindow\VideoViewControl</Filter>
     </ClCompile>
-    <ClCompile Include="VideoPlayerProcess.cpp">
-      <Filter>Controls\PictureWindow\VideoViewControl</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -296,9 +293,6 @@
     </ClInclude>
     <ClInclude Include="Plugins.h">
       <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoPlayerProcess.h">
-      <Filter>Controls\PictureWindow\VideoViewControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

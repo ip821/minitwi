@@ -40,7 +40,7 @@ LRESULT CVideoViewControl::OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lPa
 	if (uMsg == WM_LBUTTONUP && !m_bPlaying)
 	{
 		m_bPlaying = TRUE;
-		m_videoPlayProcess.Play();
+		::SendMessage(m_hWndPlayer, WM_PLAYER_PLAY, 0, 0);
 		return 0;
 	}
 	return GetParent().PostMessage(uMsg, wParam, lParam);
@@ -67,7 +67,27 @@ STDMETHODIMP CVideoViewControl::OnInitialized(IServiceProvider *pServiceProvider
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
-	m_videoPlayProcess.Start(m_hWnd);
+	STARTUPINFO si = { 0 };
+	PROCESS_INFORMATION pi = { 0 };
+	auto wstrParams = std::to_wstring((long long)m_hWnd);
+	CString strCmdLine(L"minitwivp.exe");
+	strCmdLine += CString(L" ") + wstrParams.c_str();
+	TCHAR lpszCmdLine[100];
+	wcscpy(lpszCmdLine, strCmdLine);
+	auto res = CreateProcess(
+		NULL,
+		lpszCmdLine,
+		NULL,
+		NULL,
+		FALSE,
+		NULL,
+		NULL,
+		NULL,
+		&si,
+		&pi
+		);
+	res;
+	m_hProcess = pi.hProcess;
 
 	return S_OK;
 }
@@ -82,14 +102,25 @@ LRESULT CVideoViewControl::OnPlayerStarted(UINT uMsg, WPARAM wParam, LPARAM lPar
 {
 	m_bPlayerStarted = TRUE;
 	m_bPlaying = TRUE;
-	m_videoPlayProcess.SetProcessData((HINSTANCE)wParam, (HWND)lParam);
-	m_videoPlayProcess.SetFilePath(CString(m_bstrPath));
+
+	m_hWndPlayer = (HWND)lParam;
+
+	TCHAR path[MAX_PATH] = { 0 };
+	wcscpy(path, m_bstrPath);
+	COPYDATASTRUCT cds = { 0 };
+	cds.cbData = MAX_PATH * sizeof(TCHAR);
+	cds.dwData = (ULONG_PTR)&path[0];
+	cds.lpData = &path[0];
+	::SendMessage(m_hWndPlayer, WM_COPYDATA, (WPARAM)m_hWnd, (LPARAM)&cds);
+
 	return 0;
 }
 
 STDMETHODIMP CVideoViewControl::OnShutdown()
 {
-	m_videoPlayProcess.Shutdown();
+	::SendMessage(m_hWndPlayer, WM_PLAYER_CLOSE, 0, 0);
+	::WaitForSingleObject(m_hProcess, 5 * 1000); //5 seconds
+
 	IInitializeWithControlImpl::OnShutdown();
 	m_pVariantObject.Release();
 	m_pServiceProvider.Release();
@@ -109,7 +140,7 @@ LRESULT CVideoViewControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 	if (m_bPlayerStarted)
 	{
-		m_videoPlayProcess.UpdateVideo();
+		::SendMessage(m_hWndPlayer, WM_PLAYER_UPDATE, 0, 0);
 	}
 	else
 	{

@@ -63,11 +63,13 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
+	RETURN_IF_FAILED(ShutdownViewControl());
+
 	for (auto& it : m_videoFilePaths)
 	{
 		DeleteFile(it);
 	}
-	RETURN_IF_FAILED(ShutdownViewControl());
+
 	m_pSettings.Release();
 	m_pMessageLoop.Release();
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));

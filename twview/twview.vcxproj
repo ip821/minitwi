@@ -303,7 +303,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="VideoPlayerProcess.cpp" />
     <ClCompile Include="VideoViewControl.cpp" />
     <ClCompile Include="viewmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -347,7 +346,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="twview_i.h" />
-    <ClInclude Include="VideoPlayerProcess.h" />
     <ClInclude Include="VideoViewControl.h" />
     <ClInclude Include="viewmdl_contract_i.h" />
     <ClInclude Include="xdlldata.h" />

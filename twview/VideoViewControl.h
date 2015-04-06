@@ -5,7 +5,6 @@
 #include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "Plugins.h"
-#include "VideoPlayerProcess.h"
 
 using namespace ATL;
 using namespace std;
@@ -54,9 +53,10 @@ private:
 	CComBSTR m_bstrPath;
 
 	CString m_strLastErrorMsg;
-	CVideoPlayerProcess m_videoPlayProcess;
 	BOOL m_bPlayerStarted = FALSE;
 	BOOL m_bPlaying = TRUE;
+	HANDLE m_hProcess = 0;
+	HWND m_hWndPlayer = 0;
 
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
