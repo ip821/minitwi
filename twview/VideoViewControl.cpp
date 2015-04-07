@@ -40,10 +40,20 @@ LRESULT CVideoViewControl::OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lPa
 	if (uMsg == WM_LBUTTONUP && !m_bPlaying)
 	{
 		m_bPlaying = TRUE;
-		::SendMessage(m_hWndPlayer, WM_PLAYER_PLAY, 0, 0);
+		HandleError(::SendMessage(m_hWndPlayer, WM_PLAYER_PLAY, 0, 0));
 		return 0;
 	}
 	return GetParent().PostMessage(uMsg, wParam, lParam);
+}
+
+void CVideoViewControl::HandleError(HRESULT hr)
+{
+	if (hr == S_OK)
+		return;
+
+	KillTimer(1);
+	m_strLastErrorMsg = _com_error(hr).ErrorMessage();
+	Invalidate();
 }
 
 STDMETHODIMP CVideoViewControl::SetVariantObject(IVariantObject *pVariantObject)
@@ -57,6 +67,12 @@ STDMETHODIMP CVideoViewControl::SetVariantObject(IVariantObject *pVariantObject)
 	m_bstrPath = vPath.bstrVal;
 
 	return S_OK;
+}
+
+LRESULT CVideoViewControl::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	HandleError(HRESULT_FROM_WIN32(ERROR_PROCESS_ABORTED));
+	return 0;
 }
 
 STDMETHODIMP CVideoViewControl::OnInitialized(IServiceProvider *pServiceProvider)
@@ -86,8 +102,15 @@ STDMETHODIMP CVideoViewControl::OnInitialized(IServiceProvider *pServiceProvider
 		&si,
 		&pi
 		);
-	res;
+	
+	if (!res)
+	{
+		HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+		HandleError(hr);
+	}
+
 	m_hProcess = pi.hProcess;
+	SetTimer(1, 10 * 1000); //waiting for child process init
 
 	return S_OK;
 }
@@ -100,6 +123,7 @@ LRESULT CVideoViewControl::OnPlayerFinished(UINT uMsg, WPARAM wParam, LPARAM lPa
 
 LRESULT CVideoViewControl::OnPlayerStarted(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	KillTimer(1);
 	m_bPlayerStarted = TRUE;
 	m_bPlaying = TRUE;
 
@@ -111,8 +135,8 @@ LRESULT CVideoViewControl::OnPlayerStarted(UINT uMsg, WPARAM wParam, LPARAM lPar
 	cds.cbData = MAX_PATH * sizeof(TCHAR);
 	cds.dwData = (ULONG_PTR)&path[0];
 	cds.lpData = &path[0];
-	::SendMessage(m_hWndPlayer, WM_COPYDATA, (WPARAM)m_hWnd, (LPARAM)&cds);
-
+	
+	HandleError(::SendMessage(m_hWndPlayer, WM_COPYDATA, (WPARAM)m_hWnd, (LPARAM)&cds));
 	return 0;
 }
 
@@ -128,6 +152,12 @@ STDMETHODIMP CVideoViewControl::OnShutdown()
 	return S_OK;
 }
 
+LRESULT CVideoViewControl::OnPlayerError(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	HandleError(wParam);
+	return 0;
+}
+
 LRESULT CVideoViewControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return 0;
@@ -138,7 +168,7 @@ LRESULT CVideoViewControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	PAINTSTRUCT ps = { 0 };
 	CDCHandle cdc(BeginPaint(&ps));
 
-	if (m_bPlayerStarted)
+	if (m_bPlayerStarted && m_strLastErrorMsg.IsEmpty())
 	{
 		::SendMessage(m_hWndPlayer, WM_PLAYER_UPDATE, 0, 0);
 	}

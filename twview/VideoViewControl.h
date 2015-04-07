@@ -40,10 +40,12 @@ public:
 	BEGIN_MSG_MAP(CVideoViewControl)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnForwardMessage)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnForwardMessage)
 		MESSAGE_HANDLER(WM_PLAYER_STARTED, OnPlayerStarted)
 		MESSAGE_HANDLER(WM_PLAYER_FINISHED, OnPlayerFinished)
+		MESSAGE_HANDLER(WM_PLAYER_ERROR, OnPlayerError)
 	END_MSG_MAP()
 
 private:
@@ -64,6 +66,10 @@ private:
 	LRESULT OnForwardMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPlayerStarted(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPlayerFinished(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnPlayerError(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+	void HandleError(HRESULT hr);
 
 public:
 	STDMETHOD(GetHWND)(HWND* phWnd);

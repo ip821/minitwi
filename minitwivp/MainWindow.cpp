@@ -10,25 +10,23 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 LRESULT CMainWindow::OnSetVideoHwnd(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_hWndVideo = (HWND)wParam;
-	MFPCreateMediaPlayer(NULL, FALSE, 0, this, m_hWndVideo, &m_pPlayer);
+	RETURN_IF_FAILED(MFPCreateMediaPlayer(NULL, FALSE, 0, this, m_hWndVideo, &m_pPlayer));
 	::SendMessage(m_hWndVideo, WM_PLAYER_STARTED, (WPARAM)_Module.GetModuleInstance(), (LPARAM)m_hWnd);
-	return 0;
+	return S_OK;
 }
 
 LRESULT CMainWindow::OnCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
-	TCHAR path[MAX_PATH] = { 0 };
-	wcscpy_s(&path[0], MAX_PATH, (TCHAR*)pcds->lpData);
-	m_strPath = path;
-	m_pPlayer->CreateMediaItemFromURL(m_strPath, FALSE, 0, NULL);
-	return 0;
+	m_strPath = (TCHAR*)pcds->lpData;
+	RETURN_IF_FAILED(m_pPlayer->CreateMediaItemFromURL(m_strPath, FALSE, 0, NULL));
+	return S_OK;
 }
 
 LRESULT CMainWindow::OnPlayerPlay(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	m_pPlayer->Play();
-	return 0;
+	RETURN_IF_FAILED(m_pPlayer->Play());
+	return S_OK;
 }
 
 LRESULT CMainWindow::OnPlayerClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -47,11 +45,11 @@ void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventH
 	switch (pEventHeader->eEventType)
 	{
 	case MFP_EVENT_TYPE_MEDIAITEM_CREATED:
-		m_pPlayer->SetMediaItem(MFP_GET_MEDIAITEM_CREATED_EVENT(pEventHeader)->pMediaItem);
+		NOTIFY_IF_FAILED(m_hWndVideo, m_pPlayer->SetMediaItem(MFP_GET_MEDIAITEM_CREATED_EVENT(pEventHeader)->pMediaItem));
 		break;
 	
 	case MFP_EVENT_TYPE_MEDIAITEM_SET:
-		m_pPlayer->Play();
+		NOTIFY_IF_FAILED(m_hWndVideo, m_pPlayer->Play());
 		break;
 
 	case MFP_EVENT_TYPE_PLAYBACK_ENDED:
@@ -64,8 +62,8 @@ void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventH
 LRESULT CMainWindow::OnPlayerUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	if (m_pPlayer && m_bPlaying)
-		m_pPlayer->UpdateVideo();
-	return 0;
+		RETURN_IF_FAILED(m_pPlayer->UpdateVideo());
+	return S_OK;
 }
 
 LRESULT CMainWindow::OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

@@ -63,3 +63,5 @@ extern CAppModule _Module;
 #endif
 
 #pragma comment(lib, "Mfplay.lib")
+
+#define NOTIFY_IF_FAILED(hWnd, _ex) { HRESULT _hr = _ex; if(FAILED(_hr)) {::SendMessage(hWnd, WM_PLAYER_ERROR, _hr, 0); exit(_hr);} }

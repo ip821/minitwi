@@ -29,11 +29,19 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOW)
 	}
 
 	CComObject<CMainWindow>* pMainWindow;
-	CComObject<CMainWindow>::CreateInstance(&pMainWindow);
+	NOTIFY_IF_FAILED(hWndVideo, CComObject<CMainWindow>::CreateInstance(&pMainWindow));
 	HWND hWnd = pMainWindow->Create(NULL, 0, 0, WS_BORDER);
-	auto err = GetLastError();
-	pMainWindow->ShowWindow(SW_HIDE);
-	pMainWindow->SendMessage(WM_SET_VIDEO_HWND, (WPARAM)hWndVideo);
+	if (!hWnd)
+	{
+		NOTIFY_IF_FAILED(hWndVideo, HRESULT_FROM_WIN32(GetLastError()));
+	}
+	
+	if (!pMainWindow->ShowWindow(SW_HIDE))
+	{
+		NOTIFY_IF_FAILED(hWndVideo, HRESULT_FROM_WIN32(GetLastError()));
+	}
+
+	NOTIFY_IF_FAILED(hWndVideo, pMainWindow->SendMessage(WM_SET_VIDEO_HWND, (WPARAM)hWndVideo));
 
 	int nRet = theLoop.Run();
 
