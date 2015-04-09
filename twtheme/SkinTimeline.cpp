@@ -45,9 +45,12 @@ STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageM
 
 	m_pImageManagerService = pImageManagerService;
 
-	CBitmap bmp;
-	m_pBitmapRetweet->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
-	m_pImageManagerService->AddImageFromHBITMAP(RETWEET_IMAGE_KEY, bmp);
+	if (m_pImageManagerService)
+	{
+		CBitmap bmp;
+		m_pBitmapRetweet->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
+		m_pImageManagerService->AddImageFromHBITMAP(RETWEET_IMAGE_KEY, bmp);
+	}
 	return S_OK;
 }
 

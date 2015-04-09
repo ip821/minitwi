@@ -37,15 +37,14 @@ STDMETHODIMP CHomeTimelineStreamingService::OnInitialized(IServiceProvider *pSer
 STDMETHODIMP CHomeTimelineStreamingService::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadService));
-	m_pTimelineQueueService.Release();
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings.Release();
+		m_pTimelineQueueService.Release();
+		m_pServiceProvider.Release();
 	}
 
-	m_pSettings.Release();
-	m_pThreadService.Release();;
-	m_pServiceProvider.Release();
+	m_pThreadService.Release();
 
 	return S_OK;
 }
@@ -107,14 +106,27 @@ STDMETHODIMP CHomeTimelineStreamingService::OnFinish(IVariantObject* pResult)
 
 STDMETHODIMP CHomeTimelineStreamingService::OnMessages(IObjArray *pObjectArray)
 {
+	CComPtr<ITimelineQueueService> pTimelineQueueService;
+	CComPtr<IServiceProvider> pServiceProvider;
+	{
+		boost::lock_guard<boost::mutex> lock(m_mutex);
+		pTimelineQueueService = m_pTimelineQueueService;
+		pServiceProvider = m_pServiceProvider;
+	}
+
+	if (!pTimelineQueueService || !pServiceProvider)
+		return S_OK;
+
 	CComPtr<IVariantObject> pResult;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pResult));
 	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjectArray)));
-	RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pResult));
+	RETURN_IF_FAILED(pTimelineQueueService->AddToQueue(pResult));
 
 	//temp, replace with timer
 	CComPtr<IThreadService> pThreadService;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadService));
+	if (!pThreadService)
+		return S_OK;
 	RETURN_IF_FAILED(pThreadService->Run());
 
 	return S_OK;
