@@ -181,7 +181,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWIT
 			}
 		}
 
-		if (bstrColumnName == Twitter::Connection::Metadata::UserObject::Image && bf.SourceConstantAlpha == MAX_ALPHA)
+		if ((bstrColumnName == Twitter::Connection::Metadata::UserObject::Image || bstrColumnName == RETWEET_IMAGE_KEY) && bf.SourceConstantAlpha == MAX_ALPHA)
 		{
 			static DWORD dwColor = 0;
 			if (!dwColor)
