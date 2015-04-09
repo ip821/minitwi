@@ -16,8 +16,8 @@ namespace IP
 					const static CComBSTR MediaUrlThumb(L"VAR_TWITTER_MEDIAURL_THUMB");
 					const static CComBSTR MediaThumbHeight(L"VAR_TWITTER_MEDIAURL_THUMB_HEIGHT");
 					const static CComBSTR MediaThumbWidth(L"VAR_TWITTER_MEDIAURL_THUMB_WIDTH");
-					const static CComBSTR MediaHeight(L"VAR_TWITTER_MEDIAURL_THUMB_HEIGHT");
-					const static CComBSTR MediaWidth(L"VAR_TWITTER_MEDIAURL_THUMB_WIDTH");
+					const static CComBSTR MediaHeight(L"VAR_TWITTER_MEDIAURL_HEIGHT");
+					const static CComBSTR MediaWidth(L"VAR_TWITTER_MEDIAURL_WIDTH");
 				}
 
 				namespace ListObject
