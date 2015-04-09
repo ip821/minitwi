@@ -12,6 +12,7 @@
 #define IDR_PICTUREERROR                131
 #define IDR_PICTURESEARCH				132
 #define IDR_PICTURELISTS				133
+#define IDR_RETWEET						134
 
 // Next default values for new objects
 //
