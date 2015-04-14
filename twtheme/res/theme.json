@@ -1,0 +1,15 @@
+[
+    {
+        "colors": [
+            { "name": "BrushBackground", "color": "0xFFFFFFFF" },
+            { "name": "BrushSelected", "color": "0xFFF5F5DC" }
+        ]
+    },
+
+    {
+        "images": [
+            { "name": "image1", "type": "png", "data": "aksjdhashjgfdhgfdhgf" },
+            { "name": "image2", "type": "png", "data": "aksjdhashjgfdhgfdhgf" }
+        ]
+    }
+]

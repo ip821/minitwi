@@ -32,6 +32,12 @@
     <Filter Include="PluginTable">
       <UniqueIdentifier>{fbfafec6-d4a5-4dcc-9997-c2905b9e14a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SkinBuilder">
+      <UniqueIdentifier>{7a0b2554-fbe1-4798-abb6-722884fe1f0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ZZZMisc\JSON">
+      <UniqueIdentifier>{6ea5426e-2aa7-400a-babb-28c6b6f6a7e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -78,6 +84,12 @@
     </ClCompile>
     <ClCompile Include="viewmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\json\src\JSON.cpp">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\json\src\JSONValue.cpp">
+      <Filter>ZZZMisc\JSON</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +146,15 @@
     </ClInclude>
     <ClInclude Include="viewmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Skin.h">
+      <Filter>SkinBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\model-libs\json\src\JSON.h">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\model-libs\json\src\JSONValue.h">
+      <Filter>ZZZMisc\JSON</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

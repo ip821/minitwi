@@ -35,8 +35,12 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 
+	CComPtr<IVariantObject> pColorTableObject;
+	
+	STDMETHOD(ConvertToColorTableObject)(JSONValue* pSourceValue, IVariantObject* pDestValue);
 public:
 
+	STDMETHOD(LoadThemeFromStream)(IStream* pStream);
 	STDMETHOD(GetTimelineSkin)(ISkinTimeline** ppSkinTimeline);
 	STDMETHOD(GetTabControlSkin)(ISkinTabControl** pSkinTabControl);
 	STDMETHOD(GetCommonControlSkin)(ISkinCommonControl** pSkinCommonControl);

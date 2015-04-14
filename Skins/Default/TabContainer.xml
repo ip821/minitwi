@@ -1,0 +1,26 @@
+<SkinLayout>
+  <Images>
+    <Image Name="Home" Type="png">
+      <!--Image binary data-->
+    </Image>
+    <Image Name="Lists" Type="png">
+      <!--Image binary data-->
+    </Image>
+    <Image Name="Search" Type="png">
+      <!--Image binary data-->
+    </Image>
+    <Image Name="Settings" Type="png">
+      <!--Image binary data-->
+    </Image>
+  </Images>
+  <HorizontalContainer Left="0" Top="0" Width="auto" Height="auto">
+      <ImageColumn Name="HomeImage" Image="Home"/>
+      <TextColumn Name="HomeCaption"/>
+      <ImageColumn Name="ListsImage" Image="Home"/>
+      <TextColumn Name="ListsCaption"/>
+      <ImageColumn Name="SearchImage" Image="Home"/>
+      <TextColumn Name="SearchCaption"/>
+      <ImageColumn Name="SettingsImage" Image="Home"/>
+      <TextColumn Name="SettingsCaption"/>
+  </HorizontalContainer>
+</SkinLayout>

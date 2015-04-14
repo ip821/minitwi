@@ -302,6 +302,7 @@ interface ISkinCommonControl : IUnknown
 ]
 interface ITheme : IUnknown
 {
+	HRESULT LoadThemeFromStream(IStream* pStream);
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT GetFontMap(IThemeFontMap** ppThemeFontMap);
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);

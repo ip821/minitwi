@@ -4,6 +4,7 @@
 #include "ThemeDefault.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
+#include "..\model-libs\objmdl\textfile.h"
 
 // CSkinDefault
 
@@ -12,12 +13,32 @@
 
 using namespace Gdiplus;
 using namespace IP;
+using namespace std;
 
 HRESULT CThemeDefault::FinalConstruct()
 {
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinTabControl, &m_pSkinTabControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinCommonControl, &m_pSkinCommonControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeColorMap, &m_pThemeColorMap));
+
+	HMODULE hModule = _AtlBaseModule.GetModuleInstance();
+	if (!hModule)
+		return E_UNEXPECTED;
+
+	HRSRC hRsrc = FindResource(hModule, MAKEINTRESOURCE(IDR_THEMEJSON), L"JSON");
+	if (!hRsrc)
+		return HRESULT_FROM_WIN32(GetLastError());
+
+	HGLOBAL hGlobal = LoadResource(hModule, hRsrc);
+
+	if (!hGlobal)
+		return HRESULT_FROM_WIN32(GetLastError());
+
+	auto dwSizeInBytes = SizeofResource(hModule, hRsrc);
+	LPVOID pvResourceData = LockResource(hGlobal);
+	CComPtr<IStream> pStream;
+	pStream.Attach(SHCreateMemStream((LPBYTE)pvResourceData, dwSizeInBytes));
+	LoadThemeFromStream(pStream);
 
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::BrushBackground, (ARGB)Color::White));
 	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::BrushSelected, (ARGB)Color::Beige));
@@ -116,5 +137,36 @@ STDMETHODIMP CThemeDefault::GetSkinUserAccountControl(ISkinUserAccountControl** 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinUserAccountControl, ppSkinUserAccountControl));
 	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetColorMap(m_pThemeColorMap));
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
+{
+	CString strFile;
+	CTextFile::ReadAllTextFromStream(pStream, strFile);
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strFile));
+	if (value == nullptr)
+		return E_FAIL;
+
+	CComPtr<IVariantObject> pColorTableObject;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pColorTableObject));
+	RETURN_IF_FAILED(ConvertToColorTableObject(value.get(), pColorTableObject));
+
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::ConvertToColorTableObject(JSONValue* pSourceValue, IVariantObject* pDestValue)
+{
+	auto rootArray = pSourceValue->AsArray();
+	auto tablesObj = rootArray[0]->AsObject();
+	auto tablesArray = tablesObj[L"colors"]->AsArray();
+	for (auto& it : tablesArray)
+	{
+		auto colorObj = it->AsObject();
+		auto colorName = colorObj[L"name"]->AsString();
+		auto colorValue = colorObj[L"color"]->AsString();
+		DWORD dwColor = wcstoul(colorValue.c_str(), NULL, 16);
+		RETURN_IF_FAILED(pDestValue->SetVariantValue(CComBSTR(colorName.c_str()), &CComVariant(dwColor)));
+	}
 	return S_OK;
 }
