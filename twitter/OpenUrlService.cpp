@@ -132,7 +132,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		}
 	}
 
-	if (CComBSTR(bstrColumnName) == Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME)
+	if (CComBSTR(bstrColumnName) == Twitter::Metadata::Item::TwitterRelativeTime)
 	{
 		RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
 	}

@@ -196,7 +196,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 		if (bstrColumnName != Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
 			continue;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &bFollowButtonDisabled));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, &bFollowButtonDisabled));
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &bFollowing));
 	}
 
@@ -209,11 +209,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 
 	if (bFollowButtonDisabled)
 	{
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, &dwFollowButtonColor));
 	}
 	else
 	{
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bFollowing ? Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED : Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT, &dwFollowButtonColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bFollowing ? Twitter::Metadata::Item::TwitterItemFollowButtonRectPushed : Twitter::Metadata::Item::TwitterItemFollowButtonRect, &dwFollowButtonColor));
 	}
 
 	DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);

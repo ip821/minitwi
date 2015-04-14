@@ -91,6 +91,9 @@
     <ClCompile Include="..\model-libs\json\src\JSONValue.cpp">
       <Filter>ZZZMisc\JSON</Filter>
     </ClCompile>
+    <ClCompile Include="ThemeDefault_KnownColors.cpp">
+      <Filter>Theme</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

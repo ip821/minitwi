@@ -237,7 +237,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 
 	{
 		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_TWITTER_DELIMITER, &dwColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterDelimiter, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
 #pragma warning(suppress: 6246)
@@ -337,9 +337,9 @@ STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc)
 	rect.top += rect.Height() / 2 - ITEM_SIZE / 2 + ITEM_OFFSET_Y;
 
 	DWORD dwActiveColor = 0;
-	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_ACTIVE, &dwActiveColor);
+	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterItemAnimationActive, &dwActiveColor);
 	DWORD dwInactiveColor = 0;
-	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_INACTIVE, &dwInactiveColor);
+	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterItemAnimationInactive, &dwInactiveColor);
 
 	CBrush brushActive;
 	brushActive.CreateSolidBrush(dwActiveColor);

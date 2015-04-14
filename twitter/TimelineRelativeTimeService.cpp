@@ -119,7 +119,7 @@ HRESULT CTimelineRelativeTimeService::UpdateRelativeTimeForTwit(IVariantObject* 
 		strRelTime = outputStream.str().c_str();
 	}
 
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME, &CComVariant(strRelTime)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::TwitterRelativeTime, &CComVariant(strRelTime)));
 	return S_OK;
 }
 

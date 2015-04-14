@@ -380,7 +380,7 @@ STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 		if (bstrColumnName != Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
 			continue;
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, m_bFollowButtonDisabled));
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, m_bFollowButtonDisabled));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_FOLLOWING, m_bFollowing));
 	}
 	return S_OK;

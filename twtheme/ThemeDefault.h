@@ -5,6 +5,7 @@
 #include "twtheme_i.h"
 
 using namespace ATL;
+using namespace std;
 
 // CSkinDefault
 
@@ -36,6 +37,7 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 
 	CComPtr<IVariantObject> pColorTableObject;
+	static map<wstring, DWORD> m_knownColors;
 	
 	STDMETHOD(ConvertToColorTableObject)(JSONValue* pSourceValue, IVariantObject* pDestValue);
 public:

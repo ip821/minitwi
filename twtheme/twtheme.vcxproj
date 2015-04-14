@@ -283,6 +283,7 @@
     </ClCompile>
     <ClCompile Include="ThemeColorMap.cpp" />
     <ClCompile Include="ThemeDefault.cpp" />
+    <ClCompile Include="ThemeDefault_KnownColors.cpp" />
     <ClCompile Include="ThemeFontMap.cpp" />
     <ClCompile Include="twitter_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

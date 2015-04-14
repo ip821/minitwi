@@ -161,7 +161,7 @@ void CCustomListBox::OnItemsUpdated()
 		ASSERT_IF_FAILED(m_pItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 
 		CComVariant v;
-		ASSERT_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME, &v));
+		ASSERT_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Item::TwitterRelativeTime, &v));
 		if (v.vt == VT_BSTR)
 		{
 			UINT uiColumnCount = 0;
@@ -172,7 +172,7 @@ void CCustomListBox::OnItemsUpdated()
 				ASSERT_IF_FAILED(m_columnsInfo[i]->GetItem(j, &pColumnsInfoItem));
 				CComBSTR bstrColumnName;
 				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-				if (bstrColumnName == Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME)
+				if (bstrColumnName == Twitter::Metadata::Item::TwitterRelativeTime)
 				{
 					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, v.bstrVal));
 					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, v.bstrVal));

@@ -1,8 +1,26 @@
 [
     {
         "colors": [
-            { "name": "BrushBackground", "color": "0xFFFFFFFF" },
-            { "name": "BrushSelected", "color": "0xFFF5F5DC" }
+            { "name": "BrushBackground", "color": "White" },
+            { "name": "BrushSelected", "color": "Beige" },
+            { "name": "TwitterUserDisplayName", "color": "SteelBlue" },
+            { "name": "TwitterUserName", "color": "Gray" },
+            { "name": "TwitterNormalizedText", "color": "Black" },
+            { "name": "TwitterDelimiter", "color": "LightGray" },
+            { "name": "TwitterUrl", "color": "SteelBlue" },
+            { "name": "TwitterRetweetedUserDisplayName", "color": "Gray" },
+            { "name": "TwitterRetweetedUserName", "color": "Gray" },
+            { "name": "TwitterRelativeTime", "color": "Gray" },
+            { "name": "TwitterColumnShowMoreColumn", "color": "SteelBlue" },
+            { "name": "TabsHeaderSelected", "color": "Black" },
+            { "name": "TabsHeader", "color": "Gray" },
+            { "name": "TwitterItemAnimationActive", "color": "Black" },
+            { "name": "TwitterItemAnimationInactive", "color": "Gray" },
+            { "name": "PictureWindowText", "color": "White" },
+            { "name": "AccountControlText", "color": "White" },
+            { "name": "TwitterItemFollowButtonRect", "color": "DarkGray" },
+            { "name": "TwitterItemFollowButtonRectPushed", "color": "DarkCyan" },
+            { "name": "TwitterItemFollowButtonRectDisabled", "color": "Gray" }
         ]
     },
 

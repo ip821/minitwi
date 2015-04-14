@@ -37,6 +37,7 @@ public:
 
 	STDMETHOD(GetColor)(BSTR bstrColorName, DWORD* dwColor);
 	STDMETHOD(SetColor)(BSTR bstrColorName, DWORD dwColor);
+	STDMETHOD(Initialize)(IVariantObject* pVariantObject);
 
 };
 

@@ -243,7 +243,7 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pCol
 	if (!bDisabledSelection)
 	{
 		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_TWITTER_DELIMITER, &dwColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterDelimiter, &dwColor));
 		CBrush brush;
 		brush.CreateSolidBrush(dwColor);
 		RECT rect = lpdis->lpdi->rcItem;
@@ -474,7 +474,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::DisplayName, strDisplayName);
 
 		CString strCreatedAt;
-		GetValue(pItemObject, Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME, strCreatedAt);
+		GetValue(pItemObject, Twitter::Metadata::Item::TwitterRelativeTime, strCreatedAt);
 
 		CString strName;
 		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::Name, strName);
@@ -654,7 +654,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 				sizeDateTime = AddColumn(
 					hdc,
 					pColumnsInfo,
-					CString(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME),
+					CString(Twitter::Metadata::Item::TwitterRelativeTime),
 					strCreatedAt,
 					strCreatedAt,
 					x,
