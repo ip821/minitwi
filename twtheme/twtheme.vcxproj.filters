@@ -91,7 +91,10 @@
     <ClCompile Include="..\model-libs\json\src\JSONValue.cpp">
       <Filter>ZZZMisc\JSON</Filter>
     </ClCompile>
-    <ClCompile Include="ThemeDefault_KnownColors.cpp">
+    <ClCompile Include="..\model-libs\objmdl\JSONConverter.cpp">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeColorMap_KnownColors.cpp">
       <Filter>Theme</Filter>
     </ClCompile>
   </ItemGroup>
@@ -157,6 +160,9 @@
       <Filter>ZZZMisc\JSON</Filter>
     </ClInclude>
     <ClInclude Include="..\model-libs\json\src\JSONValue.h">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\model-libs\objmdl\JSONConverter.h">
       <Filter>ZZZMisc\JSON</Filter>
     </ClInclude>
   </ItemGroup>

@@ -24,19 +24,27 @@ STDMETHODIMP CThemeColorMap::SetColor(BSTR bstrColorName, DWORD dwColor)
 	return S_OK;
 }
 
-STDMETHODIMP CThemeColorMap::Initialize(IVariantObject* pVariantObject)
+STDMETHODIMP CThemeColorMap::Initialize(IObjCollection* pObjectCollection)
 {
-	CHECK_E_POINTER(pVariantObject);
+	CHECK_E_POINTER(pObjectCollection);
 	UINT_PTR uiCount = 0;
-	RETURN_IF_FAILED(pVariantObject->GetCount(&uiCount));
+	RETURN_IF_FAILED(pObjectCollection->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
-		CComBSTR bstrKey;
-		RETURN_IF_FAILED(pVariantObject->GetKeyByIndex(i, &bstrKey));
-		CComVariant v;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(bstrKey, &v));
-		ATLASSERT(v.vt == VT_UI4);
-		SetColor(bstrKey, v.ulVal);
+		CComPtr<IVariantObject> pColorObject;
+		RETURN_IF_FAILED(pObjectCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pColorObject));
+		CComVariant vName;
+		RETURN_IF_FAILED(pColorObject->GetVariantValue(L"name", &vName));
+		CComVariant vColor;
+		RETURN_IF_FAILED(pColorObject->GetVariantValue(L"color", &vColor));
+		ATLASSERT(vName.vt == VT_BSTR && vColor.vt == VT_BSTR);
+		auto value = wstring(vColor.bstrVal);
+		DWORD dwColor = 0;
+		if (value.substr(0, 2) == L"0x")
+			dwColor = wcstoul(value.c_str(), NULL, 16);
+		else
+			dwColor = m_knownColors[value];
+		SetColor(vName.bstrVal, dwColor);
 	}
 	return S_OK;
 }

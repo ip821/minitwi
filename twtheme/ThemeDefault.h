@@ -37,9 +37,7 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 
 	CComPtr<IVariantObject> pColorTableObject;
-	static map<wstring, DWORD> m_knownColors;
 	
-	STDMETHOD(ConvertToColorTableObject)(JSONValue* pSourceValue, IVariantObject* pDestValue);
 public:
 
 	STDMETHOD(LoadThemeFromStream)(IStream* pStream);

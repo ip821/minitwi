@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "ThemeDefault.h"
+#include "ThemeColorMap.h"
 
-map<wstring, DWORD> CThemeDefault::m_knownColors =
+map<wstring, DWORD> CThemeColorMap::m_knownColors =
 {
 	{ L"AliceBlue", 0xFFF0F8FF },
 	{ L"AntiqueWhite", 0xFFFAEBD7 },

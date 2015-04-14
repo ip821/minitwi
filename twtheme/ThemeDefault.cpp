@@ -5,6 +5,7 @@
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
 #include "..\model-libs\objmdl\textfile.h"
+#include "..\model-libs\objmdl\JSONConverter.h"
 
 // CSkinDefault
 
@@ -127,30 +128,13 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 	if (value == nullptr)
 		return E_FAIL;
 
-	CComPtr<IVariantObject> pColorTableObject;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pColorTableObject));
-	RETURN_IF_FAILED(ConvertToColorTableObject(value.get(), pColorTableObject));
-	RETURN_IF_FAILED(m_pThemeColorMap->Initialize(pColorTableObject));
+	auto rootArray = value->AsArray();
+	auto colorsObj = rootArray[0]->AsObject();
+	auto colorArray = colorsObj[L"colors"]->AsArray();
+	CComPtr<IObjCollection> pObjCollection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjCollection));
+	RETURN_IF_FAILED(CJsonConverter::ConvertArray(colorArray, pObjCollection));
+	RETURN_IF_FAILED(m_pThemeColorMap->Initialize(pObjCollection));
 
-	return S_OK;
-}
-
-STDMETHODIMP CThemeDefault::ConvertToColorTableObject(JSONValue* pSourceValue, IVariantObject* pDestValue)
-{
-	auto rootArray = pSourceValue->AsArray();
-	auto tablesObj = rootArray[0]->AsObject();
-	auto tablesArray = tablesObj[L"colors"]->AsArray();
-	for (auto& it : tablesArray)
-	{
-		auto colorObj = it->AsObject();
-		auto colorName = colorObj[L"name"]->AsString();
-		auto colorValue = colorObj[L"color"]->AsString();
-		DWORD dwColor = 0;
-		if (colorValue.substr(0, 2) == L"0x")
-			dwColor = wcstoul(colorValue.c_str(), NULL, 16);
-		else
-			dwColor = m_knownColors[colorValue];
-		RETURN_IF_FAILED(pDestValue->SetVariantValue(CComBSTR(colorName.c_str()), &CComVariant(dwColor)));
-	}
 	return S_OK;
 }

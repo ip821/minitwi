@@ -107,7 +107,7 @@ interface IImageManagerService : IUnknown
 ]
 interface IThemeColorMap : IUnknown
 {
-	HRESULT Initialize(IVariantObject* pVariantObject);
+	HRESULT Initialize(IObjCollection* pObjectCollection);
 	HRESULT GetColor(BSTR bstrColorName, DWORD* dwColor);
 	HRESULT SetColor(BSTR bstrColorName, DWORD dwColor);
 };
