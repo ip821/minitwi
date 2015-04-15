@@ -41,15 +41,15 @@ namespace IP
 
 			namespace Item
 			{
-				const static CComBSTR VAR_SELECTED_POSTFIX(L"SELECTED");
-				const static CComBSTR VAR_DOUBLE_SIZE_POSTFIX(L"DOUBLE_SIZE");
+				const static CComBSTR VAR_SELECTED_POSTFIX(L"Selected");
+				const static CComBSTR VAR_DOUBLE_SIZE_POSTFIX(L"DoubleSize");
 				const static CComBSTR VAR_ITEM_DISABLED(L"VAR_ITEM_DISABLED");
 				const static CComBSTR VAR_ITEM_DISABLED_TEXT(L"VAR_ITEM_DISABLED_TEXT");
 				const static CComBSTR VAR_ITEM_DOUBLE_SIZE(L"VAR_ITEM_DOUBLE_SIZE");
 				const static CComBSTR VAR_ITEM_SELECTION_DISABLED(L"VAR_ITEM_SELECTION_DISABLED");
 				const static CComBSTR TwitterItemAnimationInactive(L"TwitterItemAnimationInactive");
 				const static CComBSTR TwitterItemAnimationActive(L"TwitterItemAnimationActive");
-				const static CComBSTR VAR_ITEM_FOLLOW_BUTTON(L"VAR_ITEM_FOLLOW_BUTTON");
+				const static CComBSTR VAR_ITEM_FOLLOW_BUTTON(L"TwitterItemFollowButton");
 				const static CComBSTR TwitterItemFollowButtonRect(L"TwitterItemFollowButtonRect");
 				const static CComBSTR TwitterItemFollowButtonRectPushed(L"TwitterItemFollowButtonRectPushed");
 				const static CComBSTR TwitterItemFollowButtonRectDisabled(L"TwitterItemFollowButtonRectDisabled");

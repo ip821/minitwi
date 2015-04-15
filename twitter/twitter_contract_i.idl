@@ -119,6 +119,7 @@ interface IThemeColorMap : IUnknown
 ]
 interface IThemeFontMap : IUnknown
 {
+	HRESULT Initialize(IObjCollection* pObjectCollection);
 	HRESULT GetFont(BSTR bstrFontName, HFONT* phFont);
 	HRESULT SetFont(BSTR bstrFontName, BSTR bstrFontFamily, DWORD dwSize, BOOL bBold, BOOL bUnderline);
 };

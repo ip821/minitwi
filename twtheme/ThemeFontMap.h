@@ -30,6 +30,7 @@ private:
 
 public:
 
+	STDMETHOD(Initialize)(IObjCollection* pObjectCollection);
 	STDMETHOD(GetFont)(BSTR bstrFontName, HFONT* phFont);
 	STDMETHOD(SetFont)(BSTR bstrFontName, BSTR bstrFontFamily, DWORD dwSize, BOOL bBold, BOOL bUnderline);
 

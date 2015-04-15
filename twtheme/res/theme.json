@@ -25,6 +25,32 @@
     },
 
     {
+        "fonts": [
+            { "name": "TwitterRetweetedUserDisplayName", "family": "Tahoma", "size": 8, "bold": false, "underline": false },
+            { "name": "TwitterRetweetedUserName", "family": "Tahoma", "size": 8, "bold": false, "underline": false },
+            { "name": "TwitterRetweetedUserDisplayNameSelected", "family": "Tahoma", "size": 8, "bold": false, "underline": true },
+            { "name": "TwitterRetweetedUserNameSelected", "family": "Tahoma", "size": 8, "bold": false, "underline": true },
+            { "name": "TwitterRelativeTime", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterRelativeTimeSelected", "family": "Tahoma", "size": 10, "bold": false, "underline": true },
+            { "name": "TwitterUserDisplayName", "family": "Tahoma", "size": 10, "bold": true, "underline": false },
+            { "name": "TwitterUserDisplayNameSelected", "family": "Tahoma", "size": 10, "bold": true, "underline": true },
+            { "name": "TwitterUserName", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterUserNameSelected", "family": "Tahoma", "size": 10, "bold": false, "underline": true },
+            { "name": "TwitterNormalizedText", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterNormalizedTextDoubleSize", "family": "Tahoma", "size": 12, "bold": false, "underline": false },
+            { "name": "TwitterUrl", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterUrlSelected", "family": "Tahoma", "size": 10, "bold": false, "underline": true },
+            { "name": "TwitterUrlDoubleSize", "family": "Tahoma", "size": 12, "bold": false, "underline": false },
+            { "name": "TwitterUrlDoubleSizeSelected", "family": "Tahoma", "size": 12, "bold": false, "underline": true },
+            { "name": "TwitterColumnShowMoreColumn", "family": "Tahoma", "size": 10, "bold": true, "underline": false },
+            { "name": "TwitterColumnShowMoreColumnSelected", "family": "Tahoma", "size": 10, "bold": true, "underline": true },
+            { "name": "TabsHeader", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterDisplayNameUserAccount", "family": "Tahoma", "size": 20, "bold": true, "underline": false },
+            { "name": "PictureWindowText", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterItemFollowButton", "family": "Tahoma", "size": 12, "bold": false, "underline": false }
+        ]
+    },
+    {
         "images": [
             { "name": "image1", "type": "png", "data": "aksjdhashjgfdhgfdhgf" },
             { "name": "image2", "type": "png", "data": "aksjdhashjgfdhgfdhgf" }
