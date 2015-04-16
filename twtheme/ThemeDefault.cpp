@@ -122,5 +122,26 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 		RETURN_IF_FAILED(CJsonConverter::ConvertArray(imageArray, pImagesObjCollection));
 		RETURN_IF_FAILED(m_pImageManagerService->Initialize(pImagesObjCollection));
 	}
+
+	{
+		//Load layouts
+		auto layoutsTable = rootArray[3]->AsObject();
+		auto layoutArray = layoutsTable[L"layouts"]->AsArray();
+		CComPtr<IObjCollection> pLayoutsObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pLayoutsObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(layoutArray, pLayoutsObjCollection));
+	
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pLayoutsObjCollection->GetCount(&uiCount));
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IVariantObject> pLayoutObject;
+			RETURN_IF_FAILED(pLayoutsObjCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pLayoutObject));
+			CComVariant vName;
+			RETURN_IF_FAILED(pLayoutObject->GetVariantValue(L"name", &vName));
+			ATLASSERT(vName.vt == VT_BSTR);
+			m_layoutsMap[vName.bstrVal] = pLayoutObject;
+		}
+	}
 	return S_OK;
 }

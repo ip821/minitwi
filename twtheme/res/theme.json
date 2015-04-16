@@ -60,8 +60,53 @@
     },
     {
         "layouts": [
-            { 
-
+            {
+                "name": "MainTabContainerHeaderLayout",
+                "elements": [
+                    {
+                        "name": "Header",
+                        "type": "horizontal_container",
+                        "fit": "parent",
+                        "elements": [
+                            {
+                                "name": "HomeContainer",
+                                "type": "horizontal_container",
+                                "fit": "content",
+                                "elements": [
+                                    { "name": "HomeImage", "type": "image_column", "image": "home" },
+                                    { "name": "HomeCaption", "type": "text_column", "text_key": "HomeCaptionKey" }
+                                ]
+                            },
+                            {
+                                "name": "ListsContainer",
+                                "type": "horizontal_container",
+                                "fit": "content",
+                                "elements": [
+                                    { "name": "ListsImage", "type": "image_column", "image": "lists" },
+                                    { "name": "ListsCaption", "type": "text_column", "text_key": "ListsCaptionKey" }
+                                ]
+                            },
+                            {
+                                "name": "SearchContainer",
+                                "type": "horizontal_container",
+                                "fit": "content",
+                                "elements": [
+                                    { "name": "SearchImage", "type": "image_column", "image": "search" },
+                                    { "name": "SearchCaption", "type": "text_column", "text_key": "SearchCaptionKey" }
+                                ]
+                            },
+                            {
+                                "name": "SettingsContainer",
+                                "type": "horizontal_container",
+                                "fit": "content",
+                                "elements": [
+                                    { "name": "SettingsImage", "type": "image_column", "image": "settings" },
+                                    { "name": "SettingsCaption", "type": "text_column", "text_key": "SettingsCaptionKey" }
+                                ]
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     }

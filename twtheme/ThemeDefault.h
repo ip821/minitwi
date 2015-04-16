@@ -36,6 +36,7 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
+	map<CComBSTR, CComPtr<IVariantObject>> m_layoutsMap;
 
 	CComPtr<IVariantObject> pColorTableObject;
 	
