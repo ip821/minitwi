@@ -208,6 +208,9 @@
     <ClCompile Include="FollowStatusService.cpp">
       <Filter>Services\FollowStatusService</Filter>
     </ClCompile>
+    <ClCompile Include="..\model-libs\json\src\base64.cpp">
+      <Filter>Services\ImageManagerService</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -341,6 +344,9 @@
     </ClInclude>
     <ClInclude Include="FollowStatusService.h">
       <Filter>Services\FollowStatusService</Filter>
+    </ClInclude>
+    <ClInclude Include="..\model-libs\json\src\base64.h">
+      <Filter>Services\ImageManagerService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

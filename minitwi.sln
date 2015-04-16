@@ -55,11 +55,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Skins", "Skins", "{3DCD81D0-473F-4617-BD7E-5B1D4277C714}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Default", "Default", "{B5DA9F13-A016-451E-BCFE-E681DE78AB49}"
-	ProjectSection(SolutionItems) = preProject
-		Skins\Default\TabContainer.xml = Skins\Default\TabContainer.xml
-		Skins\Default\Timeline.xml = Skins\Default\Timeline.xml
-		Skins\Default\UserAccount.xml = Skins\Default\UserAccount.xml
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

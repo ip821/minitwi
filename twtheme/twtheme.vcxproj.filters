@@ -175,6 +175,9 @@
     <None Include="twtheme.def">
       <Filter>ZZZMisc\Source Files</Filter>
     </None>
+    <None Include="res\theme.json">
+      <Filter>ZZZMisc\Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="twtheme.idl">

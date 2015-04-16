@@ -35,6 +35,7 @@ private:
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
+	CComPtr<IImageManagerService> m_pImageManagerService;
 
 	CComPtr<IVariantObject> pColorTableObject;
 	

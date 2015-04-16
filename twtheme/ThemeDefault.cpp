@@ -22,36 +22,14 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinCommonControl, &m_pSkinCommonControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeColorMap, &m_pThemeColorMap));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeFontMap, &m_pThemeFontMap));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ImageManagerService, &m_pImageManagerService));
 
 	CComPtr<IStream> pStream;
 	RETURN_IF_FAILED(HrGetResourceStream(_AtlBaseModule.GetModuleInstance(), IDR_THEMEJSON, L"JSON", &pStream));
-	LoadThemeFromStream(pStream);
+	RETURN_IF_FAILED(LoadThemeFromStream(pStream));
 
 	RETURN_IF_FAILED(m_pSkinTabControl->SetColorMap(m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetColorMap(m_pThemeColorMap));
-
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, FONT_NAME, FONT_SIZE - 2, FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::RetweetedUserName, FONT_NAME, FONT_SIZE - 2, FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE - 2, FALSE, TRUE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserName + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE - 2, FALSE, TRUE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Item::TwitterRelativeTime, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Metadata::Item::TwitterRelativeTime + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::DisplayName, FONT_NAME, FONT_SIZE, TRUE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::UserObject::DisplayName + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::Name, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::UserObject::Name + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::NormalizedText, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::NormalizedText + CString(Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::Url, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX) + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, TRUE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Column::ShowMoreColumn, FONT_NAME, FONT_SIZE, TRUE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Metadata::Column::ShowMoreColumn + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Tabs::Header, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::DisplayNameUserAccount, FONT_NAME, FONT_SIZE * 2, TRUE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Drawing::PictureWindowText, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	//RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
 
 	RETURN_IF_FAILED(m_pSkinTabControl->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetFontMap(m_pThemeFontMap));
@@ -115,21 +93,34 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 
 	auto rootArray = value->AsArray();
 
-	//Load color table
-	auto colorsObj = rootArray[0]->AsObject();
-	auto colorArray = colorsObj[L"colors"]->AsArray();
-	CComPtr<IObjCollection> pColorObjCollection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pColorObjCollection));
-	RETURN_IF_FAILED(CJsonConverter::ConvertArray(colorArray, pColorObjCollection));
-	RETURN_IF_FAILED(m_pThemeColorMap->Initialize(pColorObjCollection));
+	{
+		//Load color table
+		auto colorsObj = rootArray[0]->AsObject();
+		auto colorArray = colorsObj[L"colors"]->AsArray();
+		CComPtr<IObjCollection> pColorObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pColorObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(colorArray, pColorObjCollection));
+		RETURN_IF_FAILED(m_pThemeColorMap->Initialize(pColorObjCollection));
+	}
 
-	//Load font table
-	auto fontsTable = rootArray[1]->AsObject();
-	auto fontArray = fontsTable[L"fonts"]->AsArray();
-	CComPtr<IObjCollection> pFontObjCollection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pFontObjCollection));
-	RETURN_IF_FAILED(CJsonConverter::ConvertArray(fontArray, pFontObjCollection));
-	RETURN_IF_FAILED(m_pThemeFontMap->Initialize(pFontObjCollection));
+	{
+		//Load font table
+		auto fontsTable = rootArray[1]->AsObject();
+		auto fontArray = fontsTable[L"fonts"]->AsArray();
+		CComPtr<IObjCollection> pFontObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pFontObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(fontArray, pFontObjCollection));
+		RETURN_IF_FAILED(m_pThemeFontMap->Initialize(pFontObjCollection));
+	}
 
+	{
+		//Load images table
+		auto imagesTable = rootArray[2]->AsObject();
+		auto imageArray = imagesTable[L"images"]->AsArray();
+		CComPtr<IObjCollection> pImagesObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pImagesObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(imageArray, pImagesObjCollection));
+		RETURN_IF_FAILED(m_pImageManagerService->Initialize(pImagesObjCollection));
+	}
 	return S_OK;
 }

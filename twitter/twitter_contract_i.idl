@@ -87,6 +87,7 @@ interface ITimelineQueueService : IUnknown
 ]
 interface IImageManagerService : IUnknown
 {
+	HRESULT Initialize(IObjCollection* pImagesCollection);
 	HRESULT GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap);
 	HRESULT CreateImageBitmap(BSTR bstrKey, HBITMAP* phBitmap);
 	HRESULT AddImageFromFile(BSTR bstrKey, BSTR bstrFileName);
