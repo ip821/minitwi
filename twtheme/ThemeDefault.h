@@ -36,10 +36,10 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
-	map<CComBSTR, CComPtr<IVariantObject>> m_layoutsMap;
-
 	CComPtr<IVariantObject> pColorTableObject;
-	
+	CComPtr<ILayoutManager> m_pLayoutManager;
+	map<CComBSTR, CComPtr<IVariantObject>> m_layoutsMap;
+		
 public:
 
 	STDMETHOD(LoadThemeFromStream)(IStream* pStream);
@@ -50,6 +50,7 @@ public:
 	STDMETHOD(GetFontMap)(IThemeFontMap** ppThemeFontMap);
 	STDMETHOD(GetSkinUserAccountControl)(ISkinUserAccountControl** ppSkinUserAccountControl);
 	STDMETHOD(GetLayout)(BSTR bstrLayoutName, IVariantObject** ppVariantObject);
+	STDMETHOD(GetLayoutManager)(ILayoutManager** ppLayoutManager);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ThemeDefault), CThemeDefault)

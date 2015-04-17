@@ -72,6 +72,7 @@ STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
 	RETURN_IF_FAILED(m_pTheme->GetColorMap(&m_pThemeColorMap));
+	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
 	RETURN_IF_FAILED(m_pTheme->GetLayout(Twitter::Themes::Metadata::TabContainer::LayoutName, &m_pLayoutObject));
 	return S_OK;
 }

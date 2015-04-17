@@ -11,6 +11,17 @@ import "..\model-libs\viewmdl\viewmdl_contract_i.idl";
 import "..\twitter\twitter_contract_i.idl";
 
 [
+	object,
+	uuid(BEC4D679-8B74-41BC-8F6E-510F85A1F202),
+	pointer_default(unique)
+]
+interface ILayoutManagerInternal : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+};
+
+[
 	uuid(F7BFC6EF-D8BE-4C1A-A9D5-9FC57D58BF5C),
 	version(1.0),
 ]

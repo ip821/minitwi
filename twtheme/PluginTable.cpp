@@ -10,6 +10,7 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddObject(CLSID_SkinUserAccountControl, L"User account control skin object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeColorMap, L"Color map object"));
 	RETURN_IF_FAILED(AddObject(CLSID_ThemeFontMap, L"Font map object"));
+	RETURN_IF_FAILED(AddObject(CLSID_LayoutManager, L"Layout manager object"));
 
 	return S_OK;
 }

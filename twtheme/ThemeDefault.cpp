@@ -23,6 +23,11 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeColorMap, &m_pThemeColorMap));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeFontMap, &m_pThemeFontMap));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ImageManagerService, &m_pImageManagerService));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_LayoutManager, &m_pLayoutManager));
+
+	CComQIPtr<ILayoutManagerInternal> pLayoutManagerInternal = m_pLayoutManager;
+	RETURN_IF_FAILED(pLayoutManagerInternal->SetFontMap(m_pThemeFontMap));
+	RETURN_IF_FAILED(pLayoutManagerInternal->SetColorMap(m_pThemeColorMap));
 
 	CComPtr<IStream> pStream;
 	RETURN_IF_FAILED(HrGetResourceStream(_AtlBaseModule.GetModuleInstance(), IDR_THEMEJSON, L"JSON", &pStream));
@@ -80,6 +85,11 @@ STDMETHODIMP CThemeDefault::GetSkinUserAccountControl(ISkinUserAccountControl** 
 	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetColorMap(m_pThemeColorMap));
 	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::GetLayoutManager(ILayoutManager** ppLayoutManager)
+{
+	return m_pLayoutManager->QueryInterface(ppLayoutManager);
 }
 
 STDMETHODIMP CThemeDefault::GetLayout(BSTR bstrLayoutName, IVariantObject** ppVariantObject)

@@ -322,6 +322,7 @@ interface ITheme : IUnknown
 	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);
 	HRESULT GetSkinUserAccountControl(ISkinUserAccountControl** ppSkinUserAccountControl);
 	HRESULT GetLayout(BSTR bstrLayoutName, IVariantObject** ppVariantObject);
+	HRESULT GetLayoutManager(ILayoutManager** ppLayoutManager);
 };
 
 [
