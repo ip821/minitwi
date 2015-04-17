@@ -73,5 +73,12 @@ library twthemeLib
 	{
 		[default] interface ITheme;
 	};
+	[
+		uuid(CEE6C71C-CA9F-4BE3-AA49-66F379D9F266)
+	]
+	coclass LayoutManager
+	{
+		[default] interface ILayoutManager;
+	};
 };
 

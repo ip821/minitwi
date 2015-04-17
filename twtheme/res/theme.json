@@ -66,42 +66,47 @@
                     {
                         "name": "Header",
                         "type": "horizontal_container",
-                        "fit": "parent",
+                        "horizontal_fit": "parent",
+                        "vertical_fit": "content",
                         "elements": [
                             {
                                 "name": "HomeContainer",
                                 "type": "horizontal_container",
-                                "fit": "content",
+                                "horizontal_fit": "content",
+                                "vertical_fit": "parent",
                                 "elements": [
                                     { "name": "HomeImage", "type": "image_column", "image": "home" },
-                                    { "name": "HomeCaption", "type": "text_column", "text_key": "HomeCaptionKey" }
+                                    { "name": "HomeCaption", "type": "text_column", "text": "Home" }
                                 ]
                             },
                             {
                                 "name": "ListsContainer",
                                 "type": "horizontal_container",
-                                "fit": "content",
+                                "horizontal_fit": "content",
+                                "vertical_fit": "parent",
                                 "elements": [
                                     { "name": "ListsImage", "type": "image_column", "image": "lists" },
-                                    { "name": "ListsCaption", "type": "text_column", "text_key": "ListsCaptionKey" }
+                                    { "name": "ListsCaption", "type": "text_column", "text": "Lists" }
                                 ]
                             },
                             {
                                 "name": "SearchContainer",
                                 "type": "horizontal_container",
-                                "fit": "content",
+                                "horizontal_fit": "content",
+                                "vertical_fit": "parent",
                                 "elements": [
                                     { "name": "SearchImage", "type": "image_column", "image": "search" },
-                                    { "name": "SearchCaption", "type": "text_column", "text_key": "SearchCaptionKey" }
+                                    { "name": "SearchCaption", "type": "text_column", "text": "Search" }
                                 ]
                             },
                             {
                                 "name": "SettingsContainer",
                                 "type": "horizontal_container",
-                                "fit": "content",
+                                "horizontal_fit": "content",
+                                "vertical_fit": "parent",
                                 "elements": [
                                     { "name": "SettingsImage", "type": "image_column", "image": "settings" },
-                                    { "name": "SettingsCaption", "type": "text_column", "text_key": "SettingsCaptionKey" }
+                                    { "name": "SettingsCaption", "type": "text_column", "text": "Settings" }
                                 ]
                             }
                         ]

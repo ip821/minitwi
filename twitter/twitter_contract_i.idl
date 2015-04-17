@@ -156,6 +156,7 @@ interface IColumnsInfo : IUnknown
 	HRESULT Clear();
 	HRESULT IsDisabledSelection(BOOL* pbDisabled);
 	HRESULT DisableSelection(BOOL bDisabled);
+	HRESULT FindItemIndex(BSTR bstrName, UINT* puiIndex);
 };
 
 [
@@ -263,14 +264,22 @@ interface IUserAccountControl : IControl2
 
 [
 	object,
+	uuid(98E58BE4-3478-4504-82CF-29F6743BCDA8),
+	pointer_default(unique)
+]
+interface ILayoutManager : IUnknown
+{
+	HRESULT BuildLayout(HWND hWnd, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
+	HRESULT PaintLayout(HDC hdc, IColumnsInfo* pColumnInfo);
+};
+
+[
+	object,
 	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
 	pointer_default(unique)
 ]
 interface ISkinTabControl : IUnknown
 {
-	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
-	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(HDC hdc);
 	HRESULT DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
@@ -312,6 +321,7 @@ interface ITheme : IUnknown
 	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
 	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);
 	HRESULT GetSkinUserAccountControl(ISkinUserAccountControl** ppSkinUserAccountControl);
+	HRESULT GetLayout(BSTR bstrLayoutName, IVariantObject** ppVariantObject);
 };
 
 [

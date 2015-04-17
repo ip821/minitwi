@@ -67,24 +67,12 @@ CSkinTabControl::CSkinTabControl()
 {
 }
 
-STDMETHODIMP CSkinTabControl::SetColorMap(IThemeColorMap* pThemeColorMap)
+STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 {
-	CHECK_E_POINTER(pThemeColorMap);
-	m_pThemeColorMap = pThemeColorMap;
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::GetColorMap(IThemeColorMap** ppThemeColorMap)
-{
-	CHECK_E_POINTER(ppThemeColorMap);
-	m_pThemeColorMap->QueryInterface(ppThemeColorMap);
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::SetFontMap(IThemeFontMap* pThemeFontMap)
-{
-	CHECK_E_POINTER(pThemeFontMap);
-	m_pThemeFontMap = pThemeFontMap;
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
+	RETURN_IF_FAILED(m_pTheme->GetColorMap(&m_pThemeColorMap));
+	RETURN_IF_FAILED(m_pTheme->GetLayout(Twitter::Themes::Metadata::TabContainer::LayoutName, &m_pLayoutObject));
 	return S_OK;
 }
 
@@ -92,118 +80,122 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 {
 	m_hWnd = hWnd;
 
-	CRect clientRect2 = clientRect;
-	CClientDC hdc(hWnd);
-	CDC cdc;
-	cdc.CreateCompatibleDC(hdc);
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hWnd, clientRect, m_pLayoutObject, nullptr, pColumnsInfo));
+	UINT uiInex = 0;
+	RETURN_IF_FAILED(pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::RootContainerName, &uiInex));
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	RETURN_IF_FAILED(pColumnsInfo->GetItem(uiInex, &pColumnsInfoItem));
+	RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));
 
-	HFONT font = 0;
-	m_pThemeFontMap->GetFont(Twitter::Metadata::Tabs::Header, &font);
-	CDCSelectFontScope cdcSelectFontScope(cdc, font);
+	//CClientDC cdc(hWnd);
 
-	UINT uiHeight = max(m_pBitmapHome->GetHeight(), m_pBitmapSettings->GetHeight()) + PADDING_Y * 2;
+	//HFONT font = 0;
+	//m_pThemeFontMap->GetFont(Twitter::Metadata::Tabs::Header, &font);
+	//CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
-	*puiHeight = uiHeight;
+	//UINT uiHeight = max(m_pBitmapHome->GetHeight(), m_pBitmapSettings->GetHeight()) + PADDING_Y * 2;
 
-	CRect rectHomeColumn;
-	{
-		auto x = PADDING_X;
-		auto y = PADDING_Y;
-		rectHomeColumn = CRect(x, y, x + (int)m_pBitmapHome->GetWidth(), y + (int)m_pBitmapHome->GetHeight());
+	//*puiHeight = uiHeight;
 
-		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_HOME, __uuidof(IControl2), (LPVOID*)&pControl2));
-		CComBSTR bstr;
-		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+	//CRect rectHomeColumn;
+	//{
+	//	auto x = PADDING_X;
+	//	auto y = PADDING_Y;
+	//	rectHomeColumn = CRect(x, y, x + (int)m_pBitmapHome->GetWidth(), y + (int)m_pBitmapHome->GetHeight());
 
-		CSize sz;
-		GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
-		rectHomeColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+	//	CComPtr<IControl2> pControl2;
+	//	RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_HOME, __uuidof(IControl2), (LPVOID*)&pControl2));
+	//	CComBSTR bstr;
+	//	RETURN_IF_FAILED(pControl2->GetText(&bstr));
 
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectHomeColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
-	}
+	//	CSize sz;
+	//	GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
+	//	rectHomeColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
 
-	CRect rectListsColumn;
-	{
-		auto x = rectHomeColumn.right + PADDING_X;
-		auto y = PADDING_Y;
-		rectListsColumn = CRect(x, y, x + (int)m_pBitmapLists->GetWidth(), y + (int)m_pBitmapLists->GetHeight());
+	//	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	//	RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectHomeColumn));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
+	//}
 
-		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_LISTS, __uuidof(IControl2), (LPVOID*)&pControl2));
-		CComBSTR bstr;
-		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+	//CRect rectListsColumn;
+	//{
+	//	auto x = rectHomeColumn.right + PADDING_X;
+	//	auto y = PADDING_Y;
+	//	rectListsColumn = CRect(x, y, x + (int)m_pBitmapLists->GetWidth(), y + (int)m_pBitmapLists->GetHeight());
 
-		CSize sz;
-		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
-		rectListsColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+	//	CComPtr<IControl2> pControl2;
+	//	RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_LISTS, __uuidof(IControl2), (LPVOID*)&pControl2));
+	//	CComBSTR bstr;
+	//	RETURN_IF_FAILED(pControl2->GetText(&bstr));
 
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectListsColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
-	}
+	//	CSize sz;
+	//	GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
+	//	rectListsColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
 
-	CRect rectSearchColumn;
-	{
-		auto x = rectListsColumn.right + PADDING_X;
-		auto y = PADDING_Y;
-		rectSearchColumn = CRect(x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight());
+	//	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	//	RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectListsColumn));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
+	//}
 
-		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_SEARCH, __uuidof(IControl2), (LPVOID*)&pControl2));
-		CComBSTR bstr;
-		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+	//CRect rectSearchColumn;
+	//{
+	//	auto x = rectListsColumn.right + PADDING_X;
+	//	auto y = PADDING_Y;
+	//	rectSearchColumn = CRect(x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight());
 
-		CSize sz;
-		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
-		rectSearchColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+	//	CComPtr<IControl2> pControl2;
+	//	RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_SEARCH, __uuidof(IControl2), (LPVOID*)&pControl2));
+	//	CComBSTR bstr;
+	//	RETURN_IF_FAILED(pControl2->GetText(&bstr));
 
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectSearchColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
-	}
+	//	CSize sz;
+	//	GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
+	//	rectSearchColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
 
-	{
-		auto x = rectSearchColumn.right + PADDING_X;
-		auto y = PADDING_Y;
-		CRect rect = { x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight() };
+	//	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	//	RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectSearchColumn));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
+	//}
 
-		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_SETTINGS, __uuidof(IControl2), (LPVOID*)&pControl2));
-		CComBSTR bstr;
-		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+	//{
+	//	auto x = rectSearchColumn.right + PADDING_X;
+	//	auto y = PADDING_Y;
+	//	CRect rect = { x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight() };
 
-		CSize sz;
-		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
-		rect.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+	//	CComPtr<IControl2> pControl2;
+	//	RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_SETTINGS, __uuidof(IControl2), (LPVOID*)&pControl2));
+	//	CComBSTR bstr;
+	//	RETURN_IF_FAILED(pControl2->GetText(&bstr));
 
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rect));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
-	}
+	//	CSize sz;
+	//	GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
+	//	rect.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
 
-	m_rectHeader = clientRect;
-	m_rectHeader.bottom = m_rectHeader.top + uiHeight;
+	//	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	//	RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rect));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
+	//}
 
-	{ // info image rect
-		int imageWidth = m_pBitmapError->GetWidth();
-		int imageHeight = m_pBitmapError->GetHeight();
+	//m_rectHeader = clientRect;
+	//m_rectHeader.bottom = m_rectHeader.top + uiHeight;
 
-		int left = imageWidth + ITEM_DISTANCE;
-		m_rectInfoImage = m_rectHeader;
-		m_rectInfoImage.left = m_rectInfoImage.right - left;
-		m_rectInfoImage.top += m_rectInfoImage.Height() / 2 - imageHeight / 2 + ITEM_OFFSET_Y;
-	}
+	//{ // info image rect
+	//	int imageWidth = m_pBitmapError->GetWidth();
+	//	int imageHeight = m_pBitmapError->GetHeight();
+
+	//	int left = imageWidth + ITEM_DISTANCE;
+	//	m_rectInfoImage = m_rectHeader;
+	//	m_rectInfoImage.left = m_rectInfoImage.right - left;
+	//	m_rectInfoImage.top += m_rectInfoImage.Height() / 2 - imageHeight / 2 + ITEM_OFFSET_Y;
+	//}
 
 	return S_OK;
 }
@@ -232,7 +224,8 @@ STDMETHODIMP CSkinTabControl::DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RE
 
 STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect)
 {
-	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, pColumnsInfo));
+	/*UINT uiCount = 0;
 	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 
 	{
@@ -322,7 +315,7 @@ STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cd
 		cdc.SetTextColor(dwColor);
 
 		DrawText(cdc, bstr, bstr.Length(), &rectText, 0);
-	}
+	}*/
 	return S_OK;
 }
 

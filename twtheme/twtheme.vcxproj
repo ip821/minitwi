@@ -265,6 +265,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="LayoutManager.cpp" />
     <ClCompile Include="objmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -316,10 +317,11 @@
     <ClInclude Include="..\model-libs\objmdl\JSONConverter.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="GdilPlusUtils.h" />
+    <ClInclude Include="LayoutManager.h" />
+    <ClInclude Include="Metadata.h" />
     <ClInclude Include="objmdl_contract_i.h" />
     <ClInclude Include="PluginTable.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Skin.h" />
     <ClInclude Include="SkinCommonControl.h" />
     <ClInclude Include="SkinTabControl.h" />
     <ClInclude Include="SkinTimeline.h" />

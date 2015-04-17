@@ -49,6 +49,7 @@ public:
 	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
 	STDMETHOD(GetFontMap)(IThemeFontMap** ppThemeFontMap);
 	STDMETHOD(GetSkinUserAccountControl)(ISkinUserAccountControl** ppSkinUserAccountControl);
+	STDMETHOD(GetLayout)(BSTR bstrLayoutName, IVariantObject** ppVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ThemeDefault), CThemeDefault)

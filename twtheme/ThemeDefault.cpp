@@ -28,10 +28,9 @@ HRESULT CThemeDefault::FinalConstruct()
 	RETURN_IF_FAILED(HrGetResourceStream(_AtlBaseModule.GetModuleInstance(), IDR_THEMEJSON, L"JSON", &pStream));
 	RETURN_IF_FAILED(LoadThemeFromStream(pStream));
 
-	RETURN_IF_FAILED(m_pSkinTabControl->SetColorMap(m_pThemeColorMap));
+	CComQIPtr<IThemeSupport> pSkinTabControlThemeSupport = m_pSkinTabControl;
+	RETURN_IF_FAILED(pSkinTabControlThemeSupport->SetTheme(this));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetColorMap(m_pThemeColorMap));
-
-	RETURN_IF_FAILED(m_pSkinTabControl->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetFontMap(m_pThemeFontMap));
 
 	return S_OK;
@@ -81,6 +80,17 @@ STDMETHODIMP CThemeDefault::GetSkinUserAccountControl(ISkinUserAccountControl** 
 	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetColorMap(m_pThemeColorMap));
 	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::GetLayout(BSTR bstrLayoutName, IVariantObject** ppVariantObject)
+{
+	CHECK_E_POINTER(bstrLayoutName);
+	CHECK_E_POINTER(ppVariantObject);
+
+	if (m_layoutsMap.find(bstrLayoutName) == m_layoutsMap.end())
+		return E_INVALIDARG;
+
+	return m_layoutsMap[bstrLayoutName]->QueryInterface(ppVariantObject);
 }
 
 STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)

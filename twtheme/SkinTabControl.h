@@ -12,7 +12,8 @@ using namespace std;
 class ATL_NO_VTABLE CSkinTabControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CSkinTabControl, &CLSID_SkinTabControl>,
-	public ISkinTabControl
+	public ISkinTabControl,
+	public IThemeSupport
 {
 public:
 	CSkinTabControl();
@@ -21,14 +22,17 @@ public:
 
 	BEGIN_COM_MAP(CSkinTabControl)
 		COM_INTERFACE_ENTRY(ISkinTabControl)
+		COM_INTERFACE_ENTRY(IThemeSupport)
 	END_COM_MAP()
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 	void FinalRelease();
 	HRESULT FinalConstruct();
 private:
+	CComPtr<ITheme> m_pTheme;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
-	CComPtr<IThemeFontMap> m_pThemeFontMap;
+	CComPtr<ILayoutManager> m_pLayoutManager;
+	CComPtr<IVariantObject> m_pLayoutObject;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapHome;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapSearch;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapLists;
@@ -46,10 +50,7 @@ private:
 
 public:
 
-	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
-	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
-	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
-
+	STDMETHOD(SetTheme)(ITheme* pTheme);
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
 	STDMETHOD(DrawHeader)(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
