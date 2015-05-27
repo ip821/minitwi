@@ -44,7 +44,7 @@ STDMETHODIMP CTwitterConnection::GetDescription(BSTR* pBstrDescription)
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrKey, BSTR* pbstrSecret)
+STDMETHODIMP CTwitterConnection::GetAccessTokens(BSTR bstrUser, BSTR bstrPass, BSTR bstrAuthKey, BSTR bstrAuthSecret, BSTR bstrPin, BSTR* pbstrKey, BSTR* pbstrKeySecret)
 {
 	if (!bstrUser || !bstrPass)
 	{
@@ -53,47 +53,77 @@ STDMETHODIMP CTwitterConnection::GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR*
 		return COMADMIN_E_USERPASSWDNOTVALID;
 	}
 
-	twitCurl twitterObj;
-
 	USES_CONVERSION;
 
-	auto strUser = string(CW2A(bstrUser));
-	twitterObj.setTwitterUsername(strUser);
-	auto strPass = string(CW2A(bstrPass));
-	twitterObj.setTwitterPassword(strPass);
+	auto pTwitObj = make_shared<twitCurl>();
 
-	twitterObj.getOAuth().setConsumerKey(string(APP_KEY));
-	twitterObj.getOAuth().setConsumerSecret(string(APP_SECRET));
-
-	string authUrl;
-	twitterObj.oAuthRequestToken(authUrl);
-
-	twitterObj.oAuthHandlePIN(authUrl);
-	twitterObj.oAuthAccessToken();
+	auto strPin = string(CW2A(bstrPin));
+	auto strAuthKey = string(CW2A(bstrAuthKey));
+	auto strAuthSecret = string(CW2A(bstrAuthSecret));
+	pTwitObj->getOAuth().setConsumerKey(string(APP_KEY));
+	pTwitObj->getOAuth().setConsumerSecret(string(APP_SECRET));
+	pTwitObj->getOAuth().setOAuthTokenKey(strAuthKey);
+	pTwitObj->getOAuth().setOAuthTokenSecret(strAuthSecret);
+	pTwitObj->getOAuth().setOAuthPin(strPin);
+	pTwitObj->oAuthAccessToken();
 
 	string myOAuthAccessTokenKey;
 	string myOAuthAccessTokenSecret;
 
-	twitterObj.getOAuth().getOAuthTokenKey(myOAuthAccessTokenKey);
-	twitterObj.getOAuth().getOAuthTokenSecret(myOAuthAccessTokenSecret);
+	pTwitObj->getOAuth().getOAuthTokenKey(myOAuthAccessTokenKey);
+	pTwitObj->getOAuth().getOAuthTokenSecret(myOAuthAccessTokenSecret);
 
 	*pbstrKey = CComBSTR(CA2W(myOAuthAccessTokenKey.c_str())).Detach();
-	*pbstrSecret = CComBSTR(CA2W(myOAuthAccessTokenSecret.c_str())).Detach();
+	*pbstrKeySecret = CComBSTR(CA2W(myOAuthAccessTokenSecret.c_str())).Detach();
 
-	auto bRes = twitterObj.accountVerifyCredGet();
+	auto bRes = pTwitObj->accountVerifyCredGet();
 	if (!bRes)
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
 
 	string strResponse;
-	twitterObj.getLastWebResponse(strResponse);
+	pTwitObj->getLastWebResponse(strResponse);
 
 	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
 	auto hr = HandleError(value.get());
 	if (FAILED(hr))
 		return hr;
 
+	return S_OK;
+}
+
+STDMETHODIMP CTwitterConnection::GetAccessUrl(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrAuthKey, BSTR* pbstrAuthSecret, BSTR* pbstrUrl)
+{
+	if (!bstrUser || !bstrPass)
+	{
+		m_errMsg = L"Empty login or password";
+		SetErrorInfo(0, this);
+		return COMADMIN_E_USERPASSWDNOTVALID;
+	}
+
+	USES_CONVERSION;
+
+	auto pTwitObj = make_shared<twitCurl>();
+	auto strUser = string(CW2A(bstrUser));
+	pTwitObj->setTwitterUsername(strUser);
+	auto strPass = string(CW2A(bstrPass));
+	pTwitObj->setTwitterPassword(strPass);
+
+	pTwitObj->getOAuth().setConsumerKey(string(APP_KEY));
+	pTwitObj->getOAuth().setConsumerSecret(string(APP_SECRET));
+
+	string authUrl;
+	pTwitObj->oAuthRequestToken(authUrl);
+	*pbstrUrl = CComBSTR(CA2W(authUrl.c_str())).Detach();
+
+	string strAuthKey;
+	pTwitObj->getOAuth().getOAuthTokenKey(strAuthKey);
+	*pbstrAuthKey = CComBSTR(CA2W(strAuthKey.c_str())).Detach();
+
+	string strAuthSecret;
+	pTwitObj->getOAuth().getOAuthTokenSecret(strAuthSecret);
+	*pbstrAuthSecret = CComBSTR(CA2W(strAuthSecret.c_str())).Detach();
 	return S_OK;
 }
 

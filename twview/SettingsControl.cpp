@@ -34,7 +34,7 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
 	CComVariant vKey;
 	CComVariant vSecret;
-	
+
 	if (SUCCEEDED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey)) &&
 		SUCCEEDED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret)) &&
 		vKey.vt == VT_BSTR &&
@@ -107,6 +107,7 @@ LRESULT CSettingsControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 	DlgResize_Init(false);
 	m_editUser = GetDlgItem(IDC_EDITUSER);
 	m_editPass = GetDlgItem(IDC_EDITPASSWORD);
+	m_editPin = GetDlgItem(IDC_EDIT_PIN);
 	m_labelLoggedUser = GetDlgItem(IDC_LABEL_LOGGED_USER);
 	m_labelVersion = GetDlgItem(IDC_LABEL_VERSION);
 	m_buttonLogin = GetDlgItem(IDC_BUTTON_LOGIN);
@@ -136,12 +137,35 @@ void CSettingsControl::SwitchToLoginMode()
 
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_HIDE);
+	
+	::ShowWindow(GetDlgItem(IDC_LABEL_PIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_EDIT_PIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_HIDE);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGIN), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_LABEL_PASS), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_EDITUSER), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_EDITPASSWORD), SW_SHOW);
+}
+
+void CSettingsControl::SwitchToPinMode()
+{
+	m_editPin.SetWindowText(L"");
+	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_HIDE);
+
+	::ShowWindow(GetDlgItem(IDC_LABEL_PIN), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_EDIT_PIN), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_SHOW);
+
+	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_LABEL_LOGIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_LABEL_PASS), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_EDITUSER), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_EDITPASSWORD), SW_HIDE);
 }
 
 void CSettingsControl::SwitchToLogoutMode()
@@ -156,11 +180,31 @@ void CSettingsControl::SwitchToLogoutMode()
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_SHOW);
 
+	::ShowWindow(GetDlgItem(IDC_LABEL_PIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_EDIT_PIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_HIDE);
+
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_LABEL_PASS), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_EDITUSER), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_EDITPASSWORD), SW_HIDE);
+}
+
+LRESULT CSettingsControl::OnClickedEnterPin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	m_pThreadService->Run();
+	return 0;
+}
+
+LRESULT CSettingsControl::OnClickedCancelPin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	m_accessUrl.Empty();
+	m_authKey.Empty();
+	m_authSecret.Empty();
+	SwitchToLoginMode();
+	return 0;
 }
 
 LRESULT CSettingsControl::OnClickedLogout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -235,8 +279,18 @@ STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 	CComBSTR bstrPass;
 	m_editPass.GetWindowText(&bstrPass);
 
+	CComBSTR bstrPin;
+	m_editPin.GetWindowText(&bstrPin);
+
 	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &CComVariant(bstrUser)));
 	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::Password, &CComVariant(bstrPass)));
+	if (!m_accessUrl.IsEmpty())
+	{
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &CComVariant(m_accessUrl)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &CComVariant(m_authKey)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &CComVariant(m_authSecret)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessPin, &CComVariant(bstrPin)));
+	}
 
 	return S_OK;
 }
@@ -256,8 +310,30 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	m_editPass.SetWindowText(L"");
-	SwitchToLogoutMode();
+	CComVariant vKey;
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
+	if (vKey.vt == VT_EMPTY)
+	{
+		CComVariant vAccessUrl;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &vAccessUrl));
+		m_accessUrl = vAccessUrl.bstrVal;
+
+		CComVariant vAuthKey;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &vAuthKey));
+		m_authKey = vAuthKey.bstrVal;
+
+		CComVariant vAuthSecret;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &vAuthSecret));
+		m_authSecret = vAuthSecret.bstrVal;
+
+		ShellExecute(NULL, L"open", vAccessUrl.bstrVal, NULL, NULL, SW_SHOW);
+		SwitchToPinMode();
+	}
+	else
+	{
+		m_editPass.SetWindowText(L"");
+		SwitchToLogoutMode();
+	}
 
 	return S_OK;
 }
@@ -375,4 +451,7 @@ void CSettingsControl::EnableLoginControls(BOOL bEnale)
 	::EnableWindow(GetDlgItem(IDC_BUTTON_LOGIN), bEnale);
 	::EnableWindow(GetDlgItem(IDC_EDITUSER), bEnale);
 	::EnableWindow(GetDlgItem(IDC_EDITPASSWORD), bEnale);
+	::EnableWindow(GetDlgItem(IDC_EDIT_PIN), bEnale);
+	::EnableWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), bEnale);
+	::EnableWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), bEnale);
 }

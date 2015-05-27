@@ -65,15 +65,39 @@ STDMETHODIMP CLoginService::OnRun(IVariantObject *pResult)
 	CComVariant vPass;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::Password, &vPass));
 	ATLASSERT(vPass.vt == VT_BSTR);
+	CComVariant vAccessPin;
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessPin, &vAccessPin));
 
 	CComPtr<ITwitterConnection> pConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 
-	CComBSTR bstrKey, bstrSecret;
-	RETURN_IF_FAILED(pConnection->GetAuthKeys(vUser.bstrVal, vPass.bstrVal, &bstrKey, &bstrSecret));
+	CComVariant vAccessUrl;
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &vAccessUrl));
 
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &CComVariant(bstrKey)));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &CComVariant(bstrSecret)));
+	if (vAccessUrl.vt == VT_EMPTY)
+	{
+		CComBSTR bstrAccessUrl;
+		CComBSTR bstrAuthKey;
+		CComBSTR bstrAuthSecret;
+		RETURN_IF_FAILED(pConnection->GetAccessUrl(vUser.bstrVal, vPass.bstrVal, &bstrAuthKey, &bstrAuthSecret, &bstrAccessUrl));
+		vAccessUrl = bstrAccessUrl;
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &vAccessUrl));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &CComVariant(bstrAuthKey)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &CComVariant(bstrAuthSecret)));
+	}
+	else
+	{
+		CComVariant vAuthKey;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &vAuthKey));
+		CComVariant vAuthSecret;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &vAuthSecret));
+
+		ATLASSERT(vAccessPin.vt == VT_BSTR && vAuthKey.vt == VT_BSTR && vAuthSecret.vt == VT_BSTR);
+		CComBSTR bstrKey, bstrSecret;
+		RETURN_IF_FAILED(pConnection->GetAccessTokens(vUser.bstrVal, vPass.bstrVal, vAuthKey.bstrVal, vAuthSecret.bstrVal, vAccessPin.bstrVal, &bstrKey, &bstrSecret));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &CComVariant(bstrKey)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &CComVariant(bstrSecret)));
+	}
 
 	return S_OK;
 }
@@ -96,20 +120,22 @@ STDMETHODIMP CLoginService::OnFinish(IVariantObject *pResult)
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
 
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
-	RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
+	if (vKey.vt != VT_EMPTY)
+	{
+		RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
+		RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
+		RETURN_IF_FAILED(pSettingsTwitter->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 
-	CComPtr<IControl> pControl;
-	RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
-	CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pControl;
-	CComPtr<IServiceProvider> pServiceProvider;
-	RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
-	CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
-	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_HomeTimelineControllerService, &pHomeTimelineControllerService));
+		CComPtr<IControl> pControl;
+		RETURN_IF_FAILED(m_pFormManager->FindForm(CLSID_HomeTimeLineControl, &pControl));
+		CComQIPtr<IServiceProviderSupport> pServiceProviderSupport = pControl;
+		CComPtr<IServiceProvider> pServiceProvider;
+		RETURN_IF_FAILED(pServiceProviderSupport->GetServiceProvider(&pServiceProvider));
+		CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
+		RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_HomeTimelineControllerService, &pHomeTimelineControllerService));
+		RETURN_IF_FAILED(pHomeTimelineControllerService->StartConnection());
+		RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_HomeTimeLineControl));
+	}
 
-	RETURN_IF_FAILED(pHomeTimelineControllerService->StartConnection());
-
-	RETURN_IF_FAILED(m_pFormManager->ActivateForm(CLSID_HomeTimeLineControl));
 	return S_OK;
 }

@@ -60,8 +60,16 @@ public:
 		DLGRESIZE_CONTROL(IDC_EDITPASSWORD, DLSZ_CENTER_X)
 		END_DLGRESIZE_GROUP()
 
+		BEGIN_DLGRESIZE_GROUP()
+		DLGRESIZE_CONTROL(IDC_LABEL_PIN, DLSZ_CENTER_X)
+		DLGRESIZE_CONTROL(IDC_EDIT_PIN, DLSZ_CENTER_X)
+		END_DLGRESIZE_GROUP()
+
 		DLGRESIZE_CONTROL(IDC_BUTTON_LOGIN, DLSZ_CENTER_X)
 		DLGRESIZE_CONTROL(IDC_BUTTON_LOGOUT, DLSZ_CENTER_X)
+
+		DLGRESIZE_CONTROL(IDC_BUTTON_ENTER_PIN, DLSZ_CENTER_X)
+		DLGRESIZE_CONTROL(IDC_BUTTON_CANCEL_PIN, DLSZ_CENTER_X)
 
 		DLGRESIZE_CONTROL(IDC_GROUP2, DLSZ_CENTER_X)
 		
@@ -78,6 +86,8 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_HANDLER(IDC_BUTTON_LOGIN, BN_CLICKED, OnClickedLogin)
 		COMMAND_HANDLER(IDC_BUTTON_LOGOUT, BN_CLICKED, OnClickedLogout)
+		COMMAND_HANDLER(IDC_BUTTON_ENTER_PIN, BN_CLICKED, OnClickedEnterPin)
+		COMMAND_HANDLER(IDC_BUTTON_CANCEL_PIN, BN_CLICKED, OnClickedCancelPin)
 		CHAIN_MSG_MAP(CDialogResize<CSettingsControl>)
 	END_MSG_MAP()
 
@@ -88,6 +98,8 @@ private:
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedLogin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnClickedLogout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnClickedEnterPin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT OnClickedCancelPin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnCtlColorStatic(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	CComPtr<ISettings> m_pSettings;
@@ -101,6 +113,7 @@ private:
 	DWORD m_dwAdvice = 0;
 	CEdit m_editUser;
 	CEdit m_editPass;
+	CEdit m_editPin;
 	CButton m_buttonLogin;
 	CButton m_buttonLogout;
 
@@ -108,7 +121,12 @@ private:
 	CStatic m_labelVersion;
 	CHyperLink m_labelHomePage;
 
+	CString m_accessUrl;
+	CString m_authKey;
+	CString m_authSecret;
+
 	void SwitchToLoginMode();
+	void SwitchToPinMode();
 	void SwitchToLogoutMode();
 	void EnableLoginControls(BOOL bEnale);
 

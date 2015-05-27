@@ -12,7 +12,8 @@ import "objmdl_contract_i.idl";
 ]
 interface ITwitterConnection : IUnknown
 {
-	HRESULT GetAuthKeys(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrKey, BSTR* pbstrSecret);
+	HRESULT GetAccessUrl(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrAuthKey, BSTR* pbstrAuthSecret, BSTR* pbstrUrl);
+	HRESULT GetAccessTokens(BSTR bstrUser, BSTR bstrPass, BSTR bstrAuthKey, BSTR bstrAuthSecret, BSTR bstrPin, BSTR* pbstrKey, BSTR* pbstrKeySecret);
 	HRESULT OpenConnection(BSTR bstrKey, BSTR bstrSecret);
 	HRESULT OpenConnectionWithAppAuth();
 	HRESULT GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
