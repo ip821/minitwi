@@ -299,7 +299,7 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 
 		int res = 0;
 #ifdef __WINXP__
-		res = (int)ShellExecute(NULL, L"open", L"iexplore", vAccessUrl.bstrVal, NULL, SW_SHOW);
+		res = (int)ShellExecute(NULL, L"", L"iexplore", vAccessUrl.bstrVal, NULL, SW_SHOW);
 #else
 		res = (int)ShellExecute(NULL, L"open", vAccessUrl.bstrVal, NULL, NULL, SW_SHOW);
 #endif
