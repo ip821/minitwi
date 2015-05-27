@@ -105,8 +105,6 @@ LRESULT CSettingsControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 {
 	CAxDialogImpl<CSettingsControl>::OnInitDialog(uMsg, wParam, lParam, bHandled);
 	DlgResize_Init(false);
-	m_editUser = GetDlgItem(IDC_EDITUSER);
-	m_editPass = GetDlgItem(IDC_EDITPASSWORD);
 	m_editPin = GetDlgItem(IDC_EDIT_PIN);
 	m_labelLoggedUser = GetDlgItem(IDC_LABEL_LOGGED_USER);
 	m_labelVersion = GetDlgItem(IDC_LABEL_VERSION);
@@ -144,10 +142,6 @@ void CSettingsControl::SwitchToLoginMode()
 	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_HIDE);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_SHOW);
-	::ShowWindow(GetDlgItem(IDC_LABEL_LOGIN), SW_SHOW);
-	::ShowWindow(GetDlgItem(IDC_LABEL_PASS), SW_SHOW);
-	::ShowWindow(GetDlgItem(IDC_EDITUSER), SW_SHOW);
-	::ShowWindow(GetDlgItem(IDC_EDITPASSWORD), SW_SHOW);
 }
 
 void CSettingsControl::SwitchToPinMode()
@@ -162,21 +156,10 @@ void CSettingsControl::SwitchToPinMode()
 	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_SHOW);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_LABEL_LOGIN), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_LABEL_PASS), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_EDITUSER), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_EDITPASSWORD), SW_HIDE);
 }
 
 void CSettingsControl::SwitchToLogoutMode()
 {
-	if (m_editUser.IsWindow())
-	{
-		CString strText;
-		m_editUser.GetWindowText(strText);
-		m_labelLoggedUser.SetWindowText(strText);
-	}
-
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_SHOW);
 
@@ -186,10 +169,6 @@ void CSettingsControl::SwitchToLogoutMode()
 	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_HIDE);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_LABEL_LOGIN), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_LABEL_PASS), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_EDITUSER), SW_HIDE);
-	::ShowWindow(GetDlgItem(IDC_EDITPASSWORD), SW_HIDE);
 }
 
 LRESULT CSettingsControl::OnClickedEnterPin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -210,9 +189,10 @@ LRESULT CSettingsControl::OnClickedCancelPin(WORD wNotifyCode, WORD wID, HWND hW
 LRESULT CSettingsControl::OnClickedLogout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	m_pSettings->RemoveSubSettings(Twitter::Metadata::Settings::PathRoot);
-	m_pTimelineControl->Clear();
-	SwitchToLoginMode();
-	return 0;
+	TCHAR lpszFileName[MAX_PATH] = { 0 };
+	GetModuleFileName(nullptr, &lpszFileName[0], MAX_PATH);
+	ShellExecute(NULL, L"open", lpszFileName, NULL, NULL, SW_SHOW);
+	exit(0);
 }
 
 LRESULT CSettingsControl::OnClickedLogin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -227,7 +207,6 @@ STDMETHODIMP CSettingsControl::Load(ISettings *pSettings)
 	m_pSettings = pSettings;
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
-	RETURN_IF_FAILED(LoadEditBoxText(IDC_EDITUSER, Twitter::Metadata::Settings::Twitter::User, pSettingsTwitter));
 	return S_OK;
 }
 
@@ -273,17 +252,9 @@ STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 {
 	EnableLoginControls(FALSE);
 
-	CComBSTR bstrUser;
-	m_editUser.GetWindowText(&bstrUser);
-
-	CComBSTR bstrPass;
-	m_editPass.GetWindowText(&bstrPass);
-
 	CComBSTR bstrPin;
 	m_editPin.GetWindowText(&bstrPin);
 
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &CComVariant(bstrUser)));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::Password, &CComVariant(bstrPass)));
 	if (!m_accessUrl.IsEmpty())
 	{
 		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &CComVariant(m_accessUrl)));
@@ -326,12 +297,30 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &vAuthSecret));
 		m_authSecret = vAuthSecret.bstrVal;
 
-		ShellExecute(NULL, L"open", vAccessUrl.bstrVal, NULL, NULL, SW_SHOW);
-		SwitchToPinMode();
+		int res = 0;
+#ifdef __WINXP__
+		res = (int)ShellExecute(NULL, L"open", L"iexplore", vAccessUrl.bstrVal, NULL, SW_SHOW);
+#else
+		res = (int)ShellExecute(NULL, L"open", vAccessUrl.bstrVal, NULL, NULL, SW_SHOW);
+#endif
+
+		if (res <= 32)
+		{
+			auto errCode = res;
+			auto msg = _com_error(HRESULT_FROM_WIN32(errCode)).ErrorMessage();
+			MessageBox(msg, L"Error");
+		}
+		else
+		{
+			SwitchToPinMode();
+		}
 	}
 	else
 	{
-		m_editPass.SetWindowText(L"");
+		CComVariant vUser;
+		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
+		ATLASSERT(vUser.vt == VT_BSTR);
+		m_labelLoggedUser.SetWindowText(vUser.bstrVal);
 		SwitchToLogoutMode();
 	}
 
@@ -449,8 +438,6 @@ STDMETHODIMP CSettingsControl::SetTheme(ITheme* pTheme)
 void CSettingsControl::EnableLoginControls(BOOL bEnale)
 {
 	::EnableWindow(GetDlgItem(IDC_BUTTON_LOGIN), bEnale);
-	::EnableWindow(GetDlgItem(IDC_EDITUSER), bEnale);
-	::EnableWindow(GetDlgItem(IDC_EDITPASSWORD), bEnale);
 	::EnableWindow(GetDlgItem(IDC_EDIT_PIN), bEnale);
 	::EnableWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), bEnale);
 	::EnableWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), bEnale);

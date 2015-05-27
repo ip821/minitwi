@@ -44,15 +44,8 @@ STDMETHODIMP CTwitterConnection::GetDescription(BSTR* pBstrDescription)
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetAccessTokens(BSTR bstrUser, BSTR bstrPass, BSTR bstrAuthKey, BSTR bstrAuthSecret, BSTR bstrPin, BSTR* pbstrKey, BSTR* pbstrKeySecret)
+STDMETHODIMP CTwitterConnection::GetAccessTokens(BSTR bstrAuthKey, BSTR bstrAuthSecret, BSTR bstrPin, BSTR* pbstrUser, BSTR* pbstrKey, BSTR* pbstrKeySecret)
 {
-	if (!bstrUser || !bstrPass)
-	{
-		m_errMsg = L"Empty login or password";
-		SetErrorInfo(0, this);
-		return COMADMIN_E_USERPASSWDNOTVALID;
-	}
-
 	USES_CONVERSION;
 
 	auto pTwitObj = make_shared<twitCurl>();
@@ -69,10 +62,13 @@ STDMETHODIMP CTwitterConnection::GetAccessTokens(BSTR bstrUser, BSTR bstrPass, B
 
 	string myOAuthAccessTokenKey;
 	string myOAuthAccessTokenSecret;
+	string userName;
 
 	pTwitObj->getOAuth().getOAuthTokenKey(myOAuthAccessTokenKey);
 	pTwitObj->getOAuth().getOAuthTokenSecret(myOAuthAccessTokenSecret);
+	pTwitObj->getOAuth().getOAuthScreenName(userName);
 
+	*pbstrUser = CComBSTR(CA2W(userName.c_str())).Detach();
 	*pbstrKey = CComBSTR(CA2W(myOAuthAccessTokenKey.c_str())).Detach();
 	*pbstrKeySecret = CComBSTR(CA2W(myOAuthAccessTokenSecret.c_str())).Detach();
 
@@ -93,22 +89,11 @@ STDMETHODIMP CTwitterConnection::GetAccessTokens(BSTR bstrUser, BSTR bstrPass, B
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetAccessUrl(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrAuthKey, BSTR* pbstrAuthSecret, BSTR* pbstrUrl)
+STDMETHODIMP CTwitterConnection::GetAccessUrl(BSTR* pbstrAuthKey, BSTR* pbstrAuthSecret, BSTR* pbstrUrl)
 {
-	if (!bstrUser || !bstrPass)
-	{
-		m_errMsg = L"Empty login or password";
-		SetErrorInfo(0, this);
-		return COMADMIN_E_USERPASSWDNOTVALID;
-	}
-
 	USES_CONVERSION;
 
 	auto pTwitObj = make_shared<twitCurl>();
-	auto strUser = string(CW2A(bstrUser));
-	pTwitObj->setTwitterUsername(strUser);
-	auto strPass = string(CW2A(bstrPass));
-	pTwitObj->setTwitterPassword(strPass);
 
 	pTwitObj->getOAuth().setConsumerKey(string(APP_KEY));
 	pTwitObj->getOAuth().setConsumerSecret(string(APP_SECRET));

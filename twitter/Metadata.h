@@ -21,7 +21,6 @@ namespace IP
 				{
 					const static CComBSTR Pin(L"Pin");
 					const static CComBSTR User(L"User");
-					const static CComBSTR Password(L"Password");
 					const static CComBSTR TwitterAuthKey(L"TwitterAuthKey");
 					const static CComBSTR TwitterAuthSecret(L"TwitterAuthSecret");
 					const static CComBSTR TwitterAccessUrl(L"TwitterAccessUrl");

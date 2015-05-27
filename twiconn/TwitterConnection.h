@@ -58,8 +58,8 @@ public:
 	METHOD_EMPTY(STDMETHOD(GetHelpFile(BSTR *pBstrHelpFile)));
 	METHOD_EMPTY(STDMETHOD(GetHelpContext(DWORD *pdwHelpContext)));
 
-	STDMETHOD(GetAccessUrl)(BSTR bstrUser, BSTR bstrPass, BSTR* pbstrAuthKey, BSTR* pbstrAuthSecret, BSTR* pbstrUrl);
-	STDMETHOD(GetAccessTokens)(BSTR bstrUser, BSTR bstrPass, BSTR bstrAuthKey, BSTR bstrAuthSecret, BSTR bstrPin, BSTR* pbstrKey, BSTR* pbstrKeySecret);
+	STDMETHOD(GetAccessUrl)(BSTR* pbstrAuthKey, BSTR* pbstrAuthSecret, BSTR* pbstrUrl);
+	STDMETHOD(GetAccessTokens)(BSTR bstrAuthKey, BSTR bstrAuthSecret, BSTR bstrPin, BSTR* pbstrUser, BSTR* pbstrKey, BSTR* pbstrKeySecret);
 	STDMETHOD(OpenConnection)(BSTR bstrKey, BSTR bstrSecret);
 	STDMETHOD(OpenConnectionWithAppAuth)();
 	STDMETHOD(GetTimeline)(BSTR bstrUserId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiMaxCount, IObjArray** ppObjectArray);
