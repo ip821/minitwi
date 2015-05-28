@@ -174,6 +174,11 @@ void CSettingsControl::SwitchToLogoutMode()
 	::ShowWindow(GetDlgItem(IDC_LABEL_PIN_INFO), SW_HIDE);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
+
+	CComVariant vUser;
+	ASSERT_IF_FAILED(m_pSettings->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
+	ATLASSERT(vUser.vt == VT_BSTR);
+	m_labelLoggedUser.SetWindowText(vUser.bstrVal);
 }
 
 LRESULT CSettingsControl::OnClickedEnterPin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -224,33 +229,6 @@ STDMETHODIMP CSettingsControl::Save(ISettings *pSettings)
 STDMETHODIMP CSettingsControl::Reset(ISettings *pSettings)
 {
 	return E_NOTIMPL;
-}
-
-HRESULT CSettingsControl::SaveEditBoxText(int id, BSTR bstrKey, ISettings* pSettings)
-{
-	if (!IsWindow())
-		return S_OK;
-	CEdit wndTextBox = GetDlgItem(id);
-	CComBSTR bstr;
-	wndTextBox.GetWindowText(&bstr);
-
-	if (bstr == NULL)
-		bstr = "";
-	RETURN_IF_FAILED(pSettings->SetVariantValue(bstrKey, &CComVariant(bstr)));
-	return S_OK;
-}
-
-HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSettings)
-{
-	CHECK_E_POINTER(pSettings);
-	CComVariant vValue;
-	CComBSTR bstr;
-	if (SUCCEEDED(pSettings->GetVariantValue(bstrKey, &vValue)) && vValue.vt == VT_BSTR)
-		bstr = vValue.bstrVal;
-
-	CEdit wndServerTextBox = GetDlgItem(id);
-	wndServerTextBox.SetWindowText(bstr);
-	return S_OK;
 }
 
 STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
@@ -317,10 +295,6 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 	}
 	else
 	{
-		CComVariant vUser;
-		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
-		ATLASSERT(vUser.vt == VT_BSTR);
-		m_labelLoggedUser.SetWindowText(vUser.bstrVal);
 		SwitchToLogoutMode();
 	}
 

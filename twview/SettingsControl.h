@@ -83,9 +83,6 @@ public:
 	END_MSG_MAP()
 
 private:
-	HRESULT LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSettings);
-	HRESULT SaveEditBoxText(int id, BSTR bstrKey, ISettings* pSettings);
-
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClickedLogin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnClickedLogout(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
