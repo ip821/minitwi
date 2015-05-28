@@ -58,7 +58,18 @@ STDMETHODIMP CTwitterConnection::GetAccessTokens(BSTR bstrAuthKey, BSTR bstrAuth
 	pTwitObj->getOAuth().setOAuthTokenKey(strAuthKey);
 	pTwitObj->getOAuth().setOAuthTokenSecret(strAuthSecret);
 	pTwitObj->getOAuth().setOAuthPin(strPin);
-	pTwitObj->oAuthAccessToken();
+
+	if (!pTwitObj->oAuthAccessToken())
+	{
+		string strResponse;
+		m_pTwitObj->getLastWebResponse(strResponse);
+
+		auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+		auto hr = HandleError(value.get());
+		if (FAILED(hr))
+			return hr;
+		return E_FAIL;
+	}
 
 	string myOAuthAccessTokenKey;
 	string myOAuthAccessTokenSecret;
@@ -71,20 +82,6 @@ STDMETHODIMP CTwitterConnection::GetAccessTokens(BSTR bstrAuthKey, BSTR bstrAuth
 	*pbstrUser = CComBSTR(CA2W(userName.c_str())).Detach();
 	*pbstrKey = CComBSTR(CA2W(myOAuthAccessTokenKey.c_str())).Detach();
 	*pbstrKeySecret = CComBSTR(CA2W(myOAuthAccessTokenSecret.c_str())).Detach();
-
-	auto bRes = pTwitObj->accountVerifyCredGet();
-	if (!bRes)
-	{
-		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
-	}
-
-	string strResponse;
-	pTwitObj->getLastWebResponse(strResponse);
-
-	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
-	auto hr = HandleError(value.get());
-	if (FAILED(hr))
-		return hr;
 
 	return S_OK;
 }
@@ -99,7 +96,18 @@ STDMETHODIMP CTwitterConnection::GetAccessUrl(BSTR* pbstrAuthKey, BSTR* pbstrAut
 	pTwitObj->getOAuth().setConsumerSecret(string(APP_SECRET));
 
 	string authUrl;
-	pTwitObj->oAuthRequestToken(authUrl);
+	if (!pTwitObj->oAuthRequestToken(authUrl))
+	{
+		string strResponse;
+		m_pTwitObj->getLastWebResponse(strResponse);
+
+		auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+		auto hr = HandleError(value.get());
+		if (FAILED(hr))
+			return hr;
+		return E_FAIL;
+	}
+
 	*pbstrUrl = CComBSTR(CA2W(authUrl.c_str())).Detach();
 
 	string strAuthKey;

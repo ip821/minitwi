@@ -4,6 +4,8 @@
 #include "SettingsControl.h"
 #include "Plugins.h"
 #include "..\model-libs\asyncsvc\Plugins.h"
+#include "..\model-libs\objmdl\stringutils.h"
+#include "..\model-libs\objmdl\stringutils.h"
 #include "..\twiconn\Plugins.h"
 #include "..\twitter\Plugins.h"
 
@@ -140,6 +142,7 @@ void CSettingsControl::SwitchToLoginMode()
 	::ShowWindow(GetDlgItem(IDC_EDIT_PIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_LABEL_PIN_INFO), SW_HIDE);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_SHOW);
 }
@@ -154,6 +157,7 @@ void CSettingsControl::SwitchToPinMode()
 	::ShowWindow(GetDlgItem(IDC_EDIT_PIN), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_SHOW);
+	::ShowWindow(GetDlgItem(IDC_LABEL_PIN_INFO), SW_SHOW);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
 }
@@ -167,6 +171,7 @@ void CSettingsControl::SwitchToLogoutMode()
 	::ShowWindow(GetDlgItem(IDC_EDIT_PIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_HIDE);
+	::ShowWindow(GetDlgItem(IDC_LABEL_PIN_INFO), SW_HIDE);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
 }
@@ -297,13 +302,8 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &vAuthSecret));
 		m_authSecret = vAuthSecret.bstrVal;
 
-		int res = 0;
-#ifdef __WINXP__
-		res = (int)ShellExecute(NULL, L"", L"iexplore", vAccessUrl.bstrVal, NULL, SW_SHOW);
-#else
-		res = (int)ShellExecute(NULL, L"open", vAccessUrl.bstrVal, NULL, NULL, SW_SHOW);
-#endif
-
+		int res = (int)ShellExecute(NULL, L"open", vAccessUrl.bstrVal, NULL, NULL, SW_SHOWNORMAL);
+		StrCopyToClipboard(vAccessUrl.bstrVal);
 		if (res <= 32)
 		{
 			auto errCode = res;
