@@ -62,7 +62,7 @@ STDMETHODIMP CTwitterConnection::GetAccessTokens(BSTR bstrAuthKey, BSTR bstrAuth
 	if (!pTwitObj->oAuthAccessToken())
 	{
 		string strResponse;
-		m_pTwitObj->getLastWebResponse(strResponse);
+		pTwitObj->getLastWebResponse(strResponse);
 
 		auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
 		auto hr = HandleError(value.get());
@@ -99,7 +99,7 @@ STDMETHODIMP CTwitterConnection::GetAccessUrl(BSTR* pbstrAuthKey, BSTR* pbstrAut
 	if (!pTwitObj->oAuthRequestToken(authUrl))
 	{
 		string strResponse;
-		m_pTwitObj->getLastWebResponse(strResponse);
+		pTwitObj->getLastWebResponse(strResponse);
 
 		auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
 		auto hr = HandleError(value.get());

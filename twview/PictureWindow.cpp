@@ -341,13 +341,14 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaWidth, &vWidth));
 			ATLASSERT(vHeight.vt == VT_I4 && vWidth.vt == VT_I4);
 
+#ifndef __WINXP__
 			if (m_videoUrls[i] != L"" && vHeight.intVal < MIN_VIDEO_HEIGHT)
 			{
 				float ratio = (float)MIN_VIDEO_HEIGHT / vHeight.intVal;
 				vHeight.intVal = (int)(vHeight.intVal * ratio);
 				vWidth.intVal = (int)(vWidth.intVal * ratio);
 			}
-
+#endif
 			m_sizes[i] = CSize(vWidth.intVal, vHeight.intVal);
 
 			if (CComBSTR(vMediaUrlForObject.bstrVal) == CComBSTR(vMediaUrl.bstrVal))
