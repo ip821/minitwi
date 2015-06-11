@@ -24,6 +24,7 @@ private:
 
 public:
 	STDMETHOD(BuildLayout)(HWND hWnd, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
+	STDMETHOD(EraseBackground)(HDC hdc, IColumnsInfo* pColumnInfo);
 	STDMETHOD(PaintLayout)(HDC hdc, IColumnsInfo* pColumnInfo);
 	
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);

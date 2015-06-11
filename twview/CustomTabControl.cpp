@@ -539,7 +539,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 LRESULT CCustomTabControl::OnEraseBackground(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	m_pSkinTabControl->EraseBackground((HDC)wParam);
+	m_pSkinTabControl->EraseBackground(m_pColumnsInfo, (HDC)wParam);
 	return 0;
 }
 

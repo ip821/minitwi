@@ -46,13 +46,12 @@ private:
 	HWND m_hWnd;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
-	STDMETHOD(DrawTabs)(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect);
 
 public:
 
 	STDMETHOD(SetTheme)(ITheme* pTheme);
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
-	STDMETHOD(EraseBackground)(HDC hdc);
+	STDMETHOD(EraseBackground)(IColumnsInfo* pColumnsInfo, HDC hdc);
 	STDMETHOD(DrawHeader)(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
 	STDMETHOD(DrawAnimation)(HDC hdc);
 	STDMETHOD(DrawInfoImage)(HDC hdc, BOOL bError, BSTR bstrMessage);

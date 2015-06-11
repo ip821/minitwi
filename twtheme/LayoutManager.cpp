@@ -20,7 +20,14 @@ STDMETHODIMP CLayoutManager::BuildLayout(HWND hWnd, RECT* pRect, IVariantObject*
 	return S_OK;
 }
 
+STDMETHODIMP CLayoutManager::EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo)
+{
+	CHECK_E_POINTER(pColumnInfo);
+	return S_OK;
+}
+
 STDMETHODIMP CLayoutManager::PaintLayout(HDC hdc, IColumnsInfo* pColumnInfo)
 {
+	CHECK_E_POINTER(pColumnInfo);
 	return S_OK;
 }
