@@ -168,8 +168,8 @@ interface ISkinTimeline : IUnknown
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
 
-	HRESULT DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdi);
-	HRESULT MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
+	HRESULT DrawItem(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdi);
+	HRESULT MeasureItem(HDC hdc, RECT* pClientRect, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
 
 	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfoItem* pColumnsInfoItem, int iColumnIndex);
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);

@@ -618,7 +618,10 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		for (size_t i = 0; i < urls.size(); i++)
 		{
 			auto urlObject = urls[i]->AsObject();
-			urlsHashSet.insert(urlObject[L"url"]->AsString().c_str());
+			if (urlObject.find(L"expanded_url") != urlObject.end())
+				urlsHashSet.insert(urlObject[L"expanded_url"]->AsString().c_str());
+			else
+				urlsHashSet.insert(urlObject[L"url"]->AsString().c_str());
 		}
 	}
 

@@ -67,14 +67,14 @@ STDMETHODIMP CSkinTimeline::SetFontMap(IThemeFontMap* pThemeFontMap)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
+STDMETHODIMP CSkinTimeline::DrawItem(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
 	CDCHandle cdcReal = lpdis->lpdi->hDC;
 	CRect rect = lpdis->lpdi->rcItem;
 
 	if (m_steps.find(lpdis->lpdi->itemID) == m_steps.end())
 	{
-		RETURN_IF_FAILED(DrawTextColumns(hwndControl, pColumnsInfo, lpdis));
+		RETURN_IF_FAILED(DrawTextColumns(pColumnsInfo, lpdis));
 		RETURN_IF_FAILED(DrawImageColumns(pColumnsInfo, lpdis));
 		return S_OK;
 	}
@@ -93,7 +93,7 @@ STDMETHODIMP CSkinTimeline::DrawItem(HWND hwndControl, IColumnsInfo* pColumnsInf
 	lpdis->lpdi->rcItem.top = 0;
 	lpdis->lpdi->rcItem.right = rect.Width();
 	lpdis->lpdi->rcItem.bottom = rect.Height();
-	RETURN_IF_FAILED(DrawTextColumns(hwndControl, pColumnsInfo, lpdis));
+	RETURN_IF_FAILED(DrawTextColumns(pColumnsInfo, lpdis));
 	lpdis->lpdi->rcItem = rect;
 	lpdis->lpdi->hDC = cdcReal;
 
@@ -198,7 +198,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWIT
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
+STDMETHODIMP CSkinTimeline::DrawTextColumns(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
 	std::hash_set<UINT> columnIndexesAlreadyAnimated;
 
@@ -209,11 +209,6 @@ STDMETHODIMP CSkinTimeline::DrawTextColumns(HWND hwndControl, IColumnsInfo* pCol
 			columnIndexesAlreadyAnimated.insert(lpdis->puiNotAnimatedColumnIndexes[i]);
 		}
 	}
-
-	CListBox wndListBox(hwndControl);
-
-	RECT clientRect = { 0 };
-	wndListBox.GetClientRect(&clientRect);
 
 	CDCHandle cdc = lpdis->lpdi->hDC;
 	cdc.SetBkMode(TRANSPARENT);
@@ -418,15 +413,11 @@ STDMETHODIMP CSkinTimeline::InitImageFromResource(int nId, LPCTSTR lpType, share
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo)
+STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo)
 {
 	pColumnsInfo->Clear();
-	CListBox wndListBox(hwndControl);
 
-	CClientDC hdc(hwndControl);
-
-	CRect clientRect = { 0 };
-	wndListBox.GetClientRect(&clientRect);
+	CRect clientRect = *pClientRect;
 
 	CString strObjectType;
 	GetValue(pItemObject, ObjectModel::Metadata::Object::Type, strObjectType);

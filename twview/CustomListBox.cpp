@@ -128,14 +128,17 @@ void CCustomListBox::DrawItem(LPDRAWITEMSTRUCT lpdi)
 	distl.iHoveredColumn = m_HoveredColumnIndex;
 	distl.puiNotAnimatedColumnIndexes = pui;
 	distl.uiNotAnimatedColumnIndexesCount = vIndexes.size();
-	ASSERT_IF_FAILED(m_pSkinTimeline->DrawItem(m_hWnd, m_columnsInfo[lpdi->itemID], &distl));
+	ASSERT_IF_FAILED(m_pSkinTimeline->DrawItem(m_columnsInfo[lpdi->itemID], &distl));
 }
 
 void CCustomListBox::MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	CComPtr<IVariantObject> pVariantObject;
 	ASSERT_IF_FAILED(m_pItems->GetAt(lpMeasureItemStruct->itemID, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-	ASSERT_IF_FAILED(m_pSkinTimeline->MeasureItem(m_hWnd, pVariantObject.p, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnsInfo[lpMeasureItemStruct->itemID]));
+	CRect clientRect;
+	GetClientRect(&clientRect);
+	CClientDC hdc(m_hWnd);
+	ASSERT_IF_FAILED(m_pSkinTimeline->MeasureItem(hdc, clientRect, pVariantObject.p, (TMEASUREITEMSTRUCT*)lpMeasureItemStruct, m_columnsInfo[lpMeasureItemStruct->itemID]));
 }
 
 void CCustomListBox::IsEmpty(BOOL* pbEmpty)
