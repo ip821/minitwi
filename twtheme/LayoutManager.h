@@ -24,14 +24,12 @@ public:
 	void FinalRelease(){}
 	HRESULT FinalConstruct();
 private:
-	CComPtr<IThemeFontMap> m_pThemeFontMap;
-	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<ILayoutBuilder> m_pLayoutBuilder;
 
 public:
-	STDMETHOD(BuildLayout)(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
+	STDMETHOD(BuildLayout)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 	STDMETHOD(EraseBackground)(HDC hdc, IColumnsInfo* pColumnInfo);
-	STDMETHOD(PaintLayout)(HDC hdc, IColumnsInfo* pColumnInfo);
+	STDMETHOD(PaintLayout)(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 	
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);

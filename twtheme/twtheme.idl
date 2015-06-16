@@ -13,7 +13,9 @@ import "..\twitter\twitter_contract_i.idl";
 typedef enum ElementType
 {
 	UnknownValue,
-	HorizontalContainer
+	HorizontalContainer,
+	ImageColumn,
+	TextColumn
 } ElementType;
 
 [
@@ -23,7 +25,9 @@ typedef enum ElementType
 ]
 interface ILayoutBuilder : IUnknown
 {
-	HRESULT BuildLayout(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 };
 
 [

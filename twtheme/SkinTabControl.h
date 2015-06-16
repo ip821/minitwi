@@ -33,10 +33,7 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<ILayoutManager> m_pLayoutManager;
 	CComPtr<IVariantObject> m_pLayoutObject;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapHome;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapSearch;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapLists;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapSettings;
+	CComPtr<IImageManagerService> m_pImageManagerService;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapError;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapInfo;
 	CRect m_rectHeader;
@@ -46,6 +43,8 @@ private:
 	HWND m_hWnd;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
+	STDMETHOD(GetResourceStream)(int nId, LPCTSTR lpType, IStream** ppStream);
+	STDMETHOD(AppendToImageManagerService)(int nId, LPCTSTR lpType, BSTR bstrKey, IImageManagerService* pImageManagerService);
 
 public:
 

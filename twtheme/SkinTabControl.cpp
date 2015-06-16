@@ -24,8 +24,9 @@ const int TOOLTIP_ID = 1;
 #define INDEX_CONTROL_SEARCH 2
 #define INDEX_CONTROL_SETTINGS 3
 
-STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
+STDMETHODIMP CSkinTabControl::GetResourceStream(int nId, LPCTSTR lpType, IStream** ppStream)
 {
+	CHECK_E_POINTER(ppStream);
 	HMODULE hModule = _AtlBaseModule.GetModuleInstance();
 	if (!hModule)
 		return E_UNEXPECTED;
@@ -38,12 +39,28 @@ STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, sha
 
 	if (!hGlobal)
 		return HRESULT_FROM_WIN32(GetLastError());
-	
+
 	auto dwSizeInBytes = SizeofResource(hModule, hRsrc);
 	LPVOID pvResourceData = LockResource(hGlobal);
 	CComPtr<IStream> pImageStream;
 	pImageStream.Attach(SHCreateMemStream((LPBYTE)pvResourceData, dwSizeInBytes));
-	pBitmap = shared_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromStream(pImageStream));
+	RETURN_IF_FAILED(pImageStream->QueryInterface(ppStream));
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
+{
+	CComPtr<IStream> pStream;
+	RETURN_IF_FAILED(GetResourceStream(nId, lpType, &pStream));
+	pBitmap = shared_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromStream(pStream));
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::AppendToImageManagerService(int nId, LPCTSTR lpType, BSTR bstrKey, IImageManagerService* pImageManagerService)
+{
+	CComPtr<IStream> pStream;
+	RETURN_IF_FAILED(GetResourceStream(nId, lpType, &pStream));
+	RETURN_IF_FAILED(pImageManagerService->AddImageFromStream(bstrKey, pStream));
 	return S_OK;
 }
 
@@ -54,12 +71,13 @@ void CSkinTabControl::FinalRelease()
 
 HRESULT CSkinTabControl::FinalConstruct()
 {
-	InitImageFromResource(IDR_PICTUREHOME, L"PNG", m_pBitmapHome);
-	InitImageFromResource(IDR_PICTURESEARCH, L"PNG", m_pBitmapSearch);
-	InitImageFromResource(IDR_PICTURESETTINGS, L"PNG", m_pBitmapSettings);
 	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
 	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
-	InitImageFromResource(IDR_PICTURELISTS, L"PNG", m_pBitmapLists);
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ImageManagerService, &m_pImageManagerService));
+	RETURN_IF_FAILED(AppendToImageManagerService(IDR_PICTUREHOME, L"PNG", Twitter::Themes::Metadata::TabContainer::Images::Home, m_pImageManagerService));
+	RETURN_IF_FAILED(AppendToImageManagerService(IDR_PICTURELISTS, L"PNG", Twitter::Themes::Metadata::TabContainer::Images::Lists, m_pImageManagerService));
+	RETURN_IF_FAILED(AppendToImageManagerService(IDR_PICTURESEARCH, L"PNG", Twitter::Themes::Metadata::TabContainer::Images::Search, m_pImageManagerService));
+	RETURN_IF_FAILED(AppendToImageManagerService(IDR_PICTURESETTINGS, L"PNG", Twitter::Themes::Metadata::TabContainer::Images::Settings, m_pImageManagerService));
 	return S_OK;
 }
 
@@ -82,7 +100,8 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	m_hWnd = hWnd;
 
 	CClientDC hdc(hWnd);
-	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, m_pLayoutObject, nullptr, pColumnsInfo));
+	CRect resultRect;
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, &resultRect, m_pLayoutObject, nullptr, m_pImageManagerService, pColumnsInfo));
 	UINT uiInex = 0;
 	RETURN_IF_FAILED(pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::RootContainerName, &uiInex));
 	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
@@ -104,7 +123,7 @@ STDMETHODIMP CSkinTabControl::DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RE
 {
 	CDCHandle cdc(hdc);
 	cdc.SetBkMode(TRANSPARENT);
-	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, m_pImageManagerService, pColumnsInfo));
 	return S_OK;
 }
 
@@ -164,7 +183,7 @@ STDMETHODIMP CSkinTabControl::DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessa
 	CDC cdcBitmap;
 	cdcBitmap.CreateCompatibleDC(hdc);
 	CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
-	
+
 	auto x = m_rectInfoImage.left;
 	auto y = m_rectInfoImage.top;
 	auto width = imageWidth;

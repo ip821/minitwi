@@ -21,13 +21,15 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 
-
 	STDMETHOD(GetElementType)(IVariantObject* pVariantObject, ElementType* pElementType);
 	STDMETHOD(GetElements)(IVariantObject* pVariantObject, IObjArray** ppObjArray);
-
-	STDMETHOD(BuildHorizontalContainer)(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
+	STDMETHOD(BuildHorizontalContainer)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+	STDMETHOD(BuildTextColumn)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
 public:
-	STDMETHOD(BuildLayout)(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
+	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
+	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
+
+	STDMETHOD(BuildLayout)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(LayoutBuilder), CLayoutBuilder)

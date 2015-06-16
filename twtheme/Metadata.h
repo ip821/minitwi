@@ -12,6 +12,14 @@ namespace IP
 				{
 					const static CComBSTR LayoutName(L"MainTabContainerHeaderLayout");
 					const static CComBSTR RootContainerName(L"Header");
+
+					namespace Images
+					{
+						const static CComBSTR Home(L"home");
+						const static CComBSTR Lists(L"lists");
+						const static CComBSTR Search(L"search");
+						const static CComBSTR Settings(L"settings");
+					}
 				}
 
 				namespace Element
