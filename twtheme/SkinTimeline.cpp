@@ -415,7 +415,7 @@ STDMETHODIMP CSkinTimeline::InitImageFromResource(int nId, LPCTSTR lpType, share
 
 STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo)
 {
-	pColumnsInfo->Clear();
+	RETURN_IF_FAILED(pColumnsInfo->Clear());
 
 	CRect clientRect = *pClientRect;
 
