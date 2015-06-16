@@ -19,15 +19,15 @@ public:
 		COM_INTERFACE_ENTRY(ILayoutManagerInternal)
 	END_COM_MAP()
 
+	DECLARE_PROTECT_FINAL_CONSTRUCT();
+
+	void FinalRelease(){}
+	HRESULT FinalConstruct();
 private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
+	CComPtr<ILayoutBuilder> m_pLayoutBuilder;
 
-
-	STDMETHOD(GetElementType)(IVariantObject* pVariantObject, ElementType* pElementType);
-	STDMETHOD(GetElements)(IVariantObject* pVariantObject, IObjArray** ppObjArray);
-
-	STDMETHOD(BuildHorizontalContainer)(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
 public:
 	STDMETHOD(BuildLayout)(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
 	STDMETHOD(EraseBackground)(HDC hdc, IColumnsInfo* pColumnInfo);
