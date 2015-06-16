@@ -32,6 +32,19 @@ interface ILayoutBuilder : IUnknown
 
 [
 	object,
+	uuid(367EB80B-2080-4C46-BABE-D52AF3F5D210),
+	pointer_default(unique)
+]
+interface ILayoutPainter : IUnknown
+{
+	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo);
+	HRESULT PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+};
+
+[
+	object,
 	uuid(BEC4D679-8B74-41BC-8F6E-510F85A1F202),
 	pointer_default(unique)
 ]
@@ -118,5 +131,12 @@ library twthemeLib
 	{
 		[default] interface ILayoutBuilder;
 	};
+	[
+		uuid(A158CE43-161C-44E5-A88C-D51BCBBB0309)
+	]
+	coclass LayoutPainter
+	{
+		[default] interface ILayoutPainter;
+	}; 
 };
 

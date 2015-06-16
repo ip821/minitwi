@@ -25,6 +25,7 @@ public:
 	HRESULT FinalConstruct();
 private:
 	CComPtr<ILayoutBuilder> m_pLayoutBuilder;
+	CComPtr<ILayoutPainter> m_pLayoutPainter;
 
 public:
 	STDMETHOD(BuildLayout)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);

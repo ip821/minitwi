@@ -107,6 +107,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 	RETURN_IF_FAILED(pColumnsInfo->GetItem(uiInex, &pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));
+	*puiHeight = m_rectHeader.Height();
 	return S_OK;
 }
 

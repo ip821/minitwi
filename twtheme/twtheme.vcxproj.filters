@@ -106,6 +106,9 @@
     <ClCompile Include="LayoutBuilder.cpp">
       <Filter>Layout</Filter>
     </ClCompile>
+    <ClCompile Include="LayoutPainter.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -178,6 +181,9 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="LayoutBuilder.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutPainter.h">
       <Filter>Layout</Filter>
     </ClInclude>
   </ItemGroup>

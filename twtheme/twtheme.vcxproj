@@ -267,6 +267,7 @@
     </ClCompile>
     <ClCompile Include="LayoutBuilder.cpp" />
     <ClCompile Include="LayoutManager.cpp" />
+    <ClCompile Include="LayoutPainter.cpp" />
     <ClCompile Include="objmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -320,6 +321,7 @@
     <ClInclude Include="GdilPlusUtils.h" />
     <ClInclude Include="LayoutBuilder.h" />
     <ClInclude Include="LayoutManager.h" />
+    <ClInclude Include="LayoutPainter.h" />
     <ClInclude Include="Metadata.h" />
     <ClInclude Include="objmdl_contract_i.h" />
     <ClInclude Include="PluginTable.h" />

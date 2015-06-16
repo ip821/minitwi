@@ -62,6 +62,7 @@
         "layouts": [
             {
                 "name": "MainTabContainerHeaderLayout",
+                "type": "layout",
                 "elements": [
                     {
                         "name": "Header",
@@ -76,7 +77,7 @@
                                 "vertical_fit": "parent",
                                 "elements": [
                                     { "name": "HomeImage", "type": "image_column", "image": "home" },
-                                    { "name": "HomeCaption", "type": "text_column", "text": "Home" }
+                                    { "name": "HomeCaption", "type": "text_column", "text": "Home", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected" }
                                 ]
                             },
                             {
@@ -86,7 +87,7 @@
                                 "vertical_fit": "parent",
                                 "elements": [
                                     { "name": "ListsImage", "type": "image_column", "image": "lists" },
-                                    { "name": "ListsCaption", "type": "text_column", "text": "Lists" }
+                                    { "name": "ListsCaption", "type": "text_column", "text": "Lists", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected" }
                                 ]
                             },
                             {
@@ -96,7 +97,7 @@
                                 "vertical_fit": "parent",
                                 "elements": [
                                     { "name": "SearchImage", "type": "image_column", "image": "search" },
-                                    { "name": "SearchCaption", "type": "text_column", "text": "Search" }
+                                    { "name": "SearchCaption", "type": "text_column", "text": "Search", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected" }
                                 ]
                             },
                             {
@@ -106,7 +107,7 @@
                                 "vertical_fit": "parent",
                                 "elements": [
                                     { "name": "SettingsImage", "type": "image_column", "image": "settings" },
-                                    { "name": "SettingsCaption", "type": "text_column", "text": "Settings" }
+                                    { "name": "SettingsCaption", "type": "text_column", "text": "Settings", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected" }
                                 ]
                             }
                         ]

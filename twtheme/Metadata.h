@@ -30,6 +30,9 @@ namespace IP
 				namespace TextColumn
 				{
 					const static CComBSTR Text(L"text");
+					const static CComBSTR Font(L"font");
+					const static CComBSTR Color(L"color");
+					const static CComBSTR ColorSelected(L"colorSelected");
 				}
 
 				namespace Element

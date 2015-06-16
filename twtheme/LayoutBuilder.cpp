@@ -18,30 +18,7 @@ STDMETHODIMP CLayoutBuilder::SetFontMap(IThemeFontMap* pThemeFontMap)
 
 STDMETHODIMP CLayoutBuilder::BuildLayout(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
 {
-	CComPtr<IObjArray> pElements;
-	RETURN_IF_FAILED(GetElements(pLayoutObject, &pElements));
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pElements->GetCount(&uiCount));
-	for (size_t i = 0; i < uiCount; i++)
-	{
-		CComPtr<IVariantObject> pElement;
-		RETURN_IF_FAILED(pElements->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pElement));
-		ElementType elementType = ElementType::UnknownValue;
-		RETURN_IF_FAILED(GetElementType(pElement, &elementType));
-
-		switch (elementType)
-		{
-			case ElementType::HorizontalContainer:
-				RETURN_IF_FAILED(BuildHorizontalContainer(hdc, pSourceRect, pDestRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
-				break;
-			case ElementType::TextColumn:
-				RETURN_IF_FAILED(BuildTextColumn(hdc, pSourceRect, pDestRect, pElement, pValueObject, pColumnInfo));
-				break;
-			case ElementType::ImageColumn:
-				RETURN_IF_FAILED(BuildImageColumn(hdc, pSourceRect, pDestRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
-				break;
-		}
-	}
+	RETURN_IF_FAILED(BuildHorizontalContainer(hdc, pSourceRect, pDestRect, pLayoutObject, pValueObject, pImageManagerService, pColumnInfo));
 	return S_OK;
 }
 
@@ -56,20 +33,27 @@ STDMETHODIMP CLayoutBuilder::GetElements(IVariantObject* pVariantObject, IObjArr
 	return S_OK;
 }
 
+HRESULT CLayoutBuilder::MapType(BSTR bstrType, ElementType* pElementType)
+{
+	CComBSTR type(bstrType);
+	if (type == CComBSTR(Twitter::Themes::Metadata::LayoutTypes::HorizontalContainer))
+		*pElementType = ElementType::HorizontalContainer;
+	else if (type == CComBSTR(Twitter::Themes::Metadata::LayoutTypes::ImageColumn))
+		*pElementType = ElementType::ImageColumn;
+	else if (type == CComBSTR(Twitter::Themes::Metadata::LayoutTypes::TextColumn))
+		*pElementType = ElementType::TextColumn;
+	else
+		*pElementType = ElementType::UnknownValue;
+	return S_OK;
+}
+
 STDMETHODIMP CLayoutBuilder::GetElementType(IVariantObject* pVariantObject, ElementType* pElementType)
 {
 	CHECK_E_POINTER(pElementType);
 	CComVariant vLayoutType;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Themes::Metadata::Element::Type, &vLayoutType));
 	ATLASSERT(vLayoutType.vt == VT_BSTR);
-	if (CComBSTR(vLayoutType.bstrVal) == CComBSTR(Twitter::Themes::Metadata::LayoutTypes::HorizontalContainer))
-		*pElementType = ElementType::HorizontalContainer;
-	else if (CComBSTR(vLayoutType.bstrVal) == CComBSTR(Twitter::Themes::Metadata::LayoutTypes::ImageColumn))
-		*pElementType = ElementType::ImageColumn;
-	else if (CComBSTR(vLayoutType.bstrVal) == CComBSTR(Twitter::Themes::Metadata::LayoutTypes::TextColumn))
-		*pElementType = ElementType::TextColumn;
-	else
-		*pElementType = ElementType::UnknownValue;
+	RETURN_IF_FAILED(MapType(vLayoutType.bstrVal, pElementType));
 	return S_OK;
 }
 
@@ -77,6 +61,12 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 {
 	CRect sourceRect = *pSourceRect;
 	CRect destRect;
+	destRect.left = sourceRect.left;
+	destRect.top = sourceRect.top;
+
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	RETURN_IF_FAILED(pColumnInfo->AddItem(&pColumnsInfoItem));
+
 	CComPtr<IObjArray> pElements;
 	RETURN_IF_FAILED(GetElements(pLayoutObject, &pElements));
 	UINT uiCount = 0;
@@ -86,15 +76,29 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 		CComPtr<IVariantObject> pElement;
 		RETURN_IF_FAILED(pElements->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pElement));
 		CRect elementRect;
-		RETURN_IF_FAILED(BuildLayout(hdc, &sourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+
+		ElementType elementType = ElementType::UnknownValue;
+		RETURN_IF_FAILED(GetElementType(pElement, &elementType));
+
+		switch (elementType)
+		{
+			case ElementType::HorizontalContainer:
+				RETURN_IF_FAILED(BuildHorizontalContainer(hdc, pSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+				break;
+			case ElementType::TextColumn:
+				RETURN_IF_FAILED(BuildTextColumn(hdc, pSourceRect, &elementRect, pElement, pValueObject, pColumnInfo));
+				break;
+			case ElementType::ImageColumn:
+				RETURN_IF_FAILED(BuildImageColumn(hdc, pSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+				break;
+		}
+
 		sourceRect.left += elementRect.Width();
 
 		destRect.right += elementRect.Width();
-		destRect.bottom = max(elementRect.bottom, destRect.bottom);
+		destRect.bottom = max(elementRect.Height(), destRect.bottom);
 	}
 
-	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-	RETURN_IF_FAILED(pColumnInfo->AddItem(&pColumnsInfoItem));
 	RETURN_IF_FAILED(SetColumnProps(pLayoutObject, pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(destRect));
 	*pDestRect = destRect;
@@ -103,11 +107,17 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 
 STDMETHODIMP CLayoutBuilder::SetColumnProps(IVariantObject* pLayoutObject, IColumnsInfoItem* pColumnsInfoItem)
 {
+	ElementType elementType = ElementType::UnknownValue;
+	RETURN_IF_FAILED(GetElementType(pLayoutObject, &elementType));
 	CComVariant vName;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Name, &vName));
 	ATLASSERT(vName.vt == VT_BSTR);
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::Element::Name, vName.bstrVal));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, vName.bstrVal));
+	CComVariant vLayoutType;
+	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Type, &vLayoutType));
+	ATLASSERT(vLayoutType.vt == VT_BSTR);
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::Element::Type, vLayoutType.bstrVal));
 	return S_OK;
 }
 
@@ -117,8 +127,12 @@ STDMETHODIMP CLayoutBuilder::BuildTextColumn(HDC hdc, RECT* pSourceRect, RECT* p
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::Text, &vTextKey));
 	ATLASSERT(vTextKey.vt == VT_BSTR);
 
+	CComVariant vFont;
+	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::Font, &vFont));
+	ATLASSERT(vFont.vt == VT_BSTR);
+
 	HFONT font = 0;
-	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Metadata::Tabs::Header, &font));
+	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(vFont.bstrVal, &font));
 	CDCSelectFontScope cdcSelectFontScope(hdc, font);
 
 	CComBSTR bstr = vTextKey.bstrVal;
@@ -136,6 +150,20 @@ STDMETHODIMP CLayoutBuilder::BuildTextColumn(HDC hdc, RECT* pSourceRect, RECT* p
 	RETURN_IF_FAILED(SetColumnProps(pLayoutObject, pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(textRect));
 
+	CComVariant vColor;
+	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::Color, &vColor));
+	ATLASSERT(vColor.vt == VT_BSTR);
+	CComVariant vColorSelected;
+	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::ColorSelected, &vColorSelected));
+	ATLASSERT(vColorSelected.vt == VT_BSTR);
+	CComVariant vText;
+	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::Text, &vText));
+	ATLASSERT(vText.vt == VT_BSTR);
+
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::TextColumn::Color, vColor.bstrVal));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::TextColumn::ColorSelected, vColorSelected.bstrVal));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::TextColumn::Text, vText.bstrVal));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::TextColumn::Font, vFont.bstrVal));
 	*pDestRect = textRect;
 	return S_OK;
 }
