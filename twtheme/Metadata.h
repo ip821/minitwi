@@ -22,6 +22,16 @@ namespace IP
 					}
 				}
 
+				namespace ImageColumn
+				{
+					const static CComBSTR ImageKey(L"image");
+				}
+
+				namespace TextColumn
+				{
+					const static CComBSTR Text(L"text");
+				}
+
 				namespace Element
 				{
 					const static CComBSTR Name(L"name");
