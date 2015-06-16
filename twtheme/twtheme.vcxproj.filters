@@ -174,6 +174,9 @@
     <ClInclude Include="Metadata.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="ElementType.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twtheme.rc">

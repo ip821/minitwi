@@ -1,6 +1,7 @@
 #pragma once
 
 #include "twtheme_i.h"
+#include "ElementType.h"
 
 using namespace ATL;
 
@@ -22,8 +23,13 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 
+
+	STDMETHOD(GetElementType)(IVariantObject* pVariantObject, ElementType* pElementType);
+	STDMETHOD(GetElements)(IVariantObject* pVariantObject, IObjArray** ppObjArray);
+
+	STDMETHOD(BuildHorizontalContainer)(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
 public:
-	STDMETHOD(BuildLayout)(HWND hWnd, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
+	STDMETHOD(BuildLayout)(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
 	STDMETHOD(EraseBackground)(HDC hdc, IColumnsInfo* pColumnInfo);
 	STDMETHOD(PaintLayout)(HDC hdc, IColumnsInfo* pColumnInfo);
 	

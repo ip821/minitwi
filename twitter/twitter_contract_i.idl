@@ -269,7 +269,7 @@ interface IUserAccountControl : IControl2
 ]
 interface ILayoutManager : IUnknown
 {
-	HRESULT BuildLayout(HWND hWnd, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
+	HRESULT BuildLayout(HDC hdc, RECT* pRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
 	HRESULT EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo);
 	HRESULT PaintLayout(HDC hdc, IColumnsInfo* pColumnInfo);
 };

@@ -316,6 +316,7 @@
     <ClInclude Include="..\model-libs\json\src\JSONValue.h" />
     <ClInclude Include="..\model-libs\objmdl\JSONConverter.h" />
     <ClInclude Include="dllmain.h" />
+    <ClInclude Include="ElementType.h" />
     <ClInclude Include="GdilPlusUtils.h" />
     <ClInclude Include="LayoutManager.h" />
     <ClInclude Include="Metadata.h" />
