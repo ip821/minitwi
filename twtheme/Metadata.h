@@ -11,7 +11,6 @@ namespace IP
 				namespace TabContainer
 				{
 					const static CComBSTR LayoutName(L"MainTabContainerHeaderLayout");
-					const static CComBSTR RootContainerName(L"Header");
 
 					namespace Images
 					{

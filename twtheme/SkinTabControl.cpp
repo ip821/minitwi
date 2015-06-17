@@ -83,7 +83,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	CRect resultRect;
 	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, &resultRect, m_pLayoutObject, nullptr, m_pImageManagerService, pColumnsInfo));
 	UINT uiInex = 0;
-	RETURN_IF_FAILED(pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::RootContainerName, &uiInex));
+	RETURN_IF_FAILED(pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::LayoutName, &uiInex));
 	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 	RETURN_IF_FAILED(pColumnsInfo->GetItem(uiInex, &pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));

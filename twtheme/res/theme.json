@@ -60,9 +60,9 @@
     },
     {
         "styles": [
-            {"name": ""},
-            { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "5", "padding_top": "4", "markAsSelected": "true" },
-            { "name": "TabContainerHeaderChildContainer", "padding_left": "10", "padding_right": "10", "padding_top": "5", "padding_bottom": "5", "clickable": "true" }
+            { "name": "" },
+            { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "5", "padding_top": "4" },
+            { "name": "TabContainerHeaderChildContainer", "padding_left": "10", "padding_right": "10", "padding_top": "5", "padding_bottom": "5" }
         ]
     },
     {
@@ -76,46 +76,39 @@
                 "border_bottom_color": "TwitterDelimiter",
                 "elements": [
                     {
-                        "name": "Header",
+                        "name": "HomeContainer",
                         "type": "horizontal_container",
-                        "fit_horizontal": "parent",
+                        "style": "TabContainerHeaderChildContainer",
                         "elements": [
-                            {
-                                "name": "HomeContainer",
-                                "type": "horizontal_container",
-                                "style": "TabContainerHeaderChildContainer",
-                                "elements": [
-                                    { "name": "HomeImage", "type": "image_column", "image": "home" },
-                                    { "name": "HomeCaption", "type": "text_column", "text": "Home", "style": "TabContainerHeaderTextColumn" }
-                                ]
-                            },
-                            {
-                                "name": "ListsContainer",
-                                "type": "horizontal_container",
-                                "style": "TabContainerHeaderChildContainer",
-                                "elements": [
-                                    { "name": "ListsImage", "type": "image_column", "image": "lists" },
-                                    { "name": "ListsCaption", "type": "text_column", "text": "Lists", "style": "TabContainerHeaderTextColumn" }
-                                ]
-                            },
-                            {
-                                "name": "SearchContainer",
-                                "type": "horizontal_container",
-                                "style": "TabContainerHeaderChildContainer",
-                                "elements": [
-                                    { "name": "SearchImage", "type": "image_column", "image": "search" },
-                                    { "name": "SearchCaption", "type": "text_column", "text": "Search", "style": "TabContainerHeaderTextColumn" }
-                                ]
-                            },
-                            {
-                                "name": "SettingsContainer",
-                                "type": "horizontal_container",
-                                "style": "TabContainerHeaderChildContainer",
-                                "elements": [
-                                    { "name": "SettingsImage", "type": "image_column", "image": "settings" },
-                                    { "name": "SettingsCaption", "type": "text_column", "text": "Settings", "style": "TabContainerHeaderTextColumn" }
-                                ]
-                            }
+                            { "name": "HomeImage", "type": "image_column", "image": "home" },
+                            { "name": "HomeCaption", "type": "text_column", "text": "Home", "style": "TabContainerHeaderTextColumn" }
+                        ]
+                    },
+                    {
+                        "name": "ListsContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            { "name": "ListsImage", "type": "image_column", "image": "lists" },
+                            { "name": "ListsCaption", "type": "text_column", "text": "Lists", "style": "TabContainerHeaderTextColumn" }
+                        ]
+                    },
+                    {
+                        "name": "SearchContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            { "name": "SearchImage", "type": "image_column", "image": "search" },
+                            { "name": "SearchCaption", "type": "text_column", "text": "Search", "style": "TabContainerHeaderTextColumn" }
+                        ]
+                    },
+                    {
+                        "name": "SettingsContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            { "name": "SettingsImage", "type": "image_column", "image": "settings" },
+                            { "name": "SettingsCaption", "type": "text_column", "text": "Settings", "style": "TabContainerHeaderTextColumn" }
                         ]
                     }
                 ]

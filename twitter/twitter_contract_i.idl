@@ -125,14 +125,17 @@ interface IThemeFontMap : IUnknown
 	HRESULT SetFont(BSTR bstrFontName, BSTR bstrFontFamily, DWORD dwSize, BOOL bBold, BOOL bUnderline);
 };
 
+interface IColumnsInfo;
+
 [
 	object,
 	uuid(B204A899-A54F-4F36-A8E4-56A3DDF71E66),
 	pointer_default(unique),
 	local
 ]
-interface IColumnsInfoItem : IUnknown
+interface IColumnsInfoItem : IVariantObject
 {
+	HRESULT GetChildItems(IColumnsInfo** ppColumnsInfo);
 	HRESULT GetRect(RECT* rect);
 	HRESULT SetRect(RECT rect);
 	HRESULT SetRectStringProp(BSTR bstrKey, BSTR bstrValue);
@@ -140,6 +143,7 @@ interface IColumnsInfoItem : IUnknown
 	HRESULT SetRectBoolProp(BSTR bstrKey, BOOL bValue);
 	HRESULT GetRectBoolProp(BSTR bstrKey, BOOL* pbValue);
 	HRESULT Clear();
+	HRESULT SetVariantValueRecursive(BSTR key, VARIANT* v);
 };
 
 [

@@ -50,7 +50,6 @@ STDMETHODIMP CLayoutPainter::EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo)
 STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
 {
 	CHECK_E_POINTER(pColumnInfo);
-	CHECK_E_POINTER(pColumnInfo);
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pColumnInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
@@ -64,7 +63,13 @@ STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, IImageManagerService* pImageMa
 		switch (elementType)
 		{
 			case ElementType::HorizontalContainer:
+			{
 				RETURN_IF_FAILED(PaintContainer(hdc, pColumnInfoItem));
+				CComPtr<IColumnsInfo> pChildItems;
+				RETURN_IF_FAILED(pColumnInfoItem->GetChildItems(&pChildItems));
+				RETURN_IF_FAILED(PaintLayout(hdc, pImageManagerService, pChildItems));
+				break;
+			}
 			case ElementType::TextColumn:
 				RETURN_IF_FAILED(PaintTextColumn(hdc, pColumnInfoItem));
 				break;

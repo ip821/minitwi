@@ -129,7 +129,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 	UINT uiCount = 0;
 	m_pControls->GetCount(&uiCount);
 	ATLASSERT(dwIndex >= 0 && dwIndex < uiCount);
-	
+
 	if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 	{
 		CComPtr<IControl> pControl;
@@ -187,7 +187,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 			BitBlt(cdcBitmap, 0, 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap1 : cdcBitmap2, 0, 0, SRCCOPY);
 			BitBlt(cdcBitmap, m_rectChildControlArea.Width(), 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap2 : cdcBitmap1, 0, 0, SRCCOPY);
 		}
-		
+
 		cdc.SelectBitmap(currentBitmap);
 		HWND hWnd = 0;
 		m_pScrollControl->GetHWND(&hWnd);
@@ -442,31 +442,22 @@ STDMETHODIMP CCustomTabControl::Save(ISettings* pSettings)
 
 HRESULT CCustomTabControl::UpdateColumnInfo()
 {
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
-
-	int index = 0;
-	for (size_t i = 0; i < uiCount; i++)
+	UINT uiRootContainersCount = 0;
+	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiRootContainersCount));
+	if (uiRootContainersCount)
 	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-		CComBSTR bstrClickable;
-		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(L"clickable", &bstrClickable));
-		if (bstrClickable != L"")
+		CComPtr<IColumnsInfoItem> pRootContainerItem;
+		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(0, &pRootContainerItem));
+		CComPtr<IColumnsInfo> pChildContainers;
+		RETURN_IF_FAILED(pRootContainerItem->GetChildItems(&pChildContainers));
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pChildContainers->GetCount(&uiCount));
+
+		for (size_t i = 0; i < uiCount; i++)
 		{
-			for (size_t j = i; j < uiCount; j++)
-			{
-				CComPtr<IColumnsInfoItem> pColumnsInfoItemToUpdate;
-				ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(j, &pColumnsInfoItemToUpdate));
-				CComBSTR bstrMarkAsUpdate;
-				ASSERT_IF_FAILED(pColumnsInfoItemToUpdate->GetRectStringProp(L"markAsSelected", &bstrMarkAsUpdate));
-				if (bstrMarkAsUpdate != L"")
-				{
-					ASSERT_IF_FAILED(pColumnsInfoItemToUpdate->SetRectBoolProp(L"selected", m_selectedPageIndex == static_cast<int>(index)));
-					break;
-				}
-			}
-			index++;
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pChildContainers->GetItem(i, &pColumnsInfoItem));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValueRecursive(L"selected", &CComVariant((BOOL)(m_selectedPageIndex == static_cast<int>(i)))));
 		}
 	}
 	return S_OK;
@@ -575,28 +566,25 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	}
 	else
 	{
+		CComPtr<IColumnsInfoItem> pRootContainerItem;
+		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(0, &pRootContainerItem));
+		CComPtr<IColumnsInfo> pChildContainers;
+		ASSERT_IF_FAILED(pRootContainerItem->GetChildItems(&pChildContainers));
 		UINT uiCount = 0;
-		m_pColumnsInfo->GetCount(&uiCount);
-		int index = 0;
+		ASSERT_IF_FAILED(pChildContainers->GetCount(&uiCount));
 		for (size_t i = 0; i < uiCount; i++)
 		{
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-			ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-			CComBSTR bstrClickable;
-			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(L"clickable", &bstrClickable));
-			if (bstrClickable != L"")
+			ASSERT_IF_FAILED(pChildContainers->GetItem(i, &pColumnsInfoItem));
+			CRect rect;
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
+			if (rect.PtInRect(CPoint(x, y)))
 			{
-				CRect rect;
-				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-				if (rect.PtInRect(CPoint(x, y)))
-				{
-					CComPtr<IControl> pControl;
-					m_pControls->GetAt(index, __uuidof(IControl), (LPVOID*)&pControl);
-					Fire_OnTabHeaderClick(pControl);
-					SelectPage(index);
-					break;
-				}
-				index++;
+				CComPtr<IControl> pControl;
+				m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pControl);
+				Fire_OnTabHeaderClick(pControl);
+				SelectPage(i);
+				break;
 			}
 		}
 	}

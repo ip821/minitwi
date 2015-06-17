@@ -134,6 +134,9 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 	RETURN_IF_FAILED(pColumnInfo->AddItem(&pColumnsInfoItem));
 
+	CComPtr<IColumnsInfo> pChildItems;
+	RETURN_IF_FAILED(pColumnsInfoItem->GetChildItems(&pChildItems));
+
 	CComPtr<IObjArray> pElements;
 	RETURN_IF_FAILED(GetElements(pLayoutObject, &pElements));
 	UINT uiCount = 0;
@@ -152,17 +155,19 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 		switch (elementType)
 		{
 			case ElementType::HorizontalContainer:
-				RETURN_IF_FAILED(BuildHorizontalContainer(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+			{
+				RETURN_IF_FAILED(BuildHorizontalContainer(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pChildItems));
 				break;
+			}
 			case ElementType::TextColumn:
 				RETURN_IF_FAILED(ApplyStartPaddings(pElement, localSourceRect));
-				RETURN_IF_FAILED(BuildTextColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pColumnInfo));
+				RETURN_IF_FAILED(BuildTextColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pChildItems));
 				RETURN_IF_FAILED(ApplyEndPaddings(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
 				break;
 			case ElementType::ImageColumn:
 				RETURN_IF_FAILED(ApplyStartPaddings(pElement, localSourceRect));
-				RETURN_IF_FAILED(BuildImageColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+				RETURN_IF_FAILED(BuildImageColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pChildItems));
 				RETURN_IF_FAILED(ApplyEndPaddings(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
 				break;
