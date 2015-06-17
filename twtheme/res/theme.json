@@ -76,8 +76,8 @@
                                 "horizontal_fit": "content",
                                 "vertical_fit": "parent",
                                 "elements": [
-                                    { "name": "HomeImage", "type": "image_column", "image": "home" },
-                                    { "name": "HomeCaption", "type": "text_column", "text": "Home", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected" }
+                                    { "name": "HomeImage", "type": "image_column", "image": "home", "padding_left": "20" },
+                                    { "name": "HomeCaption", "type": "text_column", "text": "Home", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "20" }
                                 ]
                             },
                             {
@@ -86,8 +86,8 @@
                                 "horizontal_fit": "content",
                                 "vertical_fit": "parent",
                                 "elements": [
-                                    { "name": "ListsImage", "type": "image_column", "image": "lists" },
-                                    { "name": "ListsCaption", "type": "text_column", "text": "Lists", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected" }
+                                    { "name": "ListsImage", "type": "image_column", "image": "lists", "padding_left": "20" },
+                                    { "name": "ListsCaption", "type": "text_column", "text": "Lists", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "20" }
                                 ]
                             },
                             {

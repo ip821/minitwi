@@ -57,11 +57,53 @@ STDMETHODIMP CLayoutBuilder::GetElementType(IVariantObject* pVariantObject, Elem
 	return S_OK;
 }
 
+STDMETHODIMP CLayoutBuilder::ApplyPaddings(IVariantObject* pElement, CRect& rect)
+{
+	CHECK_E_POINTER(pElement);
+
+	CComVariant vPaddingLeft;
+	CComVariant vPaddingRight;
+	CComVariant vPaddingTop;
+	CComVariant vPaddingBottom;
+
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingLeft, &vPaddingLeft);
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingRight, &vPaddingRight);
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingTop, &vPaddingTop);
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingBottom, &vPaddingBottom);
+
+	if (vPaddingLeft.vt == VT_BSTR)
+	{
+		auto val = _wtoi(vPaddingLeft.bstrVal);
+		rect.left += val;
+	}
+
+	if (vPaddingRight.vt == VT_BSTR)
+	{
+		auto val = _wtoi(vPaddingRight.bstrVal);
+		rect.right -= val;
+	}
+
+	if (vPaddingTop.vt == VT_BSTR)
+	{
+		auto val = _wtoi(vPaddingTop.bstrVal);
+		rect.top += val;
+	}
+
+	if (vPaddingBottom.vt == VT_BSTR)
+	{
+		auto val = _wtoi(vPaddingBottom.bstrVal);
+		rect.bottom -= val;
+	}
+
+	return S_OK;
+}
+
 STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
 {
 	CRect sourceRect = *pSourceRect;
 	CRect destRect;
 	destRect.left = sourceRect.left;
+	destRect.right = sourceRect.left;
 	destRect.top = sourceRect.top;
 
 	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
@@ -83,13 +125,13 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 		switch (elementType)
 		{
 			case ElementType::HorizontalContainer:
-				RETURN_IF_FAILED(BuildHorizontalContainer(hdc, pSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+				RETURN_IF_FAILED(BuildHorizontalContainer(hdc, &sourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
 				break;
 			case ElementType::TextColumn:
-				RETURN_IF_FAILED(BuildTextColumn(hdc, pSourceRect, &elementRect, pElement, pValueObject, pColumnInfo));
+				RETURN_IF_FAILED(BuildTextColumn(hdc, &sourceRect, &elementRect, pElement, pValueObject, pColumnInfo));
 				break;
 			case ElementType::ImageColumn:
-				RETURN_IF_FAILED(BuildImageColumn(hdc, pSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+				RETURN_IF_FAILED(BuildImageColumn(hdc, &sourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
 				break;
 		}
 
@@ -139,9 +181,11 @@ STDMETHODIMP CLayoutBuilder::BuildTextColumn(HDC hdc, RECT* pSourceRect, RECT* p
 	CSize sz;
 	GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
 
+	CRect sourceRect = *pSourceRect;
+	RETURN_IF_FAILED(ApplyPaddings(pLayoutObject, sourceRect));
 	CRect textRect;
-	textRect.left = pSourceRect->left;
-	textRect.top = pSourceRect->top;
+	textRect.left = sourceRect.left;
+	textRect.top = sourceRect.top;
 	textRect.right = textRect.left + sz.cx;
 	textRect.bottom = textRect.top + sz.cy;
 
@@ -175,9 +219,13 @@ STDMETHODIMP CLayoutBuilder::BuildImageColumn(HDC hdc, RECT* pSourceRect, RECT* 
 	ATLASSERT(vImageKey.vt == VT_BSTR);
 	TBITMAP bitmapInfo = { 0 };
 	RETURN_IF_FAILED(pImageManagerService->GetImageInfo(vImageKey.bstrVal, &bitmapInfo));
+
+	CRect sourceRect = *pSourceRect;
+	RETURN_IF_FAILED(ApplyPaddings(pLayoutObject, sourceRect));
+
 	CRect imageRect;
-	imageRect.left = pSourceRect->left;
-	imageRect.top = pSourceRect->top;
+	imageRect.left = sourceRect.left;
+	imageRect.top = sourceRect.top;
 	imageRect.right = imageRect.left + bitmapInfo.Width;
 	imageRect.bottom = imageRect.top + bitmapInfo.Height;
 
@@ -185,7 +233,7 @@ STDMETHODIMP CLayoutBuilder::BuildImageColumn(HDC hdc, RECT* pSourceRect, RECT* 
 	RETURN_IF_FAILED(pColumnInfo->AddItem(&pColumnsInfoItem));
 	RETURN_IF_FAILED(SetColumnProps(pLayoutObject, pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(imageRect));
-
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::ImageColumn::ImageKey, vImageKey.bstrVal));
 	*pDestRect = imageRect;
 	return S_OK;
 }

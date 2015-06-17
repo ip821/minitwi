@@ -25,9 +25,6 @@ public:
 		COM_INTERFACE_ENTRY(IThemeSupport)
 	END_COM_MAP()
 
-	DECLARE_PROTECT_FINAL_CONSTRUCT()
-	void FinalRelease();
-	HRESULT FinalConstruct();
 private:
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
@@ -44,7 +41,6 @@ private:
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
 	STDMETHOD(GetResourceStream)(int nId, LPCTSTR lpType, IStream** ppStream);
-	STDMETHOD(AppendToImageManagerService)(int nId, LPCTSTR lpType, BSTR bstrKey, IImageManagerService* pImageManagerService);
 
 public:
 

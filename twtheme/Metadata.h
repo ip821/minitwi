@@ -40,6 +40,10 @@ namespace IP
 					const static CComBSTR Name(L"name");
 					const static CComBSTR Elements(L"elements");
 					const static CComBSTR Type(L"type");
+					const static CComBSTR PaddingLeft(L"padding_left");
+					const static CComBSTR PaddingRight(L"padding_right");
+					const static CComBSTR PaddingTop(L"padding_top");
+					const static CComBSTR PaddingBottom(L"padding_bottom");
 				}
 
 				namespace LayoutTypes

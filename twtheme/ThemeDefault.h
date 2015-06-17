@@ -43,6 +43,7 @@ private:
 public:
 
 	STDMETHOD(LoadThemeFromStream)(IStream* pStream);
+	STDMETHOD(GetImageManagerService)(IImageManagerService** ppImageManagerService);
 	STDMETHOD(GetTimelineSkin)(ISkinTimeline** ppSkinTimeline);
 	STDMETHOD(GetTabControlSkin)(ISkinTabControl** pSkinTabControl);
 	STDMETHOD(GetCommonControlSkin)(ISkinCommonControl** pSkinCommonControl);

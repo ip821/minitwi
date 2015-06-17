@@ -56,31 +56,6 @@ STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, sha
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::AppendToImageManagerService(int nId, LPCTSTR lpType, BSTR bstrKey, IImageManagerService* pImageManagerService)
-{
-	CComPtr<IStream> pStream;
-	RETURN_IF_FAILED(GetResourceStream(nId, lpType, &pStream));
-	RETURN_IF_FAILED(pImageManagerService->AddImageFromStream(bstrKey, pStream));
-	return S_OK;
-}
-
-void CSkinTabControl::FinalRelease()
-{
-
-}
-
-HRESULT CSkinTabControl::FinalConstruct()
-{
-	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
-	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ImageManagerService, &m_pImageManagerService));
-	RETURN_IF_FAILED(AppendToImageManagerService(IDR_PICTUREHOME, L"PNG", Twitter::Themes::Metadata::TabContainer::Images::Home, m_pImageManagerService));
-	RETURN_IF_FAILED(AppendToImageManagerService(IDR_PICTURELISTS, L"PNG", Twitter::Themes::Metadata::TabContainer::Images::Lists, m_pImageManagerService));
-	RETURN_IF_FAILED(AppendToImageManagerService(IDR_PICTURESEARCH, L"PNG", Twitter::Themes::Metadata::TabContainer::Images::Search, m_pImageManagerService));
-	RETURN_IF_FAILED(AppendToImageManagerService(IDR_PICTURESETTINGS, L"PNG", Twitter::Themes::Metadata::TabContainer::Images::Settings, m_pImageManagerService));
-	return S_OK;
-}
-
 CSkinTabControl::CSkinTabControl()
 {
 }
@@ -92,6 +67,11 @@ STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 	RETURN_IF_FAILED(m_pTheme->GetColorMap(&m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
 	RETURN_IF_FAILED(m_pTheme->GetLayout(Twitter::Themes::Metadata::TabContainer::LayoutName, &m_pLayoutObject));
+
+	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
+	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
+	RETURN_IF_FAILED(m_pTheme->GetImageManagerService(&m_pImageManagerService));
+
 	return S_OK;
 }
 
@@ -123,7 +103,6 @@ STDMETHODIMP CSkinTabControl::EraseBackground(IColumnsInfo* pColumnsInfo, HDC hd
 STDMETHODIMP CSkinTabControl::DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect)
 {
 	CDCHandle cdc(hdc);
-	cdc.SetBkMode(TRANSPARENT);
 	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, m_pImageManagerService, pColumnsInfo));
 	return S_OK;
 }

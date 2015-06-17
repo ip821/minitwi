@@ -318,6 +318,7 @@ interface ITheme : IUnknown
 	HRESULT LoadThemeFromStream(IStream* pStream);
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT GetFontMap(IThemeFontMap** ppThemeFontMap);
+	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
 	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
 	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);

@@ -165,3 +165,10 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 	}
 	return S_OK;
 }
+
+STDMETHODIMP CThemeDefault::GetImageManagerService(IImageManagerService** ppImageManagerService)
+{
+	CHECK_E_POINTER(ppImageManagerService);
+	RETURN_IF_FAILED(m_pImageManagerService->QueryInterface(ppImageManagerService));
+	return S_OK;
+}
