@@ -44,6 +44,8 @@ namespace IP
 					const static CComBSTR PaddingRight(L"padding_right");
 					const static CComBSTR PaddingTop(L"padding_top");
 					const static CComBSTR PaddingBottom(L"padding_bottom");
+					const static CComBSTR FitHorizontal(L"fit_horizontal");
+					const static CComBSTR FitVertical(L"fit_vertical");
 				}
 
 				namespace LayoutTypes
@@ -51,6 +53,12 @@ namespace IP
 					const static CComBSTR HorizontalContainer(L"horizontal_container");
 					const static CComBSTR ImageColumn(L"image_column");
 					const static CComBSTR TextColumn(L"text_column");
+				}
+
+				namespace FitTypes
+				{
+					const static CComBSTR Content(L"content");
+					const static CComBSTR Parent(L"parent");
 				}
 			}
 		}

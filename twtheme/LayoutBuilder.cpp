@@ -57,30 +57,60 @@ STDMETHODIMP CLayoutBuilder::GetElementType(IVariantObject* pVariantObject, Elem
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutBuilder::ApplyPaddings(IVariantObject* pElement, CRect& rect)
+STDMETHODIMP CLayoutBuilder::FitToParent(IVariantObject* pElement, CRect& rectParent, CRect& rect)
+{
+	CComVariant vFitHorizantal;
+	CComVariant vFitVertical;
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::FitHorizontal, &vFitHorizantal);
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::FitVertical, &vFitVertical);
+
+	if (vFitHorizantal.vt == VT_BSTR && CComBSTR(vFitHorizantal.bstrVal) == Twitter::Themes::Metadata::FitTypes::Parent)
+	{
+		rect.right = rectParent.right;
+	}
+
+	if (vFitVertical.vt == VT_BSTR && CComBSTR(vFitVertical.bstrVal) == Twitter::Themes::Metadata::FitTypes::Parent)
+	{
+		rect.bottom = rectParent.bottom;
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CLayoutBuilder::ApplyEndPaddings(IVariantObject* pElement, CRect& rect)
+{
+	CComVariant vPaddingRight;
+	CComVariant vPaddingBottom;
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingRight, &vPaddingRight);
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingBottom, &vPaddingBottom);
+
+	if (vPaddingRight.vt == VT_BSTR)
+	{
+		auto val = _wtoi(vPaddingRight.bstrVal);
+		rect.right += val;
+	}
+
+	if (vPaddingBottom.vt == VT_BSTR)
+	{
+		auto val = _wtoi(vPaddingBottom.bstrVal);
+		rect.bottom += val;
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CLayoutBuilder::ApplyStartPaddings(IVariantObject* pElement, CRect& rect)
 {
 	CHECK_E_POINTER(pElement);
 
 	CComVariant vPaddingLeft;
-	CComVariant vPaddingRight;
 	CComVariant vPaddingTop;
-	CComVariant vPaddingBottom;
 
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingLeft, &vPaddingLeft);
-	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingRight, &vPaddingRight);
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingTop, &vPaddingTop);
-	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingBottom, &vPaddingBottom);
 
 	if (vPaddingLeft.vt == VT_BSTR)
 	{
 		auto val = _wtoi(vPaddingLeft.bstrVal);
 		rect.left += val;
-	}
-
-	if (vPaddingRight.vt == VT_BSTR)
-	{
-		auto val = _wtoi(vPaddingRight.bstrVal);
-		rect.right -= val;
 	}
 
 	if (vPaddingTop.vt == VT_BSTR)
@@ -89,18 +119,13 @@ STDMETHODIMP CLayoutBuilder::ApplyPaddings(IVariantObject* pElement, CRect& rect
 		rect.top += val;
 	}
 
-	if (vPaddingBottom.vt == VT_BSTR)
-	{
-		auto val = _wtoi(vPaddingBottom.bstrVal);
-		rect.bottom -= val;
-	}
-
 	return S_OK;
 }
 
 STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
 {
 	CRect sourceRect = *pSourceRect;
+	RETURN_IF_FAILED(ApplyStartPaddings(pLayoutObject, sourceRect));
 	CRect destRect;
 	destRect.left = sourceRect.left;
 	destRect.right = sourceRect.left;
@@ -122,24 +147,35 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 		ElementType elementType = ElementType::UnknownValue;
 		RETURN_IF_FAILED(GetElementType(pElement, &elementType));
 
+		CRect localSourceRect = sourceRect;
+
 		switch (elementType)
 		{
 			case ElementType::HorizontalContainer:
-				RETURN_IF_FAILED(BuildHorizontalContainer(hdc, &sourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+				RETURN_IF_FAILED(BuildHorizontalContainer(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
 				break;
 			case ElementType::TextColumn:
-				RETURN_IF_FAILED(BuildTextColumn(hdc, &sourceRect, &elementRect, pElement, pValueObject, pColumnInfo));
+				RETURN_IF_FAILED(ApplyStartPaddings(pElement, localSourceRect));
+				RETURN_IF_FAILED(BuildTextColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pColumnInfo));
+				RETURN_IF_FAILED(ApplyEndPaddings(pElement, elementRect));
+				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
 				break;
 			case ElementType::ImageColumn:
-				RETURN_IF_FAILED(BuildImageColumn(hdc, &sourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+				RETURN_IF_FAILED(ApplyStartPaddings(pElement, localSourceRect));
+				RETURN_IF_FAILED(BuildImageColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pColumnInfo));
+				RETURN_IF_FAILED(ApplyEndPaddings(pElement, elementRect));
+				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
 				break;
 		}
 
-		sourceRect.left += elementRect.Width();
-
-		destRect.right += elementRect.Width();
-		destRect.bottom = max(elementRect.Height(), destRect.bottom);
+		sourceRect.left = elementRect.right;
+		destRect.right = elementRect.right;
+		destRect.bottom = max(elementRect.bottom, destRect.bottom);
 	}
+
+	CRect parentRect = *pSourceRect;
+	RETURN_IF_FAILED(ApplyEndPaddings(pLayoutObject, destRect));
+	RETURN_IF_FAILED(FitToParent(pLayoutObject, parentRect, destRect));
 
 	RETURN_IF_FAILED(SetColumnProps(pLayoutObject, pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(destRect));
@@ -182,7 +218,6 @@ STDMETHODIMP CLayoutBuilder::BuildTextColumn(HDC hdc, RECT* pSourceRect, RECT* p
 	GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
 
 	CRect sourceRect = *pSourceRect;
-	RETURN_IF_FAILED(ApplyPaddings(pLayoutObject, sourceRect));
 	CRect textRect;
 	textRect.left = sourceRect.left;
 	textRect.top = sourceRect.top;
@@ -221,8 +256,6 @@ STDMETHODIMP CLayoutBuilder::BuildImageColumn(HDC hdc, RECT* pSourceRect, RECT* 
 	RETURN_IF_FAILED(pImageManagerService->GetImageInfo(vImageKey.bstrVal, &bitmapInfo));
 
 	CRect sourceRect = *pSourceRect;
-	RETURN_IF_FAILED(ApplyPaddings(pLayoutObject, sourceRect));
-
 	CRect imageRect;
 	imageRect.left = sourceRect.left;
 	imageRect.top = sourceRect.top;

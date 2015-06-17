@@ -131,7 +131,7 @@ STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, IImageManagerService* pIm
 	CRect rect;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
 	static Gdiplus::Color color(Gdiplus::Color::Transparent);
-	auto res = TransparentBlt(hdc, rect.left, rect.top, rect.Width(), rect.Height(), cdcBitmap, 0, 0, rect.Width(), rect.Height(), color.ToCOLORREF());
+	auto res = TransparentBlt(hdc, rect.left, rect.top, bitmapInfo.Width, bitmapInfo.Height, cdcBitmap, 0, 0, bitmapInfo.Width, bitmapInfo.Height, color.ToCOLORREF());
 	if (!res)
 		return HRESULT_FROM_WIN32(GetLastError());
 	return S_OK;
