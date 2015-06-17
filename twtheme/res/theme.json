@@ -59,6 +59,13 @@
         ]
     },
     {
+        "styles": [
+            {"name": ""},
+            { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "5", "padding_top": "4" },
+            { "name": "TabContainerHeaderChildContainer", "padding_left": "10", "padding_right": "10", "padding_top": "5", "padding_bottom": "5" }
+        ]
+    },
+    {
         "layouts": [
             {
                 "name": "MainTabContainerHeaderLayout",
@@ -73,45 +80,37 @@
                             {
                                 "name": "HomeContainer",
                                 "type": "horizontal_container",
-                                "padding_left": "10",
-                                "padding_top": "5",
-                                "padding_bottom": "5",
+                                "style": "TabContainerHeaderChildContainer",
                                 "elements": [
-                                    { "name": "HomeImage", "type": "image_column", "image": "home", "padding_right": "3" },
-                                    { "name": "HomeCaption", "type": "text_column", "text": "Home", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected",  "padding_left": "5", "padding_top": "4" }
+                                    { "name": "HomeImage", "type": "image_column", "image": "home" },
+                                    { "name": "HomeCaption", "type": "text_column", "text": "Home", "style": "TabContainerHeaderTextColumn" }
                                 ]
                             },
                             {
                                 "name": "ListsContainer",
                                 "type": "horizontal_container",
-                                "padding_left": "10",
-                                "padding_top": "5",
-                                "padding_bottom": "5",
+                                "style": "TabContainerHeaderChildContainer",
                                 "elements": [
                                     { "name": "ListsImage", "type": "image_column", "image": "lists" },
-                                    { "name": "ListsCaption", "type": "text_column", "text": "Lists", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "5", "padding_top": "4" }
+                                    { "name": "ListsCaption", "type": "text_column", "text": "Lists", "style": "TabContainerHeaderTextColumn" }
                                 ]
                             },
                             {
                                 "name": "SearchContainer",
                                 "type": "horizontal_container",
-                                "padding_left": "10",
-                                "padding_top": "5",
-                                "padding_bottom": "5",
+                                "style": "TabContainerHeaderChildContainer",
                                 "elements": [
                                     { "name": "SearchImage", "type": "image_column", "image": "search" },
-                                    { "name": "SearchCaption", "type": "text_column", "text": "Search", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "5", "padding_top": "4" }
+                                    { "name": "SearchCaption", "type": "text_column", "text": "Search", "style": "TabContainerHeaderTextColumn" }
                                 ]
                             },
                             {
                                 "name": "SettingsContainer",
                                 "type": "horizontal_container",
-                                "padding_left": "10",
-                                "padding_top": "5",
-                                "padding_bottom": "5",
+                                "style": "TabContainerHeaderChildContainer",
                                 "elements": [
                                     { "name": "SettingsImage", "type": "image_column", "image": "settings" },
-                                    { "name": "SettingsCaption", "type": "text_column", "text": "Settings", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "5", "padding_top": "4" }
+                                    { "name": "SettingsCaption", "type": "text_column", "text": "Settings", "style": "TabContainerHeaderTextColumn" }
                                 ]
                             }
                         ]

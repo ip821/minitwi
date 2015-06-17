@@ -144,13 +144,35 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 	}
 
 	{
+		//Load styles table
+		auto stylesTable = rootArray[3]->AsObject();
+		auto styleArray = stylesTable[L"styles"]->AsArray();
+		CComPtr<IObjCollection> pStylesObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pStylesObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(styleArray, pStylesObjCollection));
+
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pStylesObjCollection->GetCount(&uiCount));
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IVariantObject> pStyleObject;
+			RETURN_IF_FAILED(pStylesObjCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pStyleObject));
+			CComVariant vName;
+			RETURN_IF_FAILED(pStyleObject->GetVariantValue(L"name", &vName));
+			ATLASSERT(vName.vt == VT_BSTR);
+			m_stylesMap[vName.bstrVal] = pStyleObject;
+		}
+	}
+
+	{
 		//Load layouts
-		auto layoutsTable = rootArray[3]->AsObject();
+		auto layoutsTable = rootArray[4]->AsObject();
 		auto layoutArray = layoutsTable[L"layouts"]->AsArray();
 		CComPtr<IObjCollection> pLayoutsObjCollection;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pLayoutsObjCollection));
 		RETURN_IF_FAILED(CJsonConverter::ConvertArray(layoutArray, pLayoutsObjCollection));
-	
+		RETURN_IF_FAILED(ApplyStyles(pLayoutsObjCollection));
+
 		UINT uiCount = 0;
 		RETURN_IF_FAILED(pLayoutsObjCollection->GetCount(&uiCount));
 		for (size_t i = 0; i < uiCount; i++)
@@ -161,6 +183,44 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 			RETURN_IF_FAILED(pLayoutObject->GetVariantValue(L"name", &vName));
 			ATLASSERT(vName.vt == VT_BSTR);
 			m_layoutsMap[vName.bstrVal] = pLayoutObject;
+		}
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::ApplyStyles(IObjArray* pElements)
+{
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pElements->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pElement;
+		RETURN_IF_FAILED(pElements->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pElement));
+		CComVariant vStyle;
+		RETURN_IF_FAILED(pElement->GetVariantValue(L"style", &vStyle));
+		auto it = m_stylesMap.find(vStyle.bstrVal);
+		if (it != m_stylesMap.end())
+		{
+			UINT uiPropsCount = 0;
+			RETURN_IF_FAILED(it->second->GetCount(&uiPropsCount));
+			for (size_t j = 0; j < uiPropsCount; j++)
+			{
+				CComBSTR bstrKey;
+				RETURN_IF_FAILED(it->second->GetKeyByIndex(j, &bstrKey));
+				if (bstrKey == L"name")
+					continue;
+				CComVariant vProp;
+				RETURN_IF_FAILED(it->second->GetVariantValue(bstrKey, &vProp));
+				RETURN_IF_FAILED(pElement->SetVariantValue(bstrKey, &vProp));
+			}
+		}
+
+		CComVariant vChildElements;
+		RETURN_IF_FAILED(pElement->GetVariantValue(L"elements", &vChildElements));
+		if (vChildElements.vt == VT_UNKNOWN)
+		{
+			CComQIPtr<IObjArray> pChildElements = vChildElements.punkVal;
+			RETURN_IF_FAILED(ApplyStyles(pChildElements));
 		}
 	}
 	return S_OK;

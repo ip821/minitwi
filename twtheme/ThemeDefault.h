@@ -39,7 +39,10 @@ private:
 	CComPtr<IVariantObject> pColorTableObject;
 	CComPtr<ILayoutManager> m_pLayoutManager;
 	map<CComBSTR, CComPtr<IVariantObject>> m_layoutsMap;
+	map<CComBSTR, CComPtr<IVariantObject>> m_stylesMap;
 		
+	STDMETHOD(ApplyStyles)(IObjArray* pLayouts);
+
 public:
 
 	STDMETHOD(LoadThemeFromStream)(IStream* pStream);
