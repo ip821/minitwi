@@ -185,17 +185,36 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 
 STDMETHODIMP CLayoutBuilder::SetColumnProps(IVariantObject* pLayoutObject, IColumnsInfoItem* pColumnsInfoItem)
 {
-	ElementType elementType = ElementType::UnknownValue;
-	RETURN_IF_FAILED(GetElementType(pLayoutObject, &elementType));
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pLayoutObject->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComBSTR bstrKey;
+		RETURN_IF_FAILED(pLayoutObject->GetKeyByIndex(i, &bstrKey));
+		CComVariant vValue;
+		RETURN_IF_FAILED(pLayoutObject->GetVariantValue(bstrKey, &vValue));
+		if (vValue.vt == VT_BSTR)
+		{
+			RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(bstrKey, vValue.bstrVal));
+		}
+	}
+
 	CComVariant vName;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Name, &vName));
 	ATLASSERT(vName.vt == VT_BSTR);
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::Element::Name, vName.bstrVal));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, vName.bstrVal));
-	CComVariant vLayoutType;
-	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Type, &vLayoutType));
-	ATLASSERT(vLayoutType.vt == VT_BSTR);
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::Element::Type, vLayoutType.bstrVal));
+
+	//ElementType elementType = ElementType::UnknownValue;
+	//RETURN_IF_FAILED(GetElementType(pLayoutObject, &elementType));
+	//CComVariant vName;
+	//RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Name, &vName));
+	//ATLASSERT(vName.vt == VT_BSTR);
+	//RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::Element::Name, vName.bstrVal));
+	//RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, vName.bstrVal));
+	//CComVariant vLayoutType;
+	//RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Type, &vLayoutType));
+	//ATLASSERT(vLayoutType.vt == VT_BSTR);
+	//RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::Element::Type, vLayoutType.bstrVal));
 	return S_OK;
 }
 

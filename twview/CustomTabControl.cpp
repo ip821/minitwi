@@ -445,11 +445,28 @@ HRESULT CCustomTabControl::UpdateColumnInfo()
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
 
+	int index = 0;
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, m_selectedPageIndex == static_cast<int>(i)));
+		CComBSTR bstrClickable;
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(L"clickable", &bstrClickable));
+		if (bstrClickable != L"")
+		{
+			for (size_t j = i; j < uiCount; j++)
+			{
+				CComPtr<IColumnsInfoItem> pColumnsInfoItemToUpdate;
+				ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(j, &pColumnsInfoItemToUpdate));
+				CComBSTR bstrMarkAsUpdate;
+				ASSERT_IF_FAILED(pColumnsInfoItemToUpdate->GetRectStringProp(L"markAsSelected", &bstrMarkAsUpdate));
+				if (bstrMarkAsUpdate != L"")
+				{
+					ASSERT_IF_FAILED(pColumnsInfoItemToUpdate->SetRectBoolProp(L"selected", m_selectedPageIndex == static_cast<int>(index)));
+				}
+			}
+			index++;
+		}
 	}
 	return S_OK;
 }
@@ -559,19 +576,26 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	{
 		UINT uiCount = 0;
 		m_pColumnsInfo->GetCount(&uiCount);
+		int index = 0;
 		for (size_t i = 0; i < uiCount; i++)
 		{
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 			ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-			CRect rect;
-			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-			if (rect.PtInRect(CPoint(x, y)))
+			CComBSTR bstrClickable;
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(L"clickable", &bstrClickable));
+			if (bstrClickable != L"")
 			{
-				CComPtr<IControl> pControl;
-				m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pControl);
-				Fire_OnTabHeaderClick(pControl);
-				SelectPage(i);
-				break;
+				CRect rect;
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
+				if (rect.PtInRect(CPoint(x, y)))
+				{
+					CComPtr<IControl> pControl;
+					m_pControls->GetAt(index, __uuidof(IControl), (LPVOID*)&pControl);
+					Fire_OnTabHeaderClick(pControl);
+					SelectPage(index);
+					break;
+				}
+				index++;
 			}
 		}
 	}

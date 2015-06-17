@@ -29,7 +29,10 @@ STDMETHODIMP CColumnsInfoItem::SetRectStringProp(BSTR bstrKey, BSTR bstrValue)
 
 STDMETHODIMP CColumnsInfoItem::GetRectStringProp(BSTR bstrKey, BSTR* bstrValue)
 {
-	*bstrValue = CComBSTR(m_rectStringProps[bstrKey]).Detach();
+	if (m_rectStringProps.find(bstrKey) != m_rectStringProps.end())
+	{
+		*bstrValue = CComBSTR(m_rectStringProps[bstrKey]).Detach();
+	}
 	return S_OK;
 }
 
@@ -41,7 +44,10 @@ STDMETHODIMP CColumnsInfoItem::SetRectBoolProp(BSTR bstrKey, BOOL bValue)
 
 STDMETHODIMP CColumnsInfoItem::GetRectBoolProp(BSTR bstrKey, BOOL* pbValue)
 {
-	*pbValue = m_rectBoolProps[bstrKey];
+	if (m_rectBoolProps.find(bstrKey) != m_rectBoolProps.end())
+	{
+		*pbValue = m_rectBoolProps[bstrKey];
+	}
 	return S_OK;
 }
 

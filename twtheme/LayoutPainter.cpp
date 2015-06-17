@@ -63,14 +63,37 @@ STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, IImageManagerService* pImageMa
 		RETURN_IF_FAILED(CLayoutBuilder::MapType(bstrType, &elementType));
 		switch (elementType)
 		{
+			case ElementType::HorizontalContainer:
+				RETURN_IF_FAILED(PaintContainer(hdc, pColumnInfoItem));
 			case ElementType::TextColumn:
 				RETURN_IF_FAILED(PaintTextColumn(hdc, pColumnInfoItem));
 				break;
-
 			case ElementType::ImageColumn:
 				RETURN_IF_FAILED(PaintImageColumn(hdc, pImageManagerService, pColumnInfoItem));
 				break;
 		}
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, IColumnsInfoItem* pColumnInfoItem)
+{
+	CComBSTR vBorderBottom;
+	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::BorderBottom, &vBorderBottom));
+	if (vBorderBottom != L"")
+	{
+		CComBSTR vBorderBottomColor;
+		RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::BorderBottomColor, &vBorderBottomColor));
+		DWORD dwColor = 0;
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(vBorderBottomColor, &dwColor));
+		CBrush brush;
+		brush.CreateSolidBrush(dwColor);
+		CRect rect;
+		RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
+		CComBSTR vBorderBottomWidth;
+		RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::BorderBottomWidth, &vBorderBottomWidth));
+		rect.top = rect.bottom - _wtoi(vBorderBottomWidth);
+		FillRect(hdc, &rect, brush);
 	}
 	return S_OK;
 }
@@ -92,7 +115,7 @@ STDMETHODIMP CLayoutPainter::PaintTextColumn(HDC hdc, IColumnsInfoItem* pColumnI
 	CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
 	BOOL bSelected = FALSE;
-	RETURN_IF_FAILED(pColumnInfoItem->GetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, &bSelected));
+	RETURN_IF_FAILED(pColumnInfoItem->GetRectBoolProp(Twitter::Themes::Metadata::Element::Selected, &bSelected));
 
 	CComBSTR bstrColor;
 	DWORD dwColor = 0;

@@ -16,6 +16,10 @@ using namespace Gdiplus;
 using namespace IP;
 using namespace std;
 
+hash_set<wstring> CThemeDefault::m_inheritedProps =
+{
+};
+
 HRESULT CThemeDefault::FinalConstruct()
 {
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinTabControl, &m_pSkinTabControl));
@@ -171,7 +175,7 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 		CComPtr<IObjCollection> pLayoutsObjCollection;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pLayoutsObjCollection));
 		RETURN_IF_FAILED(CJsonConverter::ConvertArray(layoutArray, pLayoutsObjCollection));
-		RETURN_IF_FAILED(ApplyStyles(pLayoutsObjCollection));
+		RETURN_IF_FAILED(ApplyStyles(nullptr, pLayoutsObjCollection));
 
 		UINT uiCount = 0;
 		RETURN_IF_FAILED(pLayoutsObjCollection->GetCount(&uiCount));
@@ -188,7 +192,35 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 	return S_OK;
 }
 
-STDMETHODIMP CThemeDefault::ApplyStyles(IObjArray* pElements)
+STDMETHODIMP CThemeDefault::CopyProps(IVariantObject* pSourceObject, IVariantObject* pDestObject, bool filterProps)
+{
+	UINT uiPropsCount = 0;
+	RETURN_IF_FAILED(pSourceObject->GetCount(&uiPropsCount));
+	for (size_t j = 0; j < uiPropsCount; j++)
+	{
+		CComBSTR bstrKey;
+		RETURN_IF_FAILED(pSourceObject->GetKeyByIndex(j, &bstrKey));
+
+		if (bstrKey == L"name")
+			continue;
+
+		if (filterProps && m_inheritedProps.find(wstring(bstrKey)) == m_inheritedProps.end())
+			continue;
+
+		CComVariant vValue;
+		RETURN_IF_FAILED(pDestObject->GetVariantValue(bstrKey, &vValue));
+
+		if (vValue.vt != VT_NULL)
+		{
+			CComVariant vProp;
+			RETURN_IF_FAILED(pSourceObject->GetVariantValue(bstrKey, &vProp));
+			RETURN_IF_FAILED(pDestObject->SetVariantValue(bstrKey, &vProp));
+		}
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::ApplyStyles(IVariantObject* pParentObject, IObjArray* pElements)
 {
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pElements->GetCount(&uiCount));
@@ -196,23 +228,13 @@ STDMETHODIMP CThemeDefault::ApplyStyles(IObjArray* pElements)
 	{
 		CComPtr<IVariantObject> pElement;
 		RETURN_IF_FAILED(pElements->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pElement));
+
 		CComVariant vStyle;
 		RETURN_IF_FAILED(pElement->GetVariantValue(L"style", &vStyle));
 		auto it = m_stylesMap.find(vStyle.bstrVal);
 		if (it != m_stylesMap.end())
 		{
-			UINT uiPropsCount = 0;
-			RETURN_IF_FAILED(it->second->GetCount(&uiPropsCount));
-			for (size_t j = 0; j < uiPropsCount; j++)
-			{
-				CComBSTR bstrKey;
-				RETURN_IF_FAILED(it->second->GetKeyByIndex(j, &bstrKey));
-				if (bstrKey == L"name")
-					continue;
-				CComVariant vProp;
-				RETURN_IF_FAILED(it->second->GetVariantValue(bstrKey, &vProp));
-				RETURN_IF_FAILED(pElement->SetVariantValue(bstrKey, &vProp));
-			}
+			RETURN_IF_FAILED(CopyProps(it->second, pElement, false));
 		}
 
 		CComVariant vChildElements;
@@ -220,7 +242,7 @@ STDMETHODIMP CThemeDefault::ApplyStyles(IObjArray* pElements)
 		if (vChildElements.vt == VT_UNKNOWN)
 		{
 			CComQIPtr<IObjArray> pChildElements = vChildElements.punkVal;
-			RETURN_IF_FAILED(ApplyStyles(pChildElements));
+			RETURN_IF_FAILED(ApplyStyles(pElement, pChildElements));
 		}
 	}
 	return S_OK;

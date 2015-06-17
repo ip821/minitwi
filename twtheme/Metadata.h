@@ -40,12 +40,16 @@ namespace IP
 					const static CComBSTR Name(L"name");
 					const static CComBSTR Elements(L"elements");
 					const static CComBSTR Type(L"type");
+					const static CComBSTR Selected(L"selected");
 					const static CComBSTR PaddingLeft(L"padding_left");
 					const static CComBSTR PaddingRight(L"padding_right");
 					const static CComBSTR PaddingTop(L"padding_top");
 					const static CComBSTR PaddingBottom(L"padding_bottom");
 					const static CComBSTR FitHorizontal(L"fit_horizontal");
 					const static CComBSTR FitVertical(L"fit_vertical");
+					const static CComBSTR BorderBottom(L"border_bottom");
+					const static CComBSTR BorderBottomColor(L"border_bottom_color");
+					const static CComBSTR BorderBottomWidth(L"border_bottom_width");
 				}
 
 				namespace LayoutTypes
