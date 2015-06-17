@@ -463,6 +463,7 @@ HRESULT CCustomTabControl::UpdateColumnInfo()
 				if (bstrMarkAsUpdate != L"")
 				{
 					ASSERT_IF_FAILED(pColumnsInfoItemToUpdate->SetRectBoolProp(L"selected", m_selectedPageIndex == static_cast<int>(index)));
+					break;
 				}
 			}
 			index++;
