@@ -22,8 +22,8 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 
 	STDMETHOD(GetElements)(IVariantObject* pVariantObject, IObjArray** ppObjArray);
-	STDMETHOD(ApplyStartPaddings)(IVariantObject* pElement, CRect& rect);
-	STDMETHOD(ApplyEndPaddings)(IVariantObject* pElement, CRect& rect);
+	STDMETHOD(ApplyStartMargins)(IVariantObject* pElement, CRect& rect);
+	STDMETHOD(ApplyEndMargins)(IVariantObject* pElement, CRect& rect);
 	STDMETHOD(FitToParent)(IVariantObject* pElement, CRect& rectParent, CRect& rect);
 	STDMETHOD(BuildHorizontalContainer)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 	STDMETHOD(BuildTextColumn)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);

@@ -89,48 +89,48 @@ STDMETHODIMP CLayoutBuilder::FitToParent(IVariantObject* pElement, CRect& rectPa
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutBuilder::ApplyEndPaddings(IVariantObject* pElement, CRect& rect)
+STDMETHODIMP CLayoutBuilder::ApplyEndMargins(IVariantObject* pElement, CRect& rect)
 {
-	CComVariant vPaddingRight;
-	CComVariant vPaddingBottom;
-	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingRight, &vPaddingRight);
-	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingBottom, &vPaddingBottom);
+	CComVariant vMarginRight;
+	CComVariant vMarginBottom;
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginRight, &vMarginRight);
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginBottom, &vMarginBottom);
 
-	if (vPaddingRight.vt == VT_BSTR)
+	if (vMarginRight.vt == VT_BSTR)
 	{
-		auto val = _wtoi(vPaddingRight.bstrVal);
+		auto val = _wtoi(vMarginRight.bstrVal);
 		rect.right += val;
 	}
 
-	if (vPaddingBottom.vt == VT_BSTR)
+	if (vMarginBottom.vt == VT_BSTR)
 	{
-		auto val = _wtoi(vPaddingBottom.bstrVal);
+		auto val = _wtoi(vMarginBottom.bstrVal);
 		rect.bottom += val;
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutBuilder::ApplyStartPaddings(IVariantObject* pElement, CRect& rect)
+STDMETHODIMP CLayoutBuilder::ApplyStartMargins(IVariantObject* pElement, CRect& rect)
 {
 	CHECK_E_POINTER(pElement);
 
-	CComVariant vPaddingLeft;
-	CComVariant vPaddingTop;
+	CComVariant vMarginLeft;
+	CComVariant vMarginTop;
 
-	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingLeft, &vPaddingLeft);
-	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::PaddingTop, &vPaddingTop);
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginLeft, &vMarginLeft);
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginTop, &vMarginTop);
 
-	if (vPaddingLeft.vt == VT_BSTR)
+	if (vMarginLeft.vt == VT_BSTR)
 	{
-		auto val = _wtoi(vPaddingLeft.bstrVal);
+		auto val = _wtoi(vMarginLeft.bstrVal);
 		auto width = rect.Width();
 		rect.left += val;
 		rect.right = rect.left + width;
 	}
 
-	if (vPaddingTop.vt == VT_BSTR)
+	if (vMarginTop.vt == VT_BSTR)
 	{
-		auto val = _wtoi(vPaddingTop.bstrVal);
+		auto val = _wtoi(vMarginTop.bstrVal);
 		auto height = rect.Height();
 		rect.top += val;
 		rect.bottom= rect.top + height;
@@ -178,16 +178,16 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 				break;
 			}
 			case ElementType::TextColumn:
-				RETURN_IF_FAILED(ApplyStartPaddings(pElement, localSourceRect));
+				RETURN_IF_FAILED(ApplyStartMargins(pElement, localSourceRect));
 				RETURN_IF_FAILED(BuildTextColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pChildItems));
-				RETURN_IF_FAILED(ApplyEndPaddings(pElement, elementRect));
+				RETURN_IF_FAILED(ApplyEndMargins(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
 				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
 				break;
 			case ElementType::ImageColumn:
-				RETURN_IF_FAILED(ApplyStartPaddings(pElement, localSourceRect));
+				RETURN_IF_FAILED(ApplyStartMargins(pElement, localSourceRect));
 				RETURN_IF_FAILED(BuildImageColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pChildItems));
-				RETURN_IF_FAILED(ApplyEndPaddings(pElement, elementRect));
+				RETURN_IF_FAILED(ApplyEndMargins(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
 				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
 				break;
@@ -201,8 +201,8 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 	CRect parentRect = *pSourceRect;
 	containerRect.OffsetRect(parentRect.left, parentRect.top);
 
-	RETURN_IF_FAILED(ApplyStartPaddings(pLayoutObject, containerRect));
-	RETURN_IF_FAILED(ApplyEndPaddings(pLayoutObject, containerRect));
+	RETURN_IF_FAILED(ApplyStartMargins(pLayoutObject, containerRect));
+	RETURN_IF_FAILED(ApplyEndMargins(pLayoutObject, containerRect));
 	RETURN_IF_FAILED(FitToParent(pLayoutObject, parentRect, containerRect));
 	RETURN_IF_FAILED(ApplyRightAlign(pLayoutObject, parentRect, containerRect));
 

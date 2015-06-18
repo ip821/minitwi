@@ -63,8 +63,8 @@
     {
         "styles": [
             { "name": "" },
-            { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "padding_left": "5", "padding_top": "4" },
-            { "name": "TabContainerHeaderChildContainer", "padding_left": "10", "padding_right": "10", "padding_top": "5", "padding_bottom": "5" }
+            { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "margin_left": "5", "margin_top": "4" },
+            { "name": "TabContainerHeaderChildContainer", "margin_left": "10", "margin_right": "10", "margin_top": "5", "margin_bottom": "5" }
         ]
     },
     {

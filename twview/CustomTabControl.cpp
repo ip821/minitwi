@@ -2,6 +2,7 @@
 #include "CustomTabControl.h"
 #include "Plugins.h"
 #include "..\twtheme\GdilPlusUtils.h"
+#include "..\twtheme\Metadata.h"
 
 CCustomTabControl::~CCustomTabControl()
 {
@@ -457,7 +458,7 @@ HRESULT CCustomTabControl::UpdateColumnInfo()
 		{
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 			ASSERT_IF_FAILED(pChildContainers->GetItem(i, &pColumnsInfoItem));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValueRecursive(L"selected", &CComVariant((BOOL)(m_selectedPageIndex == static_cast<int>(i)))));
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValueRecursive(Twitter::Themes::Metadata::Element::Selected, &CComVariant((BOOL)(m_selectedPageIndex == static_cast<int>(i)))));
 		}
 	}
 	return S_OK;
