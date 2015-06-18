@@ -31,11 +31,11 @@ private:
 	CComPtr<ILayoutManager> m_pLayoutManager;
 	CComPtr<IVariantObject> m_pLayoutObject;
 	CComPtr<IImageManagerService> m_pImageManagerService;
+	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapError;
 	shared_ptr<Gdiplus::Bitmap> m_pBitmapInfo;
 	CRect m_rectHeader;
 	CRect m_rectInfoImage;
-	int m_iFrameCount = 0;
 	CToolTipCtrl m_wndTooltip;
 	HWND m_hWnd;
 
@@ -47,15 +47,16 @@ public:
 	STDMETHOD(SetTheme)(ITheme* pTheme);
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(IColumnsInfo* pColumnsInfo, HDC hdc);
-	STDMETHOD(DrawHeader)(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
-	STDMETHOD(DrawAnimation)(HDC hdc);
+	STDMETHOD(DrawHeader)(HDC hdc, IColumnsInfo* pColumnsInfo);
+	STDMETHOD(DrawAnimation)(HDC hdc, IColumnsInfo* pColumnsInfo);
 	STDMETHOD(DrawInfoImage)(HDC hdc, BOOL bError, BSTR bstrMessage);
 	STDMETHOD(GetInfoRect)(RECT* pRect);
 	STDMETHOD(StartInfoImage)();
 	STDMETHOD(StopInfoImage)();
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationNextFrame)();
-
+	STDMETHOD(AnimationStart)();
+	STDMETHOD(AnimationStop)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinTabControl), CSkinTabControl)

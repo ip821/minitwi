@@ -210,7 +210,7 @@ STDMETHODIMP CThemeDefault::CopyProps(IVariantObject* pSourceObject, IVariantObj
 		CComVariant vValue;
 		RETURN_IF_FAILED(pDestObject->GetVariantValue(bstrKey, &vValue));
 
-		if (vValue.vt != VT_NULL)
+		if (vValue.vt == VT_EMPTY)
 		{
 			CComVariant vProp;
 			RETURN_IF_FAILED(pSourceObject->GetVariantValue(bstrKey, &vProp));
@@ -231,19 +231,29 @@ STDMETHODIMP CThemeDefault::ApplyStyles(IVariantObject* pParentObject, IObjArray
 
 		CComVariant vStyle;
 		RETURN_IF_FAILED(pElement->GetVariantValue(L"style", &vStyle));
-		auto it = m_stylesMap.find(vStyle.bstrVal);
-		if (it != m_stylesMap.end())
+		if (vStyle.vt == VT_BSTR)
 		{
-			RETURN_IF_FAILED(CopyProps(it->second, pElement, false));
+			RETURN_IF_FAILED(ApplyStyle(pElement, vStyle.bstrVal));
 		}
+		RETURN_IF_FAILED(ApplyStyle(pElement, L"")); //apply default
+	}
+	return S_OK;
+}
 
-		CComVariant vChildElements;
-		RETURN_IF_FAILED(pElement->GetVariantValue(L"elements", &vChildElements));
-		if (vChildElements.vt == VT_UNKNOWN)
-		{
-			CComQIPtr<IObjArray> pChildElements = vChildElements.punkVal;
-			RETURN_IF_FAILED(ApplyStyles(pElement, pChildElements));
-		}
+STDMETHODIMP CThemeDefault::ApplyStyle(IVariantObject* pElement, BSTR bstrStyleName)
+{
+	auto it = m_stylesMap.find(bstrStyleName);
+	if (it != m_stylesMap.end())
+	{
+		RETURN_IF_FAILED(CopyProps(it->second, pElement, false));
+	}
+
+	CComVariant vChildElements;
+	RETURN_IF_FAILED(pElement->GetVariantValue(L"elements", &vChildElements));
+	if (vChildElements.vt == VT_UNKNOWN)
+	{
+		CComQIPtr<IObjArray> pChildElements = vChildElements.punkVal;
+		RETURN_IF_FAILED(ApplyStyles(pElement, pChildElements));
 	}
 	return S_OK;
 }

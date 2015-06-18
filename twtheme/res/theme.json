@@ -62,7 +62,7 @@
     },
     {
         "styles": [
-            { "name": "" },
+            { "name": "", "visible": true },
             { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "margin_left": "5", "margin_top": "4" },
             { "name": "TabContainerHeaderChildContainer", "margin_left": "10", "margin_right": "10", "margin_top": "5", "margin_bottom": "5" }
         ]
@@ -119,6 +119,7 @@
                         "style": "TabContainerHeaderChildContainer",
                         "align_right": "true",
                         "elements": [
+                            { "name": "MarqueeProgressBox", "type": "marquee_progress", "visible": false, "margin_top": "8", "margin_right": "8","value": "0", "item_count": "3", "item_size": "10", "item_distance": "5", "color_active": "TwitterItemAnimationActive", "color_inactive": "TwitterItemAnimationInactive" },
                             { "name": "InfoImage", "type": "image_column", "image": "info" }
                         ]
                     }

@@ -42,6 +42,8 @@ HRESULT CLayoutBuilder::MapType(BSTR bstrType, ElementType* pElementType)
 		*pElementType = ElementType::ImageColumn;
 	else if (type == CComBSTR(Twitter::Themes::Metadata::LayoutTypes::TextColumn))
 		*pElementType = ElementType::TextColumn;
+	else if (type == CComBSTR(Twitter::Themes::Metadata::LayoutTypes::MarqueeProgressColumn))
+		*pElementType = ElementType::MarqueeProgressColumn;
 	else
 		*pElementType = ElementType::UnknownValue;
 	return S_OK;
@@ -191,6 +193,13 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
 				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
 				break;
+			case ElementType::MarqueeProgressColumn:
+				RETURN_IF_FAILED(ApplyStartMargins(pElement, localSourceRect));
+				RETURN_IF_FAILED(BuildMarqueeProgressColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pChildItems));
+				RETURN_IF_FAILED(ApplyEndMargins(pElement, elementRect));
+				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
+				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
+				break;
 		}
 
 		sourceRect.left = elementRect.right;
@@ -222,10 +231,7 @@ STDMETHODIMP CLayoutBuilder::SetColumnProps(IVariantObject* pLayoutObject, IColu
 		RETURN_IF_FAILED(pLayoutObject->GetKeyByIndex(i, &bstrKey));
 		CComVariant vValue;
 		RETURN_IF_FAILED(pLayoutObject->GetVariantValue(bstrKey, &vValue));
-		if (vValue.vt == VT_BSTR)
-		{
-			RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(bstrKey, vValue.bstrVal));
-		}
+		RETURN_IF_FAILED(pColumnsInfoItem->SetVariantValue(bstrKey, &vValue));
 	}
 
 	CComVariant vName;
@@ -304,5 +310,39 @@ STDMETHODIMP CLayoutBuilder::BuildImageColumn(HDC hdc, RECT* pSourceRect, RECT* 
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(imageRect));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::ImageColumn::ImageKey, vImageKey.bstrVal));
 	*pDestRect = imageRect;
+	return S_OK;
+}
+
+STDMETHODIMP CLayoutBuilder::BuildMarqueeProgressColumn(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo)
+{
+	CComVariant vItemSize;
+	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemSize, &vItemSize));
+	CComVariant vItemDistance;
+	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemDistance, &vItemDistance));
+	CComVariant vItemCount;
+	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &vItemCount));
+
+	ATLASSERT(vItemSize.vt == VT_BSTR);
+	ATLASSERT(vItemDistance.vt == VT_BSTR);
+	ATLASSERT(vItemCount.vt == VT_BSTR);
+
+	auto itemSize = _wtoi(vItemSize.bstrVal);
+	auto itemDistance = _wtoi(vItemDistance.bstrVal);
+	auto itemCount = _wtoi(vItemCount.bstrVal);
+
+	CRect sourceRect = *pSourceRect;
+	CRect columnRect;
+	columnRect.left = sourceRect.left;
+	columnRect.top = sourceRect.top;
+
+	int width = itemSize * itemCount + itemDistance * (itemCount - 1);
+	columnRect.right = columnRect.left + width;
+	columnRect.bottom = columnRect.top + itemSize;
+
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	RETURN_IF_FAILED(pColumnInfo->AddItem(&pColumnsInfoItem));
+	RETURN_IF_FAILED(SetColumnProps(pLayoutObject, pColumnsInfoItem));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(columnRect));
+	*pDestRect = columnRect;
 	return S_OK;
 }

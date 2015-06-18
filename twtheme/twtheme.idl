@@ -15,7 +15,8 @@ typedef enum ElementType
 	UnknownValue,
 	HorizontalContainer,
 	ImageColumn,
-	TextColumn
+	TextColumn,
+	MarqueeProgressColumn
 } ElementType;
 
 [
@@ -40,7 +41,7 @@ interface ILayoutPainter : IUnknown
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
 	HRESULT EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo);
-	HRESULT PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+	HRESULT PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName);
 };
 
 [

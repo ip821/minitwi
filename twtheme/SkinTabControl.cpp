@@ -82,14 +82,22 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	CClientDC hdc(hWnd);
 	CRect resultRect;
 	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, &resultRect, m_pLayoutObject, nullptr, m_pImageManagerService, pColumnsInfo));
-	UINT uiInex = 0;
-	RETURN_IF_FAILED(pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::LayoutName, &uiInex));
-	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-	RETURN_IF_FAILED(pColumnsInfo->GetItem(uiInex, &pColumnsInfoItem));
-	RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));
-	*puiHeight = m_rectHeader.Height();
-	//m_rectInfoImage = m_rectHeader;
-	//m_rectInfoImage.left = m_rectInfoImage.right - 24;
+	{
+		UINT uiIndex = 0;
+		RETURN_IF_FAILED(pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::LayoutName, &uiIndex));
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->GetItem(uiIndex, &pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));
+		*puiHeight = m_rectHeader.Height();
+	}
+
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::InfoContainer, &pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectInfoImage));
+	}
+
+	m_pColumnsInfo = pColumnsInfo;
 	return S_OK;
 }
 
@@ -102,40 +110,15 @@ STDMETHODIMP CSkinTabControl::EraseBackground(IColumnsInfo* pColumnsInfo, HDC hd
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect)
+STDMETHODIMP CSkinTabControl::DrawHeader(HDC hdc, IColumnsInfo* pColumnsInfo)
 {
-	CDCHandle cdc(hdc);
-	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, &(CPoint()), m_pImageManagerService, pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, &(CPoint()), m_pImageManagerService, pColumnsInfo));
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc)
+STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc, IColumnsInfo* pColumnsInfo)
 {
-	CDCHandle cdc(hdc);
-
-	int left = ITEM_SIZE * MAX_COUNT + ITEM_DISTANCE * MAX_COUNT;
-	CRect rect = m_rectHeader;
-	rect.left = rect.right - left;
-
-	rect.top += rect.Height() / 2 - ITEM_SIZE / 2 + ITEM_OFFSET_Y;
-
-	DWORD dwActiveColor = 0;
-	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterItemAnimationActive, &dwActiveColor);
-	DWORD dwInactiveColor = 0;
-	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterItemAnimationInactive, &dwInactiveColor);
-
-	CBrush brushActive;
-	brushActive.CreateSolidBrush(dwActiveColor);
-	CBrush brushInactive;
-	brushInactive.CreateSolidBrush(dwInactiveColor);
-
-	for (int i = 0; i < MAX_COUNT; i++)
-	{
-		auto x = rect.left + ITEM_SIZE * i + ITEM_DISTANCE * (max(0, i));
-		auto y = rect.top;
-		CRect rectItem = { (int)x, y, (int)x + ITEM_SIZE, y + ITEM_SIZE };
-		cdc.FillRect(rectItem, i == m_iFrameCount ? brushActive : brushInactive);
-	}
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, &(CPoint()), m_pImageManagerService, pColumnsInfo));
 	return S_OK;
 }
 
@@ -214,11 +197,37 @@ STDMETHODIMP CSkinTabControl::AnimationGetParams(UINT* puiMilliseconds)
 	return S_OK;
 }
 
+STDMETHODIMP CSkinTabControl::AnimationStart()
+{
+	CComPtr<IColumnsInfoItem> pColumnsItem;
+	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
+	RETURN_IF_FAILED(pColumnsItem->SetRectBoolProp(Twitter::Themes::Metadata::Element::Visible, true));
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::AnimationStop()
+{
+	CComPtr<IColumnsInfoItem> pColumnsItem;
+	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
+	RETURN_IF_FAILED(pColumnsItem->SetRectBoolProp(Twitter::Themes::Metadata::Element::Visible, false));
+	return S_OK;
+}
+
 STDMETHODIMP CSkinTabControl::AnimationNextFrame()
 {
-	m_iFrameCount++;
-	if (m_iFrameCount == MAX_COUNT)
-		m_iFrameCount = 0;
+	CComPtr<IColumnsInfoItem> pColumnsItem;
+	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
+	CComBSTR bstrValue;
+	RETURN_IF_FAILED(pColumnsItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &bstrValue));
+	CComBSTR bstrItemCount;
+	RETURN_IF_FAILED(pColumnsItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &bstrItemCount));
+
+	auto value = _wtoi(bstrValue);
+	auto itemCount = _wtoi(bstrItemCount);
+	value++;
+	if (value == itemCount - 1)
+		value = 0;
+	RETURN_IF_FAILED(pColumnsItem->SetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, CComBSTR(to_wstring(value).c_str())));
 	return S_OK;
 }
 

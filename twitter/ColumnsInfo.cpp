@@ -32,7 +32,31 @@ STDMETHODIMP CColumnsInfo::FindItemIndex(BSTR bstrName, UINT* puiIndex)
 			return S_OK;
 		}
 	}
+
 	return E_NOT_SET;
+}
+
+STDMETHODIMP CColumnsInfo::FindItemByName(BSTR bstrName, IColumnsInfoItem** ppColumnsInfoItem)
+{
+	CHECK_E_POINTER(ppColumnsInfoItem);
+	*ppColumnsInfoItem = nullptr;
+	for (size_t i = 0; i < m_pItems.size(); i++)
+	{
+		CComBSTR bstrColumnName;
+		RETURN_IF_FAILED(m_pItems[i]->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
+		if (bstrColumnName == bstrName)
+		{
+			RETURN_IF_FAILED(m_pItems[i]->QueryInterface(ppColumnsInfoItem));
+			return S_OK;
+		}
+
+		CComPtr<IColumnsInfo> pChildObjects;
+		RETURN_IF_FAILED(m_pItems[i]->GetChildItems(&pChildObjects));
+		pChildObjects->FindItemByName(bstrName, ppColumnsInfoItem);
+		if (*ppColumnsInfoItem)
+			return S_OK;
+	}
+	return S_OK;
 }
 
 STDMETHODIMP CColumnsInfo::GetItem(UINT uiIndex, IColumnsInfoItem** ppColumnsInfoItem)

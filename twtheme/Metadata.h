@@ -11,6 +11,8 @@ namespace IP
 				namespace TabContainer
 				{
 					const static CComBSTR LayoutName(L"MainTabContainerHeaderLayout");
+					const static CComBSTR InfoContainer(L"InfoContainer");
+					const static CComBSTR MarqueeProgressBox(L"MarqueeProgressBox");
 
 					namespace Images
 					{
@@ -26,6 +28,16 @@ namespace IP
 					const static CComBSTR ImageKey(L"image");
 				}
 
+				namespace MarqueeProgressColumn
+				{
+					const static CComBSTR ItemSize(L"item_size");
+					const static CComBSTR ItemDistance(L"item_distance");
+					const static CComBSTR ItemCount(L"item_count");
+					const static CComBSTR ColorActive(L"color_active");
+					const static CComBSTR ColorInactive(L"color_inactive");
+					const static CComBSTR Value(L"value");
+				}
+
 				namespace TextColumn
 				{
 					const static CComBSTR Text(L"text");
@@ -39,6 +51,7 @@ namespace IP
 					const static CComBSTR Name(L"name");
 					const static CComBSTR Elements(L"elements");
 					const static CComBSTR Type(L"type");
+					const static CComBSTR Visible(L"visible");
 					const static CComBSTR Selected(L"selected");
 					const static CComBSTR MarginLeft(L"margin_left");
 					const static CComBSTR MarginRight(L"margin_right");
@@ -57,6 +70,7 @@ namespace IP
 					const static CComBSTR HorizontalContainer(L"horizontal_container");
 					const static CComBSTR ImageColumn(L"image_column");
 					const static CComBSTR TextColumn(L"text_column");
+					const static CComBSTR MarqueeProgressColumn(L"marquee_progress");
 				}
 
 				namespace FitTypes

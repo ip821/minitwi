@@ -161,6 +161,7 @@ interface IColumnsInfo : IUnknown
 	HRESULT IsDisabledSelection(BOOL* pbDisabled);
 	HRESULT DisableSelection(BOOL bDisabled);
 	HRESULT FindItemIndex(BSTR bstrName, UINT* puiIndex);
+	HRESULT FindItemByName(BSTR bstrName, IColumnsInfoItem** ppColumnsInfoItem);
 };
 
 [
@@ -275,7 +276,7 @@ interface ILayoutManager : IUnknown
 {
 	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 	HRESULT EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo);
-	HRESULT PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+	HRESULT PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, [defaultvalue(0)] BSTR bstrItemName);
 };
 
 [
@@ -287,14 +288,16 @@ interface ISkinTabControl : IUnknown
 {
 	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(IColumnsInfo* pColumnsInfo, HDC hdc);
-	HRESULT DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
-	HRESULT DrawAnimation(HDC hdc);
+	HRESULT DrawHeader(HDC hdc, IColumnsInfo* pColumnsInfo);
+	HRESULT DrawAnimation(HDC hdc, IColumnsInfo* pColumnsInfo);
 	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
 	HRESULT GetInfoRect(RECT* pRect);
 	HRESULT StartInfoImage();
 	HRESULT StopInfoImage();
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationNextFrame();
+	HRESULT AnimationStart();
+	HRESULT AnimationStop();
 };
 
 [

@@ -41,7 +41,8 @@ private:
 	map<CComBSTR, CComPtr<IVariantObject>> m_layoutsMap;
 	map<CComBSTR, CComPtr<IVariantObject>> m_stylesMap;
 	static hash_set<wstring> m_inheritedProps;
-		
+	
+	STDMETHOD(ApplyStyle)(IVariantObject* pElement, BSTR bstrStyleName);
 	STDMETHOD(ApplyStyles)(IVariantObject* pParentObject, IObjArray* pLayouts);
 	STDMETHOD(CopyProps)(IVariantObject* pSourceObject, IVariantObject* pDestObject, bool filterProps);
 

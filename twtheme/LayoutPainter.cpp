@@ -47,7 +47,7 @@ STDMETHODIMP CLayoutPainter::EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo)
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
+STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
 {
 	CHECK_E_POINTER(pColumnInfo);
 	UINT uiCount = 0;
@@ -56,6 +56,10 @@ STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManager
 	{
 		CComPtr<IColumnsInfoItem> pColumnInfoItem;
 		RETURN_IF_FAILED(pColumnInfo->GetItem(i, &pColumnInfoItem));
+		BOOL bVisible = FALSE;
+		RETURN_IF_FAILED(pColumnInfoItem->GetRectBoolProp(Twitter::Themes::Metadata::Element::Visible, &bVisible));
+		if (!bVisible)
+			continue;
 		CComBSTR bstrType;
 		RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::Type, &bstrType));
 		ElementType elementType = ElementType::UnknownValue;
@@ -72,7 +76,7 @@ STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManager
 				RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
 				CPoint pt(ptOrigin->x + rect.left, ptOrigin->y + rect.top);
 
-				RETURN_IF_FAILED(PaintLayout(hdc, &pt, pImageManagerService, pChildItems));
+				RETURN_IF_FAILED(PaintLayout(hdc, &pt, pImageManagerService, pChildItems, bstrItemName));
 				break;
 			}
 			case ElementType::TextColumn:
@@ -80,6 +84,9 @@ STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManager
 				break;
 			case ElementType::ImageColumn:
 				RETURN_IF_FAILED(PaintImageColumn(hdc, ptOrigin, pImageManagerService, pColumnInfoItem));
+				break;
+			case ElementType::MarqueeProgressColumn:
+				RETURN_IF_FAILED(PaintMarqueeProgressColumn(hdc, ptOrigin, pColumnInfoItem));
 				break;
 		}
 	}
@@ -170,5 +177,49 @@ STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, POINT* ptOrigin, IImageMa
 	auto res = TransparentBlt(hdc, rect.left, rect.top, bitmapInfo.Width, bitmapInfo.Height, cdcBitmap, 0, 0, bitmapInfo.Width, bitmapInfo.Height, color.ToCOLORREF());
 	if (!res)
 		return HRESULT_FROM_WIN32(GetLastError());
+	return S_OK;
+}
+
+STDMETHODIMP CLayoutPainter::PaintMarqueeProgressColumn(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem)
+{
+	CComBSTR bstrValue;
+	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &bstrValue));
+	CComBSTR bstrItemSize;
+	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemSize, &bstrItemSize));
+	CComBSTR bstrItemDistance;
+	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemDistance, &bstrItemDistance));
+	CComBSTR bstrItemCount;
+	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &bstrItemCount));
+
+	auto value = _wtoi(bstrValue);
+	auto itemSize = _wtoi(bstrItemSize);
+	auto itemDistance = _wtoi(bstrItemDistance);
+	auto itemCount = _wtoi(bstrItemCount);
+
+	CComBSTR bstrActiveColor;
+	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::ColorActive, &bstrActiveColor));
+	CComBSTR bstrInactiveColor;
+	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::ColorInactive, &bstrInactiveColor));
+
+	DWORD dwActiveColor = 0;
+	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrActiveColor, &dwActiveColor));
+	DWORD dwInactiveColor = 0;
+	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrInactiveColor, &dwInactiveColor));
+
+	CBrush brushActive;
+	brushActive.CreateSolidBrush(dwActiveColor);
+	CBrush brushInactive;
+	brushInactive.CreateSolidBrush(dwInactiveColor);
+
+	CRect rect;
+	RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
+	rect.OffsetRect(*ptOrigin);
+	for (int i = 0; i < itemCount; i++)
+	{
+		auto x = rect.left + itemSize * i + itemDistance * (max(0, i));
+		auto y = rect.top;
+		CRect rectItem = { (int)x, y, (int)x + itemSize, y + itemSize };
+		FillRect(hdc, rectItem, i == value ? brushActive : brushInactive);
+	}
 	return S_OK;
 }

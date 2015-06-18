@@ -32,6 +32,8 @@ STDMETHODIMP CCustomTabControl::StartAnimation()
 	m_cAnimationRefs++;
 	UINT uiMilliseconds = 0;
 	RETURN_IF_FAILED(m_pSkinTabControl->AnimationGetParams(&uiMilliseconds));
+	if (m_pSkinTabControl)
+		m_pSkinTabControl->AnimationStart();
 	SetTimer(1, uiMilliseconds);
 	return S_OK;
 }
@@ -48,6 +50,8 @@ STDMETHODIMP CCustomTabControl::StopAnimation(UINT* puiRefs)
 	if (m_cAnimationRefs > 0)
 		return S_OK;
 
+	if (m_pSkinTabControl)
+		m_pSkinTabControl->AnimationStop();
 	KillTimer(1);
 	CRect rectClient;
 	GetClientRect(&rectClient);
@@ -535,10 +539,10 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(m_pColumnsInfo, ps.hdc, rect);
+	m_pSkinTabControl->DrawHeader(ps.hdc, m_pColumnsInfo);
 
 	if (m_cAnimationRefs > 0)
-		m_pSkinTabControl->DrawAnimation(ps.hdc);
+		m_pSkinTabControl->DrawAnimation(ps.hdc, m_pColumnsInfo);
 	else if (m_bShowInfoImage)
 		m_pSkinTabControl->DrawInfoImage(ps.hdc, m_bInfoImageIsError, m_bstrInfoMessage);
 
@@ -573,13 +577,15 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 		ASSERT_IF_FAILED(pRootContainerItem->GetChildItems(&pChildContainers));
 		UINT uiCount = 0;
 		ASSERT_IF_FAILED(pChildContainers->GetCount(&uiCount));
+		UINT uiControlsCount = 0;
+		ASSERT_IF_FAILED(m_pControls->GetCount(&uiControlsCount));
 		for (size_t i = 0; i < uiCount; i++)
 		{
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 			ASSERT_IF_FAILED(pChildContainers->GetItem(i, &pColumnsInfoItem));
 			CRect rect;
 			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-			if (rect.PtInRect(CPoint(x, y)))
+			if (rect.PtInRect(CPoint(x, y)) && i < uiControlsCount)
 			{
 				CComPtr<IControl> pControl;
 				m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pControl);
