@@ -57,6 +57,19 @@ STDMETHODIMP CLayoutBuilder::GetElementType(IVariantObject* pVariantObject, Elem
 	return S_OK;
 }
 
+STDMETHODIMP CLayoutBuilder::ApplyRightAlign(IVariantObject* pElement, CRect& rectParent, CRect& rect)
+{
+	CComVariant vAlignRight;
+	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::AlignRight, &vAlignRight);
+
+	if (vAlignRight.vt == VT_BSTR)
+	{
+		rect.left = rectParent.right - rect.Width();
+		rect.right = rectParent.right;
+	}
+	return S_OK;
+}
+
 STDMETHODIMP CLayoutBuilder::FitToParent(IVariantObject* pElement, CRect& rectParent, CRect& rect)
 {
 	CComVariant vFitHorizantal;
@@ -110,13 +123,17 @@ STDMETHODIMP CLayoutBuilder::ApplyStartPaddings(IVariantObject* pElement, CRect&
 	if (vPaddingLeft.vt == VT_BSTR)
 	{
 		auto val = _wtoi(vPaddingLeft.bstrVal);
+		auto width = rect.Width();
 		rect.left += val;
+		rect.right = rect.left + width;
 	}
 
 	if (vPaddingTop.vt == VT_BSTR)
 	{
 		auto val = _wtoi(vPaddingTop.bstrVal);
+		auto height = rect.Height();
 		rect.top += val;
+		rect.bottom= rect.top + height;
 	}
 
 	return S_OK;
@@ -125,11 +142,13 @@ STDMETHODIMP CLayoutBuilder::ApplyStartPaddings(IVariantObject* pElement, CRect&
 STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
 {
 	CRect sourceRect = *pSourceRect;
-	RETURN_IF_FAILED(ApplyStartPaddings(pLayoutObject, sourceRect));
-	CRect destRect;
-	destRect.left = sourceRect.left;
-	destRect.right = sourceRect.left;
-	destRect.top = sourceRect.top;
+	sourceRect.MoveToX(0);
+	sourceRect.MoveToY(0);
+
+	CRect containerRect;
+	containerRect.left = sourceRect.left;
+	containerRect.right = sourceRect.left;
+	containerRect.top = sourceRect.top;
 
 	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 	RETURN_IF_FAILED(pColumnInfo->AddItem(&pColumnsInfoItem));
@@ -151,7 +170,6 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 		RETURN_IF_FAILED(GetElementType(pElement, &elementType));
 
 		CRect localSourceRect = sourceRect;
-
 		switch (elementType)
 		{
 			case ElementType::HorizontalContainer:
@@ -164,27 +182,33 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 				RETURN_IF_FAILED(BuildTextColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pChildItems));
 				RETURN_IF_FAILED(ApplyEndPaddings(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
+				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
 				break;
 			case ElementType::ImageColumn:
 				RETURN_IF_FAILED(ApplyStartPaddings(pElement, localSourceRect));
 				RETURN_IF_FAILED(BuildImageColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pChildItems));
 				RETURN_IF_FAILED(ApplyEndPaddings(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
+				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
 				break;
 		}
 
 		sourceRect.left = elementRect.right;
-		destRect.right = elementRect.right;
-		destRect.bottom = max(elementRect.bottom, destRect.bottom);
+		containerRect.right = elementRect.right;
+		containerRect.bottom = max(elementRect.bottom, containerRect.bottom);
 	}
 
 	CRect parentRect = *pSourceRect;
-	RETURN_IF_FAILED(ApplyEndPaddings(pLayoutObject, destRect));
-	RETURN_IF_FAILED(FitToParent(pLayoutObject, parentRect, destRect));
+	containerRect.OffsetRect(parentRect.left, parentRect.top);
+
+	RETURN_IF_FAILED(ApplyStartPaddings(pLayoutObject, containerRect));
+	RETURN_IF_FAILED(ApplyEndPaddings(pLayoutObject, containerRect));
+	RETURN_IF_FAILED(FitToParent(pLayoutObject, parentRect, containerRect));
+	RETURN_IF_FAILED(ApplyRightAlign(pLayoutObject, parentRect, containerRect));
 
 	RETURN_IF_FAILED(SetColumnProps(pLayoutObject, pColumnsInfoItem));
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(destRect));
-	*pDestRect = destRect;
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(containerRect));
+	*pDestRect = containerRect;
 	return S_OK;
 }
 
@@ -208,18 +232,6 @@ STDMETHODIMP CLayoutBuilder::SetColumnProps(IVariantObject* pLayoutObject, IColu
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Name, &vName));
 	ATLASSERT(vName.vt == VT_BSTR);
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, vName.bstrVal));
-
-	//ElementType elementType = ElementType::UnknownValue;
-	//RETURN_IF_FAILED(GetElementType(pLayoutObject, &elementType));
-	//CComVariant vName;
-	//RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Name, &vName));
-	//ATLASSERT(vName.vt == VT_BSTR);
-	//RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::Element::Name, vName.bstrVal));
-	//RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, vName.bstrVal));
-	//CComVariant vLayoutType;
-	//RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Type, &vLayoutType));
-	//ATLASSERT(vLayoutType.vt == VT_BSTR);
-	//RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Themes::Metadata::Element::Type, vLayoutType.bstrVal));
 	return S_OK;
 }
 

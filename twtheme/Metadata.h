@@ -49,6 +49,7 @@ namespace IP
 					const static CComBSTR BorderBottom(L"border_bottom");
 					const static CComBSTR BorderBottomColor(L"border_bottom_color");
 					const static CComBSTR BorderBottomWidth(L"border_bottom_width");
+					const static CComBSTR AlignRight(L"align_right");
 				}
 
 				namespace LayoutTypes

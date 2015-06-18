@@ -88,6 +88,8 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 	RETURN_IF_FAILED(pColumnsInfo->GetItem(uiInex, &pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));
 	*puiHeight = m_rectHeader.Height();
+	//m_rectInfoImage = m_rectHeader;
+	//m_rectInfoImage.left = m_rectInfoImage.right - 24;
 	return S_OK;
 }
 
@@ -103,7 +105,7 @@ STDMETHODIMP CSkinTabControl::EraseBackground(IColumnsInfo* pColumnsInfo, HDC hd
 STDMETHODIMP CSkinTabControl::DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect)
 {
 	CDCHandle cdc(hdc);
-	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, m_pImageManagerService, pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, &(CPoint()), m_pImageManagerService, pColumnsInfo));
 	return S_OK;
 }
 

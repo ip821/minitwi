@@ -47,7 +47,7 @@ STDMETHODIMP CLayoutPainter::EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo)
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
+STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
 {
 	CHECK_E_POINTER(pColumnInfo);
 	UINT uiCount = 0;
@@ -64,24 +64,29 @@ STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, IImageManagerService* pImageMa
 		{
 			case ElementType::HorizontalContainer:
 			{
-				RETURN_IF_FAILED(PaintContainer(hdc, pColumnInfoItem));
+				RETURN_IF_FAILED(PaintContainer(hdc, ptOrigin, pColumnInfoItem));
 				CComPtr<IColumnsInfo> pChildItems;
 				RETURN_IF_FAILED(pColumnInfoItem->GetChildItems(&pChildItems));
-				RETURN_IF_FAILED(PaintLayout(hdc, pImageManagerService, pChildItems));
+
+				CRect rect;
+				RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
+				CPoint pt(ptOrigin->x + rect.left, ptOrigin->y + rect.top);
+
+				RETURN_IF_FAILED(PaintLayout(hdc, &pt, pImageManagerService, pChildItems));
 				break;
 			}
 			case ElementType::TextColumn:
-				RETURN_IF_FAILED(PaintTextColumn(hdc, pColumnInfoItem));
+				RETURN_IF_FAILED(PaintTextColumn(hdc, ptOrigin, pColumnInfoItem));
 				break;
 			case ElementType::ImageColumn:
-				RETURN_IF_FAILED(PaintImageColumn(hdc, pImageManagerService, pColumnInfoItem));
+				RETURN_IF_FAILED(PaintImageColumn(hdc, ptOrigin, pImageManagerService, pColumnInfoItem));
 				break;
 		}
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, IColumnsInfoItem* pColumnInfoItem)
+STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem)
 {
 	CComBSTR vBorderBottom;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::BorderBottom, &vBorderBottom));
@@ -95,6 +100,7 @@ STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, IColumnsInfoItem* pColumnIn
 		brush.CreateSolidBrush(dwColor);
 		CRect rect;
 		RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
+		rect.OffsetRect(*ptOrigin);
 		CComBSTR vBorderBottomWidth;
 		RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::BorderBottomWidth, &vBorderBottomWidth));
 		rect.top = rect.bottom - _wtoi(vBorderBottomWidth);
@@ -103,7 +109,7 @@ STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, IColumnsInfoItem* pColumnIn
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintTextColumn(HDC hdc, IColumnsInfoItem* pColumnInfoItem)
+STDMETHODIMP CLayoutPainter::PaintTextColumn(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem)
 {
 	CDCHandle cdc(hdc);
 	CComBSTR bstr;
@@ -137,12 +143,13 @@ STDMETHODIMP CLayoutPainter::PaintTextColumn(HDC hdc, IColumnsInfoItem* pColumnI
 
 	CRect rect;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
+	rect.OffsetRect(*ptOrigin);
 	DrawText(cdc, bstr, bstr.Length(), &rect, 0);
 
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfoItem* pColumnInfoItem)
+STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfoItem* pColumnInfoItem)
 {
 	CComBSTR bstrImageKey;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::ImageColumn::ImageKey, &bstrImageKey));
@@ -158,6 +165,7 @@ STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, IImageManagerService* pIm
 
 	CRect rect;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
+	rect.OffsetRect(*ptOrigin);
 	static Gdiplus::Color color(Gdiplus::Color::Transparent);
 	auto res = TransparentBlt(hdc, rect.left, rect.top, bitmapInfo.Width, bitmapInfo.Height, cdcBitmap, 0, 0, bitmapInfo.Width, bitmapInfo.Height, color.ToCOLORREF());
 	if (!res)

@@ -30,6 +30,7 @@ private:
 	STDMETHOD(BuildImageColumn)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 	STDMETHOD(SetColumnProps)(IVariantObject* pLayoutObject, IColumnsInfoItem* pColumnsInfoItem);
 	STDMETHOD(GetElementType)(IVariantObject* pVariantObject, ElementType* pElementType);
+	STDMETHOD(ApplyRightAlign)(IVariantObject* pElement, CRect& rectParent, CRect& rect);
 
 public:
 	static HRESULT MapType(BSTR bstrType, ElementType* pElementType);
