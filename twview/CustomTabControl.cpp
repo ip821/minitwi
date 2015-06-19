@@ -114,7 +114,10 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 		::ShowWindow(hWnd, SW_HIDE);
 
 	if (m_selectedPageIndex == INVALID_PAGE_INDEX)
+	{
 		SelectPage(0);
+		RETURN_IF_FAILED(UpdateSkinSelectedIndex());
+	}
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(IID_IUnknown, (LPVOID*)&pUnk));
@@ -256,7 +259,7 @@ STDMETHODIMP CCustomTabControl::OnEndScroll()
 	m_selectedPageIndex = m_nextSelectedPageIndex;
 	m_nextSelectedPageIndex = INVALID_PAGE_INDEX;
 
-	ASSERT_IF_FAILED(UpdateColumnInfo());
+	ASSERT_IF_FAILED(UpdateSkinSelectedIndex());
 	Invalidate(TRUE);
 	return S_OK;
 }
@@ -452,25 +455,12 @@ STDMETHODIMP CCustomTabControl::Save(ISettings* pSettings)
 	return S_OK;
 }
 
-HRESULT CCustomTabControl::UpdateColumnInfo()
+HRESULT CCustomTabControl::UpdateSkinSelectedIndex()
 {
-	UINT uiRootContainersCount = 0;
-	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiRootContainersCount));
-	if (uiRootContainersCount)
+	if (m_pSkinTabControl)
 	{
-		CComPtr<IColumnsInfoItem> pRootContainerItem;
-		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(0, &pRootContainerItem));
-		CComPtr<IColumnsInfo> pChildContainers;
-		RETURN_IF_FAILED(pRootContainerItem->GetChildItems(&pChildContainers));
-		UINT uiCount = 0;
-		RETURN_IF_FAILED(pChildContainers->GetCount(&uiCount));
-
-		for (size_t i = 0; i < uiCount; i++)
-		{
-			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-			ASSERT_IF_FAILED(pChildContainers->GetItem(i, &pColumnsInfoItem));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValueRecursive(Twitter::Themes::Metadata::Element::Selected, &CComVariant((BOOL)(m_selectedPageIndex == static_cast<int>(i)))));
-		}
+		RETURN_IF_FAILED(m_pSkinTabControl->SetSelectedIndex(m_selectedPageIndex));
+		UpdateChildControlAreaRect();
 	}
 	return S_OK;
 }
@@ -485,10 +475,9 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 	GetClientRect(&clientRect);
 	if (m_pSkinTabControl)
 	{
-		m_pSkinTabControl->MeasureHeader(m_hWnd, pObjArray, m_pColumnsInfo, &clientRect, &uiHeight);
+		CClientDC cdc(m_hWnd);
+		m_pSkinTabControl->MeasureHeader(cdc, pObjArray, m_pColumnsInfo, &clientRect, &uiHeight);
 		m_pSkinTabControl->GetInfoRect(&m_rectInfoImage);
-
-		ASSERT_IF_FAILED(UpdateColumnInfo());
 	}
 
 	GetClientRect(&m_rectChildControlArea);
@@ -500,6 +489,7 @@ STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabContr
 	CHECK_E_POINTER(pSkinTabControl);
 	m_pSkinTabControl = pSkinTabControl;
 	AdjustSize();
+	RETURN_IF_FAILED(m_pSkinTabControl->SetSelectedIndex(m_selectedPageIndex));
 	return S_OK;
 }
 

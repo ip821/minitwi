@@ -274,7 +274,7 @@ interface IUserAccountControl : IControl2
 ]
 interface ILayoutManager : IUnknown
 {
-	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 	HRESULT EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo);
 	HRESULT PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, [defaultvalue(0)] BSTR bstrItemName);
 };
@@ -286,11 +286,12 @@ interface ILayoutManager : IUnknown
 ]
 interface ISkinTabControl : IUnknown
 {
-	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
+	HRESULT MeasureHeader(HDC hdc, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(IColumnsInfo* pColumnsInfo, HDC hdc);
 	HRESULT DrawHeader(HDC hdc, IColumnsInfo* pColumnsInfo);
 	HRESULT GetInfoRect(RECT* pRect);
 	HRESULT SetErrorInfo(HWND hWnd, BOOL bError, BSTR bstrMessage);
+	HRESULT SetSelectedIndex(UINT uiIndex);
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationNextFrame();
 	HRESULT AnimationStart();

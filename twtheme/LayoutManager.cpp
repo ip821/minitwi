@@ -24,9 +24,9 @@ STDMETHODIMP CLayoutManager::SetFontMap(IThemeFontMap* pThemeFontMap)
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutManager::BuildLayout(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
+STDMETHODIMP CLayoutManager::BuildLayout(HDC hdc, RECT* pSourceRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
 {
-	RETURN_IF_FAILED(m_pLayoutBuilder->BuildLayout(hdc, pSourceRect, pDestRect, pLayoutObject, pValueObject, pImageManagerService, pColumnInfo));
+	RETURN_IF_FAILED(m_pLayoutBuilder->BuildLayout(hdc, pSourceRect, pLayoutObject, pValueObject, pImageManagerService, pColumnInfo));
 	return S_OK;
 }
 

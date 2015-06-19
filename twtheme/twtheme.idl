@@ -28,7 +28,7 @@ interface ILayoutBuilder : IUnknown
 {
 	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
 	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
-	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 };
 
 [

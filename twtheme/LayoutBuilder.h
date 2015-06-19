@@ -39,7 +39,7 @@ public:
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
 
-	STDMETHOD(BuildLayout)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+	STDMETHOD(BuildLayout)(HDC hdc, RECT* pSourceRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(LayoutBuilder), CLayoutBuilder)

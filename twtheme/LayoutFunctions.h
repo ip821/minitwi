@@ -5,9 +5,12 @@
 #include "objmdl_contract_i.h"
 #include "Metadata.h"
 
-static inline HRESULT LayoutFindItemByName(IVariantObject* pElement, BSTR bstrName, IVariantObject** ppItem)
+static inline HRESULT HrLayoutFindItemByName(IVariantObject* pElement, BSTR bstrName, IVariantObject** ppItem)
 {
+	CHECK_E_POINTER(pElement);
+	CHECK_E_POINTER(bstrName);
 	CHECK_E_POINTER(ppItem);
+
 	*ppItem = nullptr;
 
 	CComVariant vName;
@@ -30,9 +33,35 @@ static inline HRESULT LayoutFindItemByName(IVariantObject* pElement, BSTR bstrNa
 		{
 			CComPtr<IVariantObject> pChild;
 			RETURN_IF_FAILED(pChildItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pChild));
-			RETURN_IF_FAILED(LayoutFindItemByName(pChild, bstrName, ppItem));
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pChild, bstrName, ppItem));
 			if (*ppItem)
 				return S_OK;
+		}
+	}
+	return S_OK;
+}
+
+static inline HRESULT HrLayoutSetVariantValueRecursive(IVariantObject* pElement, BSTR bstrName, CComVariant* pV)
+{
+	CHECK_E_POINTER(pElement);
+	CHECK_E_POINTER(bstrName);
+	CHECK_E_POINTER(pV);
+
+	RETURN_IF_FAILED(pElement->SetVariantValue(bstrName, pV));
+
+	CComVariant vElements;
+	RETURN_IF_FAILED(pElement->GetVariantValue(IP::Twitter::Themes::Metadata::Element::Elements, &vElements));
+
+	if (vElements.vt == VT_UNKNOWN)
+	{
+		CComQIPtr<IObjArray> pChildItems = vElements.punkVal;
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pChildItems->GetCount(&uiCount));
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IVariantObject> pChild;
+			RETURN_IF_FAILED(pChildItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pChild));
+			RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pChild, bstrName, pV));
 		}
 	}
 	return S_OK;

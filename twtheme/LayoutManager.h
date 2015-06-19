@@ -28,7 +28,7 @@ private:
 	CComPtr<ILayoutPainter> m_pLayoutPainter;
 
 public:
-	STDMETHOD(BuildLayout)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+	STDMETHOD(BuildLayout)(HDC hdc, RECT* pSourceRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 	STDMETHOD(EraseBackground)(HDC hdc, IColumnsInfo* pColumnInfo);
 	STDMETHOD(PaintLayout)(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName);
 	

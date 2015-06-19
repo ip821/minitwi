@@ -9,21 +9,7 @@
 
 // CSkinTabControl
 
-const size_t MAX_COUNT = 3;
-const int ITEM_SIZE = 10;
-const int ITEM_DISTANCE = 5;
-const int ITEM_OFFSET_Y = 1;
 const int TOOLTIP_ID = 1;
-#define ITEM_DELIMITER_HEIGHT 1
-
-#define PADDING_Y 5
-#define PADDING_X 10
-#define IMAGE_TO_TEXT_DISTANCE 0
-
-#define INDEX_CONTROL_HOME 0
-#define INDEX_CONTROL_LISTS 1
-#define INDEX_CONTROL_SEARCH 2
-#define INDEX_CONTROL_SETTINGS 3
 
 STDMETHODIMP CSkinTabControl::GetResourceStream(int nId, LPCTSTR lpType, IStream** ppStream)
 {
@@ -68,25 +54,40 @@ STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 	RETURN_IF_FAILED(m_pTheme->GetColorMap(&m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
 	RETURN_IF_FAILED(m_pTheme->GetLayout(Twitter::Themes::Metadata::TabContainer::LayoutName, &m_pLayoutObject));
-
-	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
-	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
 	RETURN_IF_FAILED(m_pTheme->GetImageManagerService(&m_pImageManagerService));
 
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight)
+STDMETHODIMP CSkinTabControl::SetSelectedIndex(UINT uiIndex)
+{
+	CComVariant vContainers;
+	RETURN_IF_FAILED(m_pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Elements, &vContainers));
+	ATLASSERT(vContainers.vt == VT_UNKNOWN);
+	CComQIPtr<IObjArray> pContainers = vContainers.punkVal;
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pContainers->GetCount(&uiCount));
+
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pContainer;
+		ASSERT_IF_FAILED(pContainers->GetAt(i, __uuidof(IVariantObject),(LPVOID*)&pContainer));
+		ASSERT_IF_FAILED(HrLayoutSetVariantValueRecursive(pContainer, Twitter::Themes::Metadata::Element::Selected, &CComVariant((BOOL)(uiIndex == static_cast<int>(i)))));
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight)
 {
 	{
 		CComPtr<IVariantObject> pElement;
-		RETURN_IF_FAILED(LayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pElement));
+		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pElement));
 		RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVariant(m_bAnimation == TRUE)));
 	}
 
 	{
 		CComPtr<IVariantObject> pElement;
-		RETURN_IF_FAILED(LayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::InfoImage, &pElement));
+		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::InfoImage, &pElement));
 
 		if (m_bstrMessage == L"")
 		{
@@ -107,9 +108,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		}
 	}
 
-	CClientDC hdc(hWnd);
-	CRect resultRect;
-	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, &resultRect, m_pLayoutObject, nullptr, m_pImageManagerService, pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, m_pLayoutObject, nullptr, m_pImageManagerService, pColumnsInfo));
 	{
 		UINT uiIndex = 0;
 		RETURN_IF_FAILED(pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::LayoutName, &uiIndex));
