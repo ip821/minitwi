@@ -286,9 +286,10 @@ interface ILayoutManager : IUnknown
 ]
 interface ISkinTabControl : IUnknown
 {
-	HRESULT MeasureHeader(HDC hdc, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
-	HRESULT EraseBackground(IColumnsInfo* pColumnsInfo, HDC hdc);
-	HRESULT DrawHeader(HDC hdc, IColumnsInfo* pColumnsInfo);
+	HRESULT SetColumnsInfo(IColumnsInfo* pColumnsInfo);
+	HRESULT MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight);
+	HRESULT EraseBackground(HDC hdc);
+	HRESULT DrawHeader(HDC hdc);
 	HRESULT GetInfoRect(RECT* pRect);
 	HRESULT SetErrorInfo(HWND hWnd, BOOL bError, BSTR bstrMessage);
 	HRESULT SetSelectedIndex(UINT uiIndex);

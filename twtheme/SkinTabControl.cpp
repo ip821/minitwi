@@ -59,6 +59,12 @@ STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 	return S_OK;
 }
 
+STDMETHODIMP CSkinTabControl::SetColumnsInfo(IColumnsInfo* pColumnsInfo)
+{
+	m_pColumnsInfo = pColumnsInfo;
+	return S_OK;
+}
+
 STDMETHODIMP CSkinTabControl::SetSelectedIndex(UINT uiIndex)
 {
 	CComVariant vContainers;
@@ -77,7 +83,7 @@ STDMETHODIMP CSkinTabControl::SetSelectedIndex(UINT uiIndex)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight)
+STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight)
 {
 	{
 		CComPtr<IVariantObject> pElement;
@@ -108,19 +114,19 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, IColu
 		}
 	}
 
-	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, m_pLayoutObject, nullptr, m_pImageManagerService, pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, m_pLayoutObject, nullptr, m_pImageManagerService, m_pColumnsInfo));
 	{
 		UINT uiIndex = 0;
-		RETURN_IF_FAILED(pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::LayoutName, &uiIndex));
+		RETURN_IF_FAILED(m_pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::LayoutName, &uiIndex));
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->GetItem(uiIndex, &pColumnsInfoItem));
+		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(uiIndex, &pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));
 		*puiHeight = m_rectHeader.Height();
 	}
 
 	{
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::InfoContainer, &pColumnsInfoItem));
+		RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::InfoContainer, &pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectInfoImage));
 	}
 
@@ -137,8 +143,6 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, IColu
 			m_wndTooltip.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 		}
 
-		m_wndTooltip.UpdateTipText(m_bstrMessage.m_str, m_hWnd, TOOLTIP_ID);
-
 		TOOLINFO ti = { 0 };
 		ti.cbSize = sizeof(ti);
 		ti.hwnd = m_hWnd;
@@ -148,24 +152,23 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, IColu
 		ti.hinst = NULL;
 		m_wndTooltip.Activate(TRUE);
 		m_wndTooltip.AddTool(&ti);
+		m_wndTooltip.UpdateTipText(m_bstrMessage.m_str, m_hWnd, TOOLTIP_ID);
 	}
-
-	m_pColumnsInfo = pColumnsInfo;
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::EraseBackground(IColumnsInfo* pColumnsInfo, HDC hdc)
+STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 {
 	if (m_rectHeader.IsRectEmpty())
 		return S_OK;
 
-	RETURN_IF_FAILED(m_pLayoutManager->EraseBackground(hdc, pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->EraseBackground(hdc, m_pColumnsInfo));
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawHeader(HDC hdc, IColumnsInfo* pColumnsInfo)
+STDMETHODIMP CSkinTabControl::DrawHeader(HDC hdc)
 {
-	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, &(CPoint()), m_pImageManagerService, pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, &(CPoint()), m_pImageManagerService, m_pColumnsInfo));
 	return S_OK;
 }
 

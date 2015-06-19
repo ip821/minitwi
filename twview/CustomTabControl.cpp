@@ -476,7 +476,7 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 	if (m_pSkinTabControl)
 	{
 		CClientDC cdc(m_hWnd);
-		m_pSkinTabControl->MeasureHeader(cdc, pObjArray, m_pColumnsInfo, &clientRect, &uiHeight);
+		m_pSkinTabControl->MeasureHeader(cdc, pObjArray, &clientRect, &uiHeight);
 		m_pSkinTabControl->GetInfoRect(&m_rectInfoImage);
 	}
 
@@ -488,8 +488,9 @@ STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabContr
 {
 	CHECK_E_POINTER(pSkinTabControl);
 	m_pSkinTabControl = pSkinTabControl;
-	AdjustSize();
+	RETURN_IF_FAILED(m_pSkinTabControl->SetColumnsInfo(m_pColumnsInfo));
 	RETURN_IF_FAILED(m_pSkinTabControl->SetSelectedIndex(m_selectedPageIndex));
+	AdjustSize();
 	return S_OK;
 }
 
@@ -536,7 +537,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(ps.hdc, m_pColumnsInfo);
+	m_pSkinTabControl->DrawHeader(ps.hdc);
 	EndPaint(&ps);
 
 	return 0;
@@ -544,7 +545,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 LRESULT CCustomTabControl::OnEraseBackground(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	m_pSkinTabControl->EraseBackground(m_pColumnsInfo, (HDC)wParam);
+	m_pSkinTabControl->EraseBackground((HDC)wParam);
 	return 0;
 }
 

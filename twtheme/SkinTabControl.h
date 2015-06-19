@@ -46,9 +46,10 @@ private:
 public:
 
 	STDMETHOD(SetTheme)(ITheme* pTheme);
-	STDMETHOD(MeasureHeader)(HDC hdc, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
-	STDMETHOD(EraseBackground)(IColumnsInfo* pColumnsInfo, HDC hdc);
-	STDMETHOD(DrawHeader)(HDC hdc, IColumnsInfo* pColumnsInfo);
+	STDMETHOD(SetColumnsInfo)(IColumnsInfo* pColumnsInfo);
+	STDMETHOD(MeasureHeader)(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight);
+	STDMETHOD(EraseBackground)(HDC hdc);
+	STDMETHOD(DrawHeader)(HDC hdc);
 	STDMETHOD(SetErrorInfo)(HWND hWnd, BOOL bError, BSTR bstrMessage);
 	STDMETHOD(SetSelectedIndex)(UINT uiIndex);
 	STDMETHOD(GetInfoRect)(RECT* pRect);
