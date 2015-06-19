@@ -320,6 +320,7 @@
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="GdilPlusUtils.h" />
     <ClInclude Include="LayoutBuilder.h" />
+    <ClInclude Include="LayoutFunctions.h" />
     <ClInclude Include="LayoutManager.h" />
     <ClInclude Include="LayoutPainter.h" />
     <ClInclude Include="Metadata.h" />

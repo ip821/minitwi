@@ -186,6 +186,9 @@
     <ClInclude Include="LayoutPainter.h">
       <Filter>Layout</Filter>
     </ClInclude>
+    <ClInclude Include="LayoutFunctions.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twtheme.rc">

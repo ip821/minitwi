@@ -77,6 +77,7 @@ private:
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	CComPtr<IScrollControl> m_pScrollControl;
+	CComPtr<IVariantObject> m_pLayoutObject;
 	UINT m_cAnimationRefs = 0;
 
 	CRect m_rectChildControlArea;

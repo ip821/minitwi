@@ -166,8 +166,13 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 	{
 		CComPtr<IVariantObject> pElement;
 		RETURN_IF_FAILED(pElements->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pElement));
-		CRect elementRect;
+		CComVariant vVisible;
+		RETURN_IF_FAILED(pElement->GetVariantValue(Twitter::Themes::Metadata::Element::Visible, &vVisible));
+		ATLASSERT(vVisible.vt == VT_BOOL);
+		if (!vVisible.boolVal)
+			continue;
 
+		CRect elementRect;
 		ElementType elementType = ElementType::UnknownValue;
 		RETURN_IF_FAILED(GetElementType(pElement, &elementType));
 

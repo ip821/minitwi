@@ -5,6 +5,7 @@
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
 #include "GdilPlusUtils.h"
+#include "LayoutFunctions.h"
 
 // CSkinTabControl
 
@@ -77,7 +78,34 @@ STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 
 STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight)
 {
-	m_hWnd = hWnd;
+	{
+		CComPtr<IVariantObject> pElement;
+		RETURN_IF_FAILED(LayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pElement));
+		RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVariant(m_bAnimation == TRUE)));
+	}
+
+	{
+		CComPtr<IVariantObject> pElement;
+		RETURN_IF_FAILED(LayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::InfoImage, &pElement));
+
+		if (m_bstrMessage == L"")
+		{
+			RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVariant(false)));
+		}
+		else
+		{
+			RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVariant(true)));
+
+			if (m_bError)
+			{
+				RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::ImageColumn::ImageKey, &CComVariant(Twitter::Themes::Metadata::TabContainer::Images::Error)));
+			}
+			else
+			{
+				RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::ImageColumn::ImageKey, &CComVariant(Twitter::Themes::Metadata::TabContainer::Images::Info)));
+			}
+		}
+	}
 
 	CClientDC hdc(hWnd);
 	CRect resultRect;
@@ -95,6 +123,32 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, ICo
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		RETURN_IF_FAILED(pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::InfoContainer, &pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectInfoImage));
+	}
+
+	if (m_wndTooltip.IsWindow())
+	{
+		m_wndTooltip.DestroyWindow();
+	}
+
+	if (m_bstrMessage != L"")
+	{
+		if (!m_wndTooltip.IsWindow())
+		{
+			m_wndTooltip.Create(NULL, 0, 0, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, WS_EX_TOPMOST);
+			m_wndTooltip.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+		}
+
+		m_wndTooltip.UpdateTipText(m_bstrMessage.m_str, m_hWnd, TOOLTIP_ID);
+
+		TOOLINFO ti = { 0 };
+		ti.cbSize = sizeof(ti);
+		ti.hwnd = m_hWnd;
+		ti.uFlags = TTF_SUBCLASS | TTF_CENTERTIP;
+		ti.rect = m_rectInfoImage;
+		ti.uId = TOOLTIP_ID;
+		ti.hinst = NULL;
+		m_wndTooltip.Activate(TRUE);
+		m_wndTooltip.AddTool(&ti);
 	}
 
 	m_pColumnsInfo = pColumnsInfo;
@@ -116,77 +170,11 @@ STDMETHODIMP CSkinTabControl::DrawHeader(HDC hdc, IColumnsInfo* pColumnsInfo)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc, IColumnsInfo* pColumnsInfo)
+STDMETHODIMP CSkinTabControl::SetErrorInfo(HWND hWnd, BOOL bError, BSTR bstrMessage)
 {
-	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, &(CPoint()), m_pImageManagerService, pColumnsInfo));
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage)
-{
-	if (m_wndTooltip.IsWindow())
-	{
-		m_wndTooltip.UpdateTipText(bstrMessage, m_hWnd, TOOLTIP_ID);
-	}
-
-	int imageWidth = 0;
-	int imageHeight = 0;
-	CBitmap bitmap;
-	if (bError)
-	{
-		imageWidth = m_pBitmapError->GetWidth();
-		imageHeight = m_pBitmapError->GetHeight();
-		m_pBitmapError->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-	}
-	else
-	{
-		imageWidth = m_pBitmapInfo->GetWidth();
-		imageHeight = m_pBitmapInfo->GetHeight();
-		m_pBitmapInfo->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-	}
-
-	CDC cdcBitmap;
-	cdcBitmap.CreateCompatibleDC(hdc);
-	CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
-
-	auto x = m_rectInfoImage.left;
-	auto y = m_rectInfoImage.top;
-	auto width = imageWidth;
-	auto height = imageHeight;
-	static Gdiplus::Color color(Gdiplus::Color::Transparent);
-	TransparentBlt(hdc, x, y, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::StartInfoImage()
-{
-	if (m_wndTooltip.IsWindow())
-	{
-		m_wndTooltip.DestroyWindow();
-	}
-
-	if (!m_wndTooltip.IsWindow())
-	{
-		m_wndTooltip.Create(NULL, 0, 0, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, WS_EX_TOPMOST);
-		m_wndTooltip.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-	}
-
-	TOOLINFO ti = { 0 };
-	ti.cbSize = sizeof(ti);
-	ti.hwnd = m_hWnd;
-	ti.uFlags = TTF_SUBCLASS | TTF_CENTERTIP;
-	ti.rect = m_rectInfoImage;
-	ti.uId = TOOLTIP_ID;
-	ti.hinst = NULL;
-	m_wndTooltip.Activate(TRUE);
-	m_wndTooltip.AddTool(&ti);
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::StopInfoImage()
-{
-	if (m_wndTooltip.IsWindow())
-		m_wndTooltip.DestroyWindow();
+	m_hWnd = hWnd;
+	m_bError = bError;
+	m_bstrMessage = bstrMessage;
 	return S_OK;
 }
 
@@ -199,17 +187,13 @@ STDMETHODIMP CSkinTabControl::AnimationGetParams(UINT* puiMilliseconds)
 
 STDMETHODIMP CSkinTabControl::AnimationStart()
 {
-	CComPtr<IColumnsInfoItem> pColumnsItem;
-	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
-	RETURN_IF_FAILED(pColumnsItem->SetRectBoolProp(Twitter::Themes::Metadata::Element::Visible, true));
+	m_bAnimation = TRUE;
 	return S_OK;
 }
 
 STDMETHODIMP CSkinTabControl::AnimationStop()
 {
-	CComPtr<IColumnsInfoItem> pColumnsItem;
-	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
-	RETURN_IF_FAILED(pColumnsItem->SetRectBoolProp(Twitter::Themes::Metadata::Element::Visible, false));
+	m_bAnimation = FALSE;
 	return S_OK;
 }
 

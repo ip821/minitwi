@@ -57,7 +57,9 @@ STDMETHODIMP CColumnsInfoItem::GetRectBoolProp(BSTR bstrKey, BOOL* pbValue)
 	CComVariant vValue;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(bstrKey, &vValue));
 	if (vValue.vt == VT_I4)
-		*pbValue = vValue.intVal;	
+		*pbValue = vValue.intVal;
+	else if (vValue.vt == VT_BOOL)
+		*pbValue = vValue.boolVal;
 	return S_OK;
 }
 

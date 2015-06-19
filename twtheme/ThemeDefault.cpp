@@ -104,7 +104,10 @@ STDMETHODIMP CThemeDefault::GetLayout(BSTR bstrLayoutName, IVariantObject** ppVa
 	if (m_layoutsMap.find(bstrLayoutName) == m_layoutsMap.end())
 		return E_INVALIDARG;
 
-	return m_layoutsMap[bstrLayoutName]->QueryInterface(ppVariantObject);
+	CComPtr<IVariantObject> pLayout;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLayout));
+	RETURN_IF_FAILED(m_layoutsMap[bstrLayoutName]->CopyTo(pLayout));
+	return pLayout->QueryInterface(ppVariantObject);
 }
 
 STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)

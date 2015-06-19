@@ -3,6 +3,7 @@
 #include "Plugins.h"
 #include "..\twtheme\GdilPlusUtils.h"
 #include "..\twtheme\Metadata.h"
+#include "..\twtheme\LayoutFunctions.h"
 
 CCustomTabControl::~CCustomTabControl()
 {
@@ -33,7 +34,10 @@ STDMETHODIMP CCustomTabControl::StartAnimation()
 	UINT uiMilliseconds = 0;
 	RETURN_IF_FAILED(m_pSkinTabControl->AnimationGetParams(&uiMilliseconds));
 	if (m_pSkinTabControl)
-		m_pSkinTabControl->AnimationStart();
+	{
+		RETURN_IF_FAILED(m_pSkinTabControl->AnimationStart());
+		UpdateChildControlAreaRect();
+	}
 	SetTimer(1, uiMilliseconds);
 	return S_OK;
 }
@@ -51,7 +55,10 @@ STDMETHODIMP CCustomTabControl::StopAnimation(UINT* puiRefs)
 		return S_OK;
 
 	if (m_pSkinTabControl)
-		m_pSkinTabControl->AnimationStop();
+	{
+		RETURN_IF_FAILED(m_pSkinTabControl->AnimationStop());
+		UpdateChildControlAreaRect();
+	}
 	KillTimer(1);
 	CRect rectClient;
 	GetClientRect(&rectClient);
@@ -540,12 +547,6 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
 	m_pSkinTabControl->DrawHeader(ps.hdc, m_pColumnsInfo);
-
-	if (m_cAnimationRefs > 0)
-		m_pSkinTabControl->DrawAnimation(ps.hdc, m_pColumnsInfo);
-	else if (m_bShowInfoImage)
-		m_pSkinTabControl->DrawInfoImage(ps.hdc, m_bInfoImageIsError, m_bstrInfoMessage);
-
 	EndPaint(&ps);
 
 	return 0;
@@ -617,7 +618,9 @@ STDMETHODIMP CCustomTabControl::ShowInfo(BOOL bError, BOOL bInfoImageEnableClick
 	m_bInfoImageIsError = bError;
 	m_bstrInfoMessage = bstrMessage;
 	m_bInfoImageEnableClick = bInfoImageEnableClick;
-	m_pSkinTabControl->StartInfoImage();
+
+	RETURN_IF_FAILED(m_pSkinTabControl->SetErrorInfo(m_hWnd, bError, bstrMessage));
+	UpdateChildControlAreaRect();
 	InvalidateRect(m_rectInfoImage);
 	return S_OK;
 }
@@ -627,7 +630,9 @@ STDMETHODIMP CCustomTabControl::HideInfo()
 	m_bShowInfoImage = FALSE;
 	m_bInfoImageIsError = FALSE;
 	m_bstrInfoMessage.Empty();
-	m_pSkinTabControl->StopInfoImage();
+
+	RETURN_IF_FAILED(m_pSkinTabControl->SetErrorInfo(m_hWnd, FALSE, L""));
+	UpdateChildControlAreaRect();
 	return S_OK;
 }
 

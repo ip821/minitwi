@@ -37,10 +37,14 @@ private:
 	CRect m_rectHeader;
 	CRect m_rectInfoImage;
 	CToolTipCtrl m_wndTooltip;
-	HWND m_hWnd;
+	HWND m_hWnd = 0;
+	BOOL m_bError = FALSE;
+	BOOL m_bAnimation = FALSE;
+	CComBSTR m_bstrMessage;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
 	STDMETHOD(GetResourceStream)(int nId, LPCTSTR lpType, IStream** ppStream);
+	STDMETHOD(SetErrorInfo)(HWND hWnd, BOOL bError, BSTR bstrMessage);
 
 public:
 
@@ -48,11 +52,7 @@ public:
 	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(IColumnsInfo* pColumnsInfo, HDC hdc);
 	STDMETHOD(DrawHeader)(HDC hdc, IColumnsInfo* pColumnsInfo);
-	STDMETHOD(DrawAnimation)(HDC hdc, IColumnsInfo* pColumnsInfo);
-	STDMETHOD(DrawInfoImage)(HDC hdc, BOOL bError, BSTR bstrMessage);
 	STDMETHOD(GetInfoRect)(RECT* pRect);
-	STDMETHOD(StartInfoImage)();
-	STDMETHOD(StopInfoImage)();
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationNextFrame)();
 	STDMETHOD(AnimationStart)();

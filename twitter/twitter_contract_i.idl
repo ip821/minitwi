@@ -289,11 +289,8 @@ interface ISkinTabControl : IUnknown
 	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(IColumnsInfo* pColumnsInfo, HDC hdc);
 	HRESULT DrawHeader(HDC hdc, IColumnsInfo* pColumnsInfo);
-	HRESULT DrawAnimation(HDC hdc, IColumnsInfo* pColumnsInfo);
-	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
 	HRESULT GetInfoRect(RECT* pRect);
-	HRESULT StartInfoImage();
-	HRESULT StopInfoImage();
+	HRESULT SetErrorInfo(HWND hWnd, BOOL bError, BSTR bstrMessage);
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationNextFrame();
 	HRESULT AnimationStart();
