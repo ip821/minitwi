@@ -276,7 +276,7 @@ interface ILayoutManager : IUnknown
 {
 	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
 	HRESULT EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo);
-	HRESULT PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, [defaultvalue(0)] BSTR bstrItemName);
+	HRESULT PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, [defaultvalue(0)] BSTR bstrItemName);
 };
 
 [

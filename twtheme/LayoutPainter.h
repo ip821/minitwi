@@ -24,9 +24,11 @@ private:
 	STDMETHOD(PaintTextColumn)(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem);
 	STDMETHOD(PaintImageColumn)(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfoItem* pColumnInfoItem);
 	STDMETHOD(PaintMarqueeProgressColumn)(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem);
+	STDMETHOD(PaintLayoutInternal)(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName);
+
 public:
 	STDMETHOD(EraseBackground)(HDC hdc, IColumnsInfo* pColumnInfo);
-	STDMETHOD(PaintLayout)(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName);
+	STDMETHOD(PaintLayout)(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName);
 
 	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
 	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);

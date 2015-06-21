@@ -168,7 +168,7 @@ STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 
 STDMETHODIMP CSkinTabControl::DrawHeader(HDC hdc)
 {
-	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, &(CPoint()), m_pImageManagerService, m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, m_pImageManagerService, m_pColumnsInfo));
 	return S_OK;
 }
 

@@ -37,9 +37,9 @@ STDMETHODIMP CLayoutManager::EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo)
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutManager::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
+STDMETHODIMP CLayoutManager::PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
 {
 	CHECK_E_POINTER(pColumnInfo);
-	RETURN_IF_FAILED(m_pLayoutPainter->PaintLayout(hdc, ptOrigin, pImageManagerService, pColumnInfo, bstrItemName));
+	RETURN_IF_FAILED(m_pLayoutPainter->PaintLayout(hdc, pImageManagerService, pColumnInfo, bstrItemName));
 	return S_OK;
 }

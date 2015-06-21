@@ -47,7 +47,14 @@ STDMETHODIMP CLayoutPainter::EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo)
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
+STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
+{
+	CPoint ptOrigin;
+	RETURN_IF_FAILED(PaintLayoutInternal(hdc, &ptOrigin, pImageManagerService, pColumnInfo, bstrItemName));
+	return S_OK;
+}
+
+STDMETHODIMP CLayoutPainter::PaintLayoutInternal(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
 {
 	CHECK_E_POINTER(pColumnInfo);
 	UINT uiCount = 0;
@@ -76,7 +83,7 @@ STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, POINT* ptOrigin, IImageManager
 				RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
 				CPoint pt(ptOrigin->x + rect.left, ptOrigin->y + rect.top);
 
-				RETURN_IF_FAILED(PaintLayout(hdc, &pt, pImageManagerService, pChildItems, bstrItemName));
+				RETURN_IF_FAILED(PaintLayoutInternal(hdc, &pt, pImageManagerService, pChildItems, bstrItemName));
 				break;
 			}
 			case ElementType::TextColumn:
