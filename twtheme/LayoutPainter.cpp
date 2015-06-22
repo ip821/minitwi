@@ -50,11 +50,11 @@ STDMETHODIMP CLayoutPainter::EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo)
 STDMETHODIMP CLayoutPainter::PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
 {
 	CPoint ptOrigin;
-	RETURN_IF_FAILED(PaintLayoutInternal(hdc, &ptOrigin, pImageManagerService, pColumnInfo, bstrItemName));
+	RETURN_IF_FAILED(PaintLayoutInternal(hdc, pImageManagerService, pColumnInfo, bstrItemName));
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintLayoutInternal(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
+STDMETHODIMP CLayoutPainter::PaintLayoutInternal(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName)
 {
 	CHECK_E_POINTER(pColumnInfo);
 	UINT uiCount = 0;
@@ -75,32 +75,30 @@ STDMETHODIMP CLayoutPainter::PaintLayoutInternal(HDC hdc, POINT* ptOrigin, IImag
 		{
 			case ElementType::HorizontalContainer:
 			{
-				RETURN_IF_FAILED(PaintContainer(hdc, ptOrigin, pColumnInfoItem));
+				RETURN_IF_FAILED(PaintContainer(hdc, pColumnInfoItem));
 				CComPtr<IColumnsInfo> pChildItems;
 				RETURN_IF_FAILED(pColumnInfoItem->GetChildItems(&pChildItems));
 
 				CRect rect;
 				RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
-				CPoint pt(ptOrigin->x + rect.left, ptOrigin->y + rect.top);
-
-				RETURN_IF_FAILED(PaintLayoutInternal(hdc, &pt, pImageManagerService, pChildItems, bstrItemName));
+				RETURN_IF_FAILED(PaintLayoutInternal(hdc, pImageManagerService, pChildItems, bstrItemName));
 				break;
 			}
 			case ElementType::TextColumn:
-				RETURN_IF_FAILED(PaintTextColumn(hdc, ptOrigin, pColumnInfoItem));
+				RETURN_IF_FAILED(PaintTextColumn(hdc, pColumnInfoItem));
 				break;
 			case ElementType::ImageColumn:
-				RETURN_IF_FAILED(PaintImageColumn(hdc, ptOrigin, pImageManagerService, pColumnInfoItem));
+				RETURN_IF_FAILED(PaintImageColumn(hdc, pImageManagerService, pColumnInfoItem));
 				break;
 			case ElementType::MarqueeProgressColumn:
-				RETURN_IF_FAILED(PaintMarqueeProgressColumn(hdc, ptOrigin, pColumnInfoItem));
+				RETURN_IF_FAILED(PaintMarqueeProgressColumn(hdc, pColumnInfoItem));
 				break;
 		}
 	}
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem)
+STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, IColumnsInfoItem* pColumnInfoItem)
 {
 	CComBSTR vBorderBottom;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::BorderBottom, &vBorderBottom));
@@ -114,7 +112,6 @@ STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, POINT* ptOrigin, IColumnsIn
 		brush.CreateSolidBrush(dwColor);
 		CRect rect;
 		RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
-		rect.OffsetRect(*ptOrigin);
 		CComBSTR vBorderBottomWidth;
 		RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::BorderBottomWidth, &vBorderBottomWidth));
 		rect.top = rect.bottom - _wtoi(vBorderBottomWidth);
@@ -123,7 +120,7 @@ STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, POINT* ptOrigin, IColumnsIn
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintTextColumn(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem)
+STDMETHODIMP CLayoutPainter::PaintTextColumn(HDC hdc, IColumnsInfoItem* pColumnInfoItem)
 {
 	CDCHandle cdc(hdc);
 	CComBSTR bstr;
@@ -157,13 +154,12 @@ STDMETHODIMP CLayoutPainter::PaintTextColumn(HDC hdc, POINT* ptOrigin, IColumnsI
 
 	CRect rect;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
-	rect.OffsetRect(*ptOrigin);
 	DrawText(cdc, bstr, bstr.Length(), &rect, 0);
 
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfoItem* pColumnInfoItem)
+STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfoItem* pColumnInfoItem)
 {
 	CComBSTR bstrImageKey;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::ImageColumn::ImageKey, &bstrImageKey));
@@ -179,7 +175,6 @@ STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, POINT* ptOrigin, IImageMa
 
 	CRect rect;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
-	rect.OffsetRect(*ptOrigin);
 	static Gdiplus::Color color(Gdiplus::Color::Transparent);
 	auto res = TransparentBlt(hdc, rect.left, rect.top, bitmapInfo.Width, bitmapInfo.Height, cdcBitmap, 0, 0, bitmapInfo.Width, bitmapInfo.Height, color.ToCOLORREF());
 	if (!res)
@@ -187,7 +182,7 @@ STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, POINT* ptOrigin, IImageMa
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutPainter::PaintMarqueeProgressColumn(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem)
+STDMETHODIMP CLayoutPainter::PaintMarqueeProgressColumn(HDC hdc, IColumnsInfoItem* pColumnInfoItem)
 {
 	CComBSTR bstrValue;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &bstrValue));
@@ -220,7 +215,6 @@ STDMETHODIMP CLayoutPainter::PaintMarqueeProgressColumn(HDC hdc, POINT* ptOrigin
 
 	CRect rect;
 	RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
-	rect.OffsetRect(*ptOrigin);
 	for (int i = 0; i < itemCount; i++)
 	{
 		auto x = rect.left + itemSize * i + itemDistance * (max(0, i));

@@ -20,6 +20,28 @@ STDMETHODIMP CLayoutBuilder::BuildLayout(HDC hdc, RECT* pSourceRect, IVariantObj
 {
 	CRect rect;
 	RETURN_IF_FAILED(BuildHorizontalContainer(hdc, pSourceRect, &rect, pLayoutObject, pValueObject, pImageManagerService, pColumnInfo));
+	CPoint pt;
+	RETURN_IF_FAILED(TranslateRects(&pt, pColumnInfo));
+	return S_OK;
+}
+
+STDMETHODIMP CLayoutBuilder::TranslateRects(POINT* ptOrigin, IColumnsInfo* pColumnsInfo)
+{
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+		CRect rect;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
+		rect.OffsetRect(*ptOrigin);
+		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rect));
+		CComPtr<IColumnsInfo> pChildren;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetChildItems(&pChildren));
+		CPoint pt(rect.left, rect.top);
+		RETURN_IF_FAILED(TranslateRects(&pt, pChildren));
+	}
 	return S_OK;
 }
 

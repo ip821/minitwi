@@ -32,6 +32,7 @@ private:
 	STDMETHOD(SetColumnProps)(IVariantObject* pLayoutObject, IColumnsInfoItem* pColumnsInfoItem);
 	STDMETHOD(GetElementType)(IVariantObject* pVariantObject, ElementType* pElementType);
 	STDMETHOD(ApplyRightAlign)(IVariantObject* pElement, CRect& rectParent, CRect& rect);
+	STDMETHOD(TranslateRects)(POINT* ptOrigin, IColumnsInfo* pColumnsInfo);
 
 public:
 	static HRESULT MapType(BSTR bstrType, ElementType* pElementType);

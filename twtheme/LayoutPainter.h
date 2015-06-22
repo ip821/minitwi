@@ -20,11 +20,11 @@ private:
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 
-	STDMETHOD(PaintContainer)(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem);
-	STDMETHOD(PaintTextColumn)(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem);
-	STDMETHOD(PaintImageColumn)(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfoItem* pColumnInfoItem);
-	STDMETHOD(PaintMarqueeProgressColumn)(HDC hdc, POINT* ptOrigin, IColumnsInfoItem* pColumnInfoItem);
-	STDMETHOD(PaintLayoutInternal)(HDC hdc, POINT* ptOrigin, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName);
+	STDMETHOD(PaintContainer)(HDC hdc, IColumnsInfoItem* pColumnInfoItem);
+	STDMETHOD(PaintTextColumn)(HDC hdc, IColumnsInfoItem* pColumnInfoItem);
+	STDMETHOD(PaintImageColumn)(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfoItem* pColumnInfoItem);
+	STDMETHOD(PaintMarqueeProgressColumn)(HDC hdc, IColumnsInfoItem* pColumnInfoItem);
+	STDMETHOD(PaintLayoutInternal)(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, BSTR bstrItemName);
 
 public:
 	STDMETHOD(EraseBackground)(HDC hdc, IColumnsInfo* pColumnInfo);
