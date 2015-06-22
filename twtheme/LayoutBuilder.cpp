@@ -170,7 +170,7 @@ STDMETHODIMP CLayoutBuilder::ApplyStartMargins(IVariantObject* pElement, CRect& 
 		auto val = _wtoi(vMarginTop.bstrVal);
 		auto height = rect.Height();
 		rect.top += val;
-		rect.bottom= rect.top + height;
+		rect.bottom = rect.top + height;
 	}
 
 	return S_OK;
@@ -201,17 +201,16 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 	{
 		CComPtr<IVariantObject> pElement;
 		RETURN_IF_FAILED(pElements->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pElement));
-		CComVariant vVisible;
-		RETURN_IF_FAILED(pElement->GetVariantValue(Twitter::Themes::Metadata::Element::Visible, &vVisible));
-		ATLASSERT(vVisible.vt == VT_BOOL);
-		if (!vVisible.boolVal)
-			continue;
 
 		CRect elementRect;
 		ElementType elementType = ElementType::UnknownValue;
 		RETURN_IF_FAILED(GetElementType(pElement, &elementType));
 
 		CRect localSourceRect = sourceRect;
+
+		CComVariant vVisible;
+		RETURN_IF_FAILED(pElement->GetVariantValue(Twitter::Themes::Metadata::Element::Visible, &vVisible));
+		ATLASSERT(vVisible.vt == VT_BOOL);
 		switch (elementType)
 		{
 			case ElementType::HorizontalContainer:
@@ -239,9 +238,18 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 				break;
 		}
 
-		sourceRect.left = elementRect.right;
-		containerRect.right = elementRect.right;
-		containerRect.bottom = max(elementRect.bottom, containerRect.bottom);
+		if (vVisible.boolVal)
+		{
+			sourceRect.left = elementRect.right;
+			containerRect.right = elementRect.right;
+			containerRect.bottom = max(elementRect.bottom, containerRect.bottom);
+		}
+		else
+		{
+			elementRect = localSourceRect;
+			elementRect.right = elementRect.left;
+			elementRect.bottom = elementRect.top;
+		}
 	}
 
 	CRect parentRect = *pSourceRect;

@@ -126,7 +126,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT*
 
 	{
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::InfoContainer, &pColumnsInfoItem));
+		RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::InfoImage, &pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectInfoImage));
 	}
 

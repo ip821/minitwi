@@ -129,7 +129,6 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 
 		CString strVersion;
 		CTextFile::ReadAllTextFromStream(pStream, strVersion);
-		//CTextFile::ReadAllText(vFilePath.bstrVal, strVersion);
 		CString strInstalledVersion = GetInstalledVersionInternal();
 		if (LessThanVersion(std::wstring(strInstalledVersion), std::wstring(strVersion)))
 		{
