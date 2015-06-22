@@ -31,7 +31,7 @@ private:
 	STDMETHOD(BuildMarqueeProgressColumn)(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo);
 	STDMETHOD(SetColumnProps)(IVariantObject* pLayoutObject, IColumnsInfoItem* pColumnsInfoItem);
 	STDMETHOD(GetElementType)(IVariantObject* pVariantObject, ElementType* pElementType);
-	STDMETHOD(ApplyRightAlign)(IVariantObject* pElement, CRect& rectParent, CRect& rect);
+	STDMETHOD(ApplyRightAlign)(IColumnsInfo* pChildItems, CRect& rectParent, CRect& rect);
 	STDMETHOD(TranslateRects)(POINT* ptOrigin, IColumnsInfo* pColumnsInfo);
 
 public:

@@ -82,15 +82,27 @@ STDMETHODIMP CLayoutBuilder::GetElementType(IVariantObject* pVariantObject, Elem
 	return S_OK;
 }
 
-STDMETHODIMP CLayoutBuilder::ApplyRightAlign(IVariantObject* pElement, CRect& rectParent, CRect& rect)
+STDMETHODIMP CLayoutBuilder::ApplyRightAlign(IColumnsInfo* pChildItems, CRect& rectParent, CRect& rect)
 {
-	CComVariant vAlignRight;
-	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::AlignRight, &vAlignRight);
-
-	if (vAlignRight.vt == VT_BSTR)
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pChildItems->GetCount(&uiCount));
+	int maxRight = rectParent.right;
+	while (uiCount > 0)
 	{
-		rect.left = rectParent.right - rect.Width();
-		rect.right = rectParent.right;
+		uiCount--;
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pChildItems->GetItem(uiCount, &pColumnsInfoItem));
+		CRect rect;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
+		CComBSTR bstrAlignRight;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::AlignRight, &bstrAlignRight));
+		if (bstrAlignRight == L"true")
+		{
+			rect.left = maxRight - rect.Width();
+			rect.right = maxRight;
+			maxRight -= rect.Width();
+			RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rect));
+		}
 	}
 	return S_OK;
 }
@@ -212,21 +224,18 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 				RETURN_IF_FAILED(BuildTextColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pChildItems));
 				RETURN_IF_FAILED(ApplyEndMargins(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
-				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
 				break;
 			case ElementType::ImageColumn:
 				RETURN_IF_FAILED(ApplyStartMargins(pElement, localSourceRect));
 				RETURN_IF_FAILED(BuildImageColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pImageManagerService, pChildItems));
 				RETURN_IF_FAILED(ApplyEndMargins(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
-				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
 				break;
 			case ElementType::MarqueeProgressColumn:
 				RETURN_IF_FAILED(ApplyStartMargins(pElement, localSourceRect));
 				RETURN_IF_FAILED(BuildMarqueeProgressColumn(hdc, &localSourceRect, &elementRect, pElement, pValueObject, pChildItems));
 				RETURN_IF_FAILED(ApplyEndMargins(pElement, elementRect));
 				RETURN_IF_FAILED(FitToParent(pElement, localSourceRect, elementRect));
-				RETURN_IF_FAILED(ApplyRightAlign(pElement, localSourceRect, elementRect));
 				break;
 		}
 
@@ -241,7 +250,7 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 	RETURN_IF_FAILED(ApplyStartMargins(pLayoutObject, containerRect));
 	RETURN_IF_FAILED(ApplyEndMargins(pLayoutObject, containerRect));
 	RETURN_IF_FAILED(FitToParent(pLayoutObject, parentRect, containerRect));
-	RETURN_IF_FAILED(ApplyRightAlign(pLayoutObject, parentRect, containerRect));
+	RETURN_IF_FAILED(ApplyRightAlign(pChildItems, parentRect, containerRect));
 
 	RETURN_IF_FAILED(SetColumnProps(pLayoutObject, pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(containerRect));
