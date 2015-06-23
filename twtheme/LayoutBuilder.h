@@ -2,6 +2,7 @@
 
 #include "twtheme_i.h"
 #include "ElementType.h"
+#include "Metadata.h"
 
 using namespace ATL;
 

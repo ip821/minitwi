@@ -49,9 +49,9 @@ STDMETHODIMP CThemeFontMap::Initialize(IObjCollection* pObjectCollection)
 		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"bold", &vBold));
 		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"underline", &vUnderline));
 
-		ATLASSERT(vName.vt == VT_BSTR && vFontFamily.vt == VT_BSTR && vSize.vt == VT_R8 && vBold.vt == VT_BOOL && vUnderline.vt == VT_BOOL);
+		ATLASSERT(vName.vt == VT_BSTR && vFontFamily.vt == VT_BSTR && vSize.vt == VT_I4 && vBold.vt == VT_BOOL && vUnderline.vt == VT_BOOL);
 
-		SetFont(vName.bstrVal, vFontFamily.bstrVal, (DWORD)vSize.dblVal, vBold.boolVal, vUnderline.boolVal);
+		SetFont(vName.bstrVal, vFontFamily.bstrVal, vSize.intVal, vBold.boolVal, vUnderline.boolVal);
 	}
 	return S_OK;
 }

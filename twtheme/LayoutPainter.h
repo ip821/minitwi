@@ -1,6 +1,7 @@
 #pragma once
 
 #include "twtheme_i.h"
+#include "Metadata.h"
 
 using namespace ATL;
 

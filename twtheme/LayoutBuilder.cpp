@@ -94,9 +94,9 @@ STDMETHODIMP CLayoutBuilder::ApplyRightAlign(IColumnsInfo* pChildItems, CRect& r
 		RETURN_IF_FAILED(pChildItems->GetItem(uiCount, &pColumnsInfoItem));
 		CRect rect;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-		CComBSTR bstrAlignRight;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::AlignRight, &bstrAlignRight));
-		if (bstrAlignRight == L"true")
+		CComBSTR bstrAlign;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Themes::Metadata::Element::AlignHorizontal, &bstrAlign));
+		if (bstrAlign == Twitter::Themes::Metadata::AlignTypes::Right)
 		{
 			rect.left = maxRight - rect.Width();
 			rect.right = maxRight;
@@ -133,15 +133,15 @@ STDMETHODIMP CLayoutBuilder::ApplyEndMargins(IVariantObject* pElement, CRect& re
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginRight, &vMarginRight);
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginBottom, &vMarginBottom);
 
-	if (vMarginRight.vt == VT_BSTR)
+	if (vMarginRight.vt == VT_I4)
 	{
-		auto val = _wtoi(vMarginRight.bstrVal);
+		auto val = vMarginRight.intVal;
 		rect.right += val;
 	}
 
-	if (vMarginBottom.vt == VT_BSTR)
+	if (vMarginBottom.vt == VT_I4)
 	{
-		auto val = _wtoi(vMarginBottom.bstrVal);
+		auto val = vMarginBottom.intVal;
 		rect.bottom += val;
 	}
 	return S_OK;
@@ -157,17 +157,17 @@ STDMETHODIMP CLayoutBuilder::ApplyStartMargins(IVariantObject* pElement, CRect& 
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginLeft, &vMarginLeft);
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginTop, &vMarginTop);
 
-	if (vMarginLeft.vt == VT_BSTR)
+	if (vMarginLeft.vt == VT_I4)
 	{
-		auto val = _wtoi(vMarginLeft.bstrVal);
+		auto val = vMarginLeft.intVal;
 		auto width = rect.Width();
 		rect.left += val;
 		rect.right = rect.left + width;
 	}
 
-	if (vMarginTop.vt == VT_BSTR)
+	if (vMarginTop.vt == VT_I4)
 	{
-		auto val = _wtoi(vMarginTop.bstrVal);
+		auto val = vMarginTop.intVal;
 		auto height = rect.Height();
 		rect.top += val;
 		rect.bottom = rect.top + height;
@@ -367,13 +367,13 @@ STDMETHODIMP CLayoutBuilder::BuildMarqueeProgressColumn(HDC hdc, RECT* pSourceRe
 	CComVariant vItemCount;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &vItemCount));
 
-	ATLASSERT(vItemSize.vt == VT_BSTR);
-	ATLASSERT(vItemDistance.vt == VT_BSTR);
-	ATLASSERT(vItemCount.vt == VT_BSTR);
+	ATLASSERT(vItemSize.vt == VT_I4);
+	ATLASSERT(vItemDistance.vt == VT_I4);
+	ATLASSERT(vItemCount.vt == VT_I4);
 
-	auto itemSize = _wtoi(vItemSize.bstrVal);
-	auto itemDistance = _wtoi(vItemDistance.bstrVal);
-	auto itemCount = _wtoi(vItemCount.bstrVal);
+	auto itemSize = vItemSize.intVal;
+	auto itemDistance = vItemDistance.intVal;
+	auto itemCount = vItemCount.intVal;
 
 	CRect sourceRect = *pSourceRect;
 	CRect columnRect;

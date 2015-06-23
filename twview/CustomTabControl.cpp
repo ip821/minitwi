@@ -2,8 +2,6 @@
 #include "CustomTabControl.h"
 #include "Plugins.h"
 #include "..\twtheme\GdilPlusUtils.h"
-#include "..\twtheme\Metadata.h"
-#include "..\twtheme\LayoutFunctions.h"
 
 CCustomTabControl::~CCustomTabControl()
 {

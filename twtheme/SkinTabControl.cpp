@@ -203,17 +203,20 @@ STDMETHODIMP CSkinTabControl::AnimationNextFrame()
 {
 	CComPtr<IColumnsInfoItem> pColumnsItem;
 	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
-	CComBSTR bstrValue;
-	RETURN_IF_FAILED(pColumnsItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &bstrValue));
-	CComBSTR bstrItemCount;
-	RETURN_IF_FAILED(pColumnsItem->GetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &bstrItemCount));
+	CComVariant vValue;
+	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &vValue));
+	CComVariant vItemCount;
+	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &vItemCount));
 
-	auto value = _wtoi(bstrValue);
-	auto itemCount = _wtoi(bstrItemCount);
+	ATLASSERT(vValue.vt == VT_I4);
+	ATLASSERT(vItemCount.vt == VT_I4);
+
+	auto value = vValue.intVal;
+	auto itemCount = vItemCount.intVal;
 	value++;
 	if (value == itemCount - 1)
 		value = 0;
-	RETURN_IF_FAILED(pColumnsItem->SetRectStringProp(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, CComBSTR(to_wstring(value).c_str())));
+	RETURN_IF_FAILED(pColumnsItem->SetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &CComVariant(value)));
 	return S_OK;
 }
 

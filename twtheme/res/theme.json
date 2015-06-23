@@ -63,8 +63,8 @@
     {
         "styles": [
             { "name": "", "visible": true },
-            { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "colorSelected": "TabsHeaderSelected", "margin_left": "5", "margin_top": "4" },
-            { "name": "TabContainerHeaderChildContainer", "margin_left": "10", "margin_right": "10", "margin_top": "5", "margin_bottom": "5" }
+            { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "color_selected": "TabsHeaderSelected", "margin_left": 5, "margin_top": 4 },
+            { "name": "TabContainerHeaderChildContainer", "margin_left": 10, "margin_right": 10, "margin_top": 5, "margin_bottom": 5 }
         ]
     },
     {
@@ -73,8 +73,8 @@
                 "name": "MainTabContainerHeaderLayout",
                 "type": "horizontal_container",
                 "fit_horizontal": "parent",
-                "border_bottom": "true",
-                "border_bottom_width": "1",
+                "border_bottom": true,
+                "border_bottom_width": 1,
                 "border_bottom_color": "TwitterDelimiter",
                 "elements": [
                     {
@@ -117,9 +117,9 @@
                         "name": "InfoContainer",
                         "type": "horizontal_container",
                         "style": "TabContainerHeaderChildContainer",
-                        "align_right": "true",
+                        "align_horizontal": "right",
                         "elements": [
-                            { "name": "MarqueeProgressBox", "type": "marquee_progress", "visible": false, "margin_top": "8", "margin_right": "8","value": "0", "item_count": "3", "item_size": "10", "item_distance": "5", "color_active": "TwitterItemAnimationActive", "color_inactive": "TwitterItemAnimationInactive" },
+                            { "name": "MarqueeProgressBox", "type": "marquee_progress", "visible": false, "margin_top": 8, "margin_right": 8,"value": 0, "item_count": 3, "item_size": 10, "item_distance": 5, "color_active": "TwitterItemAnimationActive", "color_inactive": "TwitterItemAnimationInactive" },
                             { "name": "InfoImage", "type": "image_column", "image": "info" }
                         ]
                     }

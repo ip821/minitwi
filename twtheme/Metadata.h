@@ -46,7 +46,7 @@ namespace IP
 					const static CComBSTR Text(L"text");
 					const static CComBSTR Font(L"font");
 					const static CComBSTR Color(L"color");
-					const static CComBSTR ColorSelected(L"colorSelected");
+					const static CComBSTR ColorSelected(L"color_selected");
 				}
 
 				namespace Element
@@ -65,7 +65,12 @@ namespace IP
 					const static CComBSTR BorderBottom(L"border_bottom");
 					const static CComBSTR BorderBottomColor(L"border_bottom_color");
 					const static CComBSTR BorderBottomWidth(L"border_bottom_width");
-					const static CComBSTR AlignRight(L"align_right");
+					const static CComBSTR AlignHorizontal(L"align_horizontal");
+				}
+
+				namespace AlignTypes
+				{
+					const static CComBSTR Right(L"right");
 				}
 
 				namespace LayoutTypes
