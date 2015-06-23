@@ -33,9 +33,9 @@ STDMETHODIMP CThemeColorMap::Initialize(IObjCollection* pObjectCollection)
 	{
 		CComPtr<IVariantObject> pColorObject;
 		RETURN_IF_FAILED(pObjectCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pColorObject));
-		CComVariant vName;
+		CComVar vName;
 		RETURN_IF_FAILED(pColorObject->GetVariantValue(L"name", &vName));
-		CComVariant vColor;
+		CComVar vColor;
 		RETURN_IF_FAILED(pColorObject->GetVariantValue(L"color", &vColor));
 		ATLASSERT(vName.vt == VT_BSTR && vColor.vt == VT_BSTR);
 		auto value = wstring(vColor.bstrVal);

@@ -57,11 +57,11 @@ STDMETHODIMP CFollowService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
-	CComVariant vUserName;
+	CComVar vUserName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 	ATLASSERT(vUserName.vt == VT_BSTR);
 
-	CComVariant vFollowing;
+	CComVar vFollowing;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &vFollowing));
 
 	bool bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
@@ -75,7 +75,7 @@ STDMETHODIMP CFollowService::OnRun(IVariantObject *pResult)
 		RETURN_IF_FAILED(pConnection->FollowUser(vUserName.bstrVal));
 	}
 
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &CComVariant(!bFollowing)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &CComVar(!bFollowing)));
 
 	return S_OK;
 }

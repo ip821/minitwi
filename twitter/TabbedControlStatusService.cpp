@@ -97,7 +97,7 @@ STDMETHODIMP CTabbedControlStatusService::StopAnimation()
 
 STDMETHODIMP CTabbedControlStatusService::OnStart(IVariantObject *pResult)
 {
-	CComVariant vThreadId;
+	CComVar vThreadId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::Id, &vThreadId));
 	CComQIPtr<IThreadService> pThreadService = vThreadId.punkVal;
 	if (m_pThreadServiceStreamingTimeline != pThreadService)
@@ -110,7 +110,7 @@ STDMETHODIMP CTabbedControlStatusService::OnStart(IVariantObject *pResult)
 
 STDMETHODIMP CTabbedControlStatusService::OnFinish(IVariantObject *pResult)
 {
-	CComVariant vThreadId;
+	CComVar vThreadId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::Id, &vThreadId));
 	CComQIPtr<IThreadService> pThreadService = vThreadId.punkVal;
 	if (m_pThreadServiceStreamingTimeline != pThreadService)
@@ -118,12 +118,12 @@ STDMETHODIMP CTabbedControlStatusService::OnFinish(IVariantObject *pResult)
 		RETURN_IF_FAILED(StopAnimation());
 	}
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 
 	if (FAILED(vHr.intVal))
 	{
-		CComVariant vDesc;
+		CComVar vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResultDescription, &vDesc));
 		CComBSTR bstrMsg = L"Unknown error";
 		if (vDesc.vt == VT_BSTR)

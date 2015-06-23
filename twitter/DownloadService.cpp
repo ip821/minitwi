@@ -48,16 +48,16 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 		return E_FAIL;
 
 	HRESULT hr = S_OK;
-	CComVariant vUrl;
+	CComVar vUrl;
 	if (FAILED(hr = pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl)) || vUrl.vt != VT_BSTR)
 	{
 		curl_easy_cleanup(curl);
 		return E_INVALIDARG;
 	}
 
-	CComVariant vKeepFile;
+	CComVar vKeepFile;
 	ASSERT_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::KeepFileFlag, &vKeepFile));
-	CComVariant vExt;
+	CComVar vExt;
 	ASSERT_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Extension, &vExt));
 
 	CString strFilePath;
@@ -144,14 +144,14 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 		case CURLE_COULDNT_CONNECT:
 			curlHr = HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 		}
-		RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Thread::HResult, &CComVariant(curlHr)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Thread::HResult, &CComVar(curlHr)));
 		curl_easy_cleanup(curl);
 		return curlHr;
 	}
 
 	curl_easy_cleanup(curl);
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::Path, &CComVariant(strFilePath)));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::StreamObject, &CComVariant(pStream)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::Path, &CComVar(strFilePath)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::File::StreamObject, &CComVar(pStream)));
 	LARGE_INTEGER li = { 0 };
 	RETURN_IF_FAILED(pStream->Seek(li, STREAM_SEEK_SET, nullptr));
 
@@ -160,7 +160,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 
 STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 {
-	CComVariant vUrl;
+	CComVar vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 	ATLASSERT(vUrl.vt == VT_BSTR);
 	if (vUrl.vt == VT_BSTR)
@@ -181,7 +181,7 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
-	CComVariant vUrl;
+	CComVar vUrl;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);

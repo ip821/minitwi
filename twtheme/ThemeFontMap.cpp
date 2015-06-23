@@ -37,11 +37,11 @@ STDMETHODIMP CThemeFontMap::Initialize(IObjCollection* pObjectCollection)
 		CComPtr<IVariantObject> pFontObject;
 		RETURN_IF_FAILED(pObjectCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pFontObject));
 
-		CComVariant vName;
-		CComVariant vFontFamily;
-		CComVariant vSize;
-		CComVariant vBold;
-		CComVariant vUnderline;
+		CComVar vName;
+		CComVar vFontFamily;
+		CComVar vSize;
+		CComVar vBold;
+		CComVar vUnderline;
 
 		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"name", &vName));
 		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"family", &vFontFamily));

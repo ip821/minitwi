@@ -168,7 +168,7 @@ STDMETHODIMP CSearchControl::DoSearch()
 
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(strText)));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVar(strText)));
 		RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObject));
 
 		CComPtr<IThreadService> pThreadService;

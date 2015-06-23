@@ -81,11 +81,11 @@ STDMETHODIMP CUserTimelineService::OnStart(IVariantObject* pResult)
 	if (bEmpty)
 	{
 		UINT uiMaxCount = COUNT_USER_ITEMS;
-		RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVariant(uiMaxCount)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVar(uiMaxCount)));
 	}
 	else
 	{
-		CComVariant vMaxId;
+		CComVar vMaxId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vMaxId));
 		CComPtr<IObjArray> pObjArray;
 		RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pObjArray));
@@ -93,7 +93,7 @@ STDMETHODIMP CUserTimelineService::OnStart(IVariantObject* pResult)
 		{
 			CComPtr<IVariantObject> pFirstItem;
 			RETURN_IF_FAILED(pObjArray->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
-			CComVariant vId;
+			CComVar vId;
 			RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 			RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::SinceId, &vId));
 		}
@@ -126,13 +126,13 @@ STDMETHODIMP CUserTimelineService::OnRun(IVariantObject* pResultObj)
 
 	RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
 
-	CComVariant vMaxId;
+	CComVar vMaxId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vMaxId));
 
-	CComVariant vSinceId;
+	CComVar vSinceId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::SinceId, &vSinceId));
 
-	CComVariant vCount;
+	CComVar vCount;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Count, &vCount));
 
 	CComPtr<IObjArray> pObjectArray;
@@ -144,7 +144,7 @@ STDMETHODIMP CUserTimelineService::OnRun(IVariantObject* pResultObj)
 		vCount.vt == VT_UI4 ? vCount.uintVal : 0,
 		&pObjectArray));
 
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjectArray)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVar(pObjectArray)));
 
 	return S_OK;
 }
@@ -153,7 +153,7 @@ STDMETHODIMP CUserTimelineService::SetVariantObject(IVariantObject* pVariantObje
 {
 	CHECK_E_POINTER(pVariantObject);
 
-	CComVariant vUserScreenName;
+	CComVar vUserScreenName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserScreenName));
 	ATLASSERT(vUserScreenName.vt == VT_BSTR);
 	m_bstrUser = vUserScreenName.bstrVal;
@@ -164,23 +164,23 @@ STDMETHODIMP CUserTimelineService::OnFinish(IVariantObject* pResult)
 {
 	CHECK_E_POINTER(pResult);
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		if (vHr.intVal == COMADMIN_E_USERPASSWDNOTVALID)
 		{
-			RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Timer::RestartFlag, &CComVariant(FALSE)));
+			RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Timer::RestartFlag, &CComVar(FALSE)));
 		}
 		return S_OK;
 	}
 
-	CComVariant vResult;
+	CComVar vResult;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 	{
-		CComVariant vId;
+		CComVar vId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
 		if (vId.vt == VT_BSTR)
 		{

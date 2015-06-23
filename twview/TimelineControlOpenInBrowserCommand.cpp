@@ -42,9 +42,9 @@ STDMETHODIMP CTimelineControlOpenInBrowserCommand::Invoke(REFGUID guidCommand)
 	CComPtr<IVariantObject> pTempObject = m_pVariantObject;
 	m_pVariantObject.Release();
 
-	CComVariant vUserName;
+	CComVar vUserName;
 	RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
-	CComVariant v;
+	CComVar v;
 	RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &v));
 	if (vUserName.vt == VT_BSTR && v.vt == VT_BSTR)
 	{

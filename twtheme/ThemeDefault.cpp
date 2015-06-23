@@ -164,7 +164,7 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 		{
 			CComPtr<IVariantObject> pStyleObject;
 			RETURN_IF_FAILED(pStylesObjCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pStyleObject));
-			CComVariant vName;
+			CComVar vName;
 			RETURN_IF_FAILED(pStyleObject->GetVariantValue(L"name", &vName));
 			ATLASSERT(vName.vt == VT_BSTR);
 			m_stylesMap[vName.bstrVal] = pStyleObject;
@@ -186,7 +186,7 @@ STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
 		{
 			CComPtr<IVariantObject> pLayoutObject;
 			RETURN_IF_FAILED(pLayoutsObjCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pLayoutObject));
-			CComVariant vName;
+			CComVar vName;
 			RETURN_IF_FAILED(pLayoutObject->GetVariantValue(L"name", &vName));
 			ATLASSERT(vName.vt == VT_BSTR);
 			m_layoutsMap[vName.bstrVal] = pLayoutObject;
@@ -210,12 +210,12 @@ STDMETHODIMP CThemeDefault::CopyProps(IVariantObject* pSourceObject, IVariantObj
 		if (filterProps && m_inheritedProps.find(wstring(bstrKey)) == m_inheritedProps.end())
 			continue;
 
-		CComVariant vValue;
+		CComVar vValue;
 		RETURN_IF_FAILED(pDestObject->GetVariantValue(bstrKey, &vValue));
 
 		if (vValue.vt == VT_EMPTY)
 		{
-			CComVariant vProp;
+			CComVar vProp;
 			RETURN_IF_FAILED(pSourceObject->GetVariantValue(bstrKey, &vProp));
 			RETURN_IF_FAILED(pDestObject->SetVariantValue(bstrKey, &vProp));
 		}
@@ -232,7 +232,7 @@ STDMETHODIMP CThemeDefault::ApplyStyles(IVariantObject* pParentObject, IObjArray
 		CComPtr<IVariantObject> pElement;
 		RETURN_IF_FAILED(pElements->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pElement));
 
-		CComVariant vStyle;
+		CComVar vStyle;
 		RETURN_IF_FAILED(pElement->GetVariantValue(L"style", &vStyle));
 		if (vStyle.vt == VT_BSTR)
 		{
@@ -251,7 +251,7 @@ STDMETHODIMP CThemeDefault::ApplyStyle(IVariantObject* pElement, BSTR bstrStyleN
 		RETURN_IF_FAILED(CopyProps(it->second, pElement, false));
 	}
 
-	CComVariant vChildElements;
+	CComVar vChildElements;
 	RETURN_IF_FAILED(pElement->GetVariantValue(L"elements", &vChildElements));
 	if (vChildElements.vt == VT_UNKNOWN)
 	{

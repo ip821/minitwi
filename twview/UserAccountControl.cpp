@@ -205,7 +205,7 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 	UpdateColumnInfo();
 	RETURN_IF_FAILED(m_pFollowStatusThreadService->Run());
 
-	CComVariant vBannerUrl;
+	CComVar vBannerUrl;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl));
 	if (vBannerUrl.vt == VT_BSTR)
 	{
@@ -214,11 +214,11 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 		CComPtr<IVariantObject> pDownloadObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObject));
 		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(Twitter::Metadata::Object::Url, &vBannerUrl));
-		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::ImageUserBanner)));
+		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::ImageUserBanner)));
 		RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObject));
 	}
 
-	CComVariant vUserImage;
+	CComVar vUserImage;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
 	if (vUserImage.vt == VT_BSTR)
 	{
@@ -229,7 +229,7 @@ STDMETHODIMP CUserAccountControl::OnActivate()
 			CComPtr<IVariantObject> pDownloadObjectUserImage;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObjectUserImage));
 			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(Twitter::Metadata::Object::Url, &vUserImage));
-			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::ImageUserImage)));
+			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::ImageUserImage)));
 			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObjectUserImage));
 		}
 	}
@@ -243,15 +243,15 @@ STDMETHODIMP CUserAccountControl::OnDeactivate()
 
 STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 {
-	CComVariant vType;
+	CComVar vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
-	CComVariant vUrl;
+	CComVar vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
-	CComVariant vStream;
+	CComVar vStream;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
 	CComQIPtr<IStream> pStream = vStream.punkVal;
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
@@ -321,7 +321,7 @@ LRESULT CUserAccountControl::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 	if (m_rectUserImage.PtInRect(CPoint(x, y)))
 	{
-		CComVariant vUserImage;
+		CComVar vUserImage;
 		ASSERT_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
 		if (vUserImage.vt != VT_BSTR)
 			return 0;
@@ -330,7 +330,7 @@ LRESULT CUserAccountControl::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 		CComPtr<IVariantObject> pUrlObject;
 		ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
-		ASSERT_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(strUrl)));
+		ASSERT_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(strUrl)));
 		ASSERT_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
 	}
 	else if (m_rectFollowButton.PtInRect(CPoint(x, y)) && !m_bFollowButtonDisabled)
@@ -345,13 +345,13 @@ STDMETHODIMP CUserAccountControl::OnStart(IVariantObject *pResult)
 	m_bFollowButtonDisabled = TRUE;
 	UpdateColumnInfo();
 	Invalidate();
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &CComVariant(m_bFollowing)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &CComVar(m_bFollowing)));
 	return S_OK;
 }
 
 STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
 {
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 
 	if (FAILED(vHr.intVal))
@@ -359,7 +359,7 @@ STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CComVariant vFollowing;
+	CComVar vFollowing;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &vFollowing));
 	m_bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
 	m_bFollowButtonDisabled = FALSE;

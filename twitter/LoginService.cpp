@@ -59,10 +59,10 @@ STDMETHODIMP CLoginService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThreadService));
 	RETURN_IF_FAILED(pTimelineThreadService->Join());
 
-	CComVariant vUser;
+	CComVar vUser;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
 	ATLASSERT(vUser.vt == VT_BSTR);
-	CComVariant vPass;
+	CComVar vPass;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::Password, &vPass));
 	ATLASSERT(vPass.vt == VT_BSTR);
 
@@ -72,8 +72,8 @@ STDMETHODIMP CLoginService::OnRun(IVariantObject *pResult)
 	CComBSTR bstrKey, bstrSecret;
 	RETURN_IF_FAILED(pConnection->GetAuthKeys(vUser.bstrVal, vPass.bstrVal, &bstrKey, &bstrSecret));
 
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &CComVariant(bstrKey)));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &CComVariant(bstrSecret)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &CComVar(bstrKey)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &CComVar(bstrSecret)));
 
 	return S_OK;
 }
@@ -81,14 +81,14 @@ STDMETHODIMP CLoginService::OnRun(IVariantObject *pResult)
 STDMETHODIMP CLoginService::OnFinish(IVariantObject *pResult)
 {
 	RETURN_IF_FAILED(m_pViewControllerService->StopAnimation());
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
 	}
 
-	CComVariant vKey, vSecret, vUser;
+	CComVar vKey, vSecret, vUser;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));

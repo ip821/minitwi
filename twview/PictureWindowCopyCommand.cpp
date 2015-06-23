@@ -35,7 +35,7 @@ STDMETHODIMP CPictureWindowCopyCommand::Invoke(REFGUID guidCommand)
 		{
 			std::wstring str;
 
-			CComVariant vUrl;
+			CComVar vUrl;
 			RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 
 			if (vUrl.vt == VT_BSTR)
@@ -45,7 +45,7 @@ STDMETHODIMP CPictureWindowCopyCommand::Invoke(REFGUID guidCommand)
 
 			if (str.empty())
 			{
-				CComVariant vMediaUrl;
+				CComVar vMediaUrl;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl));
 				str = vMediaUrl.bstrVal;
 			}

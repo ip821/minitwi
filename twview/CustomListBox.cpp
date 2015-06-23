@@ -75,7 +75,7 @@ void CCustomListBox::RemoveItemByIndex(UINT uiIndex)
 	ASSERT_IF_FAILED(m_pItems->RemoveObjectAt(uiIndex));
 	m_columnsInfo.erase(m_columnsInfo.begin() + uiIndex);
 
-	CComVariant vId;
+	CComVar vId;
 	ASSERT_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 	m_animatedColumns.erase(pVariantObject.p);
 }
@@ -160,7 +160,7 @@ void CCustomListBox::OnItemsUpdated()
 		CComPtr<IVariantObject> pVariantObject;
 		ASSERT_IF_FAILED(m_pItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 
-		CComVariant v;
+		CComVar v;
 		ASSERT_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Item::TwitterRelativeTime, &v));
 		if (v.vt == VT_BSTR)
 		{
@@ -185,7 +185,7 @@ void CCustomListBox::OnItemsUpdated()
 void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 {
 	ATLASSERT(m_pSettings);
-	CComVariant vId;
+	CComVar vId;
 	ASSERT_IF_FAILED(pItemObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 
 	CComPtr<IColumnsInfo> pColumnsInfo;
@@ -606,7 +606,7 @@ void CCustomListBox::SetSettings(ISettings* pSettings)
 	m_pSettings = pSettings;
 	CComPtr<ISettings> pTimelineSettings;
 	ASSERT_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathTimeline, &pTimelineSettings));
-	CComVariant vDisableAnimation;
+	CComVar vDisableAnimation;
 	ASSERT_IF_FAILED(pTimelineSettings->GetVariantValue(Twitter::Metadata::Settings::Timeline::DisableAnimation, &vDisableAnimation));
 	m_bEnableAnimation = (vDisableAnimation.vt != VT_I4 || (!vDisableAnimation.intVal));
 }

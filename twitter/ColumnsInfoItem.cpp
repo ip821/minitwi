@@ -36,7 +36,7 @@ STDMETHODIMP CColumnsInfoItem::Clear()
 
 STDMETHODIMP CColumnsInfoItem::SetRectStringProp(BSTR bstrKey, BSTR bstrValue)
 {
-	RETURN_IF_FAILED(m_pVariantObject->SetVariantValue(bstrKey, &CComVariant(bstrValue)));
+	RETURN_IF_FAILED(m_pVariantObject->SetVariantValue(bstrKey, &CComVar(bstrValue)));
 	return S_OK;
 }
 
@@ -48,13 +48,13 @@ STDMETHODIMP CColumnsInfoItem::GetRectStringProp(BSTR bstrKey, BSTR* bstrValue)
 
 STDMETHODIMP CColumnsInfoItem::SetRectBoolProp(BSTR bstrKey, BOOL bValue)
 {
-	RETURN_IF_FAILED(m_pVariantObject->SetVariantValue(bstrKey, &CComVariant(bValue)));
+	RETURN_IF_FAILED(m_pVariantObject->SetVariantValue(bstrKey, &CComVar(bValue)));
 	return S_OK;
 }
 
 STDMETHODIMP CColumnsInfoItem::GetRectBoolProp(BSTR bstrKey, BOOL* pbValue)
 {
-	CComVariant vValue;
+	CComVar vValue;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(bstrKey, &vValue));
 	if (vValue.vt == VT_I4)
 		*pbValue = vValue.intVal;

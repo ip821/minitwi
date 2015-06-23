@@ -112,7 +112,7 @@ STDMETHODIMP CLayoutPainter::PaintContainer(HDC hdc, IColumnsInfoItem* pColumnIn
 		brush.CreateSolidBrush(dwColor);
 		CRect rect;
 		RETURN_IF_FAILED(pColumnInfoItem->GetRect(&rect));
-		CComVariant vBorderBottomWidth;
+		CComVar vBorderBottomWidth;
 		RETURN_IF_FAILED(pColumnInfoItem->GetVariantValue(Twitter::Themes::Metadata::Element::BorderBottomWidth, &vBorderBottomWidth));
 		ATLASSERT(vBorderBottomWidth.vt == VT_I4);
 		rect.top = rect.bottom - vBorderBottomWidth.intVal;
@@ -185,13 +185,13 @@ STDMETHODIMP CLayoutPainter::PaintImageColumn(HDC hdc, IImageManagerService* pIm
 
 STDMETHODIMP CLayoutPainter::PaintMarqueeProgressColumn(HDC hdc, IColumnsInfoItem* pColumnInfoItem)
 {
-	CComVariant vValue;
+	CComVar vValue;
 	RETURN_IF_FAILED(pColumnInfoItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &vValue));
-	CComVariant vItemSize;
+	CComVar vItemSize;
 	RETURN_IF_FAILED(pColumnInfoItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemSize, &vItemSize));
-	CComVariant vItemDistance;
+	CComVar vItemDistance;
 	RETURN_IF_FAILED(pColumnInfoItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemDistance, &vItemDistance));
-	CComVariant vItemCount;
+	CComVar vItemCount;
 	RETURN_IF_FAILED(pColumnInfoItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &vItemCount));
 
 	ATLASSERT(vValue.vt == VT_I4);

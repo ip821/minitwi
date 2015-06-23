@@ -389,7 +389,7 @@ SIZE CSkinTimeline::AddColumn(
 
 void CSkinTimeline::GetValue(IVariantObject* pItemObject, const CComBSTR& bstrColumnName, CString& strValue)
 {
-	CComVariant v;
+	CComVar v;
 	pItemObject->GetVariantValue(bstrColumnName, &v);
 	if (v.vt == VT_BSTR)
 		strValue = v.bstrVal;
@@ -439,7 +439,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		CString strCustomDisabledText;
 		GetValue(pItemObject, Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, strCustomDisabledText);
 
-		CComVariant vDisabled;
+		CComVar vDisabled;
 		pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &vDisabled);
 		auto bDisabled = vDisabled.vt == VT_BOOL && vDisabled.boolVal;
 		auto y = PADDING_Y;
@@ -485,7 +485,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		CString strImageUrl;
 		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::Image, strImageUrl);
 
-		CComVariant vDoubleSize;
+		CComVar vDoubleSize;
 		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &vDoubleSize));
 
 		CSize sizeRetweetedDislpayName;
@@ -708,7 +708,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		std::hash_set<std::wstring> imageUrls;
 
 		{ //Images
-			CComVariant vMediaUrls;
+			CComVar vMediaUrls;
 			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
 			if (vMediaUrls.vt == VT_UNKNOWN)
 			{
@@ -724,7 +724,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						CComPtr<IVariantObject> pMediaObject;
 						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-						CComVariant vMediaUrlShort;
+						CComVar vMediaUrlShort;
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &vMediaUrlShort);
 
 						imageUrls.insert(vMediaUrlShort.bstrVal);
@@ -733,7 +733,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 			}
 		}
 
-		CComVariant vUrls;
+		CComVar vUrls;
 		pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls);
 		if (vUrls.vt == VT_UNKNOWN)
 		{
@@ -774,7 +774,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 		}
 
 		{ //Images
-			CComVariant vMediaUrls;
+			CComVar vMediaUrls;
 			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
 			if (vMediaUrls.vt == VT_UNKNOWN)
 			{
@@ -791,15 +791,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						CComPtr<IVariantObject> pMediaObject;
 						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-						CComVariant vMediaUrlThumb;
+						CComVar vMediaUrlThumb;
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
 						TBITMAP tBitmap = { 0 };
 						if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
 						{
-							CComVariant vHeight;
+							CComVar vHeight;
 							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
-							CComVariant vWidth;
+							CComVar vWidth;
 							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
 							tBitmap.Width = vWidth.intVal;
 							tBitmap.Height = vHeight.intVal;
@@ -819,21 +819,21 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HWND hwndControl, IVariantObject* pItemO
 						CComPtr<IVariantObject> pMediaObject;
 						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-						CComVariant vMediaUrl;
+						CComVar vMediaUrl;
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
 
-						CComVariant vMediaVideoUrl;
+						CComVar vMediaVideoUrl;
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
 
-						CComVariant vMediaUrlThumb;
+						CComVar vMediaUrlThumb;
 						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
 						TBITMAP tBitmap = { 0 };
 						if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
 						{
-							CComVariant vHeight;
+							CComVar vHeight;
 							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
-							CComVariant vWidth;
+							CComVar vWidth;
 							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
 							tBitmap.Width = vWidth.intVal;
 							tBitmap.Height = vHeight.intVal;

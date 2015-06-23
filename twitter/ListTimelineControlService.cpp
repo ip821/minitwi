@@ -97,13 +97,13 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
-	CComVariant vListId;
+	CComVar vListId;
 	RETURN_IF_FAILED(pListVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vListId));
 	ATLASSERT(vListId.vt == VT_BSTR);
 
 	CComPtr<IObjArray> pObjectArray;
 	RETURN_IF_FAILED(pConnection->GetListTweets(vListId.bstrVal, COUNT_ITEMS, &pObjectArray));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjectArray)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVar(pObjectArray)));
 
 	return S_OK;
 }
@@ -121,7 +121,7 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 	CUpdateScope scope(m_pTimelineControl);
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{

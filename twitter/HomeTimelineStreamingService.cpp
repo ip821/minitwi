@@ -119,7 +119,7 @@ STDMETHODIMP CHomeTimelineStreamingService::OnMessages(IObjArray *pObjectArray)
 
 	CComPtr<IVariantObject> pResult;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pResult));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjectArray)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVar(pObjectArray)));
 	RETURN_IF_FAILED(pTimelineQueueService->AddToQueue(pResult));
 
 	//temp, replace with timer

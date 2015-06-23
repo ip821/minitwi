@@ -241,7 +241,7 @@ STDMETHODIMP CTwitterConnection::GetUserSettings(IVariantObject** ppVariantObjec
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObjectSettings));
 	auto settingsObject = value.get()->AsObject();
 	auto userScreenName = settingsObject[L"screen_name"]->AsString();
-	RETURN_IF_FAILED(pVariantObjectSettings->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVariant(userScreenName.c_str())));
+	RETURN_IF_FAILED(pVariantObjectSettings->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVar(userScreenName.c_str())));
 	RETURN_IF_FAILED(pVariantObjectSettings->QueryInterface(ppVariantObject));
 	return S_OK;
 }
@@ -283,19 +283,19 @@ STDMETHODIMP CTwitterConnection::GetLists(IObjArray** ppObjectArray)
 		auto userImageUrl = userObj[L"profile_image_url_https"]->AsString();
 		auto userDisplayName = userObj[L"name"]->AsString();
 
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant(strId.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Name, &CComVariant(strName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Text, &CComVariant(strName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::NormalizedText, &CComVariant(strName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVariant(userScreenName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVariant(userDisplayName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &CComVariant(userImageUrl.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Connection::Metadata::ListObject::TypeId)));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVar(strId.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Name, &CComVar(strName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Text, &CComVar(strName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::NormalizedText, &CComVar(strName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVar(userScreenName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVar(userDisplayName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &CComVar(userImageUrl.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Connection::Metadata::ListObject::TypeId)));
 
 		CComPtr<IVariantObject> pUserVariantObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));
 		RETURN_IF_FAILED(ParseUser(userObj, pUserVariantObject));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &CComVariant(pUserVariantObject)));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &CComVar(pUserVariantObject)));
 
 		RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
 	}
@@ -526,20 +526,20 @@ HRESULT CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pVarian
 	auto statusesCount = value[L"statuses_count"]->AsNumber();
 	auto description = value[L"description"]->AsString();
 	
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVariant(userDisplayName.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVariant(userScreenName.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &CComVariant(userImageUrl.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::BackColor, &CComVariant((int)userBackgroundColor)));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::ForeColor, &CComVariant((int)userForegroundColor)));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::FollowersCount, &CComVariant((int)followersCount)));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::FriendsCount, &CComVariant((int)friendsCount)));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::TweetsCount, &CComVariant((int)statusesCount)));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Description, &CComVariant(description.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVar(userDisplayName.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVar(userScreenName.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &CComVar(userImageUrl.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::BackColor, &CComVar((int)userBackgroundColor)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::ForeColor, &CComVar((int)userForegroundColor)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::FollowersCount, &CComVar((int)followersCount)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::FriendsCount, &CComVar((int)friendsCount)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::TweetsCount, &CComVar((int)statusesCount)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Description, &CComVar(description.c_str())));
 
 	if (value.find(L"profile_banner_url") != value.end())
 	{
 		auto userBannerUrl = value[L"profile_banner_url"]->AsString();
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &CComVariant(userBannerUrl.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &CComVar(userBannerUrl.c_str())));
 	}
 	return S_OK;
 }
@@ -553,7 +553,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	if (itemObject.find(L"in_reply_to_status_id_str") != itemObject.end() && itemObject.find(L"in_reply_to_status_id_str")->second->IsString())
 	{
 		auto inReplyToStatusId = itemObject[L"in_reply_to_status_id_str"]->AsString();
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::InReplyToStatusId, &CComVariant(inReplyToStatusId.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::InReplyToStatusId, &CComVar(inReplyToStatusId.c_str())));
 	}
 
 	if (itemObject.find(L"retweeted_status") != itemObject.end())
@@ -563,13 +563,13 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		retweetedUserDisplayName = retweetedUserObj[L"name"]->AsString();
 		retweetedUserScreenName = retweetedUserObj[L"screen_name"]->AsString();
 		auto idOriginal = retweetStatusObject[L"id_str"]->AsString();
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::OriginalId, &CComVariant(idOriginal.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::OriginalId, &CComVar(idOriginal.c_str())));
 		itemObject = retweetStatusObject;
 
 		CComPtr<IVariantObject> pRetwettedUserVariantObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pRetwettedUserVariantObject));
 		RETURN_IF_FAILED(ParseUser(retweetedUserObj, pRetwettedUserVariantObject));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserObject, &CComVariant(pRetwettedUserVariantObject)));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserObject, &CComVar(pRetwettedUserVariantObject)));
 	}
 
 	auto createdAt = itemObject[L"created_at"]->AsString();
@@ -578,7 +578,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	CComPtr<IVariantObject> pUserVariantObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));
 	RETURN_IF_FAILED(ParseUser(userObj, pUserVariantObject));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &CComVariant(pUserVariantObject)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &CComVar(pUserVariantObject)));
 
 	auto userDisplayName = userObj[L"name"]->AsString();
 	auto userScreenName = userObj[L"screen_name"]->AsString();
@@ -601,7 +601,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 
 	CComPtr<IObjCollection> pMediaObjectCollection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pMediaObjectCollection));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &CComVariant(pMediaObjectCollection)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &CComVar(pMediaObjectCollection)));
 
 	hash_set<wstring> processedMediaUrls;
 
@@ -661,19 +661,19 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	}
 	strText = strText.Trim();
 
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant(id.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVariant(userDisplayName.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVariant(userScreenName.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &CComVariant(userImageUrl.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::NormalizedText, &CComVariant(strText)));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Text, &CComVariant(text.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::CreatedAt, &CComVariant(createdAt.c_str())));
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Connection::Metadata::TweetObject::TypeId)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVar(id.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVar(userDisplayName.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVar(userScreenName.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &CComVar(userImageUrl.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::NormalizedText, &CComVar(strText)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Text, &CComVar(text.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::CreatedAt, &CComVar(createdAt.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Connection::Metadata::TweetObject::TypeId)));
 
 	if (!retweetedUserDisplayName.empty())
 	{
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, &CComVariant(retweetedUserDisplayName.c_str())));
-		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserName, &CComVariant(retweetedUserScreenName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, &CComVar(retweetedUserDisplayName.c_str())));
+		RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserName, &CComVar(retweetedUserScreenName.c_str())));
 	}
 	return S_OK;
 }
@@ -708,9 +708,9 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 		CComPtr<IVariantObject> pMediaObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pMediaObject));
 		RETURN_IF_FAILED(pMediaObjectCollection->AddObject(pMediaObject));
-		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &CComVariant(shortUrl.c_str())));
-		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(url.c_str())));
-		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &CComVariant((url + L":small").c_str())));
+		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &CComVar(shortUrl.c_str())));
+		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(url.c_str())));
+		RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &CComVar((url + L":small").c_str())));
 
 		if (mediaObj.find(L"video_info") != mediaObj.end())
 		{
@@ -718,7 +718,7 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 			auto videoVariantsArray = videoObj[L"variants"]->AsArray();
 			auto firstVariantObj = videoVariantsArray[0]->AsObject();
 			auto strVideoUrl = firstVariantObj[L"url"]->AsString();
-			RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVariant(strVideoUrl.c_str())));
+			RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVar(strVideoUrl.c_str())));
 		}
 
 		if (mediaObj.find(L"sizes") != mediaObj.end())
@@ -728,15 +728,15 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 				auto sizeObj = sizesObj[L"small"]->AsObject();
 				auto height = static_cast<int>(sizeObj[L"h"]->AsNumber());
 				auto width = static_cast<int>(sizeObj[L"w"]->AsNumber());
-				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &CComVariant(width)));
-				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &CComVariant(height)));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &CComVar(width)));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &CComVar(height)));
 			}
 			{
 				auto sizeObj = sizesObj[L"large"]->AsObject();
 				auto height = static_cast<int>(sizeObj[L"h"]->AsNumber());
 				auto width = static_cast<int>(sizeObj[L"w"]->AsNumber());
-				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaWidth, &CComVariant(width)));
-				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaHeight, &CComVariant(height)));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaWidth, &CComVar(width)));
+				RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaHeight, &CComVar(height)));
 			}
 		}
 	}
@@ -746,7 +746,7 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 HRESULT CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, vector<wstring>& urlsVector)
 {
 	CComPtr<IBstrCollection> pBstrCollection;
-	CComVariant vCollection;
+	CComVar vCollection;
 	pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vCollection);
 	if (vCollection.vt == VT_UNKNOWN)
 	{
@@ -763,6 +763,6 @@ HRESULT CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, vector<ws
 	{
 		RETURN_IF_FAILED(pBstrCollection->AddItem(CComBSTR(urlsVector[i].c_str())));
 	}
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &CComVariant(pBstrCollection)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &CComVar(pBstrCollection)));
 	return S_OK;
 }

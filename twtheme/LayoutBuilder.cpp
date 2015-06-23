@@ -49,7 +49,7 @@ STDMETHODIMP CLayoutBuilder::GetElements(IVariantObject* pVariantObject, IObjArr
 {
 	CHECK_E_POINTER(pVariantObject);
 	CHECK_E_POINTER(ppObjArray);
-	CComVariant vElements;
+	CComVar vElements;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Themes::Metadata::Element::Elements, &vElements));
 	ATLASSERT(vElements.vt == VT_UNKNOWN);
 	RETURN_IF_FAILED(vElements.punkVal->QueryInterface(ppObjArray));
@@ -75,7 +75,7 @@ HRESULT CLayoutBuilder::MapType(BSTR bstrType, ElementType* pElementType)
 STDMETHODIMP CLayoutBuilder::GetElementType(IVariantObject* pVariantObject, ElementType* pElementType)
 {
 	CHECK_E_POINTER(pElementType);
-	CComVariant vLayoutType;
+	CComVar vLayoutType;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Themes::Metadata::Element::Type, &vLayoutType));
 	ATLASSERT(vLayoutType.vt == VT_BSTR);
 	RETURN_IF_FAILED(MapType(vLayoutType.bstrVal, pElementType));
@@ -109,8 +109,8 @@ STDMETHODIMP CLayoutBuilder::ApplyRightAlign(IColumnsInfo* pChildItems, CRect& r
 
 STDMETHODIMP CLayoutBuilder::FitToParent(IVariantObject* pElement, CRect& rectParent, CRect& rect)
 {
-	CComVariant vFitHorizantal;
-	CComVariant vFitVertical;
+	CComVar vFitHorizantal;
+	CComVar vFitVertical;
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::FitHorizontal, &vFitHorizantal);
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::FitVertical, &vFitVertical);
 
@@ -128,8 +128,8 @@ STDMETHODIMP CLayoutBuilder::FitToParent(IVariantObject* pElement, CRect& rectPa
 
 STDMETHODIMP CLayoutBuilder::ApplyEndMargins(IVariantObject* pElement, CRect& rect)
 {
-	CComVariant vMarginRight;
-	CComVariant vMarginBottom;
+	CComVar vMarginRight;
+	CComVar vMarginBottom;
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginRight, &vMarginRight);
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginBottom, &vMarginBottom);
 
@@ -151,8 +151,8 @@ STDMETHODIMP CLayoutBuilder::ApplyStartMargins(IVariantObject* pElement, CRect& 
 {
 	CHECK_E_POINTER(pElement);
 
-	CComVariant vMarginLeft;
-	CComVariant vMarginTop;
+	CComVar vMarginLeft;
+	CComVar vMarginTop;
 
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginLeft, &vMarginLeft);
 	pElement->GetVariantValue(Twitter::Themes::Metadata::Element::MarginTop, &vMarginTop);
@@ -208,7 +208,7 @@ STDMETHODIMP CLayoutBuilder::BuildHorizontalContainer(HDC hdc, RECT* pSourceRect
 
 		CRect localSourceRect = sourceRect;
 
-		CComVariant vVisible;
+		CComVar vVisible;
 		RETURN_IF_FAILED(pElement->GetVariantValue(Twitter::Themes::Metadata::Element::Visible, &vVisible));
 		ATLASSERT(vVisible.vt == VT_BOOL);
 		switch (elementType)
@@ -274,12 +274,12 @@ STDMETHODIMP CLayoutBuilder::SetColumnProps(IVariantObject* pLayoutObject, IColu
 	{
 		CComBSTR bstrKey;
 		RETURN_IF_FAILED(pLayoutObject->GetKeyByIndex(i, &bstrKey));
-		CComVariant vValue;
+		CComVar vValue;
 		RETURN_IF_FAILED(pLayoutObject->GetVariantValue(bstrKey, &vValue));
 		RETURN_IF_FAILED(pColumnsInfoItem->SetVariantValue(bstrKey, &vValue));
 	}
 
-	CComVariant vName;
+	CComVar vName;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Name, &vName));
 	ATLASSERT(vName.vt == VT_BSTR);
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, vName.bstrVal));
@@ -288,11 +288,11 @@ STDMETHODIMP CLayoutBuilder::SetColumnProps(IVariantObject* pLayoutObject, IColu
 
 STDMETHODIMP CLayoutBuilder::BuildTextColumn(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo)
 {
-	CComVariant vTextKey;
+	CComVar vTextKey;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::Text, &vTextKey));
 	ATLASSERT(vTextKey.vt == VT_BSTR);
 
-	CComVariant vFont;
+	CComVar vFont;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::Font, &vFont));
 	ATLASSERT(vFont.vt == VT_BSTR);
 
@@ -316,13 +316,13 @@ STDMETHODIMP CLayoutBuilder::BuildTextColumn(HDC hdc, RECT* pSourceRect, RECT* p
 	RETURN_IF_FAILED(SetColumnProps(pLayoutObject, pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(textRect));
 
-	CComVariant vColor;
+	CComVar vColor;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::Color, &vColor));
 	ATLASSERT(vColor.vt == VT_BSTR);
-	CComVariant vColorSelected;
+	CComVar vColorSelected;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::ColorSelected, &vColorSelected));
 	ATLASSERT(vColorSelected.vt == VT_BSTR);
-	CComVariant vText;
+	CComVar vText;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::TextColumn::Text, &vText));
 	ATLASSERT(vText.vt == VT_BSTR);
 
@@ -336,7 +336,7 @@ STDMETHODIMP CLayoutBuilder::BuildTextColumn(HDC hdc, RECT* pSourceRect, RECT* p
 
 STDMETHODIMP CLayoutBuilder::BuildImageColumn(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo)
 {
-	CComVariant vImageKey;
+	CComVar vImageKey;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::ImageColumn::ImageKey, &vImageKey));
 	ATLASSERT(vImageKey.vt == VT_BSTR);
 	TBITMAP bitmapInfo = { 0 };
@@ -360,11 +360,11 @@ STDMETHODIMP CLayoutBuilder::BuildImageColumn(HDC hdc, RECT* pSourceRect, RECT* 
 
 STDMETHODIMP CLayoutBuilder::BuildMarqueeProgressColumn(HDC hdc, RECT* pSourceRect, RECT* pDestRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IColumnsInfo* pColumnInfo)
 {
-	CComVariant vItemSize;
+	CComVar vItemSize;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemSize, &vItemSize));
-	CComVariant vItemDistance;
+	CComVar vItemDistance;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemDistance, &vItemDistance));
-	CComVariant vItemCount;
+	CComVar vItemCount;
 	RETURN_IF_FAILED(pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &vItemCount));
 
 	ATLASSERT(vItemSize.vt == VT_I4);

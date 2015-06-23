@@ -158,9 +158,9 @@ STDMETHODIMP CImageManagerService::Initialize(IObjCollection* pObjectCollection)
 		CComPtr<IVariantObject> pImageObject;
 		RETURN_IF_FAILED(pObjectCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pImageObject));
 
-		CComVariant vName;
-		CComVariant vType;
-		CComVariant vImageDataBase64;
+		CComVar vName;
+		CComVar vType;
+		CComVar vImageDataBase64;
 
 		RETURN_IF_FAILED(pImageObject->GetVariantValue(L"name", &vName));
 		RETURN_IF_FAILED(pImageObject->GetVariantValue(L"type", &vType));

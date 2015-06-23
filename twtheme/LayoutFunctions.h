@@ -13,7 +13,7 @@ static inline HRESULT HrLayoutFindItemByName(IVariantObject* pElement, BSTR bstr
 
 	*ppItem = nullptr;
 
-	CComVariant vName;
+	CComVar vName;
 	pElement->GetVariantValue(IP::Twitter::Themes::Metadata::Element::Name, &vName);
 	if (vName.vt == VT_BSTR && CComBSTR(vName.bstrVal) == bstrName)
 	{
@@ -21,7 +21,7 @@ static inline HRESULT HrLayoutFindItemByName(IVariantObject* pElement, BSTR bstr
 		return S_OK;
 	}
 
-	CComVariant vElements;
+	CComVar vElements;
 	RETURN_IF_FAILED(pElement->GetVariantValue(IP::Twitter::Themes::Metadata::Element::Elements, &vElements));
 
 	if (vElements.vt == VT_UNKNOWN)
@@ -41,7 +41,7 @@ static inline HRESULT HrLayoutFindItemByName(IVariantObject* pElement, BSTR bstr
 	return S_OK;
 }
 
-static inline HRESULT HrLayoutSetVariantValueRecursive(IVariantObject* pElement, BSTR bstrName, CComVariant* pV)
+static inline HRESULT HrLayoutSetVariantValueRecursive(IVariantObject* pElement, BSTR bstrName, CComVar* pV)
 {
 	CHECK_E_POINTER(pElement);
 	CHECK_E_POINTER(bstrName);
@@ -49,7 +49,7 @@ static inline HRESULT HrLayoutSetVariantValueRecursive(IVariantObject* pElement,
 
 	RETURN_IF_FAILED(pElement->SetVariantValue(bstrName, pV));
 
-	CComVariant vElements;
+	CComVar vElements;
 	RETURN_IF_FAILED(pElement->GetVariantValue(IP::Twitter::Themes::Metadata::Element::Elements, &vElements));
 
 	if (vElements.vt == VT_UNKNOWN)

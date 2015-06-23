@@ -89,7 +89,7 @@ STDMETHODIMP CListsTimelineService::OnRun(IVariantObject *pResult)
 
 	CComPtr<IObjArray> pObjectArray;
 	RETURN_IF_FAILED(pConnection->GetLists(&pObjectArray));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVariant(pObjectArray)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVar(pObjectArray)));
 
 	return S_OK;
 }
@@ -101,14 +101,14 @@ STDMETHODIMP CListsTimelineService::OnFinish(IVariantObject *pResult)
 	CUpdateScope scope(m_pTimelineControl);
 	RETURN_IF_FAILED(m_pTimelineControl->Clear());
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
 	}
 
-	CComVariant vResult;
+	CComVar vResult;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
@@ -123,10 +123,10 @@ STDMETHODIMP CListsTimelineService::OnFinish(IVariantObject *pResult)
 	{
 		CComPtr<IVariantObject> pNoListsFoundObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pNoListsFoundObject));
-		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"No lists found")));
-		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"No lists found")));
-		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::CustomTimelineObject)));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVar(L"No lists found")));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVar(L"No lists found")));
+		RETURN_IF_FAILED(pNoListsFoundObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVar(true)));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pNoListsFoundObject, 0));
 	}
 

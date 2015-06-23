@@ -56,7 +56,7 @@ STDMETHODIMP CShowMoreSupportService::OnFinish(IVariantObject* pResult)
 
 	m_bShowMoreRunning = FALSE;
 
-	CComVariant vId;
+	CComVar vId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
 	if (vId.vt == VT_BSTR)
 	{
@@ -68,19 +68,19 @@ STDMETHODIMP CShowMoreSupportService::OnFinish(IVariantObject* pResult)
 		{
 			CComPtr<IVariantObject> pVariantObject;
 			RETURN_IF_FAILED(pAllItems->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-			RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(false)));
+			RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVar(false)));
 			RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&pVariantObject.p, 1));
 		}
 	}
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
 	}
 
-	CComVariant vResult;
+	CComVar vResult;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
 	CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
@@ -91,9 +91,9 @@ STDMETHODIMP CShowMoreSupportService::OnFinish(IVariantObject* pResult)
 	{
 		CComPtr<IVariantObject> pShowMoreObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pShowMoreObject));
-		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(L"Show more")));
-		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(L"Loading...")));
+		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::CustomTimelineObject)));
+		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVar(L"Show more")));
+		RETURN_IF_FAILED(pShowMoreObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVar(L"Loading...")));
 		CComQIPtr<IObjCollection> pObjCollection = pObjectArray;
 		RETURN_IF_FAILED(pObjCollection->AddObject(pShowMoreObject));
 	}
@@ -115,13 +115,13 @@ STDMETHODIMP CShowMoreSupportService::OnColumnClick(IColumnsInfoItem* pColumnsIn
 		{
 			CComPtr<IVariantObject> pVariantObjectItem;
 			RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 2, __uuidof(IVariantObject), (LPVOID*)&pVariantObjectItem));
-			CComVariant vId;
+			CComVar vId;
 			RETURN_IF_FAILED(pVariantObjectItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 
 			{
 				CComPtr<IVariantObject> pVariantObjectItemShowMore;
 				RETURN_IF_FAILED(pObjArray->GetAt(uiCount - 1, __uuidof(IVariantObject), (LPVOID*)&pVariantObjectItemShowMore));
-				RETURN_IF_FAILED(pVariantObjectItemShowMore->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
+				RETURN_IF_FAILED(pVariantObjectItemShowMore->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVar(true)));
 				RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&pVariantObjectItemShowMore.p, 1));
 				RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&pVariantObjectItemShowMore.p, 1));
 			}
@@ -129,7 +129,7 @@ STDMETHODIMP CShowMoreSupportService::OnColumnClick(IColumnsInfoItem* pColumnsIn
 			CComPtr<IVariantObject> pThreadContext;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pThreadContext));
 			RETURN_IF_FAILED(pThreadContext->SetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
-			RETURN_IF_FAILED(pThreadContext->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVariant((UINT)COUNT_ITEMS)));
+			RETURN_IF_FAILED(pThreadContext->SetVariantValue(ObjectModel::Metadata::Object::Count, &CComVar((UINT)COUNT_ITEMS)));
 			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->SetThreadContext(pThreadContext));
 			RETURN_IF_FAILED(m_pThreadServiceShowMoreService->Run());
 			m_bShowMoreRunning = TRUE;

@@ -32,8 +32,8 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
-	CComVariant vKey;
-	CComVariant vSecret;
+	CComVar vKey;
+	CComVar vSecret;
 	
 	if (SUCCEEDED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey)) &&
 		SUCCEEDED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret)) &&
@@ -208,14 +208,14 @@ HRESULT CSettingsControl::SaveEditBoxText(int id, BSTR bstrKey, ISettings* pSett
 
 	if (bstr == NULL)
 		bstr = "";
-	RETURN_IF_FAILED(pSettings->SetVariantValue(bstrKey, &CComVariant(bstr)));
+	RETURN_IF_FAILED(pSettings->SetVariantValue(bstrKey, &CComVar(bstr)));
 	return S_OK;
 }
 
 HRESULT CSettingsControl::LoadEditBoxText(int id, BSTR bstrKey, ISettings* pSettings)
 {
 	CHECK_E_POINTER(pSettings);
-	CComVariant vValue;
+	CComVar vValue;
 	CComBSTR bstr;
 	if (SUCCEEDED(pSettings->GetVariantValue(bstrKey, &vValue)) && vValue.vt == VT_BSTR)
 		bstr = vValue.bstrVal;
@@ -235,8 +235,8 @@ STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 	CComBSTR bstrPass;
 	m_editPass.GetWindowText(&bstrPass);
 
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &CComVariant(bstrUser)));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::Password, &CComVariant(bstrPass)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &CComVar(bstrUser)));
+	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::Password, &CComVar(bstrPass)));
 
 	return S_OK;
 }
@@ -245,11 +245,11 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 {
 	EnableLoginControls(TRUE);
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
-		CComVariant vDesc;
+		CComVar vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResultDescription, &vDesc));
 		RETURN_IF_FAILED(m_pCustomTabControl->ShowInfo(TRUE, FALSE, vDesc.bstrVal));
 		MessageBox(vDesc.bstrVal, L"Error", MB_OK | MB_ICONERROR);

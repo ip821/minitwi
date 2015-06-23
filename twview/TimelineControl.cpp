@@ -268,7 +268,7 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	{
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
-		ASSERT_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Table::Column::Object, &CComVariant(pColumnsInfoItem)));
+		ASSERT_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Table::Column::Object, &CComVar(pColumnsInfoItem)));
 	}
 
 	CComQIPtr<IInitializeWithVariantObject> pInitializeWithVariantObject = m_pCommandSupport;
