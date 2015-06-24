@@ -36,6 +36,11 @@ HRESULT CTwitViewControl::OnActivateInternal()
 	CComPtr<IThreadService> pTimelineThread;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pTimelineThread));
 	RETURN_IF_FAILED(pTimelineThread->Run());
+
+	HWND hWnd = 0;
+	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hWnd));
+	::SetFocus(hWnd);
+
 	return S_OK;
 }
 
