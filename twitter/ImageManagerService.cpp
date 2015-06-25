@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "ImageManagerService.h"
 #include "..\twtheme\GdilPlusUtils.h"
+#include "..\model-libs\json\src\base64.h"
 
 // CImageManagerService
 
@@ -87,7 +88,8 @@ STDMETHODIMP CImageManagerService::AddImageFromStream(BSTR bstrKey, IStream* pSt
 	CHECK_E_POINTER(pStream);
 	{
 		boost::lock_guard<boost::mutex> mutex(m_mutex);
-		m_bitmaps[bstrKey] = std::make_shared<Gdiplus::Bitmap>(pStream);
+		auto pBitmap = std::make_shared<Gdiplus::Bitmap>(pStream);
+		m_bitmaps[bstrKey] = pBitmap;
 	}
 	return S_OK;
 }
@@ -142,6 +144,37 @@ STDMETHODIMP CImageManagerService::SaveImage(BSTR bstrKey, BSTR bstrFilePath)
 		auto status = it->second->Save(bstrFilePath, &clsid, NULL);
 		if (status != Ok)
 			return E_FAIL;
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CImageManagerService::Initialize(IObjCollection* pObjectCollection)
+{
+	CHECK_E_POINTER(pObjectCollection);
+	UINT_PTR uiCount = 0;
+	RETURN_IF_FAILED(pObjectCollection->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pImageObject;
+		RETURN_IF_FAILED(pObjectCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pImageObject));
+
+		CComVar vName;
+		CComVar vType;
+		CComVar vImageDataBase64;
+
+		RETURN_IF_FAILED(pImageObject->GetVariantValue(L"name", &vName));
+		RETURN_IF_FAILED(pImageObject->GetVariantValue(L"type", &vType));
+		RETURN_IF_FAILED(pImageObject->GetVariantValue(L"data", &vImageDataBase64));
+
+		ATLASSERT(vName.vt == VT_BSTR && vType.vt == VT_BSTR && vImageDataBase64.vt == VT_BSTR);
+
+		USES_CONVERSION;
+		auto strData = string(CW2A(vImageDataBase64.bstrVal));
+		auto strDataDecoded = base64_decode(strData);
+		auto lpszDataDecoded = strDataDecoded.c_str();
+		CComPtr<IStream> pStream;
+		pStream.p = SHCreateMemStream((BYTE*)lpszDataDecoded, strDataDecoded.size());
+		RETURN_IF_FAILED(AddImageFromStream(vName.bstrVal, pStream));
 	}
 	return S_OK;
 }

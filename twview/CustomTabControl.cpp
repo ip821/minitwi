@@ -31,6 +31,11 @@ STDMETHODIMP CCustomTabControl::StartAnimation()
 	m_cAnimationRefs++;
 	UINT uiMilliseconds = 0;
 	RETURN_IF_FAILED(m_pSkinTabControl->AnimationGetParams(&uiMilliseconds));
+	if (m_pSkinTabControl)
+	{
+		RETURN_IF_FAILED(m_pSkinTabControl->AnimationStart());
+		UpdateChildControlAreaRect();
+	}
 	SetTimer(1, uiMilliseconds);
 	return S_OK;
 }
@@ -47,6 +52,11 @@ STDMETHODIMP CCustomTabControl::StopAnimation(UINT* puiRefs)
 	if (m_cAnimationRefs > 0)
 		return S_OK;
 
+	if (m_pSkinTabControl)
+	{
+		RETURN_IF_FAILED(m_pSkinTabControl->AnimationStop());
+		UpdateChildControlAreaRect();
+	}
 	KillTimer(1);
 	CRect rectClient;
 	GetClientRect(&rectClient);
@@ -102,7 +112,10 @@ STDMETHODIMP CCustomTabControl::AddPage(IControl *pControl)
 		::ShowWindow(hWnd, SW_HIDE);
 
 	if (m_selectedPageIndex == INVALID_PAGE_INDEX)
+	{
 		SelectPage(0);
+		RETURN_IF_FAILED(UpdateSkinSelectedIndex());
+	}
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(IID_IUnknown, (LPVOID*)&pUnk));
@@ -129,7 +142,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 	UINT uiCount = 0;
 	m_pControls->GetCount(&uiCount);
 	ATLASSERT(dwIndex >= 0 && dwIndex < uiCount);
-	
+
 	if (m_selectedPageIndex != INVALID_PAGE_INDEX)
 	{
 		CComPtr<IControl> pControl;
@@ -187,7 +200,7 @@ void CCustomTabControl::SelectPage(DWORD dwIndex)
 			BitBlt(cdcBitmap, 0, 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap1 : cdcBitmap2, 0, 0, SRCCOPY);
 			BitBlt(cdcBitmap, m_rectChildControlArea.Width(), 0, m_rectChildControlArea.Width(), m_rectChildControlArea.Height(), bRightToLeft ? cdcBitmap2 : cdcBitmap1, 0, 0, SRCCOPY);
 		}
-		
+
 		cdc.SelectBitmap(currentBitmap);
 		HWND hWnd = 0;
 		m_pScrollControl->GetHWND(&hWnd);
@@ -244,7 +257,7 @@ STDMETHODIMP CCustomTabControl::OnEndScroll()
 	m_selectedPageIndex = m_nextSelectedPageIndex;
 	m_nextSelectedPageIndex = INVALID_PAGE_INDEX;
 
-	ASSERT_IF_FAILED(UpdateColumnInfo());
+	ASSERT_IF_FAILED(UpdateSkinSelectedIndex());
 	Invalidate(TRUE);
 	return S_OK;
 }
@@ -440,16 +453,12 @@ STDMETHODIMP CCustomTabControl::Save(ISettings* pSettings)
 	return S_OK;
 }
 
-HRESULT CCustomTabControl::UpdateColumnInfo()
+HRESULT CCustomTabControl::UpdateSkinSelectedIndex()
 {
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
-
-	for (size_t i = 0; i < uiCount; i++)
+	if (m_pSkinTabControl)
 	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, m_selectedPageIndex == static_cast<int>(i)));
+		RETURN_IF_FAILED(m_pSkinTabControl->SetSelectedIndex(m_selectedPageIndex));
+		UpdateChildControlAreaRect();
 	}
 	return S_OK;
 }
@@ -464,10 +473,9 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 	GetClientRect(&clientRect);
 	if (m_pSkinTabControl)
 	{
-		m_pSkinTabControl->MeasureHeader(m_hWnd, pObjArray, m_pColumnsInfo, &clientRect, &uiHeight);
+		CClientDC cdc(m_hWnd);
+		m_pSkinTabControl->MeasureHeader(cdc, pObjArray, &clientRect, &uiHeight);
 		m_pSkinTabControl->GetInfoRect(&m_rectInfoImage);
-
-		ASSERT_IF_FAILED(UpdateColumnInfo());
 	}
 
 	GetClientRect(&m_rectChildControlArea);
@@ -478,6 +486,8 @@ STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabContr
 {
 	CHECK_E_POINTER(pSkinTabControl);
 	m_pSkinTabControl = pSkinTabControl;
+	RETURN_IF_FAILED(m_pSkinTabControl->SetColumnsInfo(m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pSkinTabControl->SetSelectedIndex(m_selectedPageIndex));
 	AdjustSize();
 	return S_OK;
 }
@@ -525,13 +535,7 @@ LRESULT CCustomTabControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	m_pSkinTabControl->DrawHeader(m_pColumnsInfo, ps.hdc, rect);
-
-	if (m_cAnimationRefs > 0)
-		m_pSkinTabControl->DrawAnimation(ps.hdc);
-	else if (m_bShowInfoImage)
-		m_pSkinTabControl->DrawInfoImage(ps.hdc, m_bInfoImageIsError, m_bstrInfoMessage);
-
+	m_pSkinTabControl->DrawHeader(ps.hdc);
 	EndPaint(&ps);
 
 	return 0;
@@ -557,15 +561,21 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	}
 	else
 	{
+		CComPtr<IColumnsInfoItem> pRootContainerItem;
+		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(0, &pRootContainerItem));
+		CComPtr<IColumnsInfo> pChildContainers;
+		ASSERT_IF_FAILED(pRootContainerItem->GetChildItems(&pChildContainers));
 		UINT uiCount = 0;
-		m_pColumnsInfo->GetCount(&uiCount);
+		ASSERT_IF_FAILED(pChildContainers->GetCount(&uiCount));
+		UINT uiControlsCount = 0;
+		ASSERT_IF_FAILED(m_pControls->GetCount(&uiControlsCount));
 		for (size_t i = 0; i < uiCount; i++)
 		{
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-			ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+			ASSERT_IF_FAILED(pChildContainers->GetItem(i, &pColumnsInfoItem));
 			CRect rect;
 			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-			if (rect.PtInRect(CPoint(x, y)))
+			if (rect.PtInRect(CPoint(x, y)) && i < uiControlsCount)
 			{
 				CComPtr<IControl> pControl;
 				m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pControl);
@@ -597,7 +607,9 @@ STDMETHODIMP CCustomTabControl::ShowInfo(BOOL bError, BOOL bInfoImageEnableClick
 	m_bInfoImageIsError = bError;
 	m_bstrInfoMessage = bstrMessage;
 	m_bInfoImageEnableClick = bInfoImageEnableClick;
-	m_pSkinTabControl->StartInfoImage();
+
+	RETURN_IF_FAILED(m_pSkinTabControl->SetErrorInfo(m_hWnd, bError, bstrMessage));
+	UpdateChildControlAreaRect();
 	InvalidateRect(m_rectInfoImage);
 	return S_OK;
 }
@@ -607,7 +619,9 @@ STDMETHODIMP CCustomTabControl::HideInfo()
 	m_bShowInfoImage = FALSE;
 	m_bInfoImageIsError = FALSE;
 	m_bstrInfoMessage.Empty();
-	m_pSkinTabControl->StopInfoImage();
+
+	RETURN_IF_FAILED(m_pSkinTabControl->SetErrorInfo(m_hWnd, FALSE, L""));
+	UpdateChildControlAreaRect();
 	return S_OK;
 }
 

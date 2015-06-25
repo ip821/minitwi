@@ -126,13 +126,13 @@ STDMETHODIMP CTimelineImageService::OnFinish(IVariantObject *pResult)
 
 STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 {
-	CComVariant vType;
+	CComVar vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
 	if (vType.vt != VT_BSTR || CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::Image)
 		return S_OK;
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
@@ -149,13 +149,13 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 		pTimelineControl = m_pTimelineControl;
 	}
 
-	CComVariant vId;
+	CComVar vId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
-	CComVariant vUrl;
+	CComVar vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
-	CComVariant vFilePath;
+	CComVar vFilePath;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
-	CComVariant vItemIndex;
+	CComVar vItemIndex;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &vItemIndex));
 
 	UINT uiCount = 0;
@@ -178,7 +178,7 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 			}
 			else
 			{
-				CComVariant vStream;
+				CComVar vStream;
 				RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
 				CComQIPtr<IStream> pStream = vStream.punkVal;
 				RETURN_IF_FAILED(pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
@@ -209,7 +209,7 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 			CComPtr<IVariantObject> pVariantObject;
 			RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
 
-			CComVariant vId;
+			CComVar vId;
 			RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 
 			vector<wstring> itemUrls;
@@ -228,10 +228,10 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 				{
 					CComPtr<IVariantObject> pDownloadTask;
 					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(url.c_str())));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(url.c_str())));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
-					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &CComVariant(i)));
-					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::Image)));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &CComVar(i)));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::Image)));
 					RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 					urls.insert(url);
 				}
@@ -243,14 +243,14 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 
 HRESULT CTimelineImageService::GetUrls(IVariantObject* pVariantObject, vector<wstring>& urls)
 {
-	CComVariant vUserImage;
+	CComVar vUserImage;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
 	if (vUserImage.vt == VT_BSTR)
 	{
 		urls.push_back(vUserImage.bstrVal);
 	}
 
-	CComVariant vMediaUrls;
+	CComVar vMediaUrls;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls));
 	if (vMediaUrls.vt == VT_UNKNOWN)
 	{
@@ -262,7 +262,7 @@ HRESULT CTimelineImageService::GetUrls(IVariantObject* pVariantObject, vector<ws
 			CComPtr<IVariantObject> pMediaObject;
 			pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-			CComVariant vMediaUrl;
+			CComVar vMediaUrl;
 			pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrl);
 
 			if (vMediaUrl.vt == VT_BSTR)

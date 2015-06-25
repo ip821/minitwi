@@ -36,6 +36,8 @@ public:
 	STDMETHOD(Clear)();
 	STDMETHOD(IsDisabledSelection)(BOOL* pbDisabled);
 	STDMETHOD(DisableSelection)(BOOL bDisabled);
+	STDMETHOD(FindItemIndex)(BSTR bstrName, UINT* puiIndex);
+	STDMETHOD(FindItemByName)(BSTR bstrName, IColumnsInfoItem** ppColumnsInfoItem);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ColumnsInfo), CColumnsInfo)

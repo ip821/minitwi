@@ -100,14 +100,14 @@ STDMETHODIMP CLoginService::OnRun(IVariantObject *pResult)
 STDMETHODIMP CLoginService::OnFinish(IVariantObject *pResult)
 {
 	RETURN_IF_FAILED(m_pViewControllerService->StopAnimation());
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
 		return S_OK;
 	}
 
-	CComVariant vKey, vSecret, vUser;
+	CComVar vKey, vSecret, vUser;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret));
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));

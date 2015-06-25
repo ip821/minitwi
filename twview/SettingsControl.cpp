@@ -34,8 +34,8 @@ STDMETHODIMP CSettingsControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
-	CComVariant vKey;
-	CComVariant vSecret;
+	CComVar vKey;
+	CComVar vSecret;
 
 	if (SUCCEEDED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey)) &&
 		SUCCEEDED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &vSecret)) &&
@@ -253,11 +253,11 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 {
 	EnableLoginControls(TRUE);
 
-	CComVariant vHr;
+	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 	if (FAILED(vHr.intVal))
 	{
-		CComVariant vDesc;
+		CComVar vDesc;
 		RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResultDescription, &vDesc));
 		RETURN_IF_FAILED(m_pCustomTabControl->ShowInfo(TRUE, FALSE, vDesc.bstrVal));
 		MessageBox(vDesc.bstrVal, L"Error", MB_OK | MB_ICONERROR);

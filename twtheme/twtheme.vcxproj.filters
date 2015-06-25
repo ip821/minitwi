@@ -32,6 +32,15 @@
     <Filter Include="PluginTable">
       <UniqueIdentifier>{fbfafec6-d4a5-4dcc-9997-c2905b9e14a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ZZZMisc\JSON">
+      <UniqueIdentifier>{6ea5426e-2aa7-400a-babb-28c6b6f6a7e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Layout">
+      <UniqueIdentifier>{561dfe75-9c8e-475f-9852-f16e3fbe9ce0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{047d8380-33de-4700-bfea-427183206a10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -78,6 +87,27 @@
     </ClCompile>
     <ClCompile Include="viewmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\json\src\JSON.cpp">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\json\src\JSONValue.cpp">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\objmdl\JSONConverter.cpp">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeColorMap_KnownColors.cpp">
+      <Filter>Theme</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutManager.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutBuilder.cpp">
+      <Filter>Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutPainter.cpp">
+      <Filter>Layout</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +165,30 @@
     <ClInclude Include="viewmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\model-libs\json\src\JSON.h">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\model-libs\json\src\JSONValue.h">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\model-libs\objmdl\JSONConverter.h">
+      <Filter>ZZZMisc\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutManager.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="Metadata.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutBuilder.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutPainter.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutFunctions.h">
+      <Filter>Layout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twtheme.rc">
@@ -144,6 +198,9 @@
   <ItemGroup>
     <None Include="twtheme.def">
       <Filter>ZZZMisc\Source Files</Filter>
+    </None>
+    <None Include="res\theme.json">
+      <Filter>ZZZMisc\Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

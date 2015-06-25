@@ -1,0 +1,130 @@
+[
+    {
+        "colors": [
+            { "name": "BrushBackground", "color": "White" },
+            { "name": "BrushSelected", "color": "Beige" },
+            { "name": "TwitterUserDisplayName", "color": "SteelBlue" },
+            { "name": "TwitterUserName", "color": "Gray" },
+            { "name": "TwitterNormalizedText", "color": "Black" },
+            { "name": "TwitterDelimiter", "color": "LightGray" },
+            { "name": "TwitterUrl", "color": "SteelBlue" },
+            { "name": "TwitterRetweetedUserDisplayName", "color": "Gray" },
+            { "name": "TwitterRetweetedUserName", "color": "Gray" },
+            { "name": "TwitterRelativeTime", "color": "Gray" },
+            { "name": "TwitterColumnShowMoreColumn", "color": "SteelBlue" },
+            { "name": "TabsHeaderSelected", "color": "Black" },
+            { "name": "TabsHeader", "color": "Gray" },
+            { "name": "TwitterItemAnimationActive", "color": "Black" },
+            { "name": "TwitterItemAnimationInactive", "color": "Gray" },
+            { "name": "PictureWindowText", "color": "White" },
+            { "name": "AccountControlText", "color": "White" },
+            { "name": "TwitterItemFollowButtonRect", "color": "DarkGray" },
+            { "name": "TwitterItemFollowButtonRectPushed", "color": "DarkCyan" },
+            { "name": "TwitterItemFollowButtonRectDisabled", "color": "Gray" }
+        ]
+    },
+
+    {
+        "fonts": [
+            { "name": "TwitterRetweetedUserDisplayName", "family": "Tahoma", "size": 8, "bold": false, "underline": false },
+            { "name": "TwitterRetweetedUserName", "family": "Tahoma", "size": 8, "bold": false, "underline": false },
+            { "name": "TwitterRetweetedUserDisplayNameSelected", "family": "Tahoma", "size": 8, "bold": false, "underline": true },
+            { "name": "TwitterRetweetedUserNameSelected", "family": "Tahoma", "size": 8, "bold": false, "underline": true },
+            { "name": "TwitterRelativeTime", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterRelativeTimeSelected", "family": "Tahoma", "size": 10, "bold": false, "underline": true },
+            { "name": "TwitterUserDisplayName", "family": "Tahoma", "size": 10, "bold": true, "underline": false },
+            { "name": "TwitterUserDisplayNameSelected", "family": "Tahoma", "size": 10, "bold": true, "underline": true },
+            { "name": "TwitterUserName", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterUserNameSelected", "family": "Tahoma", "size": 10, "bold": false, "underline": true },
+            { "name": "TwitterNormalizedText", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterNormalizedTextDoubleSize", "family": "Tahoma", "size": 12, "bold": false, "underline": false },
+            { "name": "TwitterUrl", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterUrlSelected", "family": "Tahoma", "size": 10, "bold": false, "underline": true },
+            { "name": "TwitterUrlDoubleSize", "family": "Tahoma", "size": 12, "bold": false, "underline": false },
+            { "name": "TwitterUrlDoubleSizeSelected", "family": "Tahoma", "size": 12, "bold": false, "underline": true },
+            { "name": "TwitterColumnShowMoreColumn", "family": "Tahoma", "size": 10, "bold": true, "underline": false },
+            { "name": "TwitterColumnShowMoreColumnSelected", "family": "Tahoma", "size": 10, "bold": true, "underline": true },
+            { "name": "TabsHeader", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterDisplayNameUserAccount", "family": "Tahoma", "size": 20, "bold": true, "underline": false },
+            { "name": "PictureWindowText", "family": "Tahoma", "size": 10, "bold": false, "underline": false },
+            { "name": "TwitterItemFollowButton", "family": "Tahoma", "size": 12, "bold": false, "underline": false }
+        ]
+    },
+    {
+        "images": [
+            { "name": "home", "type": "png", "data": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEQgAABEIARKiQPwAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAI4SURBVEhL7Za9axRBGMYXgqBowFhEFIwW6unJfX+D5CqLpBGEq9JaWOl/oFcFE9KZdGlCYpH8AyI2gmChVmIKIwTsAiksEiGaD/0947vHZm932bOycODHzLzzzvPOPjt7nPdPtWw2e6ZSqZywaa81m81TxO+Wy+Vmp9MZsvBgrVar3UJkHZGX+Xx+1MKuEXvE2i79VqPROG/h9K1YLGYR+IDAIf0B/VKpVLpoyyrwjPgvQfyqhdM1O7nE92FO4lbkjS/21wUkzuYNOIS5TCYzrJNLHLEj+teyi37wAiTeZIOzBZ5Xq9UM8wXoYllB4oydXbAscZGqQL1e9z3fp5818TWb70KX2CWJMz6ALUhXQOJs/Ax6obN2NRdM3InAHnSDdvlriQXMlvds0qlWArb4wmGCdrkijCsmd7xJnEWJ/0R4hhd8nQ2+LVHiImyXnvpt31MQvEGCbNFLm4mxJY4+u+jd7XLiPOI1Au9A4st28iRb4oi6XRd0+nn4weRpSlviiLpd0ypwh8B9Huk04zhbvhF/BS8MnVLWhPOcXfo9op/mwOPOplwuN0IgyZaOSww0Yg9COT04wON2u33SUt0NuseCHjFyA9y21F7DiomIPAcFNnUrLdX9WE3B96hkY9ACXyFnqf8L9NNXgOAk7ASTgpD8kJd2mfGY4BpeocCTYE6IL/qATd7zCoXCWUT0mUclC30Hn+CjYL4OSbdu5dg1VWu1WqMsrCKQZFUi7N2GRf5lnPuj6nm/AWBsF8WoAfKkAAAAAElFTkSuQmCC" },
+            { "name": "lists", "type": "png", "data": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNWWFMmUAAAPhSURBVEhLlZZ5SNRREMd3t8Oyw06MLo3sMs/12G07pAu3kihIotAOIogSivpLKoQOohsKCiKMiIygIEOJIooMugyiTCyKqKjtJC1UJK8+359vzd3NxIEv897Md+a9N795b9fWhdhTUlIOOp3OD+A246PJyck5YEp8fPzg2NjY/hkZGX1AT3HbQrohJB0PfKAOvAGfWaQW/Ru8A6Vgf2pqai726WlpaVNZPAo9VAubNJ0LwfkmYTF6PsFr0XuZF6FvgqfgI2jApk1UgRJwDNtWdKZJFSoQIiDcBdptFiZHm8dm0+6w6XSzwWq429EnQTEoB9+xtaKfm5BQgbAQfIRUgR4GJnP0icYdLPbExMRB8sObQcwVdDO6xPhDxI5TO6qnvgXp6ekDGesjl+nDMnYBZ0JCQj/Db5eCggIHrgdwW9ArjTlQcOj4jyDVJiUlJapLmJ9kXqgPyPgZ40r0DbAPLNImFCs+vhpQ7Xa7h1gJgwXnOqDylPpJzIcRPJx5X8Zq3ddA3+cX8NEAeTodegd+ffQLhLV/t3bB2QvnOQUzXqfaMnbKbih2k2gk5jlodZXaNQtOOCgHzWCJ4QeKkiEPgY/6T0LvhPwD5FGG0ST0+mufnZ3dIyYmJgxfuMrICT3wv4HvHo9ngJUwWHBuBJ8IOqOSUHMv4zvY1JJqQ51MN/sYG/B4vd4wE6rYXaAO+2lzuwNFO4NQSIIWdrqcUvQ2LusZIHAx/ir8reIwbgJn4UYxV2kfopvZ2ALoofWH4IZwD13BzuElrWCcqd0oARSHyoJNbXoEqJOK4E1gkblwdLJ36Ii2jAiTsaZT1PtucBnkE5CK7z547HK5orFtBktZeCrzSOy9VH9zSgenO45f5dktu5VcgvE8OKTjA33U8aan1ftZ2OahVf/3JFVZXoDTYA28ccpBp0VrI6AGuxPT3/Iwf4lD19qH1u63oWeYLrBqb27yaqCyXMf/AXwFG0yO9UDxV/WMy9YuOO7g0EfzQ7vQLT7F7nPBGGjWQrpk+OLxLUNvAgytR1Gva4P4HRqjTTBuwdlxAQsENaLfom8BPQcuEyKxmzZU7VXCClDFeJJ8FsMv1G8Uia51TB4Mgn+iL0EPCMam1tyHrgUHQspjxIFzMkTVVxess0Xeww1YgB2n4SsDX2nVDEyhvW/EofeFgGQSHQL6aQxepJnWnWb4/g+/B9SDE7TvCOP6rzjUw5AnkkyP2BcSt3RY5BWbyEEvwXcYrTeqEu4sYgNr34XYdWPj4uIiSZQP1IJaQPeg0aCJuX6PV4V0TjdFf13CSahef8JYT3E1uMh8pjZieP8Qm+0PVs+lpJk6LpUAAAAASUVORK5CYII=" },
+            { "name": "search", "type": "png", "data": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAZdEVYdFNvZnR3YXJlAEFkb2JlIEltYWdlUmVhZHlxyWU8AAADtklEQVRIS61WSSi1YRR+fFeZyjzPMiWKhRAKmTZY2JAFWcnGUFJCIRZEFkqGoggbJUMylpKluWRYWJgtTJmn93/P+T/q+10/xVO3ezvv8JzhOee9BkIC/+Dg4ACjo6NYWVnB2toaLi8v4efnh6CgIMTExCAhIUHd+TU0BMfHx2htbUV/fz8URYG5uTmMjIz499PTE+7u7nB2dgZvb2/U1dUhKipKPfk53gk2NjZQXFyMnZ0d+Pr6sqeJiYlwcnJigvv7e6yvr2NgYACbm5u4vb1Ffn4+ioqKYGBgwJfpBREcHR2JpKQkERAQIAoLC4W8gMyfor29XUgHhEyZaGtrU636wQSVlZXCy8tLFBQUiJubG174CjMzMyI4OFgkJyeLxcVF1foR2N/fFzKnHMHW1pZq/hovLy+iqamJHaupqRGPj4/qihYKqYVyHBcXx0ohxXwHdCY1NRWenp5YXV3F9va2uqKFsry8zGqRobKK5ubm1KWv4eDggIiICMoCTk5OVKsWCunc2NgYrq6uvHF4ePjbUZCE7e3tIUWC09NT1aqFcnV1xTIzNDSEzCtkHViq3wGd0+l0LOGHhwfVqoVCeX9+fuYmokj29vYwPT2tLv8f5BCds7Ozg7W1tWrVQgkMDOSmobHg4uKCkJAQ9PX1YWxsTN3yOa6vr7m41IxEohdTU1NC5l9kZGSwrKSqhL+/v5DqEI2NjUKGznZ9kIIQbm5uIi8vTxweHqpWLXQ9PT1VIyMjPOCoDpmZmbCysuKxMD8/j97eXq7J6+srZBPC0dGRHaPCVlRUQOofubm5CAsLY/u/0FVJ+Pj4YHBwELu7u/Dw8EBaWhqio6NhaWnJQ44upu/w8HBYWFhAestDcWJiArGxscjOzoaZmZnemfQ+7Jqbm9HV1cVR5OTkID09He7u7rzpDefn5zy+ae/S0hL3Dw3G0NBQ2NracuM5Ozuru//inYC+Ojo6MDQ0xIWjDqUmIp2/SZHsk5OTsLGx4ZSQ9il9pCaKMCUlBaWlpRqSDw+OHFwYHx9nVVFdKNd0OXlIaqF00hiPjIxEd3c314jSQzUiydJEKCsr4y4nfCAgkDfkGbU/faiJSOcUDdWICk3HOjs70dDQwKmi2fRGEh8fj+rqao5UL8F3QcUmAkqbiYkJk9B11Ff02rW0tPyMgEAk9fX11E8fSKgmPyYg0BSura3F7OwsTE1NWa6ULqrdrxAQ6M8AKWhhYYEjubi4QFZW1t83+bcgCyxKSkr4bS8vL5cWIf4AEdpCx8yK8KwAAAAASUVORK5CYII=" },
+            { "name": "settings", "type": "png", "data": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEQgAABEIARKiQPwAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAALQSURBVEhLpZVdaM1xGMfPDvOyooiLUZRO4rSz834c5+aUcuPMy9S4WCwbrYYb7YKkXCGKG27YBTfiDotabhQ3bLSyRMwoJTSNMfOy8fn+e/7bv6PT/p3zrW/P83ue5/v83s7vfwKVIJlMHkwkEvuw1ZlMZiH+yVQq1WrpykHD+3CYCU7AC/jfFbN0xQjS9B78S9Nf8Lf8eDzebfnyQKNOGvVppdb8BxyEb6EzCbYHPk2n0ztM5h+scA/iT25z7HFia2kWY3yT8YTlXmG3mcw/EFXD0zTQsQzir7GUdtfI+BscwS80NTXNspR/RCKRRYi7oI7jDTZiqSr8ZqiL/gpb8vn8PMv5B8dxDvEYzZ3LxV7HFojvxD5mPKkc/Mi402T/gyQ1yV7sFQs5oFE7sR5y3WqE/wc7CnU0bvNu4gOxWGyTyQKBbDa7WNu3oc66zYolrrawJq5l67NxdSTuL+kLVhPIv6GcU+yCVYVI3Ia36uvr6/hFpPDvSmCiDmqW4R/Gf8hr3aILxB8i9gzbgG3DDsNH1nYaBPdCneuEirD6FWjr7gRjUD/NcRtfYsfzsS2wQZMRr2ERR+FmazuNcDg8h4JrEhfRPVMv39E0YVL/QNPsaTLJ+CpHsQv/EHzhyfV678oPqqLR6HIaPvA0uQhrlNOFcifryb+33Af8Armgo54JJpw6CsajsNbSDuy877g1Vqd7OWUlpUGRHotX+Bm7xNIOdEfE9Z2ZqrPaLispDQpXUNgIX5tQ57/f0g64i1XEnltTfQaOEYvncrkFVjIzELfbBOI4TY7AdXAD1Mt1V/2EF7rUZL4RRHjWM4Goneg+nG+8hy95jKtN5w9sdzvCkaJGpTjBYzoTCoXmmnxmsMos7EfcB7fC3XAAuk3Ps4g89jIcorYDO/V98gVdJCtbaUPdyQGo5j+h3kRAb4K6urK+88Wg6Uaov79+C5WBQOAfrKhmJPuPKVsAAAAASUVORK5CYII=" },
+            { "name": "info", "type": "png", "data": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAKNSURBVEhLlZY7axRRGIZnVyeIt4gJKopgoc0We5u9yDYLKdJEUojb+ANsTJVOWyEQi2i/sbUyib8gCIps0qTINqIiqKBImoALxsTL886eQyaTMzubDx7O5Xu/75w9t1kvxbLNZvNEo9E4UygUzgVBMF6tVscoR3O53GkYQZPpS49gJPArlcrVcrk8VSqVHlOuwjv6/1HuQRdWaM9S1jU4Ydl+dIpplnAHlgjuKWkK72EObWB+UbLl8/kLCB8Q8An+mATDsEOcfuUEdd+kO2g4xk3yryboyBDfgclWq3XMpO0bTh+0LJq5M1gQvAl34T58SNB02JNrpN3ffG0oziUYuCwEP9Ls6vX6RerPEjQ6BPPRX5GlYwpSNxTNK2Z3pVgsNqlvujQC37b5FZ6nc66j6BLGIfA3fIct2HNpLOScIX3G0yVCvOoSRUHzGV7DtsvvYDkcQJeEoPASJfAF/0Nu8CXqPstzg/a3mOYQaDbCAWjoYjlFEf4S8FIB1E+Cc4PjoM96elsIHrieAs0LDcBlPEVbJ86ps6DfDQegMUqjGxfEQXNPA2ipqG+5NFHQrEnv6VWkoYfLKTT85FRcJ8BDe8vhPwS6th1ghI7ZuCAK4jeU4RtD+TTqS4IJTUsvy5CgTqdeRacY/yL35bjE1J+7NFHQrDPx82F2mY4qjjnYiQojdFn7orQE34Q2fT9imhB8PWZ/G+mB74OeiwCcF45++5HRUr2l/Ej5K6qx4Fuo1WpnTd59017gnICOK3AYmPkTuEw692cUkc8AkxoEUu+GBW0PFgYmt6ZnVi8hAfOQ+u6gWdeam2UZ+g9Axg5E8AyJlkm0YRLuwhq08U2b0zLcBz/BNCuLEgnbTjHP+w9ZNWcECHO7PAAAAABJRU5ErkJggg==" },
+            { "name": "error", "type": "png", "data": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAJISURBVEhLrZVLSFRRGMfnTk+pkMIIIRiJiWic98thIocWRbjNae0ujAI3EUGLdCeCKzfVKmgRKoiLFu7cuAhsFUTQptKgIojUIh9pv2/87nDmzO36mPngxzn3e/y/e+bccyawWwuHw0cKhcIpIRKJHFZ3cywWi53MZDKDsATf0un0bZoc13DjhuhDRDcYtwTmC4y9Gm7MEOtCbNEV1wbrMJVIJDo0bX8WCoWOipAImg2Ur/j7S6XSQU3fuyHQB989xIW/xGaSyWRC0/dm+Xz+LAKvREgFl3l+AEPwS30r2Wz23r42nOJBhH6qkHC3WCyeYGyDEcM/T5Oclu3OKLqE+BvGTVeI52saOwR3DL9s+DDztkrxTsZBaiH5MUW/XRHlEWGHTZWNH7Vii/guEw9WRPyM5B54axRXQOAZYScejx/j+YUV3yT+lNF/FSS0whOS17SwCr5ZUhzmrcxf23FYwn+lXC4f2FartyCbdYPE91ZhFSmWu4j5ih0TaPCSz/a06tUa4udImrSLTMi5wOnt9Iq5kDNQdxnKxqVSqVsk/LALLJ7DuOWrgVUsQAxZZ1udSS6X68Q551Vg8IecCZhmvmrFbMarh0+Wg+M+hV73jcmY/Iys9CJz31XAKno35eUDbMp5HB+sBC/kenbcF7JiddDgXTQaPSOfpnns/Zjn7bvhOvO6c+IFTYakQc1d74PcnvJH81nmhv+/kP9JGkiRZ0Kj0OCjNCjDFzPQDOTtGXvkQwrKBSeHCMfVZoB4ux62nS+/xiwQ+AcinvrxdSH3SgAAAABJRU5ErkJggg==" }
+        ]
+    },
+    {
+        "styles": [
+            { "name": "", "visible": true },
+            { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "color_selected": "TabsHeaderSelected", "margin_left": 3, "margin_top": 4 },
+            { "name": "TabContainerHeaderChildContainer", "margin_left": 10, "margin_right": 10, "margin_top": 5, "margin_bottom": 5 }
+        ]
+    },
+    {
+        "layouts": [
+            {
+                "name": "MainTabContainerHeaderLayout",
+                "type": "horizontal_container",
+                "fit_horizontal": "parent",
+                "border_bottom": true,
+                "border_bottom_width": 1,
+                "border_bottom_color": "TwitterDelimiter",
+                "elements": [
+                    {
+                        "name": "HomeContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            { "name": "HomeImage", "type": "image_column", "image": "home" },
+                            { "name": "HomeCaption", "type": "text_column", "text": "Home", "style": "TabContainerHeaderTextColumn" }
+                        ]
+                    },
+                    {
+                        "name": "ListsContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            { "name": "ListsImage", "type": "image_column", "image": "lists" },
+                            { "name": "ListsCaption", "type": "text_column", "text": "Lists", "style": "TabContainerHeaderTextColumn" }
+                        ]
+                    },
+                    {
+                        "name": "SearchContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            { "name": "SearchImage", "type": "image_column", "image": "search" },
+                            { "name": "SearchCaption", "type": "text_column", "text": "Search", "style": "TabContainerHeaderTextColumn" }
+                        ]
+                    },
+                    {
+                        "name": "SettingsContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            { "name": "SettingsImage", "type": "image_column", "image": "settings" },
+                            { "name": "SettingsCaption", "type": "text_column", "text": "Settings", "style": "TabContainerHeaderTextColumn" }
+                        ]
+                    },
+                    {
+                        "name": "InfoContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "align_horizontal": "right",
+                        "elements": [
+                            { "name": "MarqueeProgressBox", "type": "marquee_progress", "visible": false, "margin_top": 8, "margin_right": 8,"value": 0, "item_count": 3, "item_size": 10, "item_distance": 5, "color_active": "TwitterItemAnimationActive", "color_inactive": "TwitterItemAnimationInactive" },
+                            { "name": "InfoImage", "type": "image_column", "image": "info" }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -5,27 +5,15 @@
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
 #include "GdilPlusUtils.h"
+#include "LayoutFunctions.h"
 
 // CSkinTabControl
 
-const size_t MAX_COUNT = 3;
-const int ITEM_SIZE = 10;
-const int ITEM_DISTANCE = 5;
-const int ITEM_OFFSET_Y = 1;
 const int TOOLTIP_ID = 1;
-#define ITEM_DELIMITER_HEIGHT 1
 
-#define PADDING_Y 5
-#define PADDING_X 10
-#define IMAGE_TO_TEXT_DISTANCE 0
-
-#define INDEX_CONTROL_HOME 0
-#define INDEX_CONTROL_LISTS 1
-#define INDEX_CONTROL_SEARCH 2
-#define INDEX_CONTROL_SETTINGS 3
-
-STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
+STDMETHODIMP CSkinTabControl::GetResourceStream(int nId, LPCTSTR lpType, IStream** ppStream)
 {
+	CHECK_E_POINTER(ppStream);
 	HMODULE hModule = _AtlBaseModule.GetModuleInstance();
 	if (!hModule)
 		return E_UNEXPECTED;
@@ -38,28 +26,20 @@ STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, sha
 
 	if (!hGlobal)
 		return HRESULT_FROM_WIN32(GetLastError());
-	
+
 	auto dwSizeInBytes = SizeofResource(hModule, hRsrc);
 	LPVOID pvResourceData = LockResource(hGlobal);
 	CComPtr<IStream> pImageStream;
 	pImageStream.Attach(SHCreateMemStream((LPBYTE)pvResourceData, dwSizeInBytes));
-	pBitmap = shared_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromStream(pImageStream));
+	RETURN_IF_FAILED(pImageStream->QueryInterface(ppStream));
 	return S_OK;
 }
 
-void CSkinTabControl::FinalRelease()
+STDMETHODIMP CSkinTabControl::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
 {
-
-}
-
-HRESULT CSkinTabControl::FinalConstruct()
-{
-	InitImageFromResource(IDR_PICTUREHOME, L"PNG", m_pBitmapHome);
-	InitImageFromResource(IDR_PICTURESEARCH, L"PNG", m_pBitmapSearch);
-	InitImageFromResource(IDR_PICTURESETTINGS, L"PNG", m_pBitmapSettings);
-	InitImageFromResource(IDR_PICTUREERROR, L"PNG", m_pBitmapError);
-	InitImageFromResource(IDR_PICTUREINFO, L"PNG", m_pBitmapInfo);
-	InitImageFromResource(IDR_PICTURELISTS, L"PNG", m_pBitmapLists);
+	CComPtr<IStream> pStream;
+	RETURN_IF_FAILED(GetResourceStream(nId, lpType, &pStream));
+	pBitmap = shared_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromStream(pStream));
 	return S_OK;
 }
 
@@ -67,144 +47,113 @@ CSkinTabControl::CSkinTabControl()
 {
 }
 
-STDMETHODIMP CSkinTabControl::SetColorMap(IThemeColorMap* pThemeColorMap)
+STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 {
-	CHECK_E_POINTER(pThemeColorMap);
-	m_pThemeColorMap = pThemeColorMap;
+	CHECK_E_POINTER(pTheme);
+	m_pTheme = pTheme;
+	RETURN_IF_FAILED(m_pTheme->GetColorMap(&m_pThemeColorMap));
+	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
+	RETURN_IF_FAILED(m_pTheme->GetLayout(Twitter::Themes::Metadata::TabContainer::LayoutName, &m_pLayoutObject));
+	RETURN_IF_FAILED(m_pTheme->GetImageManagerService(&m_pImageManagerService));
+
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::GetColorMap(IThemeColorMap** ppThemeColorMap)
+STDMETHODIMP CSkinTabControl::SetColumnsInfo(IColumnsInfo* pColumnsInfo)
 {
-	CHECK_E_POINTER(ppThemeColorMap);
-	m_pThemeColorMap->QueryInterface(ppThemeColorMap);
+	m_pColumnsInfo = pColumnsInfo;
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::SetFontMap(IThemeFontMap* pThemeFontMap)
+STDMETHODIMP CSkinTabControl::SetSelectedIndex(UINT uiIndex)
 {
-	CHECK_E_POINTER(pThemeFontMap);
-	m_pThemeFontMap = pThemeFontMap;
+	CComVar vContainers;
+	RETURN_IF_FAILED(m_pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Elements, &vContainers));
+	ATLASSERT(vContainers.vt == VT_UNKNOWN);
+	CComQIPtr<IObjArray> pContainers = vContainers.punkVal;
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pContainers->GetCount(&uiCount));
+
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pContainer;
+		ASSERT_IF_FAILED(pContainers->GetAt(i, __uuidof(IVariantObject),(LPVOID*)&pContainer));
+		ASSERT_IF_FAILED(HrLayoutSetVariantValueRecursive(pContainer, Twitter::Themes::Metadata::Element::Selected, &CComVar((BOOL)(uiIndex == static_cast<int>(i)))));
+	}
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight)
+STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight)
 {
-	m_hWnd = hWnd;
-
-	CRect clientRect2 = clientRect;
-	CClientDC hdc(hWnd);
-	CDC cdc;
-	cdc.CreateCompatibleDC(hdc);
-
-	HFONT font = 0;
-	m_pThemeFontMap->GetFont(Twitter::Metadata::Tabs::Header, &font);
-	CDCSelectFontScope cdcSelectFontScope(cdc, font);
-
-	UINT uiHeight = max(m_pBitmapHome->GetHeight(), m_pBitmapSettings->GetHeight()) + PADDING_Y * 2;
-
-	*puiHeight = uiHeight;
-
-	CRect rectHomeColumn;
 	{
-		auto x = PADDING_X;
-		auto y = PADDING_Y;
-		rectHomeColumn = CRect(x, y, x + (int)m_pBitmapHome->GetWidth(), y + (int)m_pBitmapHome->GetHeight());
-
-		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_HOME, __uuidof(IControl2), (LPVOID*)&pControl2));
-		CComBSTR bstr;
-		RETURN_IF_FAILED(pControl2->GetText(&bstr));
-
-		CSize sz;
-		GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
-		rectHomeColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
-
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectHomeColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
-	}
-
-	CRect rectListsColumn;
-	{
-		auto x = rectHomeColumn.right + PADDING_X;
-		auto y = PADDING_Y;
-		rectListsColumn = CRect(x, y, x + (int)m_pBitmapLists->GetWidth(), y + (int)m_pBitmapLists->GetHeight());
-
-		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_LISTS, __uuidof(IControl2), (LPVOID*)&pControl2));
-		CComBSTR bstr;
-		RETURN_IF_FAILED(pControl2->GetText(&bstr));
-
-		CSize sz;
-		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
-		rectListsColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
-
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectListsColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
-	}
-
-	CRect rectSearchColumn;
-	{
-		auto x = rectListsColumn.right + PADDING_X;
-		auto y = PADDING_Y;
-		rectSearchColumn = CRect(x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight());
-
-		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_SEARCH, __uuidof(IControl2), (LPVOID*)&pControl2));
-		CComBSTR bstr;
-		RETURN_IF_FAILED(pControl2->GetText(&bstr));
-
-		CSize sz;
-		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
-		rectSearchColumn.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
-
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectSearchColumn));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
+		CComPtr<IVariantObject> pElement;
+		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pElement));
+		RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVar(m_bAnimation == TRUE)));
 	}
 
 	{
-		auto x = rectSearchColumn.right + PADDING_X;
-		auto y = PADDING_Y;
-		CRect rect = { x, y, x + (int)m_pBitmapSearch->GetWidth(), y + (int)m_pBitmapSearch->GetHeight() };
+		CComPtr<IVariantObject> pElement;
+		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::InfoImage, &pElement));
 
-		CComPtr<IControl2> pControl2;
-		RETURN_IF_FAILED(pObjArray->GetAt(INDEX_CONTROL_SETTINGS, __uuidof(IControl2), (LPVOID*)&pControl2));
-		CComBSTR bstr;
-		RETURN_IF_FAILED(pControl2->GetText(&bstr));
+		if (m_bstrMessage == L"")
+		{
+			RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVar(false)));
+		}
+		else
+		{
+			RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVar(true)));
 
-		CSize sz;
-		GetTextExtentPoint32(hdc, bstr, bstr.Length(), &sz);
-		rect.right += PADDING_X + IMAGE_TO_TEXT_DISTANCE + sz.cx;
+			if (m_bError)
+			{
+				RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::ImageColumn::ImageKey, &CComVar(Twitter::Themes::Metadata::TabContainer::Images::Error)));
+			}
+			else
+			{
+				RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::ImageColumn::ImageKey, &CComVar(Twitter::Themes::Metadata::TabContainer::Images::Info)));
+			}
+		}
+	}
 
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, m_pLayoutObject, nullptr, m_pImageManagerService, m_pColumnsInfo));
+	{
+		UINT uiIndex = 0;
+		RETURN_IF_FAILED(m_pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::LayoutName, &uiIndex));
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rect));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, bstr));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, FALSE));
+		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(uiIndex, &pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));
+		*puiHeight = m_rectHeader.Height();
 	}
 
-	m_rectHeader = clientRect;
-	m_rectHeader.bottom = m_rectHeader.top + uiHeight;
-
-	{ // info image rect
-		int imageWidth = m_pBitmapError->GetWidth();
-		int imageHeight = m_pBitmapError->GetHeight();
-
-		int left = imageWidth + ITEM_DISTANCE;
-		m_rectInfoImage = m_rectHeader;
-		m_rectInfoImage.left = m_rectInfoImage.right - left;
-		m_rectInfoImage.top += m_rectInfoImage.Height() / 2 - imageHeight / 2 + ITEM_OFFSET_Y;
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::InfoImage, &pColumnsInfoItem));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectInfoImage));
 	}
 
+	if (m_wndTooltip.IsWindow())
+	{
+		m_wndTooltip.DestroyWindow();
+	}
+
+	if (m_bstrMessage != L"")
+	{
+		if (!m_wndTooltip.IsWindow())
+		{
+			m_wndTooltip.Create(NULL, 0, 0, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, WS_EX_TOPMOST);
+			m_wndTooltip.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+		}
+
+		TOOLINFO ti = { 0 };
+		ti.cbSize = sizeof(ti);
+		ti.hwnd = m_hWnd;
+		ti.uFlags = TTF_SUBCLASS | TTF_CENTERTIP;
+		ti.rect = m_rectInfoImage;
+		ti.uId = TOOLTIP_ID;
+		ti.hinst = NULL;
+		m_wndTooltip.Activate(TRUE);
+		m_wndTooltip.AddTool(&ti);
+		m_wndTooltip.UpdateTipText(m_bstrMessage.m_str, m_hWnd, TOOLTIP_ID);
+	}
 	return S_OK;
 }
 
@@ -213,214 +162,21 @@ STDMETHODIMP CSkinTabControl::EraseBackground(HDC hdc)
 	if (m_rectHeader.IsRectEmpty())
 		return S_OK;
 
-	CDCHandle cdc(hdc);
-	DWORD dwColor = 0;
-	RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwColor));
-	CBrush brush;
-	brush.CreateSolidBrush(dwColor);
-	cdc.FillRect(m_rectHeader, brush);
+	RETURN_IF_FAILED(m_pLayoutManager->EraseBackground(hdc, m_pColumnsInfo));
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect)
+STDMETHODIMP CSkinTabControl::DrawHeader(HDC hdc)
 {
-	CDCHandle cdc(hdc);
-	cdc.SetBkMode(TRANSPARENT);
-	RETURN_IF_FAILED(DrawTabs(pColumnsInfo, cdc, rect));
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, m_pImageManagerService, m_pColumnsInfo));
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTabControl::DrawTabs(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect)
+STDMETHODIMP CSkinTabControl::SetErrorInfo(HWND hWnd, BOOL bError, BSTR bstrMessage)
 {
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
-
-	{
-		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_TWITTER_DELIMITER, &dwColor));
-		CBrush brush;
-		brush.CreateSolidBrush(dwColor);
-#pragma warning(suppress: 6246)
-		CRect rect = m_rectHeader;
-		rect.top = rect.bottom - ITEM_DELIMITER_HEIGHT;
-		cdc.FillRect(&rect, brush);
-	}
-
-	for (size_t i = 0; i < uiCount; i++)
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-
-		CRect rect;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-
-		UINT imageWidth = 0;
-		UINT imageHeight = 0;
-		CBitmap bitmap;
-		if (i == INDEX_CONTROL_HOME)
-		{
-			m_pBitmapHome->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-			imageWidth = m_pBitmapHome->GetWidth();
-			imageHeight = m_pBitmapHome->GetHeight();
-		}
-		else if (i == INDEX_CONTROL_LISTS)
-		{
-			m_pBitmapLists->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-			imageWidth = m_pBitmapLists->GetWidth();
-			imageHeight = m_pBitmapLists->GetHeight();
-		}
-		else if (i == INDEX_CONTROL_SEARCH)
-		{
-			m_pBitmapSearch->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-			imageWidth = m_pBitmapSearch->GetWidth();
-			imageHeight = m_pBitmapSearch->GetHeight();
-		}
-		else if (i == INDEX_CONTROL_SETTINGS)
-		{
-			m_pBitmapSettings->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-			imageWidth = m_pBitmapSettings->GetWidth();
-			imageHeight = m_pBitmapSettings->GetHeight();
-		}
-
-		CDC cdcBitmap;
-		cdcBitmap.CreateCompatibleDC(cdc);
-		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
-		
-		auto x = rect.left;
-		auto y = rect.top;
-		auto width = imageWidth;
-		auto height = imageHeight;
-		static Gdiplus::Color color(Gdiplus::Color::Transparent);
-		TransparentBlt(cdc, x, y, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
-
-		CComBSTR bstr;
-		pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Text, &bstr);
-
-		HFONT font = 0;
-		m_pThemeFontMap->GetFont(Twitter::Metadata::Tabs::Header, &font);
-		CDCSelectFontScope cdcSelectFontScope(cdc, font);
-
-		CRect rectText = rect;
-		rectText.left += imageWidth + PADDING_X + IMAGE_TO_TEXT_DISTANCE;
-
-		CSize sz;
-		GetTextExtentPoint32(cdc, bstr, bstr.Length(), &sz);
-		rectText.top = rect.top + ((rect.Height() / 2) - sz.cy / 2);
-
-		BOOL bSelected = FALSE;
-		pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Tabs::HeaderSelected, &bSelected);
-
-		DWORD dwColor = 0;
-		if (bSelected)
-		{
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Tabs::HeaderSelected, &dwColor));
-		}
-		else
-		{
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Tabs::Header, &dwColor));
-		}
-		cdc.SetTextColor(dwColor);
-
-		DrawText(cdc, bstr, bstr.Length(), &rectText, 0);
-	}
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::DrawAnimation(HDC hdc)
-{
-	CDCHandle cdc(hdc);
-
-	int left = ITEM_SIZE * MAX_COUNT + ITEM_DISTANCE * MAX_COUNT;
-	CRect rect = m_rectHeader;
-	rect.left = rect.right - left;
-
-	rect.top += rect.Height() / 2 - ITEM_SIZE / 2 + ITEM_OFFSET_Y;
-
-	DWORD dwActiveColor = 0;
-	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_ACTIVE, &dwActiveColor);
-	DWORD dwInactiveColor = 0;
-	m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_INACTIVE, &dwInactiveColor);
-
-	CBrush brushActive;
-	brushActive.CreateSolidBrush(dwActiveColor);
-	CBrush brushInactive;
-	brushInactive.CreateSolidBrush(dwInactiveColor);
-
-	for (int i = 0; i < MAX_COUNT; i++)
-	{
-		auto x = rect.left + ITEM_SIZE * i + ITEM_DISTANCE * (max(0, i));
-		auto y = rect.top;
-		CRect rectItem = { (int)x, y, (int)x + ITEM_SIZE, y + ITEM_SIZE };
-		cdc.FillRect(rectItem, i == m_iFrameCount ? brushActive : brushInactive);
-	}
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage)
-{
-	if (m_wndTooltip.IsWindow())
-	{
-		m_wndTooltip.UpdateTipText(bstrMessage, m_hWnd, TOOLTIP_ID);
-	}
-
-	int imageWidth = 0;
-	int imageHeight = 0;
-	CBitmap bitmap;
-	if (bError)
-	{
-		imageWidth = m_pBitmapError->GetWidth();
-		imageHeight = m_pBitmapError->GetHeight();
-		m_pBitmapError->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-	}
-	else
-	{
-		imageWidth = m_pBitmapInfo->GetWidth();
-		imageHeight = m_pBitmapInfo->GetHeight();
-		m_pBitmapInfo->GetHBITMAP(Gdiplus::Color::Transparent, &bitmap.m_hBitmap);
-	}
-
-	CDC cdcBitmap;
-	cdcBitmap.CreateCompatibleDC(hdc);
-	CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
-	
-	auto x = m_rectInfoImage.left;
-	auto y = m_rectInfoImage.top;
-	auto width = imageWidth;
-	auto height = imageHeight;
-	static Gdiplus::Color color(Gdiplus::Color::Transparent);
-	TransparentBlt(hdc, x, y, width, height, cdcBitmap, 0, 0, width, height, color.ToCOLORREF());
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::StartInfoImage()
-{
-	if (m_wndTooltip.IsWindow())
-	{
-		m_wndTooltip.DestroyWindow();
-	}
-
-	if (!m_wndTooltip.IsWindow())
-	{
-		m_wndTooltip.Create(NULL, 0, 0, WS_POPUP | TTS_ALWAYSTIP | TTS_BALLOON, WS_EX_TOPMOST);
-		m_wndTooltip.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-	}
-
-	TOOLINFO ti = { 0 };
-	ti.cbSize = sizeof(ti);
-	ti.hwnd = m_hWnd;
-	ti.uFlags = TTF_SUBCLASS | TTF_CENTERTIP;
-	ti.rect = m_rectInfoImage;
-	ti.uId = TOOLTIP_ID;
-	ti.hinst = NULL;
-	m_wndTooltip.Activate(TRUE);
-	m_wndTooltip.AddTool(&ti);
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::StopInfoImage()
-{
-	if (m_wndTooltip.IsWindow())
-		m_wndTooltip.DestroyWindow();
+	m_hWnd = hWnd;
+	m_bError = bError;
+	m_bstrMessage = bstrMessage;
 	return S_OK;
 }
 
@@ -431,11 +187,36 @@ STDMETHODIMP CSkinTabControl::AnimationGetParams(UINT* puiMilliseconds)
 	return S_OK;
 }
 
+STDMETHODIMP CSkinTabControl::AnimationStart()
+{
+	m_bAnimation = TRUE;
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::AnimationStop()
+{
+	m_bAnimation = FALSE;
+	return S_OK;
+}
+
 STDMETHODIMP CSkinTabControl::AnimationNextFrame()
 {
-	m_iFrameCount++;
-	if (m_iFrameCount == MAX_COUNT)
-		m_iFrameCount = 0;
+	CComPtr<IColumnsInfoItem> pColumnsItem;
+	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
+	CComVar vValue;
+	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &vValue));
+	CComVar vItemCount;
+	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &vItemCount));
+
+	ATLASSERT(vValue.vt == VT_I4);
+	ATLASSERT(vItemCount.vt == VT_I4);
+
+	auto value = vValue.intVal;
+	auto itemCount = vItemCount.intVal;
+	value++;
+	if (value == itemCount - 1)
+		value = 0;
+	RETURN_IF_FAILED(pColumnsItem->SetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &CComVar(value)));
 	return S_OK;
 }
 

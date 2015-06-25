@@ -65,20 +65,20 @@ STDMETHODIMP CHomeTimelineControllerService::OnFinish(IVariantObject* pResult)
 	if (!m_running)
 		return S_OK;
 
-	CComVariant vThreadId;
+	CComVar vThreadId;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::Id, &vThreadId));
 	CComQIPtr<IThreadService> pThreadService = vThreadId.punkVal;
 	
 	if (m_pThreadServiceUpdateService == pThreadService)
 	{
-		CComVariant vHr;
+		CComVar vHr;
 		RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
 		if (FAILED(vHr.intVal))
 		{
 			return S_OK;
 		}
 
-		RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Timer::RestartFlag, &CComVariant(FALSE)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Timer::RestartFlag, &CComVar(FALSE)));
 		RETURN_IF_FAILED(m_pTimerService->StopTimer());
 		RETURN_IF_FAILED(m_pThreadServiceStreamingService->Run());
 	}

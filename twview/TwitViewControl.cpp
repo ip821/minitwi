@@ -25,7 +25,7 @@ HRESULT CTwitViewControl::OnActivateInternal()
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObjectCopy));
 	RETURN_IF_FAILED(m_pVariantObject->CopyTo(pVariantObjectCopy));
 	m_pVariantObject = pVariantObjectCopy;
-	RETURN_IF_FAILED(pVariantObjectCopy->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &CComVariant(true)));
+	RETURN_IF_FAILED(pVariantObjectCopy->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &CComVar(true)));
 	RETURN_IF_FAILED(pInit->SetVariantObject(pVariantObjectCopy));
 
 	{
@@ -36,6 +36,11 @@ HRESULT CTwitViewControl::OnActivateInternal()
 	CComPtr<IThreadService> pTimelineThread;
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pTimelineThread));
 	RETURN_IF_FAILED(pTimelineThread->Run());
+
+	HWND hWnd = 0;
+	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hWnd));
+	::SetFocus(hWnd);
+
 	return S_OK;
 }
 

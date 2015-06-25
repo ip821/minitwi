@@ -1,0 +1,29 @@
+<SkinLayout>
+  <Images>
+    <Image Name="RetweetStaticImage" Type="png">
+      <!--Image binary data-->
+    </Image>
+  </Images>
+  <HorizontalContainer Left="0" Right="0" Width="auto" Height="auto">
+    <ImageColumn Name="UserImage" HorizontalAlignment="center" VerticalAlignment="center"/>
+    <VerticalContainer Left="0" Right="0" Width="auto" Height="auto">
+      <HorizontalContainer>
+        <ImageColumn Name="RetweetStaticImage" Image="RetweetStaticImage"/>
+        <TextColumn Name="RetweetUserDisplayName"/>
+        <TextColumn Name="RetweetUserName"/>
+      </HorizontalContainer>
+      <HorizontalContainer>
+        <TextColumn Name="UserDisplayName"/>
+        <TextColumn Name="UserName"/>
+        <TextColumn Name="RelativeTime" HorizontalAlignment="right"/>
+      </HorizontalContainer>
+      <TextColumn Name="Text" TextWrap="true"/>
+      <VerticalContainer>
+        <!--Dynamic url columns-->
+      </VerticalContainer>
+      <HorizontalContainer>
+        <!--Dynamic image columns-->
+      </HorizontalContainer>
+    </VerticalContainer>
+  </HorizontalContainer>
+</SkinLayout>

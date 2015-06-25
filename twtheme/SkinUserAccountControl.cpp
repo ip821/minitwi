@@ -38,7 +38,7 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 	CBitmap bitmap;
 	TBITMAP tBitmap = { 0 };
 
-	CComVariant vBitmapUrl;
+	CComVar vBitmapUrl;
 	pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBitmapUrl);
 	if (vBitmapUrl.vt == VT_BSTR)
 	{
@@ -102,7 +102,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	cdc.SetBkMode(TRANSPARENT);
 	cdc.SetTextColor(dwTextColor);
 
-	CComVariant vDisplayName;
+	CComVar vDisplayName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vDisplayName));
 	ATLASSERT(vDisplayName.vt == VT_BSTR);
 
@@ -114,7 +114,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	CSize szDisplayName;
 	cdc.GetTextExtent(bstrDisplayName, bstrDisplayName.Length(), &szDisplayName);
 
-	CComVariant vScreenName;
+	CComVar vScreenName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vScreenName));
 	ATLASSERT(vScreenName.vt == VT_BSTR);
 	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
@@ -127,7 +127,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 
 	DrawRoundedRect(cdc, rectBox, true);
 
-	CComVariant vUserImage;
+	CComVar vUserImage;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
 	CBitmap bitmapUserImage;
 	if (vUserImage.vt == VT_BSTR && SUCCEEDED(m_pImageManagerService->CreateImageBitmap(vUserImage.bstrVal, &bitmapUserImage.m_hBitmap)))
@@ -158,7 +158,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Connection::Metadata::TweetObject::NormalizedText, &font));
 	CDCSelectFontScope cdcSelectFontScope2(cdc, font);
 
-	CComVariant vDescription;
+	CComVar vDescription;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Description, &vDescription));
 	ATLASSERT(vDescription.vt == VT_BSTR);
 	CComBSTR bstrDescription(vDescription.bstrVal);
@@ -196,7 +196,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 		if (bstrColumnName != Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
 			continue;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &bFollowButtonDisabled));
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, &bFollowButtonDisabled));
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &bFollowing));
 	}
 
@@ -209,11 +209,11 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 
 	if (bFollowButtonDisabled)
 	{
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, &dwFollowButtonColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, &dwFollowButtonColor));
 	}
 	else
 	{
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bFollowing ? Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED : Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT, &dwFollowButtonColor));
+		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bFollowing ? Twitter::Metadata::Item::TwitterItemFollowButtonRectPushed : Twitter::Metadata::Item::TwitterItemFollowButtonRect, &dwFollowButtonColor));
 	}
 
 	DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);
@@ -224,7 +224,7 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 
 int CSkinUserAccountControl::DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage)
 {
-	CComVariant v;
+	CComVar v;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(bstrName, &v));
 	ATLASSERT(v.vt == VT_I4);
 
@@ -281,7 +281,7 @@ HRESULT CSkinUserAccountControl::MeasureInternal(HDC hdc, RECT clientRect, IVari
 	CDCHandle cdc(hdc);
 	CRect rect = clientRect;
 
-	CComVariant vDisplayName;
+	CComVar vDisplayName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vDisplayName));
 	ATLASSERT(vDisplayName.vt == VT_BSTR);
 
@@ -293,7 +293,7 @@ HRESULT CSkinUserAccountControl::MeasureInternal(HDC hdc, RECT clientRect, IVari
 	CSize szDisplayName;
 	cdc.GetTextExtent(bstrDisplayName, bstrDisplayName.Length(), &szDisplayName);
 
-	CComVariant vScreenName;
+	CComVar vScreenName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vScreenName));
 	ATLASSERT(vScreenName.vt == VT_BSTR);
 	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);

@@ -87,6 +87,7 @@ interface ITimelineQueueService : IUnknown
 ]
 interface IImageManagerService : IUnknown
 {
+	HRESULT Initialize(IObjCollection* pImagesCollection);
 	HRESULT GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap);
 	HRESULT CreateImageBitmap(BSTR bstrKey, HBITMAP* phBitmap);
 	HRESULT AddImageFromFile(BSTR bstrKey, BSTR bstrFileName);
@@ -107,6 +108,7 @@ interface IImageManagerService : IUnknown
 ]
 interface IThemeColorMap : IUnknown
 {
+	HRESULT Initialize(IObjCollection* pObjectCollection);
 	HRESULT GetColor(BSTR bstrColorName, DWORD* dwColor);
 	HRESULT SetColor(BSTR bstrColorName, DWORD dwColor);
 };
@@ -118,9 +120,12 @@ interface IThemeColorMap : IUnknown
 ]
 interface IThemeFontMap : IUnknown
 {
+	HRESULT Initialize(IObjCollection* pObjectCollection);
 	HRESULT GetFont(BSTR bstrFontName, HFONT* phFont);
 	HRESULT SetFont(BSTR bstrFontName, BSTR bstrFontFamily, DWORD dwSize, BOOL bBold, BOOL bUnderline);
 };
+
+interface IColumnsInfo;
 
 [
 	object,
@@ -128,8 +133,9 @@ interface IThemeFontMap : IUnknown
 	pointer_default(unique),
 	local
 ]
-interface IColumnsInfoItem : IUnknown
+interface IColumnsInfoItem : IVariantObject
 {
+	HRESULT GetChildItems(IColumnsInfo** ppColumnsInfo);
 	HRESULT GetRect(RECT* rect);
 	HRESULT SetRect(RECT rect);
 	HRESULT SetRectStringProp(BSTR bstrKey, BSTR bstrValue);
@@ -137,6 +143,7 @@ interface IColumnsInfoItem : IUnknown
 	HRESULT SetRectBoolProp(BSTR bstrKey, BOOL bValue);
 	HRESULT GetRectBoolProp(BSTR bstrKey, BOOL* pbValue);
 	HRESULT Clear();
+	HRESULT SetVariantValueRecursive(BSTR key, VARIANT* v);
 };
 
 [
@@ -153,6 +160,8 @@ interface IColumnsInfo : IUnknown
 	HRESULT Clear();
 	HRESULT IsDisabledSelection(BOOL* pbDisabled);
 	HRESULT DisableSelection(BOOL bDisabled);
+	HRESULT FindItemIndex(BSTR bstrName, UINT* puiIndex);
+	HRESULT FindItemByName(BSTR bstrName, IColumnsInfoItem** ppColumnsInfoItem);
 };
 
 [
@@ -260,24 +269,34 @@ interface IUserAccountControl : IControl2
 
 [
 	object,
+	uuid(98E58BE4-3478-4504-82CF-29F6743BCDA8),
+	pointer_default(unique)
+]
+interface ILayoutManager : IUnknown
+{
+	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
+	HRESULT EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo);
+	HRESULT PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, [defaultvalue(0)] BSTR bstrItemName);
+};
+
+[
+	object,
 	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
 	pointer_default(unique)
 ]
 interface ISkinTabControl : IUnknown
 {
-	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
-	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
-	HRESULT MeasureHeader(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
+	HRESULT SetColumnsInfo(IColumnsInfo* pColumnsInfo);
+	HRESULT MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight);
 	HRESULT EraseBackground(HDC hdc);
-	HRESULT DrawHeader(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
-	HRESULT DrawAnimation(HDC hdc);
-	HRESULT DrawInfoImage(HDC hdc, BOOL bError, BSTR bstrMessage);
+	HRESULT DrawHeader(HDC hdc);
 	HRESULT GetInfoRect(RECT* pRect);
-	HRESULT StartInfoImage();
-	HRESULT StopInfoImage();
+	HRESULT SetErrorInfo(HWND hWnd, BOOL bError, BSTR bstrMessage);
+	HRESULT SetSelectedIndex(UINT uiIndex);
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationNextFrame();
+	HRESULT AnimationStart();
+	HRESULT AnimationStop();
 };
 
 [
@@ -302,12 +321,16 @@ interface ISkinCommonControl : IUnknown
 ]
 interface ITheme : IUnknown
 {
+	HRESULT LoadThemeFromStream(IStream* pStream);
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT GetFontMap(IThemeFontMap** ppThemeFontMap);
+	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
 	HRESULT GetTimelineSkin(ISkinTimeline** ppSkinTimeline);
 	HRESULT GetTabControlSkin(ISkinTabControl** pSkinTabControl);
 	HRESULT GetCommonControlSkin(ISkinCommonControl** pSkinCommonControl);
 	HRESULT GetSkinUserAccountControl(ISkinUserAccountControl** ppSkinUserAccountControl);
+	HRESULT GetLayout(BSTR bstrLayoutName, IVariantObject** ppVariantObject);
+	HRESULT GetLayoutManager(ILayoutManager** ppLayoutManager);
 };
 
 [

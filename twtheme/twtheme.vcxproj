@@ -238,6 +238,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\model-libs\json\src\JSON.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\json\src\JSONValue.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\model-libs\objmdl\JSONConverter.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">false</CompileAsManaged>
@@ -252,6 +265,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="LayoutBuilder.cpp" />
+    <ClCompile Include="LayoutManager.cpp" />
+    <ClCompile Include="LayoutPainter.cpp" />
     <ClCompile Include="objmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -271,6 +287,7 @@
     </ClCompile>
     <ClCompile Include="ThemeColorMap.cpp" />
     <ClCompile Include="ThemeDefault.cpp" />
+    <ClCompile Include="ThemeColorMap_KnownColors.cpp" />
     <ClCompile Include="ThemeFontMap.cpp" />
     <ClCompile Include="twitter_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -297,8 +314,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\model-libs\json\src\JSON.h" />
+    <ClInclude Include="..\model-libs\json\src\JSONValue.h" />
+    <ClInclude Include="..\model-libs\objmdl\JSONConverter.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="GdilPlusUtils.h" />
+    <ClInclude Include="LayoutBuilder.h" />
+    <ClInclude Include="LayoutFunctions.h" />
+    <ClInclude Include="LayoutManager.h" />
+    <ClInclude Include="LayoutPainter.h" />
+    <ClInclude Include="Metadata.h" />
     <ClInclude Include="objmdl_contract_i.h" />
     <ClInclude Include="PluginTable.h" />
     <ClInclude Include="Resource.h" />
@@ -323,6 +348,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\theme.json" />
     <None Include="twtheme.def" />
   </ItemGroup>
   <ItemGroup>

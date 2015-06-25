@@ -12,7 +12,8 @@ using namespace std;
 class ATL_NO_VTABLE CSkinTabControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CSkinTabControl, &CLSID_SkinTabControl>,
-	public ISkinTabControl
+	public ISkinTabControl,
+	public IThemeSupport
 {
 public:
 	CSkinTabControl();
@@ -21,46 +22,41 @@ public:
 
 	BEGIN_COM_MAP(CSkinTabControl)
 		COM_INTERFACE_ENTRY(ISkinTabControl)
+		COM_INTERFACE_ENTRY(IThemeSupport)
 	END_COM_MAP()
 
-	DECLARE_PROTECT_FINAL_CONSTRUCT()
-	void FinalRelease();
-	HRESULT FinalConstruct();
 private:
+	CComPtr<ITheme> m_pTheme;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
-	CComPtr<IThemeFontMap> m_pThemeFontMap;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapHome;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapSearch;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapLists;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapSettings;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapError;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapInfo;
+	CComPtr<ILayoutManager> m_pLayoutManager;
+	CComPtr<IVariantObject> m_pLayoutObject;
+	CComPtr<IImageManagerService> m_pImageManagerService;
+	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	CRect m_rectHeader;
 	CRect m_rectInfoImage;
-	int m_iFrameCount = 0;
 	CToolTipCtrl m_wndTooltip;
-	HWND m_hWnd;
+	HWND m_hWnd = 0;
+	BOOL m_bError = FALSE;
+	BOOL m_bAnimation = FALSE;
+	CComBSTR m_bstrMessage;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
-	STDMETHOD(DrawTabs)(IColumnsInfo* pColumnsInfo, CDCHandle& cdc, RECT rect);
+	STDMETHOD(GetResourceStream)(int nId, LPCTSTR lpType, IStream** ppStream);
 
 public:
 
-	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
-	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
-	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
-
-	STDMETHOD(MeasureHeader)(HWND hWnd, IObjArray* pObjArray, IColumnsInfo* pColumnsInfo, RECT* clientRect, UINT* puiHeight);
+	STDMETHOD(SetTheme)(ITheme* pTheme);
+	STDMETHOD(SetColumnsInfo)(IColumnsInfo* pColumnsInfo);
+	STDMETHOD(MeasureHeader)(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight);
 	STDMETHOD(EraseBackground)(HDC hdc);
-	STDMETHOD(DrawHeader)(IColumnsInfo* pColumnsInfo, HDC hdc, RECT rect);
-	STDMETHOD(DrawAnimation)(HDC hdc);
-	STDMETHOD(DrawInfoImage)(HDC hdc, BOOL bError, BSTR bstrMessage);
+	STDMETHOD(DrawHeader)(HDC hdc);
+	STDMETHOD(SetErrorInfo)(HWND hWnd, BOOL bError, BSTR bstrMessage);
+	STDMETHOD(SetSelectedIndex)(UINT uiIndex);
 	STDMETHOD(GetInfoRect)(RECT* pRect);
-	STDMETHOD(StartInfoImage)();
-	STDMETHOD(StopInfoImage)();
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationNextFrame)();
-
+	STDMETHOD(AnimationStart)();
+	STDMETHOD(AnimationStop)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinTabControl), CSkinTabControl)

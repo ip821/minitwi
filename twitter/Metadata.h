@@ -44,20 +44,20 @@ namespace IP
 
 			namespace Item
 			{
-				const static CComBSTR VAR_SELECTED_POSTFIX(L"SELECTED");
-				const static CComBSTR VAR_DOUBLE_SIZE_POSTFIX(L"DOUBLE_SIZE");
+				const static CComBSTR VAR_SELECTED_POSTFIX(L"Selected");
+				const static CComBSTR VAR_DOUBLE_SIZE_POSTFIX(L"DoubleSize");
 				const static CComBSTR VAR_ITEM_DISABLED(L"VAR_ITEM_DISABLED");
 				const static CComBSTR VAR_ITEM_DISABLED_TEXT(L"VAR_ITEM_DISABLED_TEXT");
 				const static CComBSTR VAR_ITEM_DOUBLE_SIZE(L"VAR_ITEM_DOUBLE_SIZE");
 				const static CComBSTR VAR_ITEM_SELECTION_DISABLED(L"VAR_ITEM_SELECTION_DISABLED");
-				const static CComBSTR VAR_ITEM_ANIMATION_INACTIVE(L"VAR_ITEM_ANIMATION_INACTIVE");
-				const static CComBSTR VAR_ITEM_ANIMATION_ACTIVE (L"VAR_ITEM_ANIMATION_ACTIVE");
-				const static CComBSTR VAR_ITEM_FOLLOW_BUTTON(L"VAR_ITEM_FOLLOW_BUTTON");
-				const static CComBSTR VAR_ITEM_FOLLOW_BUTTON_RECT(L"VAR_ITEM_FOLLOW_BUTTON_RECT");
-				const static CComBSTR VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED(L"VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED");
-				const static CComBSTR VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED(L"VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED");
-				const static CComBSTR VAR_TWITTER_RELATIVE_TIME(L"VAR_TWITTER_RELATIVE_TIME");
-				const static CComBSTR VAR_TWITTER_DELIMITER(L"VAR_TWITTER_DELIMITER");
+				const static CComBSTR TwitterItemAnimationInactive(L"TwitterItemAnimationInactive");
+				const static CComBSTR TwitterItemAnimationActive(L"TwitterItemAnimationActive");
+				const static CComBSTR VAR_ITEM_FOLLOW_BUTTON(L"TwitterItemFollowButton");
+				const static CComBSTR TwitterItemFollowButtonRect(L"TwitterItemFollowButtonRect");
+				const static CComBSTR TwitterItemFollowButtonRectPushed(L"TwitterItemFollowButtonRectPushed");
+				const static CComBSTR TwitterItemFollowButtonRectDisabled(L"TwitterItemFollowButtonRectDisabled");
+				const static CComBSTR TwitterRelativeTime(L"TwitterRelativeTime");
+				const static CComBSTR TwitterDelimiter(L"TwitterDelimiter");
 				const static CComBSTR VAR_IS_URL(L"VAR_IS_URL");
 				const static CComBSTR VAR_IS_IMAGE(L"VAR_IS_IMAGE");
 				const static CComBSTR VAR_IS_WORDWRAP(L"VAR_IS_WORDWRAP");
@@ -67,8 +67,8 @@ namespace IP
 
 			namespace Column
 			{
-				const static CComBSTR ShowMoreColumn(L"VAR_COLUMN_SHOW_MORE");
-				const static CComBSTR Name(L"VAR_COLUMN_NAME");
+				const static CComBSTR ShowMoreColumn(L"TwitterColumnShowMoreColumn");
+				const static CComBSTR Name(L"TwitterColumnName");
 			}
 
 			namespace File
@@ -92,16 +92,16 @@ namespace IP
 
 			namespace Tabs
 			{
-				const static CComBSTR Header(L"VAR_TAB_HEADER");
-				const static CComBSTR HeaderSelected(L"VAR_TAB_HEADER_SELECTED");
+				const static CComBSTR Header(L"TabsHeader");
+				const static CComBSTR HeaderSelected(L"TabsHeaderSelected");
 			}
 
 			namespace Drawing
 			{
-				const static CComBSTR BrushSelected(L"VAR_BRUSH_SELECTED");
-				const static CComBSTR BrushBackground(L"VAR_BRUSH_BACKGROUND");
-				const static CComBSTR PictureWindowText(L"VAR_PICTURE_WINDOW_TEXT");
-				const static CComBSTR AccountControlText(L"VAR_ACCOUNT_CONTROL_TEXT");
+				const static CComBSTR BrushSelected(L"BrushSelected");
+				const static CComBSTR BrushBackground(L"BrushBackground");
+				const static CComBSTR PictureWindowText(L"PictureWindowText");
+				const static CComBSTR AccountControlText(L"AccountControlText");
 			}
 		}
 	}

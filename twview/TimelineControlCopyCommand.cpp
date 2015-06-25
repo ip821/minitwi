@@ -22,7 +22,7 @@ STDMETHODIMP CTimelineControlCopyCommand::GetEnabled(REFGUID guidCommand, BOOL *
 	if (IsEqualGUID(guidCommand, COMMAND_COPY_IMAGE_URL))
 	{
 		*pbEnabled = FALSE;
-		CComVariant vColumnObject;
+		CComVar vColumnObject;
 		ASSERT_IF_FAILED(m_pVariantObject->GetVariantValue(ObjectModel::Metadata::Table::Column::Object, &vColumnObject));
 		if (vColumnObject.vt == VT_UNKNOWN)
 		{
@@ -82,9 +82,9 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 
 			if (IsEqualGUID(guidCommand, COMMAND_COPY_URL))
 			{
-				CComVariant vUserName;
+				CComVar vUserName;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
-				CComVariant v;
+				CComVar v;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &v));
 				if (vUserName.vt == VT_BSTR && v.vt == VT_BSTR)
 				{
@@ -93,11 +93,11 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 			}
 			else if (IsEqualGUID(guidCommand, COMMAND_COPY_TEXT))
 			{
-				CComVariant vUserDisplayName;
+				CComVar vUserDisplayName;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vUserDisplayName));
-				CComVariant vUserName;
+				CComVar vUserName;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
-				CComVariant vText;
+				CComVar vText;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Text, &vText));
 				if (vUserDisplayName.vt == VT_BSTR)
 					str = vUserDisplayName.bstrVal;
@@ -108,7 +108,7 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 			}
 			else if (IsEqualGUID(guidCommand, COMMAND_COPY_IMAGE_URL))
 			{
-				CComVariant vColumnObject;
+				CComVar vColumnObject;
 				ASSERT_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Table::Column::Object, &vColumnObject));
 				CComQIPtr<IColumnsInfoItem> pColumnsInfoItem = vColumnObject.punkVal;
 				ATLASSERT(pColumnsInfoItem);

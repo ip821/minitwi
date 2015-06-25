@@ -67,6 +67,9 @@
 #include "..\twitter\Plugins.h"
 #include "..\twitter\Metadata.h"
 
+#include "..\model-libs\json\src\JSON.h"
+#include "..\model-libs\json\src\JSONValue.h"
+
 using namespace IP;
 
 #pragma comment (lib,"Gdiplus.lib")

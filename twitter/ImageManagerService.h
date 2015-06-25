@@ -52,6 +52,7 @@ public:
 	STDMETHOD(CopyImageTo)(BSTR bstrKey, IImageManagerService* pDest);
 	STDMETHOD(CopyTo)(IImageManagerService* pDest);
 	STDMETHOD(SaveImage)(BSTR bstrKey, BSTR bstrFilePath);
+	STDMETHOD(Initialize)(IObjCollection* pImagesCollection);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ImageManagerService), CImageManagerService)

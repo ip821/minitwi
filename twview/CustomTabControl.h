@@ -77,6 +77,7 @@ private:
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	CComPtr<IScrollControl> m_pScrollControl;
+	CComPtr<IVariantObject> m_pLayoutObject;
 	UINT m_cAnimationRefs = 0;
 
 	CRect m_rectChildControlArea;
@@ -96,7 +97,7 @@ private:
 	void UpdateChildControlAreaRect();
 	void UpdateSizes();
 	void AdjustSize();
-	HRESULT UpdateColumnInfo();
+	HRESULT UpdateSkinSelectedIndex();
 
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

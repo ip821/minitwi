@@ -61,7 +61,7 @@ STDMETHODIMP CVideoViewControl::SetVariantObject(IVariantObject *pVariantObject)
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
 
-	CComVariant vPath;
+	CComVar vPath;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Metadata::File::Path, &vPath));
 	ATLASSERT(vPath.vt == VT_BSTR);
 	m_bstrPath = vPath.bstrVal;

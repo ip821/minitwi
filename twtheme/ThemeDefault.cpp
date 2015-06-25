@@ -4,6 +4,8 @@
 #include "ThemeDefault.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
+#include "..\model-libs\objmdl\textfile.h"
+#include "..\model-libs\objmdl\JSONConverter.h"
 
 // CSkinDefault
 
@@ -12,62 +14,32 @@
 
 using namespace Gdiplus;
 using namespace IP;
+using namespace std;
+
+hash_set<wstring> CThemeDefault::m_inheritedProps =
+{
+};
 
 HRESULT CThemeDefault::FinalConstruct()
 {
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinTabControl, &m_pSkinTabControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinCommonControl, &m_pSkinCommonControl));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeColorMap, &m_pThemeColorMap));
-
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::BrushBackground, (ARGB)Color::White));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::BrushSelected, (ARGB)Color::Beige));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::UserObject::DisplayName, (ARGB)Color::SteelBlue));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::UserObject::Name, (ARGB)Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::NormalizedText, (ARGB)Color::Black));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_TWITTER_DELIMITER, (ARGB)Color::LightGray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::Url, (ARGB)Color::SteelBlue));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, (ARGB)Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Connection::Metadata::TweetObject::RetweetedUserName, (ARGB)Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME, (ARGB)Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Column::ShowMoreColumn, (ARGB)Color::SteelBlue));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Tabs::HeaderSelected, (ARGB)Color::Black));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Tabs::Header, (ARGB)Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_ACTIVE, (ARGB)Color::Black));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_ANIMATION_INACTIVE, (ARGB)Color::Gray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::PictureWindowText, (ARGB)Color::White));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Drawing::AccountControlText, (ARGB)Color::White));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT, (ARGB)Color::DarkGray));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_PUSHED, (ARGB)Color::DarkCyan));
-	RETURN_IF_FAILED(m_pThemeColorMap->SetColor(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON_RECT_DISABLED, (ARGB)Color::Gray));
-
-	RETURN_IF_FAILED(m_pSkinTabControl->SetColorMap(m_pThemeColorMap));
-	RETURN_IF_FAILED(m_pSkinCommonControl->SetColorMap(m_pThemeColorMap));
-
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ThemeFontMap, &m_pThemeFontMap));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, FONT_NAME, FONT_SIZE - 2, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::RetweetedUserName, FONT_NAME, FONT_SIZE - 2, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE - 2, FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::RetweetedUserName + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE - 2, FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::DisplayName, FONT_NAME, FONT_SIZE, TRUE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::UserObject::DisplayName + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::Name, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::UserObject::Name + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::NormalizedText, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::NormalizedText + CString(Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::TweetObject::Url, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Connection::Metadata::TweetObject::Url + CString(Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX) + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Column::ShowMoreColumn, FONT_NAME, FONT_SIZE, TRUE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(CComBSTR(Twitter::Metadata::Column::ShowMoreColumn + CString(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX)), FONT_NAME, FONT_SIZE, TRUE, TRUE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Tabs::Header, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Connection::Metadata::UserObject::DisplayNameUserAccount, FONT_NAME, FONT_SIZE * 2, TRUE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Drawing::PictureWindowText, FONT_NAME, FONT_SIZE, FALSE, FALSE));
-	RETURN_IF_FAILED(m_pThemeFontMap->SetFont(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, FONT_NAME, (DWORD)(FONT_SIZE * 1.2), FALSE, FALSE));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ImageManagerService, &m_pImageManagerService));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_LayoutManager, &m_pLayoutManager));
 
-	RETURN_IF_FAILED(m_pSkinTabControl->SetFontMap(m_pThemeFontMap));
+	CComQIPtr<ILayoutManagerInternal> pLayoutManagerInternal = m_pLayoutManager;
+	RETURN_IF_FAILED(pLayoutManagerInternal->SetFontMap(m_pThemeFontMap));
+	RETURN_IF_FAILED(pLayoutManagerInternal->SetColorMap(m_pThemeColorMap));
+
+	CComPtr<IStream> pStream;
+	RETURN_IF_FAILED(HrGetResourceStream(_AtlBaseModule.GetModuleInstance(), IDR_THEMEJSON, L"JSON", &pStream));
+	RETURN_IF_FAILED(LoadThemeFromStream(pStream));
+
+	CComQIPtr<IThemeSupport> pSkinTabControlThemeSupport = m_pSkinTabControl;
+	RETURN_IF_FAILED(pSkinTabControlThemeSupport->SetTheme(this));
+	RETURN_IF_FAILED(m_pSkinCommonControl->SetColorMap(m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pSkinCommonControl->SetFontMap(m_pThemeFontMap));
 
 	return S_OK;
@@ -116,5 +88,182 @@ STDMETHODIMP CThemeDefault::GetSkinUserAccountControl(ISkinUserAccountControl** 
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinUserAccountControl, ppSkinUserAccountControl));
 	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetFontMap(m_pThemeFontMap));
 	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetColorMap(m_pThemeColorMap));
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::GetLayoutManager(ILayoutManager** ppLayoutManager)
+{
+	return m_pLayoutManager->QueryInterface(ppLayoutManager);
+}
+
+STDMETHODIMP CThemeDefault::GetLayout(BSTR bstrLayoutName, IVariantObject** ppVariantObject)
+{
+	CHECK_E_POINTER(bstrLayoutName);
+	CHECK_E_POINTER(ppVariantObject);
+
+	if (m_layoutsMap.find(bstrLayoutName) == m_layoutsMap.end())
+		return E_INVALIDARG;
+
+	CComPtr<IVariantObject> pLayout;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLayout));
+	RETURN_IF_FAILED(m_layoutsMap[bstrLayoutName]->CopyTo(pLayout));
+	return pLayout->QueryInterface(ppVariantObject);
+}
+
+STDMETHODIMP CThemeDefault::LoadThemeFromStream(IStream* pStream)
+{
+	CString strFile;
+	CTextFile::ReadAllTextFromStream(pStream, strFile);
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strFile));
+	if (value == nullptr)
+		return E_FAIL;
+
+	auto rootArray = value->AsArray();
+
+	{
+		//Load color table
+		auto colorsObj = rootArray[0]->AsObject();
+		auto colorArray = colorsObj[L"colors"]->AsArray();
+		CComPtr<IObjCollection> pColorObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pColorObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(colorArray, pColorObjCollection));
+		RETURN_IF_FAILED(m_pThemeColorMap->Initialize(pColorObjCollection));
+	}
+
+	{
+		//Load font table
+		auto fontsTable = rootArray[1]->AsObject();
+		auto fontArray = fontsTable[L"fonts"]->AsArray();
+		CComPtr<IObjCollection> pFontObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pFontObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(fontArray, pFontObjCollection));
+		RETURN_IF_FAILED(m_pThemeFontMap->Initialize(pFontObjCollection));
+	}
+
+	{
+		//Load images table
+		auto imagesTable = rootArray[2]->AsObject();
+		auto imageArray = imagesTable[L"images"]->AsArray();
+		CComPtr<IObjCollection> pImagesObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pImagesObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(imageArray, pImagesObjCollection));
+		RETURN_IF_FAILED(m_pImageManagerService->Initialize(pImagesObjCollection));
+	}
+
+	{
+		//Load styles table
+		auto stylesTable = rootArray[3]->AsObject();
+		auto styleArray = stylesTable[L"styles"]->AsArray();
+		CComPtr<IObjCollection> pStylesObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pStylesObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(styleArray, pStylesObjCollection));
+
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pStylesObjCollection->GetCount(&uiCount));
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IVariantObject> pStyleObject;
+			RETURN_IF_FAILED(pStylesObjCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pStyleObject));
+			CComVar vName;
+			RETURN_IF_FAILED(pStyleObject->GetVariantValue(L"name", &vName));
+			ATLASSERT(vName.vt == VT_BSTR);
+			m_stylesMap[vName.bstrVal] = pStyleObject;
+		}
+	}
+
+	{
+		//Load layouts
+		auto layoutsTable = rootArray[4]->AsObject();
+		auto layoutArray = layoutsTable[L"layouts"]->AsArray();
+		CComPtr<IObjCollection> pLayoutsObjCollection;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pLayoutsObjCollection));
+		RETURN_IF_FAILED(CJsonConverter::ConvertArray(layoutArray, pLayoutsObjCollection));
+		RETURN_IF_FAILED(ApplyStyles(nullptr, pLayoutsObjCollection));
+
+		UINT uiCount = 0;
+		RETURN_IF_FAILED(pLayoutsObjCollection->GetCount(&uiCount));
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IVariantObject> pLayoutObject;
+			RETURN_IF_FAILED(pLayoutsObjCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pLayoutObject));
+			CComVar vName;
+			RETURN_IF_FAILED(pLayoutObject->GetVariantValue(L"name", &vName));
+			ATLASSERT(vName.vt == VT_BSTR);
+			m_layoutsMap[vName.bstrVal] = pLayoutObject;
+		}
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::CopyProps(IVariantObject* pSourceObject, IVariantObject* pDestObject, bool filterProps)
+{
+	UINT uiPropsCount = 0;
+	RETURN_IF_FAILED(pSourceObject->GetCount(&uiPropsCount));
+	for (size_t j = 0; j < uiPropsCount; j++)
+	{
+		CComBSTR bstrKey;
+		RETURN_IF_FAILED(pSourceObject->GetKeyByIndex(j, &bstrKey));
+
+		if (bstrKey == L"name")
+			continue;
+
+		if (filterProps && m_inheritedProps.find(wstring(bstrKey)) == m_inheritedProps.end())
+			continue;
+
+		CComVar vValue;
+		RETURN_IF_FAILED(pDestObject->GetVariantValue(bstrKey, &vValue));
+
+		if (vValue.vt == VT_EMPTY)
+		{
+			CComVar vProp;
+			RETURN_IF_FAILED(pSourceObject->GetVariantValue(bstrKey, &vProp));
+			RETURN_IF_FAILED(pDestObject->SetVariantValue(bstrKey, &vProp));
+		}
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::ApplyStyles(IVariantObject* pParentObject, IObjArray* pElements)
+{
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pElements->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pElement;
+		RETURN_IF_FAILED(pElements->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pElement));
+
+		CComVar vStyle;
+		RETURN_IF_FAILED(pElement->GetVariantValue(L"style", &vStyle));
+		if (vStyle.vt == VT_BSTR)
+		{
+			RETURN_IF_FAILED(ApplyStyle(pElement, vStyle.bstrVal));
+		}
+		RETURN_IF_FAILED(ApplyStyle(pElement, L"")); //apply default
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::ApplyStyle(IVariantObject* pElement, BSTR bstrStyleName)
+{
+	auto it = m_stylesMap.find(bstrStyleName);
+	if (it != m_stylesMap.end())
+	{
+		RETURN_IF_FAILED(CopyProps(it->second, pElement, false));
+	}
+
+	CComVar vChildElements;
+	RETURN_IF_FAILED(pElement->GetVariantValue(L"elements", &vChildElements));
+	if (vChildElements.vt == VT_UNKNOWN)
+	{
+		CComQIPtr<IObjArray> pChildElements = vChildElements.punkVal;
+		RETURN_IF_FAILED(ApplyStyles(pElement, pChildElements));
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CThemeDefault::GetImageManagerService(IImageManagerService** ppImageManagerService)
+{
+	CHECK_E_POINTER(ppImageManagerService);
+	RETURN_IF_FAILED(m_pImageManagerService->QueryInterface(ppImageManagerService));
 	return S_OK;
 }

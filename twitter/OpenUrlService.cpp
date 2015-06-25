@@ -42,9 +42,9 @@ STDMETHODIMP COpenUrlService::OpenUserInfoForm(IVariantObject* pVariantObject)
 		ATLASSERT(pUserInfoControl);
 		CComPtr<IVariantObject> pVariantObjectOpened;
 		RETURN_IF_FAILED(pUserInfoControl->GetVariantObject(&pVariantObjectOpened));
-		CComVariant vUserNameOpened;
+		CComVar vUserNameOpened;
 		RETURN_IF_FAILED(pVariantObjectOpened->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserNameOpened));
-		CComVariant vUserName;
+		CComVar vUserName;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 		if (vUserName.vt == VT_BSTR && vUserNameOpened.vt == VT_BSTR && CComBSTR(vUserName.bstrVal) == CComBSTR(vUserNameOpened.bstrVal))
 		{
@@ -66,9 +66,9 @@ STDMETHODIMP COpenUrlService::OpenTwitViewForm(IVariantObject* pVariantObject)
 		ATLASSERT(pTwitViewControl);
 		CComPtr<IVariantObject> pVariantObjectOpened;
 		RETURN_IF_FAILED(pTwitViewControl->GetVariantObject(&pVariantObjectOpened));
-		CComVariant vIdOpened;
+		CComVar vIdOpened;
 		RETURN_IF_FAILED(pVariantObjectOpened->GetVariantValue(ObjectModel::Metadata::Object::Id, &vIdOpened));
-		CComVariant vId;
+		CComVar vId;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 		if (vId.vt == VT_BSTR && vIdOpened.vt == VT_BSTR && CComBSTR(vId.bstrVal) == CComBSTR(vIdOpened.bstrVal))
 		{
@@ -81,7 +81,7 @@ STDMETHODIMP COpenUrlService::OpenTwitViewForm(IVariantObject* pVariantObject)
 
 STDMETHODIMP COpenUrlService::OnItemDoubleClick(IVariantObject* pVariantObject)
 {
-	CComVariant vObjectType;
+	CComVar vObjectType;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
 	if (vObjectType.vt == VT_BSTR)
 	{
@@ -109,7 +109,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::UserObject::DisplayName ||
 		CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::UserObject::Name)
 	{
-		CComVariant vUserObject;
+		CComVar vUserObject;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &vUserObject));
 		if (vUserObject.vt == VT_UNKNOWN)
 		{
@@ -122,7 +122,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName ||
 		CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::RetweetedUserName)
 	{
-		CComVariant vUserObject;
+		CComVar vUserObject;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserObject, &vUserObject));
 		if (vUserObject.vt == VT_UNKNOWN)
 		{
@@ -132,7 +132,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		}
 	}
 
-	if (CComBSTR(bstrColumnName) == Twitter::Metadata::Item::VAR_TWITTER_RELATIVE_TIME)
+	if (CComBSTR(bstrColumnName) == Twitter::Metadata::Item::TwitterRelativeTime)
 	{
 		RETURN_IF_FAILED(OpenTwitViewForm(pVariantObject));
 	}
@@ -153,7 +153,7 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 
 		CComPtr<IVariantObject> pUrlObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
-		RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(strUrl)));
+		RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(strUrl)));
 
 		RETURN_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
 		return S_OK;
@@ -167,21 +167,21 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		CComPtr<IVariantObject> pUrlObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
 
-		CComVariant vObjectType;
+		CComVar vObjectType;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
 		if (vObjectType.vt == VT_BSTR && CComBSTR(vObjectType.bstrVal) == Twitter::Connection::Metadata::TweetObject::TypeId)
 		{
-			CComVariant vUserName;
+			CComVar vUserName;
 			RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
-			CComVariant vId;
+			CComVar vId;
 			RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 			auto strUrl = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(vId.bstrVal);
-			RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(strUrl)));
+			RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(strUrl)));
 		}
 
-		RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVariant(bstr)));
+		RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(bstr)));
 
-		CComVariant vMediaUrls;
+		CComVar vMediaUrls;
 		if (SUCCEEDED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls)))
 		{
 			RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls));

@@ -5,6 +5,7 @@
 #include "twtheme_i.h"
 
 using namespace ATL;
+using namespace std;
 
 // CThemeColorMap
 
@@ -32,11 +33,13 @@ public:
 
 private:
 	std::map<CString, DWORD> m_colors;
+	static map<wstring, DWORD> m_knownColors;
 
 public:
 
 	STDMETHOD(GetColor)(BSTR bstrColorName, DWORD* dwColor);
 	STDMETHOD(SetColor)(BSTR bstrColorName, DWORD dwColor);
+	STDMETHOD(Initialize)(IObjCollection* pObjectCollection);
 
 };
 

@@ -26,3 +26,32 @@ STDMETHODIMP CThemeFontMap::SetFont(BSTR bstrFontName, BSTR bstrFontFamily, DWOR
 	m_fonts[bstrFontName] = font.Detach();
 	return S_OK;
 }
+
+STDMETHODIMP CThemeFontMap::Initialize(IObjCollection* pObjectCollection)
+{
+	CHECK_E_POINTER(pObjectCollection);
+	UINT_PTR uiCount = 0;
+	RETURN_IF_FAILED(pObjectCollection->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IVariantObject> pFontObject;
+		RETURN_IF_FAILED(pObjectCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pFontObject));
+
+		CComVar vName;
+		CComVar vFontFamily;
+		CComVar vSize;
+		CComVar vBold;
+		CComVar vUnderline;
+
+		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"name", &vName));
+		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"family", &vFontFamily));
+		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"size", &vSize));
+		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"bold", &vBold));
+		RETURN_IF_FAILED(pFontObject->GetVariantValue(L"underline", &vUnderline));
+
+		ATLASSERT(vName.vt == VT_BSTR && vFontFamily.vt == VT_BSTR && vSize.vt == VT_I4 && vBold.vt == VT_BOOL && vUnderline.vt == VT_BOOL);
+
+		SetFont(vName.bstrVal, vFontFamily.bstrVal, vSize.intVal, vBold.boolVal, vUnderline.boolVal);
+	}
+	return S_OK;
+}

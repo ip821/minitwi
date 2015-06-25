@@ -1,0 +1,20 @@
+<SkinLayout>
+  <VerticalContainer>
+    <HorizontalContainer HorizontalAlignment="center" Left="auto" Top="30" Width="auto" Height="auto">
+      <ImageColumn Name="UserImage"/>
+      <VerticalContainer>
+        <TextColumn Name="UserDisplayName"/>
+        <TextColumn Name="UserName"/>
+      </VerticalContainer>
+    </HorizontalContainer>
+    <TextColumn Name="Text" HorizontalAlignment="center"/>
+    <HorizontalContainer>
+      <VerticalContainer>
+        <TextColumn Name="TweetsCount" HorizontalAlignment="left"/>
+        <TextColumn Name="FollowingCount" HorizontalAlignment="left"/>
+        <TextColumn Name="FollowersCount" HorizontalAlignment="left"/>
+      </VerticalContainer>
+      <TextColumn Name="FollowButton" HorizontalAlignment="right" VerticalAlignment="center"/>
+    </HorizontalContainer>
+  </VerticalContainer>
+</SkinLayout>

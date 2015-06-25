@@ -46,7 +46,7 @@ STDMETHODIMP CThemeService::ApplyTheme(GUID gId)
 	{
 		CComPtr<IVariantObject> pVariantObject;
 		RETURN_IF_FAILED(m_pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
-		CComVariant vId;
+		CComVar vId;
 		RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Plugins::Object::Id, &vId));
 		if (vId.vt == VT_BSTR)
 		{
@@ -137,7 +137,7 @@ STDMETHODIMP CThemeService::ApplyThemeFromSettings()
 {
 	CComPtr<ISettings> pSettings;
 	RETURN_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathThemes, &pSettings));
-	CComVariant vThemeId;
+	CComVar vThemeId;
 	RETURN_IF_FAILED(pSettings->GetVariantValue(ObjectModel::Metadata::Plugins::Object::Id, &vThemeId));
 	if (vThemeId.vt == VT_BSTR)
 	{

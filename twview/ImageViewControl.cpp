@@ -45,7 +45,7 @@ STDMETHODIMP CImageViewControl::SetVariantObject(IVariantObject *pVariantObject)
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
 
-	CComVariant vUrl;
+	CComVar vUrl;
 	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 	ATLASSERT(vUrl.vt == VT_BSTR);
 	m_bstrUrl = vUrl.bstrVal;

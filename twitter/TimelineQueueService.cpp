@@ -68,7 +68,7 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 	{
 		CComPtr<IVariantObject> pItem;
 		RETURN_IF_FAILED(pAllItems->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pItem));
-		CComVariant vItemId;
+		CComVar vItemId;
 		RETURN_IF_FAILED(pItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vItemId));
 		if (vItemId.vt != VT_BSTR)
 			continue;
@@ -81,12 +81,12 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 	{
 		CComPtr<IVariantObject> pResult = m_queue.front();
 		m_queue.pop();
-		CComVariant vResult;
+		CComVar vResult;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
 		CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
 		int insertIndex = 0;
-		CComVariant vId;
+		CComVar vId;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
 		if (vId.vt == VT_BSTR)
 		{
@@ -94,7 +94,7 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 				insertIndex = uiCount - 1;
 		}
 
-		CComVariant vIndex;
+		CComVar vIndex;
 		RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Index, &vIndex));
 		if (vIndex.vt == VT_I4)
 		{
@@ -109,7 +109,7 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 		{
 			CComPtr<IVariantObject> pArrayItem;
 			RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pArrayItem));
-			CComVariant vArrayItemId;
+			CComVar vArrayItemId;
 			RETURN_IF_FAILED(pArrayItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vArrayItemId));
 			if (vArrayItemId.vt == VT_BSTR && existingIds.find(vArrayItemId.bstrVal) != existingIds.end())
 				continue;

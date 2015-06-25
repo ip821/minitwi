@@ -55,11 +55,11 @@ STDMETHODIMP CTimelineLoadingService::OnStart(IVariantObject *pResult)
 		CUpdateScope scope(m_pTimelineControl);
 		CComPtr<IVariantObject> pLoadingObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pLoadingObject));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::CustomTimelineObject)));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVariant(CUSTOM_OBJECT_LOADING_ID)));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVariant(m_strText)));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVariant(m_strText)));
-		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVariant(true)));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::CustomTimelineObject)));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVar(CUSTOM_OBJECT_LOADING_ID)));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVar(m_strText)));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, &CComVar(m_strText)));
+		RETURN_IF_FAILED(pLoadingObject->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &CComVar(true)));
 		RETURN_IF_FAILED(m_pTimelineControl->InsertItem(pLoadingObject, 0));
 	}
 
@@ -76,9 +76,9 @@ STDMETHODIMP CTimelineLoadingService::OnFinish(IVariantObject *pResult)
 	{
 		CComPtr<IVariantObject> pFirstItem;
 		RETURN_IF_FAILED(pItems->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pFirstItem));
-		CComVariant vId;
+		CComVar vId;
 		RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
-		CComVariant vObjectType;
+		CComVar vObjectType;
 		RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
 		if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == Twitter::Metadata::Types::CustomTimelineObject)
 		{

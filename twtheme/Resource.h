@@ -13,6 +13,7 @@
 #define IDR_PICTURESEARCH				132
 #define IDR_PICTURELISTS				133
 #define IDR_RETWEET						134
+#define IDR_THEMEJSON					135
 
 // Next default values for new objects
 //

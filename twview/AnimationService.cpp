@@ -95,7 +95,7 @@ STDMETHODIMP CAnimationService::Load(ISettings* pSettings)
 	m_pSettings = pSettings;
 	CComPtr<ISettings> pTimelineSettings;
 	RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathTimeline, &pTimelineSettings));
-	CComVariant vDisableAnimation;
+	CComVar vDisableAnimation;
 	RETURN_IF_FAILED(pTimelineSettings->GetVariantValue(Twitter::Metadata::Settings::Timeline::DisableAnimation, &vDisableAnimation));
 	m_bDisableAnimation = vDisableAnimation.vt == VT_I4 && vDisableAnimation.intVal;
 	return S_OK;
