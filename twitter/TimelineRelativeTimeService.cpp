@@ -2,6 +2,7 @@
 #include "TimelineRelativeTimeService.h"
 #include "Plugins.h"
 #include "UpdateScope.h"
+#include <boost\\date_time\c_local_time_adjustor.hpp>
 
 STDMETHODIMP CTimelineRelativeTimeService::OnInitialized(IServiceProvider *pServiceProvider)
 {
@@ -87,7 +88,7 @@ HRESULT CTimelineRelativeTimeService::UpdateRelativeTimeForTwit(IVariantObject* 
 		utcDiff = someLocalTime - someUtcTime;
 	}
 
-	ptime ptCreatedAt(pt.date(), pt.time_of_day() + utcDiff);
+	ptime ptCreatedAt = date_time::c_local_adjustor<ptime>::utc_to_local(pt);
 	posix_time::time_duration diff(posix_time::second_clock::local_time() - ptCreatedAt);
 
 	CString strRelTime;
