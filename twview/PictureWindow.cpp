@@ -526,6 +526,9 @@ void CPictureWindow::ResizeToCurrentBitmap()
 	}
 	else
 	{
+		if (!m_sizes.size())
+			return;
+
 		width = m_sizes[m_currentBitmapIndex].cx;
 		height = m_sizes[m_currentBitmapIndex].cy;
 	}
