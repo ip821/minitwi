@@ -59,13 +59,13 @@ STDMETHODIMP CLoginService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pTimelineThreadService));
 	RETURN_IF_FAILED(pTimelineThreadService->Join());
 
-	CComVariant vAccessPin;
+	CComVar vAccessPin;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessPin, &vAccessPin));
 
 	CComPtr<ITwitterConnection> pConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
 
-	CComVariant vAccessUrl;
+	CComVar vAccessUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &vAccessUrl));
 
 	if (vAccessUrl.vt == VT_EMPTY)
@@ -76,22 +76,22 @@ STDMETHODIMP CLoginService::OnRun(IVariantObject *pResult)
 		RETURN_IF_FAILED(pConnection->GetAccessUrl(&bstrAuthKey, &bstrAuthSecret, &bstrAccessUrl));
 		vAccessUrl = bstrAccessUrl;
 		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &vAccessUrl));
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &CComVariant(bstrAuthKey)));
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &CComVariant(bstrAuthSecret)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &CComVar(bstrAuthKey)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &CComVar(bstrAuthSecret)));
 	}
 	else
 	{
-		CComVariant vAuthKey;
+		CComVar vAuthKey;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &vAuthKey));
-		CComVariant vAuthSecret;
+		CComVar vAuthSecret;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &vAuthSecret));
 
 		ATLASSERT(vAccessPin.vt == VT_BSTR && vAuthKey.vt == VT_BSTR && vAuthSecret.vt == VT_BSTR);
 		CComBSTR bstrUser, bstrKey, bstrSecret;
 		RETURN_IF_FAILED(pConnection->GetAccessTokens(vAuthKey.bstrVal, vAuthSecret.bstrVal, vAccessPin.bstrVal, &bstrUser, &bstrKey, &bstrSecret));
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &CComVariant(bstrUser)));
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &CComVariant(bstrKey)));
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &CComVariant(bstrSecret)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::User, &CComVar(bstrUser)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &CComVar(bstrKey)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterSecret, &CComVar(bstrSecret)));
 	}
 
 	return S_OK;

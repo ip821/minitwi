@@ -76,8 +76,8 @@ STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
 
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(L"https://raw.githubusercontent.com/ip821/minitwi.version/master/version.txt")));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVariant(Twitter::Metadata::Types::SoftwareUpdateVersion)));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(L"https://raw.githubusercontent.com/ip821/minitwi.version/master/version.txt")));
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::SoftwareUpdateVersion)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 	return S_OK;
 }
@@ -135,9 +135,9 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 			CComPtr<IVariantObject> pDownloadTask;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
 #ifdef __WINXP__
-			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(L"https://github.com/ip821/minitwi.version/raw/master/Release_XP/Setup.msi")));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(L"https://github.com/ip821/minitwi.version/raw/master/Release_XP/Setup.msi")));
 #else
-			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVariant(L"https://github.com/ip821/minitwi.version/raw/master/Release/Setup.msi")));
+			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(L"https://github.com/ip821/minitwi.version/raw/master/Release/Setup.msi")));
 #endif
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::SoftwareUpdateMsi)));
 			RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::Extension, &CComVar(L".msi")));

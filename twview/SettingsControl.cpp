@@ -175,7 +175,7 @@ void CSettingsControl::SwitchToLogoutMode()
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
 
-	CComVariant vUser;
+	CComVar vUser;
 	ASSERT_IF_FAILED(m_pSettings->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
 	ATLASSERT(vUser.vt == VT_BSTR);
 	m_labelLoggedUser.SetWindowText(vUser.bstrVal);
@@ -240,10 +240,10 @@ STDMETHODIMP CSettingsControl::OnStart(IVariantObject *pResult)
 
 	if (!m_accessUrl.IsEmpty())
 	{
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &CComVariant(m_accessUrl)));
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &CComVariant(m_authKey)));
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &CComVariant(m_authSecret)));
-		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessPin, &CComVariant(bstrPin)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &CComVar(m_accessUrl)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &CComVar(m_authKey)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &CComVar(m_authSecret)));
+		RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessPin, &CComVar(bstrPin)));
 	}
 
 	return S_OK;
@@ -264,19 +264,19 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 		return S_OK;
 	}
 
-	CComVariant vKey;
+	CComVar vKey;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterKey, &vKey));
 	if (vKey.vt == VT_EMPTY)
 	{
-		CComVariant vAccessUrl;
+		CComVar vAccessUrl;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAccessUrl, &vAccessUrl));
 		m_accessUrl = vAccessUrl.bstrVal;
 
-		CComVariant vAuthKey;
+		CComVar vAuthKey;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthKey, &vAuthKey));
 		m_authKey = vAuthKey.bstrVal;
 
-		CComVariant vAuthSecret;
+		CComVar vAuthSecret;
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Settings::Twitter::TwitterAuthSecret, &vAuthSecret));
 		m_authSecret = vAuthSecret.bstrVal;
 
