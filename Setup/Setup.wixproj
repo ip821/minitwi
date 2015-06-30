@@ -71,6 +71,14 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\model-libs\layout\layout.vcxproj">
+      <Name>layout</Name>
+      <Project>{614567e1-0a47-4134-9a0f-2ca28d383b0f}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\model-libs\objmdl\ObjMdl.vcxproj">
       <Name>objmdl</Name>
       <Project>{8f3fe293-d9b1-4c72-bb96-155af4a8910b}</Project>
