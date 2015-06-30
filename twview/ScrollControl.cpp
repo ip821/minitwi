@@ -2,7 +2,7 @@
 #include "ScrollControl.h"
 #include "CustomTabControl.h"
 #include "Mmsystem.h"
-#include "..\twtheme\GdilPlusUtils.h"
+#include "..\model-libs\layout\GdilPlusUtils.h"
 #pragma comment(lib, "Winmm.lib")
 
 #define TARGET_INTERVAL 12

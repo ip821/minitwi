@@ -395,3 +395,6 @@
 /twview/Debug_XP/twview.log
 /twtheme/twtheme.aps
 /twtheme/twtheme_p.c
+/twitter/layout_contract_i.c
+/twitter/layout_contract_i.h
+/twitter/layout_contract_p.c

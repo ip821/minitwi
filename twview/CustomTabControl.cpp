@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CustomTabControl.h"
 #include "Plugins.h"
-#include "..\twtheme\GdilPlusUtils.h"
+#include "..\model-libs\layout\GdilPlusUtils.h"
 
 CCustomTabControl::~CCustomTabControl()
 {

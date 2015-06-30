@@ -2,7 +2,7 @@
 #include "CustomListBox.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
-#include "..\twtheme\GdilPlusUtils.h"
+#include "..\model-libs\layout\GdilPlusUtils.h"
 
 #define TARGET_RESOLUTION 1
 

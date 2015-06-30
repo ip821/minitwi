@@ -70,6 +70,9 @@
 #include "..\model-libs\json\src\JSON.h"
 #include "..\model-libs\json\src\JSONValue.h"
 
+#include "..\model-libs\layout\Plugins.h"
+#include "..\model-libs\layout\Metadata.h"
+
 using namespace IP;
 
 #pragma comment (lib,"Gdiplus.lib")

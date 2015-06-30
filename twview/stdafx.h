@@ -76,6 +76,9 @@
 #include "..\twitter\Plugins.h"
 #include "..\twitter\Metadata.h"
 
+#include "..\model-libs\layout\Plugins.h"
+#include "..\model-libs\layout\Metadata.h"
+
 using namespace IP;
 
 #pragma comment (lib,"Gdiplus.lib")

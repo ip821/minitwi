@@ -4,7 +4,7 @@
 #include "PictureWindow.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
-#include "..\twtheme\GdilPlusUtils.h"
+#include "..\model-libs\layout\GdilPlusUtils.h"
 
 // CPictureWindow
 

@@ -67,26 +67,26 @@
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath);..\model-libs\layout</IncludePath>
     <CodeAnalysisRuleSet>C:\_dev\minitwi\MiniTwi.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath);..\model-libs\layout</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath);..\model-libs\layout</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath);..\model-libs\layout</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -244,26 +244,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\model-libs\json\src\base64.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="asyncsvc_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ColumnsInfo.cpp" />
-    <ClCompile Include="ColumnsInfoItem.cpp" />
     <ClCompile Include="FollowStatusService.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="FollowService.cpp" />
     <ClCompile Include="HomeTimelineControllerService.cpp" />
     <ClCompile Include="HomeTimelineStreamingService.cpp" />
-    <ClCompile Include="ImageManagerService.cpp" />
+    <ClCompile Include="layout_contract_i.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ListsTimelineService.cpp" />
     <ClCompile Include="ListTimelineControlService.cpp" />
     <ClCompile Include="LoginService.cpp" />
@@ -344,15 +341,13 @@
     <ClCompile Include="WindowService.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\model-libs\json\src\base64.h" />
     <ClInclude Include="AnimationTimerSupport.h" />
     <ClInclude Include="asyncsvc_contract_i.h" />
-    <ClInclude Include="ColumnsInfo.h" />
-    <ClInclude Include="ColumnsInfoItem.h" />
     <ClInclude Include="FollowStatusService.h" />
     <ClInclude Include="FollowService.h" />
     <ClInclude Include="HomeTimelineControllerService.h" />
     <ClInclude Include="HomeTimelineStreamingService.h" />
+    <ClInclude Include="layout_contract_i.h" />
     <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="ListTimelineControlService.h" />
     <ClInclude Include="LoginService.h" />
@@ -364,7 +359,6 @@
     <ClInclude Include="TimelineRelativeTimeService.h" />
     <ClInclude Include="twitter_contract_i.h" />
     <ClInclude Include="DownloadService.h" />
-    <ClInclude Include="ImageManagerService.h" />
     <ClInclude Include="TabbedControlStatusService.h" />
     <ClInclude Include="TimelineCleanupService.h" />
     <ClInclude Include="TimelineImageService.h" />
@@ -413,6 +407,20 @@
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">asyncsvc_contract_i.h</HeaderFileName>
       <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">asyncsvc_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">asyncsvc_contract_p.c</ProxyFileName>
+    </Midl>
+    <Midl Include="..\model-libs\layout\layout_contract_i.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">layout_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">layout_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">layout_contract_p.c</ProxyFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">layout_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">layout_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">layout_contract_p.c</ProxyFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">layout_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">layout_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">layout_contract_p.c</ProxyFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">layout_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">layout_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">layout_contract_p.c</ProxyFileName>
     </Midl>
     <Midl Include="..\model-libs\ObjMdl\objmdl_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">objmdl_contract_i.h</HeaderFileName>

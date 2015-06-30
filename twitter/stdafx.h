@@ -80,6 +80,9 @@
 
 #include "..\twiconn\Metadata.h"
 
+#include "..\model-libs\layout\Plugins.h"
+#include "..\model-libs\layout\Metadata.h"
+
 #include "Plugins.h"
 #include "Metadata.h"
 

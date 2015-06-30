@@ -62,7 +62,7 @@
     },
     {
         "styles": [
-            { "name": "", "visible": true },
+            { "name": "", "visible": true, "color_background": "BrushBackground" },
             { "name": "TabContainerHeaderTextColumn", "font": "TabsHeader", "color": "TabsHeader", "color_selected": "TabsHeaderSelected", "margin_left": 3, "margin_top": 4 },
             { "name": "TabContainerHeaderChildContainer", "margin_left": 10, "margin_right": 10, "margin_top": 5, "margin_bottom": 5 }
         ]

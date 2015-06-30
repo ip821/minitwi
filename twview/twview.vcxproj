@@ -72,19 +72,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\model-libs\boost;..\model-libs\WTL90_4140_Final\Include;..\model-libs\objmdl;..\model-libs\viewmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\layout;..\model-libs\boost;..\model-libs\WTL90_4140_Final\Include;..\model-libs\objmdl;..\model-libs\viewmdl;$(IncludePath)</IncludePath>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\model-libs\boost;..\model-libs\WTL90_4140_Final\Include;..\model-libs\objmdl;..\model-libs\viewmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\layout;..\model-libs\boost;..\model-libs\WTL90_4140_Final\Include;..\model-libs\objmdl;..\model-libs\viewmdl;$(IncludePath)</IncludePath>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\model-libs\boost;..\model-libs\WTL90_4140_Final\Include;..\model-libs\objmdl;..\model-libs\viewmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\layout;..\model-libs\boost;..\model-libs\WTL90_4140_Final\Include;..\model-libs\objmdl;..\model-libs\viewmdl;$(IncludePath)</IncludePath>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
@@ -96,7 +96,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\model-libs\boost;..\model-libs\WTL90_4140_Final\Include;..\model-libs\objmdl;..\model-libs\viewmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\layout;..\model-libs\boost;..\model-libs\WTL90_4140_Final\Include;..\model-libs\objmdl;..\model-libs\viewmdl;$(IncludePath)</IncludePath>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

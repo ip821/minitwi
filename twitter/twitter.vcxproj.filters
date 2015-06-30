@@ -44,9 +44,6 @@
     <Filter Include="Services\OpenUrlService">
       <UniqueIdentifier>{da8470ea-63f7-46fa-a852-d803039486ac}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Services\ImageManagerService">
-      <UniqueIdentifier>{3a59f18e-e53f-4d9a-a4b0-cabdd41035ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Services\DownloadService">
       <UniqueIdentifier>{0fa18dfb-b6cd-4ae6-91ad-44bf14a653cf}</UniqueIdentifier>
     </Filter>
@@ -79,9 +76,6 @@
     </Filter>
     <Filter Include="Services\LoginService">
       <UniqueIdentifier>{db9640c6-4321-420f-9dc3-7e5305949ec7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ColumnsInfo">
-      <UniqueIdentifier>{a46c2823-09be-422c-a048-a42f97805d44}</UniqueIdentifier>
     </Filter>
     <Filter Include="Services\HomeTimelineService">
       <UniqueIdentifier>{8635e74e-ec62-468b-ba07-28a5f75589ec}</UniqueIdentifier>
@@ -133,9 +127,6 @@
     <ClCompile Include="asyncsvc_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageManagerService.cpp">
-      <Filter>Services\ImageManagerService</Filter>
-    </ClCompile>
     <ClCompile Include="DownloadService.cpp">
       <Filter>Services\DownloadService</Filter>
     </ClCompile>
@@ -178,12 +169,6 @@
     <ClCompile Include="LoginService.cpp">
       <Filter>Services\LoginService</Filter>
     </ClCompile>
-    <ClCompile Include="ColumnsInfo.cpp">
-      <Filter>ColumnsInfo</Filter>
-    </ClCompile>
-    <ClCompile Include="ColumnsInfoItem.cpp">
-      <Filter>ColumnsInfo</Filter>
-    </ClCompile>
     <ClCompile Include="TimelineLoadingService.cpp">
       <Filter>Services\TimelineService</Filter>
     </ClCompile>
@@ -208,8 +193,8 @@
     <ClCompile Include="FollowStatusService.cpp">
       <Filter>Services\FollowStatusService</Filter>
     </ClCompile>
-    <ClCompile Include="..\model-libs\json\src\base64.cpp">
-      <Filter>Services\ImageManagerService</Filter>
+    <ClCompile Include="layout_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -260,9 +245,6 @@
     </ClInclude>
     <ClInclude Include="asyncsvc_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageManagerService.h">
-      <Filter>Services\ImageManagerService</Filter>
     </ClInclude>
     <ClInclude Include="DownloadService.h">
       <Filter>Services\DownloadService</Filter>
@@ -315,12 +297,6 @@
     <ClInclude Include="LoginService.h">
       <Filter>Services\LoginService</Filter>
     </ClInclude>
-    <ClInclude Include="ColumnsInfo.h">
-      <Filter>ColumnsInfo</Filter>
-    </ClInclude>
-    <ClInclude Include="ColumnsInfoItem.h">
-      <Filter>ColumnsInfo</Filter>
-    </ClInclude>
     <ClInclude Include="TimelineLoadingService.h">
       <Filter>Services\TimelineService</Filter>
     </ClInclude>
@@ -345,8 +321,8 @@
     <ClInclude Include="FollowStatusService.h">
       <Filter>Services\FollowStatusService</Filter>
     </ClInclude>
-    <ClInclude Include="..\model-libs\json\src\base64.h">
-      <Filter>Services\ImageManagerService</Filter>
+    <ClInclude Include="layout_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -376,6 +352,9 @@
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
     <Midl Include="twitter_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\model-libs\layout\layout_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

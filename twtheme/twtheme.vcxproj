@@ -66,25 +66,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\layout;..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\layout;..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\layout;..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
+    <IncludePath>..\model-libs\layout;..\model-libs\boost\;..\model-libs\WTL90_4140_Final\Include;..\model-libs\asyncsvc;..\model-libs\viewmdl;..\model-libs\objmdl;$(IncludePath)</IncludePath>
     <LibraryPath>..\model-libs\boost\stage\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -238,19 +238,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\model-libs\json\src\JSON.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\model-libs\json\src\JSONValue.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\model-libs\objmdl\JSONConverter.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">false</CompileAsManaged>
@@ -265,9 +252,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="LayoutBuilder.cpp" />
-    <ClCompile Include="LayoutManager.cpp" />
-    <ClCompile Include="LayoutPainter.cpp" />
     <ClCompile Include="objmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -285,10 +269,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ThemeColorMap.cpp" />
     <ClCompile Include="ThemeDefault.cpp" />
-    <ClCompile Include="ThemeColorMap_KnownColors.cpp" />
-    <ClCompile Include="ThemeFontMap.cpp" />
     <ClCompile Include="twitter_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -314,15 +295,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\model-libs\json\src\JSON.h" />
-    <ClInclude Include="..\model-libs\json\src\JSONValue.h" />
-    <ClInclude Include="..\model-libs\objmdl\JSONConverter.h" />
     <ClInclude Include="dllmain.h" />
-    <ClInclude Include="GdilPlusUtils.h" />
-    <ClInclude Include="LayoutBuilder.h" />
-    <ClInclude Include="LayoutFunctions.h" />
-    <ClInclude Include="LayoutManager.h" />
-    <ClInclude Include="LayoutPainter.h" />
     <ClInclude Include="Metadata.h" />
     <ClInclude Include="objmdl_contract_i.h" />
     <ClInclude Include="PluginTable.h" />
@@ -333,9 +306,7 @@
     <ClInclude Include="SkinUserAccountControl.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="ThemeColorMap.h" />
     <ClInclude Include="ThemeDefault.h" />
-    <ClInclude Include="ThemeFontMap.h" />
     <ClInclude Include="twitter_contract_i.h" />
     <ClInclude Include="twtheme_i.h" />
     <ClInclude Include="viewmdl_contract_i.h" />

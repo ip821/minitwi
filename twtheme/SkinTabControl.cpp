@@ -6,6 +6,8 @@
 #include "..\twiconn\Plugins.h"
 #include "GdilPlusUtils.h"
 #include "LayoutFunctions.h"
+#include "Metadata.h"
+#include "..\model-libs\layout\Functions.h"
 
 // CSkinTabControl
 
@@ -68,7 +70,7 @@ STDMETHODIMP CSkinTabControl::SetColumnsInfo(IColumnsInfo* pColumnsInfo)
 STDMETHODIMP CSkinTabControl::SetSelectedIndex(UINT uiIndex)
 {
 	CComVar vContainers;
-	RETURN_IF_FAILED(m_pLayoutObject->GetVariantValue(Twitter::Themes::Metadata::Element::Elements, &vContainers));
+	RETURN_IF_FAILED(m_pLayoutObject->GetVariantValue(Layout::Metadata::Element::Elements, &vContainers));
 	ATLASSERT(vContainers.vt == VT_UNKNOWN);
 	CComQIPtr<IObjArray> pContainers = vContainers.punkVal;
 	UINT uiCount = 0;
@@ -78,7 +80,7 @@ STDMETHODIMP CSkinTabControl::SetSelectedIndex(UINT uiIndex)
 	{
 		CComPtr<IVariantObject> pContainer;
 		ASSERT_IF_FAILED(pContainers->GetAt(i, __uuidof(IVariantObject),(LPVOID*)&pContainer));
-		ASSERT_IF_FAILED(HrLayoutSetVariantValueRecursive(pContainer, Twitter::Themes::Metadata::Element::Selected, &CComVar((BOOL)(uiIndex == static_cast<int>(i)))));
+		ASSERT_IF_FAILED(HrLayoutSetVariantValueRecursive(pContainer, Layout::Metadata::Element::Selected, &CComVar((BOOL)(uiIndex == static_cast<int>(i)))));
 	}
 	return S_OK;
 }
@@ -88,7 +90,7 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT*
 	{
 		CComPtr<IVariantObject> pElement;
 		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pElement));
-		RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVar(m_bAnimation == TRUE)));
+		RETURN_IF_FAILED(pElement->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(m_bAnimation == TRUE)));
 	}
 
 	{
@@ -97,19 +99,19 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT*
 
 		if (m_bstrMessage == L"")
 		{
-			RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVar(false)));
+			RETURN_IF_FAILED(pElement->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(false)));
 		}
 		else
 		{
-			RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::Element::Visible, &CComVar(true)));
+			RETURN_IF_FAILED(pElement->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(true)));
 
 			if (m_bError)
 			{
-				RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::ImageColumn::ImageKey, &CComVar(Twitter::Themes::Metadata::TabContainer::Images::Error)));
+				RETURN_IF_FAILED(pElement->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(Twitter::Themes::Metadata::TabContainer::Images::Error)));
 			}
 			else
 			{
-				RETURN_IF_FAILED(pElement->SetVariantValue(Twitter::Themes::Metadata::ImageColumn::ImageKey, &CComVar(Twitter::Themes::Metadata::TabContainer::Images::Info)));
+				RETURN_IF_FAILED(pElement->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(Twitter::Themes::Metadata::TabContainer::Images::Info)));
 			}
 		}
 	}
@@ -204,9 +206,9 @@ STDMETHODIMP CSkinTabControl::AnimationNextFrame()
 	CComPtr<IColumnsInfoItem> pColumnsItem;
 	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
 	CComVar vValue;
-	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &vValue));
+	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Layout::Metadata::MarqueeProgressColumn::Value, &vValue));
 	CComVar vItemCount;
-	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::ItemCount, &vItemCount));
+	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Layout::Metadata::MarqueeProgressColumn::ItemCount, &vItemCount));
 
 	ATLASSERT(vValue.vt == VT_I4);
 	ATLASSERT(vItemCount.vt == VT_I4);
@@ -216,7 +218,7 @@ STDMETHODIMP CSkinTabControl::AnimationNextFrame()
 	value++;
 	if (value == itemCount - 1)
 		value = 0;
-	RETURN_IF_FAILED(pColumnsItem->SetVariantValue(Twitter::Themes::Metadata::MarqueeProgressColumn::Value, &CComVar(value)));
+	RETURN_IF_FAILED(pColumnsItem->SetVariantValue(Layout::Metadata::MarqueeProgressColumn::Value, &CComVar(value)));
 	return S_OK;
 }
 

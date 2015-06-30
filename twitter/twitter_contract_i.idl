@@ -2,6 +2,7 @@ import "oaidl.idl";
 import "ocidl.idl";
 import "objmdl_contract_i.idl";
 import "viewmdl_contract_i.idl";
+import "layout_contract_i.idl";
 
 typedef struct TtagDRAWITEMSTRUCT {
 	UINT        CtlType;
@@ -32,12 +33,6 @@ typedef struct TtagMEASUREITEMSTRUCT {
 	UINT       itemHeight;
 	ULONG_PTR  itemData;
 } TMEASUREITEMSTRUCT;
-
-typedef struct TtagBITMAP
-{
-	UINT Width;
-	UINT Height;
-} TBITMAP;
 
 [
 	object,
@@ -78,90 +73,6 @@ interface IHomeTimelineStreamingService : IUnknown
 interface ITimelineQueueService : IUnknown
 {
 	HRESULT AddToQueue(IVariantObject* pVariantObject);
-};
-
-[
-	object,
-	uuid(828C2337-535F-491B-943D-EDF93F760CB7),
-	pointer_default(unique)
-]
-interface IImageManagerService : IUnknown
-{
-	HRESULT Initialize(IObjCollection* pImagesCollection);
-	HRESULT GetImageInfo(BSTR bstrKey, TBITMAP* ptBitmap);
-	HRESULT CreateImageBitmap(BSTR bstrKey, HBITMAP* phBitmap);
-	HRESULT AddImageFromFile(BSTR bstrKey, BSTR bstrFileName);
-	HRESULT AddImageFromStream(BSTR bstrKey, IStream* pStream);
-	HRESULT AddImageFromHBITMAP(BSTR bstrKey, HBITMAP hBitmap);
-	HRESULT ContainsImageKey(BSTR bstrKey, BOOL* pbContains);
-	HRESULT RemoveImage(BSTR bstrKey);
-	HRESULT CopyImageTo(BSTR bstrKey, IImageManagerService* pDest);
-	HRESULT CopyTo(IImageManagerService* pDest);
-	HRESULT SaveImage(BSTR bstrKey, BSTR bstrFilePath);
-
-};
-
-[
-	object,
-	uuid(627BE6CD-5CB1-4364-817A-1EABA04B52C9),
-	pointer_default(unique)
-]
-interface IThemeColorMap : IUnknown
-{
-	HRESULT Initialize(IObjCollection* pObjectCollection);
-	HRESULT GetColor(BSTR bstrColorName, DWORD* dwColor);
-	HRESULT SetColor(BSTR bstrColorName, DWORD dwColor);
-};
-
-[
-	object,
-	uuid(DD372332-232D-4CA9-9807-B2F21D3C689A),
-	pointer_default(unique)
-]
-interface IThemeFontMap : IUnknown
-{
-	HRESULT Initialize(IObjCollection* pObjectCollection);
-	HRESULT GetFont(BSTR bstrFontName, HFONT* phFont);
-	HRESULT SetFont(BSTR bstrFontName, BSTR bstrFontFamily, DWORD dwSize, BOOL bBold, BOOL bUnderline);
-};
-
-interface IColumnsInfo;
-
-[
-	object,
-	uuid(B204A899-A54F-4F36-A8E4-56A3DDF71E66),
-	pointer_default(unique),
-	local
-]
-interface IColumnsInfoItem : IVariantObject
-{
-	HRESULT GetChildItems(IColumnsInfo** ppColumnsInfo);
-	HRESULT GetRect(RECT* rect);
-	HRESULT SetRect(RECT rect);
-	HRESULT SetRectStringProp(BSTR bstrKey, BSTR bstrValue);
-	HRESULT GetRectStringProp(BSTR bstrKey, BSTR* bstrValue);
-	HRESULT SetRectBoolProp(BSTR bstrKey, BOOL bValue);
-	HRESULT GetRectBoolProp(BSTR bstrKey, BOOL* pbValue);
-	HRESULT Clear();
-	HRESULT SetVariantValueRecursive(BSTR key, VARIANT* v);
-};
-
-[
-	object,
-	uuid(2EC751CC-D4F3-4B3B-B0C7-862916A085FC),
-	pointer_default(unique),
-	local
-]
-interface IColumnsInfo : IUnknown
-{
-	HRESULT AddItem(IColumnsInfoItem** ppColumnsInfoItem);
-	HRESULT GetItem(UINT uiIndex, IColumnsInfoItem** ppColumnsInfoItem);
-	HRESULT GetCount(UINT* puiCount);
-	HRESULT Clear();
-	HRESULT IsDisabledSelection(BOOL* pbDisabled);
-	HRESULT DisableSelection(BOOL bDisabled);
-	HRESULT FindItemIndex(BSTR bstrName, UINT* puiIndex);
-	HRESULT FindItemByName(BSTR bstrName, IColumnsInfoItem** ppColumnsInfoItem);
 };
 
 [
@@ -269,18 +180,6 @@ interface IUserAccountControl : IControl2
 
 [
 	object,
-	uuid(98E58BE4-3478-4504-82CF-29F6743BCDA8),
-	pointer_default(unique)
-]
-interface ILayoutManager : IUnknown
-{
-	HRESULT BuildLayout(HDC hdc, RECT* pSourceRect, IVariantObject* pLayoutObject, IVariantObject* pValueObject, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo);
-	HRESULT EraseBackground(HDC hdc, IColumnsInfo* pColumnInfo);
-	HRESULT PaintLayout(HDC hdc, IImageManagerService* pImageManagerService, IColumnsInfo* pColumnInfo, [defaultvalue(0)] BSTR bstrItemName);
-};
-
-[
-	object,
 	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
 	pointer_default(unique)
 ]
@@ -321,7 +220,6 @@ interface ISkinCommonControl : IUnknown
 ]
 interface ITheme : IUnknown
 {
-	HRESULT LoadThemeFromStream(IStream* pStream);
 	HRESULT GetColorMap(IThemeColorMap** ppThemeColorMap);
 	HRESULT GetFontMap(IThemeFontMap** ppThemeFontMap);
 	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);

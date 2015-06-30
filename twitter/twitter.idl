@@ -108,25 +108,11 @@ library twitterLib
 		[default] interface IThemeService;
 	};
 	[
-		uuid(89CA168E-8568-4653-9DCF-8DEB3CA21A37)
-	]
-	coclass ColumnsInfo
-	{
-		[default] interface IColumnsInfo;
-	};
-	[
 		uuid(07E747E2-451F-498F-B460-E46A44C5126C)
 	]
 	coclass OpenUrlService
 	{
 		[default] interface IOpenUrlService;
-	};
-	[
-		uuid(204D2E4F-72BE-41EF-8B7D-992B89BE36DA)
-	]
-	coclass ImageManagerService
-	{
-		[default] interface IImageManagerService;
 	};
 	[
 		uuid(8A7C5710-9FCB-4FD9-83A2-36EE81E10FB9)
@@ -190,13 +176,6 @@ library twitterLib
 	coclass TimelineRelativeTimeService
 	{
 		[default] interface ITimelineRelativeTimeService;
-	};
-	[
-		uuid(92F9FBB1-0F78-4B66-A783-0A891F3CC9F8)
-	]
-	coclass ColumnsInfoItem
-	{
-		[default] interface IColumnsInfoItem;
 	};
 	[
 		uuid(951B8635-6514-485A-B31D-3C0293203B79)

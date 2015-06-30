@@ -33,30 +33,22 @@ public:
 private:
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
+	CComPtr<IVariantObject> pColorTableObject;
+	CComPtr<ILayoutManager> m_pLayoutManager;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
-	CComPtr<IVariantObject> pColorTableObject;
-	CComPtr<ILayoutManager> m_pLayoutManager;
-	map<CComBSTR, CComPtr<IVariantObject>> m_layoutsMap;
-	map<CComBSTR, CComPtr<IVariantObject>> m_stylesMap;
-	static hash_set<wstring> m_inheritedProps;
 	
-	STDMETHOD(ApplyStyle)(IVariantObject* pElement, BSTR bstrStyleName);
-	STDMETHOD(ApplyStyles)(IVariantObject* pParentObject, IObjArray* pLayouts);
-	STDMETHOD(CopyProps)(IVariantObject* pSourceObject, IVariantObject* pDestObject, bool filterProps);
-
 public:
-
-	STDMETHOD(LoadThemeFromStream)(IStream* pStream);
+	
 	STDMETHOD(GetImageManagerService)(IImageManagerService** ppImageManagerService);
 	STDMETHOD(GetTimelineSkin)(ISkinTimeline** ppSkinTimeline);
 	STDMETHOD(GetTabControlSkin)(ISkinTabControl** pSkinTabControl);
 	STDMETHOD(GetCommonControlSkin)(ISkinCommonControl** pSkinCommonControl);
 	STDMETHOD(GetColorMap)(IThemeColorMap** ppThemeColorMap);
 	STDMETHOD(GetFontMap)(IThemeFontMap** ppThemeFontMap);
-	STDMETHOD(GetSkinUserAccountControl)(ISkinUserAccountControl** ppSkinUserAccountControl);
 	STDMETHOD(GetLayout)(BSTR bstrLayoutName, IVariantObject** ppVariantObject);
+	STDMETHOD(GetSkinUserAccountControl)(ISkinUserAccountControl** ppSkinUserAccountControl);
 	STDMETHOD(GetLayoutManager)(ILayoutManager** ppLayoutManager);
 };
 

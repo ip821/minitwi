@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "VideoViewControl.h"
-#include "..\twtheme\GdilPlusUtils.h"
+#include "..\model-libs\layout\GdilPlusUtils.h"
 
 #define TARGET_INTERVAL 15
 
