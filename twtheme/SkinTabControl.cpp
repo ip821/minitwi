@@ -216,7 +216,7 @@ STDMETHODIMP CSkinTabControl::AnimationNextFrame()
 	auto value = vValue.intVal;
 	auto itemCount = vItemCount.intVal;
 	value++;
-	if (value == itemCount - 1)
+	if (value == itemCount)
 		value = 0;
 	RETURN_IF_FAILED(pColumnsItem->SetVariantValue(Layout::Metadata::MarqueeProgressColumn::Value, &CComVar(value)));
 	return S_OK;
