@@ -4,7 +4,7 @@
 #include "TwitterConnection.h"
 #include "Plugins.h"
 #include "TextNormalizeTable.h"
-#include <hash_set>
+#include <unordered_set>
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
 
@@ -611,7 +611,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	auto urls = entities[L"urls"]->AsArray();
 
 	CString strText = text.c_str();
-	hash_set<wstring> urlsHashSet;
+	unordered_set<wstring> urlsHashSet;
 
 	if (urls.size())
 	{
@@ -626,7 +626,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pMediaObjectCollection));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &CComVar(pMediaObjectCollection)));
 
-	hash_set<wstring> processedMediaUrls;
+	unordered_set<wstring> processedMediaUrls;
 
 	if (itemObject.find(L"extended_entities") != itemObject.end())
 	{
@@ -718,7 +718,7 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 	return S_OK;
 }
 
-HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, hash_set<wstring>& processedMediaUrls)
+HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, unordered_set<wstring>& processedMediaUrls)
 {
 	for (size_t i = 0; i < mediaArray.size(); i++)
 	{

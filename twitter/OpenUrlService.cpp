@@ -148,12 +148,12 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 	{
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstr));
-		CString strUrl(bstr);
-		strUrl.Replace(L"_normal", L"");
+		CString strUrlImage(bstr);
+		strUrlImage.Replace(L"_normal", L"");
 
 		CComPtr<IVariantObject> pUrlObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
-		RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(strUrl)));
+		RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(strUrlImage)));
 
 		RETURN_IF_FAILED(m_pWindowService->OpenWindow(m_hControlWnd, CLSID_PictureWindow, pUrlObject));
 		return S_OK;
@@ -175,8 +175,8 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 			RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 			CComVar vId;
 			RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
-			auto strUrl = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(vId.bstrVal);
-			RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(strUrl)));
+			auto strUrlImage = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(vId.bstrVal);
+			RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(strUrlImage)));
 		}
 
 		RETURN_IF_FAILED(pUrlObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(bstr)));

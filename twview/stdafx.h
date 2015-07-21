@@ -54,7 +54,7 @@
 #include <vector>
 #include <map>
 #include <list>
-#include <hash_set>
+#include <unordered_set>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/condition_variable.hpp>
 

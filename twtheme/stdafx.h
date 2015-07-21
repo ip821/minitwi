@@ -51,7 +51,7 @@
 
 #include <gdiplus.h>
 #include <map>
-#include <hash_set>
+#include <unordered_set>
 
 #include <boost/lexical_cast.hpp>
 

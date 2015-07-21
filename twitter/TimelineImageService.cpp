@@ -66,10 +66,10 @@ STDMETHODIMP CTimelineImageService::OnShutdown()
 STDMETHODIMP CTimelineImageService::OnTimer(ITimerService* pTimerService)
 {
 	RETURN_IF_FAILED(m_pTimerServiceUpdate->StopTimer());
-	hash_set<IVariantObject*> ids;
+	unordered_set<IVariantObject*> ids;
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
-		ids = hash_set<IVariantObject*>(m_idsToUpdate);
+		ids = unordered_set<IVariantObject*>(m_idsToUpdate);
 		m_idsToUpdate.clear();
 	}
 
@@ -200,7 +200,7 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_imageRefs.clear();
 
-		hash_set<wstring> urls;
+		unordered_set<wstring> urls;
 
 		UINT uiCount = 0;
 		RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));

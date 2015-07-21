@@ -111,7 +111,7 @@ STDMETHODIMP CSkinTimeline::DrawItem(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCT
 
 STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
-	std::hash_set<UINT> columnIndexesAlreadyAnimated;
+	std::unordered_set<UINT> columnIndexesAlreadyAnimated;
 
 	if (lpdis->puiNotAnimatedColumnIndexes)
 	{
@@ -200,7 +200,7 @@ STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWIT
 
 STDMETHODIMP CSkinTimeline::DrawTextColumns(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
-	std::hash_set<UINT> columnIndexesAlreadyAnimated;
+	std::unordered_set<UINT> columnIndexesAlreadyAnimated;
 
 	if (lpdis->puiNotAnimatedColumnIndexes)
 	{
@@ -696,7 +696,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 			lastY += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
 		}
 
-		std::hash_set<std::wstring> imageUrls;
+		std::unordered_set<std::wstring> imageUrls;
 
 		{ //Images
 			CComVar vMediaUrls;

@@ -55,9 +55,9 @@ private:
 	DWORD m_dwAdviceTimerServiceUpdate = 0;
 	DWORD m_dwAdviceTimelineControl = 0;
 
-	hash_set<IVariantObject*> m_idsToUpdate;
+	unordered_set<IVariantObject*> m_idsToUpdate;
 	boost::mutex m_mutex;
-	map<wstring, hash_set<IVariantObject*>> m_imageRefs;
+	map<wstring, unordered_set<IVariantObject*>> m_imageRefs;
 
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
 	static HRESULT GetUrls(IVariantObject* pItemObject, vector<wstring>& urls);

@@ -41,7 +41,7 @@ public:
 private:
 	CComPtr<IThreadPoolService> m_pThreadPoolService;
 	DWORD m_dwAdvice = 0;
-	hash_set<wstring> m_urls;
+	unordered_set<wstring> m_urls;
 	boost::mutex m_mutex;
 
 	HRESULT Fire_OnDownloadComplete(IVariantObject *pResult);

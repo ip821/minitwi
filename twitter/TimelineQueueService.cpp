@@ -63,7 +63,7 @@ STDMETHODIMP CTimelineQueueService::OnFinish(IVariantObject* pThreadResult)
 	UINT uiCount = 0;
 	RETURN_IF_FAILED(pAllItems->GetCount(&uiCount));
 
-	hash_set<wstring> existingIds;
+	unordered_set<wstring> existingIds;
 	for (UINT i = 0; i < uiCount; i++)
 	{
 		CComPtr<IVariantObject> pItem;
