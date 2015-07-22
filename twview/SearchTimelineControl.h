@@ -60,6 +60,7 @@ public:
 protected:
 	virtual HRESULT Initializing() override;
 	virtual HRESULT Initialized() override;
+	virtual HRESULT OnActivateInternal() override;
 private:
 
 public:

@@ -9,6 +9,14 @@ HRESULT CSearchTimelineControl::Initializing()
 	return S_OK;
 }
 
+HRESULT CSearchTimelineControl::OnActivateInternal()
+{
+	HWND hWnd = 0;
+	RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hWnd));
+	::SetFocus(hWnd);
+	return S_OK;
+}
+
 HRESULT CSearchTimelineControl::Initialized()
 {
 	RETURN_IF_FAILED(__super::Initialized());
