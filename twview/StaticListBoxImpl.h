@@ -211,9 +211,6 @@ public:
 	{
 		auto curSelIndex = SendMessage(GetHWND(), LB_GETCURSEL, 0, 0);
 
-		//if ((WPARAM)curSelIndex == wParam)
-		//	return 0;
-
 		for_each(m_items.begin(), m_items.end(), [&](Item& item){item.focused = false; });
 
 		if (wParam == (WPARAM)LB_ERR)
@@ -222,6 +219,9 @@ public:
 				InvalidateItem(curSelIndex);
 			return 0;
 		}
+
+		if (!m_items.size())
+			return 0;
 
 		m_items[wParam].focused = true;
 
