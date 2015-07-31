@@ -68,6 +68,9 @@
 #include "..\ViewMdl\Plugins.h"
 #include "..\ViewMdl\Functions.h"
 
+#include "..\layout\Plugins.h"
+#include "..\layout\Functions.h"
+
 #include "..\model-libs\asyncsvc\Plugins.h"
 #include "..\model-libs\asyncsvc\Metadata.h"
 

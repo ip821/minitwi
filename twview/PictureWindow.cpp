@@ -84,11 +84,16 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 	m_pImageManagerService.Release();
 	m_pServiceProvider.Release();
 	m_pTheme.Release();
+	m_pVariantObject.Release();
+	m_pLayout.Release();
+	m_pLayoutManager.Release();
+	m_pColumnsInfo.Release();
 	return S_OK;
 }
 
 LRESULT CPictureWindow::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	ASSERT_IF_FAILED(m_pLayoutManager->EraseBackground((HDC)wParam, m_pColumnsInfo));
 	return 0;
 }
 
@@ -171,6 +176,11 @@ STDMETHODIMP CPictureWindow::ShutdownViewControl()
 {
 	if (m_pViewControl)
 	{
+		if (::IsWindow(m_hWnd))
+		{
+			RETURN_IF_FAILED(RebuildLayout());
+		}
+
 		RETURN_IF_FAILED(HrNotifyOnShutdown(m_pViewControl));
 		m_pViewControl.Release();
 	}
@@ -181,6 +191,8 @@ STDMETHODIMP CPictureWindow::ShutdownViewControl()
 STDMETHODIMP CPictureWindow::LoadViewControl()
 {
 	ATLASSERT(!m_pViewControl);
+
+	RETURN_IF_FAILED(RebuildLayout());
 
 	CComPtr<IVariantObject> pVariantObject;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
@@ -269,6 +281,7 @@ STDMETHODIMP CPictureWindow::CreateEx(HWND hWndParent, HWND *hWnd)
 	__super::Create(NULL, rect, 0, WS_VISIBLE | WS_BORDER | WS_SYSMENU, WS_EX_CONTROLPARENT);
 	if (hWnd)
 		*hWnd = m_hWnd;
+	ResizeWindow(rect.Width(), rect.Height());
 	return S_OK;
 }
 
@@ -329,7 +342,7 @@ STDMETHODIMP CPictureWindow::SetVariantObject(IVariantObject *pVariantObject)
 			CComVar vMediaUrlForObject;
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrlForObject));
 			m_bitmapsUrls[i] = vMediaUrlForObject.bstrVal;
-			
+
 #ifndef __WINXP__
 			CComVar vVideoUrlForObject;
 			RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vVideoUrlForObject));
@@ -404,13 +417,13 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
 	if (
-		vType.vt != VT_BSTR 
-		|| 
+		vType.vt != VT_BSTR
+		||
 			(
 				CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::ImagePictureWindow
 				&&
 				CComBSTR(vType.bstrVal) != Twitter::Metadata::Types::VideoPictureWindow
-			)
+				)
 		)
 		return S_OK;
 
@@ -512,6 +525,24 @@ void CPictureWindow::ResizeWindow(UINT uiWidth, UINT uiHeight)
 	}
 	SetWindowPos(NULL, &rect, SWP_NOZORDER);
 	AdjustSize();
+
+	ASSERT_IF_FAILED(RebuildLayout());
+}
+
+STDMETHODIMP CPictureWindow::RebuildLayout()
+{
+	RETURN_IF_FAILED(m_pColumnsInfo->Clear());
+
+	CComPtr<IVariantObject> pLayoutItem;
+	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, L"CenterString", &pLayoutItem));
+	RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pLayoutItem, Layout::Metadata::Element::Visible, &CComVar(m_pViewControl == nullptr)));
+
+	CRect rect;
+	GetClientRect(&rect);
+	CClientDC cdc(m_hWnd);
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(cdc, &rect, m_pLayout, nullptr, m_pImageManagerService, m_pColumnsInfo));
+
+	return S_OK;
 }
 
 void CPictureWindow::ResizeToCurrentBitmap()
@@ -588,79 +619,85 @@ LRESULT CPictureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 {
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
-	CDCHandle cdcReal(ps.hdc);
-
-	CRect rect;
-	GetClientRect(&rect);
-
-	int currentBitmapIndex = 0;
-	{
-		boost::lock_guard<boost::mutex> lock(m_mutex);
-		currentBitmapIndex = m_currentBitmapIndex;
-	}
-
-	static DWORD dwBrushColor = 0;
-	static DWORD dwTextColor = 0;
-	if (!dwBrushColor)
-	{
-		CComPtr<IThemeColorMap> pThemeColorMap;
-		ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
-		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwBrushColor));
-		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::PictureWindowText, &dwTextColor));
-	}
-
-	static HFONT font = 0;
-	if (!font)
-	{
-		CComPtr<IThemeFontMap> pThemeFontMap;
-		ASSERT_IF_FAILED(m_pTheme->GetFontMap(&pThemeFontMap));
-		ASSERT_IF_FAILED(pThemeFontMap->GetFont(Twitter::Metadata::Drawing::PictureWindowText, &font));
-	}
-
-	CDCSelectFontScope cdcSelectFontScope(cdcReal, font);
-
-	cdcReal.SetBkMode(TRANSPARENT);
-	cdcReal.SetTextColor(dwTextColor);
-
-	cdcReal.FillSolidRect(&rect, dwBrushColor);
-
-	if (!m_pViewControl)
-	{
-		CComBSTR str = L"Downloading...";
-		if (!m_strLastErrorMsg.IsEmpty())
-			str = m_strLastErrorMsg;
-
-		CSize size;
-		CRect rect1 = rect;
-		cdcReal.DrawTextEx(str, str.Length(), &rect1, DT_WORDBREAK | DT_CENTER | DT_CALCRECT, NULL);
-		size.cx = rect1.Width();
-		size.cy = rect1.Height();
-
-		auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
-		auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
-
-		CRect rectText(x, y, x + size.cx, y + size.cy);
-		DrawRoundedRect(cdcReal, rectText, false);
-		cdcReal.DrawTextEx(str, str.Length(), &rectText, DT_WORDBREAK | DT_CENTER, NULL);
-	}
-
-	if (m_bitmapsUrls.size() > 1 && m_currentBitmapIndex >= 0)
-	{
-		CString str;
-		str.Format(L"%u / %u", (UINT)currentBitmapIndex + 1, m_bitmapsUrls.size());
-		CSize sz;
-		cdcReal.GetTextExtent(str, str.GetLength(), &sz);
-
-		auto x = rect.Width() / 2;
-		auto y = rect.bottom - BOTTOM_PANEL_HEIGHT / 2 - sz.cy / 2;
-
-		CRect rectText(x, y, x + sz.cx, y + sz.cy);
-		DrawRoundedRect(cdcReal, rectText, false);
-		cdcReal.DrawText(str, str.GetLength(), rectText, 0);
-	}
-
+	ASSERT_IF_FAILED(m_pLayoutManager->PaintLayout(ps.hdc, m_pImageManagerService, m_pColumnsInfo));
 	EndPaint(&ps);
+
 	return 0;
+	//PAINTSTRUCT ps = { 0 };
+	//BeginPaint(&ps);
+	//CDCHandle cdcReal(ps.hdc);
+
+	//CRect rect;
+	//GetClientRect(&rect);
+
+	//int currentBitmapIndex = 0;
+	//{
+	//	boost::lock_guard<boost::mutex> lock(m_mutex);
+	//	currentBitmapIndex = m_currentBitmapIndex;
+	//}
+
+	//static DWORD dwBrushColor = 0;
+	//static DWORD dwTextColor = 0;
+	//if (!dwBrushColor)
+	//{
+	//	CComPtr<IThemeColorMap> pThemeColorMap;
+	//	ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
+	//	ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwBrushColor));
+	//	ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::PictureWindowText, &dwTextColor));
+	//}
+
+	//static HFONT font = 0;
+	//if (!font)
+	//{
+	//	CComPtr<IThemeFontMap> pThemeFontMap;
+	//	ASSERT_IF_FAILED(m_pTheme->GetFontMap(&pThemeFontMap));
+	//	ASSERT_IF_FAILED(pThemeFontMap->GetFont(Twitter::Metadata::Drawing::PictureWindowText, &font));
+	//}
+
+	//CDCSelectFontScope cdcSelectFontScope(cdcReal, font);
+
+	//cdcReal.SetBkMode(TRANSPARENT);
+	//cdcReal.SetTextColor(dwTextColor);
+
+	//cdcReal.FillSolidRect(&rect, dwBrushColor);
+
+	//if (!m_pViewControl)
+	//{
+	//	CComBSTR str = L"Downloading...";
+	//	if (!m_strLastErrorMsg.IsEmpty())
+	//		str = m_strLastErrorMsg;
+
+	//	CSize size;
+	//	CRect rect1 = rect;
+	//	cdcReal.DrawTextEx(str, str.Length(), &rect1, DT_WORDBREAK | DT_CENTER | DT_CALCRECT, NULL);
+	//	size.cx = rect1.Width();
+	//	size.cy = rect1.Height();
+
+	//	auto x = (rect.right - rect.left) / 2 - (size.cx / 2);
+	//	auto y = (rect.bottom - rect.top) / 2 - (size.cy / 2);
+
+	//	CRect rectText(x, y, x + size.cx, y + size.cy);
+	//	DrawRoundedRect(cdcReal, rectText, false);
+	//	cdcReal.DrawTextEx(str, str.Length(), &rectText, DT_WORDBREAK | DT_CENTER, NULL);
+	//}
+
+	//if (m_bitmapsUrls.size() > 1 && m_currentBitmapIndex >= 0)
+	//{
+	//	CString str;
+	//	str.Format(L"%u / %u", (UINT)currentBitmapIndex + 1, m_bitmapsUrls.size());
+	//	CSize sz;
+	//	cdcReal.GetTextExtent(str, str.GetLength(), &sz);
+
+	//	auto x = rect.Width() / 2;
+	//	auto y = rect.bottom - BOTTOM_PANEL_HEIGHT / 2 - sz.cy / 2;
+
+	//	CRect rectText(x, y, x + sz.cx, y + sz.cy);
+	//	DrawRoundedRect(cdcReal, rectText, false);
+	//	cdcReal.DrawText(str, str.GetLength(), rectText, 0);
+	//}
+
+	//EndPaint(&ps);
+	//return 0;
 }
 
 HRESULT CPictureWindow::Fire_OnClosed(HWND hWnd)
@@ -702,5 +739,8 @@ STDMETHODIMP CPictureWindow::SetTheme(ITheme* pTheme)
 {
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
+	RETURN_IF_FAILED(m_pTheme->GetLayout(L"PictureWindowLayout", &m_pLayout));
+	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	return S_OK;
 }

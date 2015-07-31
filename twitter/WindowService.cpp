@@ -46,19 +46,6 @@ STDMETHODIMP CWindowService::OpenWindow(HWND hWndParent, REFCLSID clsid, IVarian
 	CComPtr<IWindow> pWindow;
 	RETURN_IF_FAILED(HrCoCreateInstance(clsid, &pWindow));
 	RETURN_IF_FAILED(HrInitializeWithSettings(pWindow, m_pSettings));
-	RETURN_IF_FAILED(pWindow->Show(hWndParent));
-	HWND hWnd = 0;
-	RETURN_IF_FAILED(pWindow->GetHWND(&hWnd));
-	WindowData windowData;
-	windowData.m_pWindow = pWindow;
-
-	CComPtr<IUnknown> pUnk;
-	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-	RETURN_IF_FAILED(AtlAdvise(pWindow, pUnk, __uuidof(IWindowEventSink), &windowData.m_dwAdvice));
-
-	m_windows[hWnd] = windowData;
-
-	RETURN_IF_FAILED(HrInitializeWithControl(pWindow, m_pControl));
 
 	{
 		CComQIPtr<IThemeSupport> pThemeSupport = pWindow;
@@ -72,6 +59,19 @@ STDMETHODIMP CWindowService::OpenWindow(HWND hWndParent, REFCLSID clsid, IVarian
 		}
 	}
 
+	RETURN_IF_FAILED(pWindow->Show(hWndParent));
+	HWND hWnd = 0;
+	RETURN_IF_FAILED(pWindow->GetHWND(&hWnd));
+	WindowData windowData;
+	windowData.m_pWindow = pWindow;
+
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	RETURN_IF_FAILED(AtlAdvise(pWindow, pUnk, __uuidof(IWindowEventSink), &windowData.m_dwAdvice));
+
+	m_windows[hWnd] = windowData;
+
+	RETURN_IF_FAILED(HrInitializeWithControl(pWindow, m_pControl));
 	RETURN_IF_FAILED(HrNotifyOnInitialized(pWindow, m_pServiceProvider));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(pWindow, pVariantObject));
 	return S_OK;

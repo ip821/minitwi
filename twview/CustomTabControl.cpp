@@ -474,8 +474,8 @@ void CCustomTabControl::UpdateChildControlAreaRect()
 	if (m_pSkinTabControl)
 	{
 		CClientDC cdc(m_hWnd);
-		m_pSkinTabControl->MeasureHeader(cdc, pObjArray, &clientRect, &uiHeight);
-		m_pSkinTabControl->GetInfoRect(&m_rectInfoImage);
+		ASSERT_IF_FAILED(m_pSkinTabControl->MeasureHeader(cdc, pObjArray, &clientRect, &uiHeight));
+		ASSERT_IF_FAILED(m_pSkinTabControl->GetInfoRect(&m_rectInfoImage));
 	}
 
 	GetClientRect(&m_rectChildControlArea);
