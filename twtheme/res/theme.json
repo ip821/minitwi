@@ -419,7 +419,7 @@
             },
             {
                 "name": "PictureWindowLayout",
-                "type": "horizontal_container",
+                "type": "vertical_container",
                 "fit_horizontal": "parent",
                 "fit_vertical": "parent",
                 "elements": [
@@ -429,8 +429,8 @@
                         "text": "Downloading...",
                         "font": "PictureWindowText",
                         "color": "PictureWindowText",
-                        "center_horizontal": true,
-                        "center_vertical": true,
+                        "align_horizontal": "center",
+                        "align_vertical": "center",
                         "background_style": "rounded",
                         "color_background": "RoundedColor"
                     }
