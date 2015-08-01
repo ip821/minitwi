@@ -433,6 +433,19 @@
                         "align_vertical": "center",
                         "background_style": "rounded",
                         "color_background": "RoundedColor"
+                    },
+                    {
+                        "name": "SelectedImageString",
+                        "type": "text_column",
+                        "text": "",
+                        "font": "PictureWindowText",
+                        "color": "PictureWindowText",
+                        "align_horizontal": "center",
+                        "align_vertical": "down",
+                        "background_style": "rounded",
+                        "color_background": "RoundedColor",
+                        "margin_top": 30,
+                        "margin_bottom": 30
                     }
                 ]
             }

@@ -533,9 +533,28 @@ STDMETHODIMP CPictureWindow::RebuildLayout()
 {
 	RETURN_IF_FAILED(m_pColumnsInfo->Clear());
 
-	CComPtr<IVariantObject> pLayoutItem;
-	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, L"CenterString", &pLayoutItem));
-	RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pLayoutItem, Layout::Metadata::Element::Visible, &CComVar(m_pViewControl == nullptr)));
+	CComPtr<IVariantObject> pLayoutItemCenterItem;
+	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, L"CenterString", &pLayoutItemCenterItem));
+	RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pLayoutItemCenterItem, Layout::Metadata::Element::Visible, &CComVar(m_pViewControl == nullptr)));
+
+	CComPtr<IVariantObject> pLayoutItemImageNumber;
+	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, L"SelectedImageString", &pLayoutItemImageNumber));
+	RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pLayoutItemImageNumber, Layout::Metadata::Element::Visible, &CComVar(false)));
+
+	int currentBitmapIndex = m_currentBitmapIndex;
+	//{
+	//	boost::lock_guard<boost::mutex> lock(m_mutex);
+	//	currentBitmapIndex = m_currentBitmapIndex;
+	//}
+
+	if (m_bitmapsUrls.size() > 1 && m_currentBitmapIndex >= 0)
+	{
+		CString str;
+		str.Format(L"%u / %u", (UINT)currentBitmapIndex + 1, m_bitmapsUrls.size());
+
+		RETURN_IF_FAILED(pLayoutItemImageNumber->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(str)));
+		RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pLayoutItemImageNumber, Layout::Metadata::Element::Visible, &CComVar(true)));
+	}
 
 	CRect rect;
 	GetClientRect(&rect);
