@@ -393,6 +393,7 @@
                         "name": "InfoContainer",
                         "type": "horizontal_container",
                         "style": "TabContainerHeaderChildContainer",
+                        "margin_right": 5,
                         "align_horizontal": "right",
                         "elements": [
                             {
@@ -400,7 +401,6 @@
                                 "type": "marquee_progress",
                                 "visible": false,
                                 "margin_top": 8,
-                                "margin_right": 8,
                                 "value": 0,
                                 "item_count": 3,
                                 "item_size": 10,
@@ -444,7 +444,6 @@
                         "align_vertical": "down",
                         "background_style": "rounded",
                         "color_background": "RoundedColor",
-                        "margin_top": 30,
                         "margin_bottom": 30
                     }
                 ]
