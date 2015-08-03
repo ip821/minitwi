@@ -65,7 +65,19 @@ STDMETHODIMP CImageViewControl::OnInitialized(IServiceProvider *pServiceProvider
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_AnimationService, &m_pAnimationService));
 	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &m_dwAdviceAnimationService));
 
-	RETURN_IF_FAILED(m_pAnimationService->SetParams(0, 255, STEPS, TARGET_INTERVAL));
+	const DWORD dwValueStart = 0;
+
+	CComPtr<IVariantObject> pImageElement;
+	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, L"ImageViewLayoutImageColumn", &pImageElement));
+	RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(m_bstrUrl)));
+	RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValueStart)));
+
+	CRect rect;
+	GetClientRect(&rect);
+	CClientDC cdc(m_hWnd);
+
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(cdc, &rect, m_pLayout, nullptr, m_pImageManagerService, m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pAnimationService->SetParams(dwValueStart, 255, STEPS, TARGET_INTERVAL));
 	RETURN_IF_FAILED(m_pAnimationService->StartAnimationTimer());
 
 	return S_OK;
@@ -79,11 +91,18 @@ STDMETHODIMP CImageViewControl::OnShutdown()
 	m_pImageManagerService.Release();
 	m_pServiceProvider.Release();
 	m_pTheme.Release();
+	m_pLayout.Release();
+	m_pLayoutManager.Release();
+	m_pColumnsInfo.Release();
 	return S_OK;
 }
 
 STDMETHODIMP CImageViewControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
+	CComPtr<IColumnsInfoItem> pImageColumnsInfoItem;
+	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(L"ImageViewLayoutImageColumn", &pImageColumnsInfoItem));
+	RETURN_IF_FAILED(pImageColumnsInfoItem->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValue)));
+
 	Invalidate();
 
 	if (dwStep == STEPS)
@@ -115,40 +134,10 @@ LRESULT CImageViewControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 	cdc.CreateCompatibleDC(cdcReal);
 	CDCSelectBitmapScope cdcSelectBitmapScopeBufferBitmap(cdc, bufferBitmap);
 
-	static DWORD dwBrushColor = 0;
-	static DWORD dwTextColor = 0;
-	if (!dwBrushColor)
-	{
-		CComPtr<IThemeColorMap> pThemeColorMap;
-		ASSERT_IF_FAILED(m_pTheme->GetColorMap(&pThemeColorMap));
-		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwBrushColor));
-		ASSERT_IF_FAILED(pThemeColorMap->GetColor(Twitter::Metadata::Drawing::PictureWindowText, &dwTextColor));
-	}
-
 	cdc.SetBkMode(TRANSPARENT);
-	cdc.SetTextColor(dwTextColor);
-
-	cdc.FillSolidRect(&rect, dwBrushColor);
-
-	DWORD dwAlpha = 0;
-	ASSERT_IF_FAILED(m_pAnimationService->GetCurrentValue(&dwAlpha));
-	TBITMAP tBitmap = { 0 };
-	ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(m_bstrUrl, &tBitmap));
-	auto width = tBitmap.Width;
-	auto height = tBitmap.Height;
-	auto x = (rect.right - rect.left) / 2 - (width / 2);
-	auto y = (rect.bottom - rect.top) / 2 - (height / 2);
-
-	CBitmap bitmap;
-	ASSERT_IF_FAILED(m_pImageManagerService->CreateImageBitmap(m_bstrUrl, &bitmap.m_hBitmap));
-	CDC cdcBitmap;
-	cdcBitmap.CreateCompatibleDC(cdc);
-	CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
-	BLENDFUNCTION bf = { 0 };
-	bf.BlendOp = AC_SRC_OVER;
-	bf.SourceConstantAlpha = (BYTE)dwAlpha;
-	cdc.AlphaBlend(x, y, width, height, cdcBitmap, 0, 0, width, height, bf);
-
+	ASSERT_IF_FAILED(m_pLayoutManager->EraseBackground(cdc, m_pColumnsInfo));
+	ASSERT_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, m_pImageManagerService, m_pColumnsInfo));
+	
 	cdcReal.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, SRCCOPY);
 
 	EndPaint(&ps);
@@ -159,5 +148,8 @@ STDMETHODIMP CImageViewControl::SetTheme(ITheme *pTheme)
 {
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
+	RETURN_IF_FAILED(m_pTheme->GetLayout(L"ImageViewLayout", &m_pLayout));
+	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	return S_OK;
 }

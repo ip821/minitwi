@@ -447,6 +447,22 @@
                         "margin_bottom": 30
                     }
                 ]
+            },
+            {
+                "name": "ImageViewLayout",
+                "type": "horizontal_container",
+                "fit_horizontal": "parent",
+                "fit_vertical": "parent",
+                "color_background": "BrushBackground",
+                "elements": [
+                    {
+                        "name": "ImageViewLayoutImageColumn",
+                        "type": "image_column",
+                        "color_background": "BrushBackground",
+                        "align_horizontal": "center",
+                        "align_vertical": "center"
+                    }
+                ]
             }
         ]
     }
