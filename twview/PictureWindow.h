@@ -76,6 +76,10 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IControl> m_pViewControl;
 	CComPtr<IVariantObject> m_pVariantObject;
+	CComPtr<IVariantObject> m_pLayout;
+	CComPtr<ILayoutManager> m_pLayoutManager;
+	CComPtr<IColumnsInfo> m_pColumnsInfo;
+
 	CMenu m_popupMenu;
 	DWORD m_dwAdviceDownloadService = 0;
 	int m_currentBitmapIndex = -1;
@@ -113,6 +117,7 @@ private:
 	STDMETHOD(InitCommandSupport)(int index);
 	STDMETHOD(ShutdownViewControl());
 	STDMETHOD(LoadViewControl());
+	STDMETHOD(RebuildLayout());
 	void MoveToPicture(BOOL bForward);
 	void AdjustSize();
 

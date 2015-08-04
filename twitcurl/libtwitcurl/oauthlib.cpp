@@ -673,6 +673,11 @@ bool oAuth::extractOAuthTokenKeySecret( const std::string& requestTokenResponse 
     {
         nPos = nPos + oAuthLibDefaults::OAUTHLIB_SCREENNAME_KEY.length() + strlen( "=" );
         strDummy = requestTokenResponse.substr( nPos );
+		nPos = strDummy.find("&");
+		if (std::string::npos != nPos)
+		{
+			strDummy = strDummy.substr(0, nPos);
+		}
         m_oAuthScreenName = strDummy;
     }
 

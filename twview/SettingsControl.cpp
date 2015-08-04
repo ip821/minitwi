@@ -175,8 +175,11 @@ void CSettingsControl::SwitchToLogoutMode()
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_HIDE);
 
+	CComPtr<ISettings> pSettingsTwitter;
+	ASSERT_IF_FAILED(m_pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
+
 	CComVar vUser;
-	ASSERT_IF_FAILED(m_pSettings->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
+	ASSERT_IF_FAILED(pSettingsTwitter->GetVariantValue(Twitter::Metadata::Settings::Twitter::User, &vUser));
 	ATLASSERT(vUser.vt == VT_BSTR);
 	m_labelLoggedUser.SetWindowText(vUser.bstrVal);
 }

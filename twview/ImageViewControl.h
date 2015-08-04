@@ -52,6 +52,9 @@ private:
 	CComPtr<IVariantObject> m_pVariantObject;
 	CComPtr<IAnimationService> m_pAnimationService;
 	CComPtr<ITheme> m_pTheme;
+	CComPtr<IVariantObject> m_pLayout;
+	CComPtr<ILayoutManager> m_pLayoutManager;
+	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	CComBSTR m_bstrUrl;
 
 	CString m_strLastErrorMsg;
