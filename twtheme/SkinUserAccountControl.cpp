@@ -2,6 +2,7 @@
 #include "SkinUserAccountControl.h"
 #include "..\twiconn\Plugins.h"
 #include "GdilPlusUtils.h"
+#include "Metadata.h"
 
 #define DISTANCE_DISPLAY_NAME 20 / 200
 #define DISTANCE_DESCRIPTION_Y 20
@@ -9,20 +10,6 @@
 #define DISTANCE_DESCRIPTION_X 20
 #define DISTANCE_USER_IMAGE_X 20
 #define ALPHA_USER_IMAGE 200
-
-STDMETHODIMP CSkinUserAccountControl::SetColorMap(IThemeColorMap* pThemeColorMap)
-{
-	CHECK_E_POINTER(pThemeColorMap);
-	m_pThemeColorMap = pThemeColorMap;
-	return S_OK;
-}
-
-STDMETHODIMP CSkinUserAccountControl::SetFontMap(IThemeFontMap* pThemeFontMap)
-{
-	CHECK_E_POINTER(pThemeFontMap);
-	m_pThemeFontMap = pThemeFontMap;
-	return S_OK;
-}
 
 STDMETHODIMP CSkinUserAccountControl::SetImageManagerService(IImageManagerService* pImageManagerService)
 {
@@ -33,7 +20,7 @@ STDMETHODIMP CSkinUserAccountControl::SetImageManagerService(IImageManagerServic
 
 STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject)
 {
-	CRect rect = *lpRect;
+	/*CRect rect = *lpRect;
 	auto dwBackColor = Color((ARGB)Color::DarkSlateGray).ToCOLORREF();
 	CBitmap bitmap;
 	TBITMAP tBitmap = { 0 };
@@ -81,13 +68,18 @@ STDMETHODIMP CSkinUserAccountControl::EraseBackground(HDC hdc, LPRECT lpRect, IV
 		bf.BlendOp = AC_SRC_OVER;
 		bf.SourceConstantAlpha = (BYTE)m_alpha;
 		cdc.AlphaBlend(0, 0, rect.Width(), rect.Height(), cdcBitmap, x, y, width, height, bf);
-	}
+	}*/
 	return S_OK;
 }
 
 STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject, IColumnsInfo* pColumnsInfo)
 {
-	CRect rect = *lpRect;
+	if (m_pColumnsInfo)
+	{
+		RETURN_IF_FAILED(m_pLayoutManager->EraseBackground(hdc, m_pColumnsInfo));
+		RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(hdc, m_pImageManagerService, m_pColumnsInfo));
+	}
+	/*CRect rect = *lpRect;
 	CDCHandle cdc(hdc);
 
 	CRect rectDisplayName;
@@ -217,29 +209,29 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc, LPRECT lpRect, IVariantObjec
 	}
 
 	DrawRoundedRect(cdc, rectFollowButton, true, dwFollowButtonColor);
-	cdc.DrawText(str, str.GetLength(), rectFollowButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+	cdc.DrawText(str, str.GetLength(), rectFollowButton, DT_CENTER | DT_VCENTER | DT_SINGLELINE);*/
 
 	return S_OK;
 }
 
 int CSkinUserAccountControl::DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage)
 {
-	CComVar v;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(bstrName, &v));
-	ATLASSERT(v.vt == VT_I4);
+	//CComVar v;
+	//RETURN_IF_FAILED(pVariantObject->GetVariantValue(bstrName, &v));
+	//ATLASSERT(v.vt == VT_I4);
 
-	CString strText = CString(bstrMessage) + boost::lexical_cast<wstring>(v.intVal).c_str();
-	CDCHandle cdc(hdc);
-	CSize sz;
-	cdc.GetTextExtent(strText, strText.GetLength(), &sz);
-	CRect rect;
-	rect.left = x;
-	rect.top = y - sz.cy;
-	rect.right = rect.left + sz.cx;
-	rect.bottom = y;
-	DrawRoundedRect(cdc, rect);
-	cdc.DrawText(strText, strText.GetLength(), &rect, 0);
-	return y - sz.cy - 1;
+	//CString strText = CString(bstrMessage) + boost::lexical_cast<wstring>(v.intVal).c_str();
+	//CDCHandle cdc(hdc);
+	//CSize sz;
+	//cdc.GetTextExtent(strText, strText.GetLength(), &sz);
+	//CRect rect;
+	//rect.left = x;
+	//rect.top = y - sz.cy;
+	//rect.right = rect.left + sz.cx;
+	//rect.bottom = y;
+	//DrawRoundedRect(cdc, rect);
+	//cdc.DrawText(strText, strText.GetLength(), &rect, 0);
+	return 0; // y - sz.cy - 1;
 }
 
 STDMETHODIMP CSkinUserAccountControl::AnimationSetValue(DWORD dwValue)
@@ -251,94 +243,104 @@ STDMETHODIMP CSkinUserAccountControl::AnimationSetValue(DWORD dwValue)
 STDMETHODIMP CSkinUserAccountControl::Measure(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject)
 {
 	CHECK_E_POINTER(pColumnsInfo);
-
-	CRect rect = *lpRect;
 	CClientDC cdc(hWnd);
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(cdc, lpRect, m_pLayout, pVariantObject, m_pImageManagerService, pColumnsInfo));
+	m_pColumnsInfo = pColumnsInfo;
+	//CRect rect = *lpRect;
+	//CClientDC cdc(hWnd);
 
-	CRect rectUserImage;
-	CRect rectFollowButton;
-	RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, nullptr, nullptr, &rectUserImage, &rectFollowButton));
+	//CRect rectUserImage;
+	//CRect rectFollowButton;
+	//RETURN_IF_FAILED(MeasureInternal(cdc, rect, pVariantObject, nullptr, nullptr, &rectUserImage, &rectFollowButton));
 
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectUserImage));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::UserObject::Image));
-	}
+	//{
+	//	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	//	RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectUserImage));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::UserObject::Image));
+	//}
 
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectFollowButton));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON));
-	}
+	//{
+	//	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	//	RETURN_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRect(rectFollowButton));
+	//	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON));
+	//}
 
 	return S_OK;
 }
 
 HRESULT CSkinUserAccountControl::MeasureInternal(HDC hdc, RECT clientRect, IVariantObject* pVariantObject, LPRECT lpRectScreenName, LPRECT lpRectDisplayName, LPRECT lpRectUserImage, LPRECT lpRectFollowButton)
 {
-	CDCHandle cdc(hdc);
-	CRect rect = clientRect;
+	//CDCHandle cdc(hdc);
+	//CRect rect = clientRect;
 
-	CComVar vDisplayName;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vDisplayName));
-	ATLASSERT(vDisplayName.vt == VT_BSTR);
+	//CComVar vDisplayName;
+	//RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vDisplayName));
+	//ATLASSERT(vDisplayName.vt == VT_BSTR);
 
-	HFONT font = 0;
-	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Connection::Metadata::UserObject::DisplayNameUserAccount, &font));
-	CDCSelectFontScope cdcSelectFontScope(cdc, font);
+	//HFONT font = 0;
+	//RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Connection::Metadata::UserObject::DisplayNameUserAccount, &font));
+	//CDCSelectFontScope cdcSelectFontScope(cdc, font);
 
-	CComBSTR bstrDisplayName(vDisplayName.bstrVal);
-	CSize szDisplayName;
-	cdc.GetTextExtent(bstrDisplayName, bstrDisplayName.Length(), &szDisplayName);
+	//CComBSTR bstrDisplayName(vDisplayName.bstrVal);
+	//CSize szDisplayName;
+	//cdc.GetTextExtent(bstrDisplayName, bstrDisplayName.Length(), &szDisplayName);
 
-	CComVar vScreenName;
-	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vScreenName));
-	ATLASSERT(vScreenName.vt == VT_BSTR);
-	CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
-	CSize szScreenName;
-	cdc.GetTextExtent(bstrScreenName, bstrScreenName.Length(), &szScreenName);
+	//CComVar vScreenName;
+	//RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vScreenName));
+	//ATLASSERT(vScreenName.vt == VT_BSTR);
+	//CComBSTR bstrScreenName(CString(L"@") + vScreenName.bstrVal);
+	//CSize szScreenName;
+	//cdc.GetTextExtent(bstrScreenName, bstrScreenName.Length(), &szScreenName);
 
-	auto maxWidth = max(szDisplayName.cx, szScreenName.cx);
-	auto boxHeight = szDisplayName.cy + szScreenName.cy + 1 - 10;
-	auto boxWidth = boxHeight;
-	auto boxLeft = rect.Width() / 2 - maxWidth / 2 - boxWidth / 2;
+	//auto maxWidth = max(szDisplayName.cx, szScreenName.cx);
+	//auto boxHeight = szDisplayName.cy + szScreenName.cy + 1 - 10;
+	//auto boxWidth = boxHeight;
+	//auto boxLeft = rect.Width() / 2 - maxWidth / 2 - boxWidth / 2;
 
-	CRect rectDisplayName;
-	rectDisplayName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
-	rectDisplayName.top = rect.Height() * DISTANCE_DISPLAY_NAME;
-	rectDisplayName.right = rectDisplayName.left + szDisplayName.cx;
-	rectDisplayName.bottom = rectDisplayName.top + szDisplayName.cy;
+	//CRect rectDisplayName;
+	//rectDisplayName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
+	//rectDisplayName.top = rect.Height() * DISTANCE_DISPLAY_NAME;
+	//rectDisplayName.right = rectDisplayName.left + szDisplayName.cx;
+	//rectDisplayName.bottom = rectDisplayName.top + szDisplayName.cy;
 
-	CRect rectScreenName;
-	rectScreenName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
-	rectScreenName.top = rectDisplayName.bottom + 1;
-	rectScreenName.right = rectScreenName.left + szScreenName.cx;
-	rectScreenName.bottom = rectScreenName.top + szScreenName.cy;
+	//CRect rectScreenName;
+	//rectScreenName.left = boxLeft + boxWidth + DISTANCE_USER_IMAGE_X;
+	//rectScreenName.top = rectDisplayName.bottom + 1;
+	//rectScreenName.right = rectScreenName.left + szScreenName.cx;
+	//rectScreenName.bottom = rectScreenName.top + szScreenName.cy;
 
-	auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
-	CRect rectBox = CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight);
+	//auto boxTop = rectDisplayName.top + ((rectScreenName.bottom - rectDisplayName.top) / 2 - boxHeight / 2);
+	//CRect rectBox = CRect(boxLeft, boxTop, boxLeft + boxWidth, boxTop + boxHeight);
 
-	HFONT hFontFollowButton = 0;
-	RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
-	cdc.SelectFont(hFontFollowButton);
-	CSize szFollowButtonCaption;
-	cdc.GetTextExtent(m_strFollowing, m_strFollowing.GetLength(), &szFollowButtonCaption);
-	CRect rectFollowButton;
-	rectFollowButton.bottom = rect.bottom - 15;
-	rectFollowButton.top = rectFollowButton.bottom - szFollowButtonCaption.cy - 20;
-	rectFollowButton.right = rect.right - 15;
-	rectFollowButton.left = rectFollowButton.right - szFollowButtonCaption.cx - 20;
+	//HFONT hFontFollowButton = 0;
+	//RETURN_IF_FAILED(m_pThemeFontMap->GetFont(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &hFontFollowButton));
+	//cdc.SelectFont(hFontFollowButton);
+	//CSize szFollowButtonCaption;
+	//cdc.GetTextExtent(m_strFollowing, m_strFollowing.GetLength(), &szFollowButtonCaption);
+	//CRect rectFollowButton;
+	//rectFollowButton.bottom = rect.bottom - 15;
+	//rectFollowButton.top = rectFollowButton.bottom - szFollowButtonCaption.cy - 20;
+	//rectFollowButton.right = rect.right - 15;
+	//rectFollowButton.left = rectFollowButton.right - szFollowButtonCaption.cx - 20;
 
-	if (lpRectScreenName)
-		*lpRectScreenName = rectScreenName;
-	if (lpRectDisplayName)
-		*lpRectDisplayName = rectDisplayName;
-	if (lpRectUserImage)
-		*lpRectUserImage = rectBox;
-	if (lpRectFollowButton)
-		*lpRectFollowButton = rectFollowButton;
+	//if (lpRectScreenName)
+	//	*lpRectScreenName = rectScreenName;
+	//if (lpRectDisplayName)
+	//	*lpRectDisplayName = rectDisplayName;
+	//if (lpRectUserImage)
+	//	*lpRectUserImage = rectBox;
+	//if (lpRectFollowButton)
+	//	*lpRectFollowButton = rectFollowButton;
 
+	return S_OK;
+}
+
+HRESULT CSkinUserAccountControl::SetTheme(ITheme* pTheme)
+{
+	CHECK_E_POINTER(pTheme);
+	RETURN_IF_FAILED(pTheme->GetLayout(Twitter::Themes::Metadata::UserAccountControl::LayoutName, &m_pLayout));
+	RETURN_IF_FAILED(pTheme->GetLayoutManager(&m_pLayoutManager));
 	return S_OK;
 }

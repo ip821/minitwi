@@ -153,6 +153,8 @@ interface ITimelineService : IUnknown
 {
 };
 
+interface ITheme;
+
 [
 	object,
 	uuid(99939FE4-3FE1-4AFE-B8AC-2D10B9A9DDCE),
@@ -160,8 +162,7 @@ interface ITimelineService : IUnknown
 ]
 interface ISkinUserAccountControl : IUnknown
 {
-	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+	HRESULT SetTheme(ITheme* pTheme);
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT EraseBackground(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
 	HRESULT Draw(HDC hdc, LPRECT lpRect, IVariantObject* pObject, IColumnsInfo* pColumnsInfo);

@@ -84,6 +84,10 @@
             {
                 "name": "RoundedColor",
                 "color": "0x882F4F4F"
+            },
+            {
+                "name": "UserAccountControlBackground",
+                "color": "DarkSlateGray"
             }
         ]
     },
@@ -462,6 +466,16 @@
                         "align_horizontal": "center",
                         "align_vertical": "center"
                     }
+                ]
+            },
+            {
+                "name": "UserAccountControlLayout",
+                "type": "vertical_container",
+                "fit_horizontal": "parent",
+                "fit_vertical": "parent",
+                "color_background": "UserAccountControlBackground",
+                "elements": [
+
                 ]
             }
         ]

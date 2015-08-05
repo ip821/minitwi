@@ -25,6 +25,11 @@ namespace IP
 						const static CComBSTR Info(L"info");
 					}
 				}
+
+				namespace UserAccountControl
+				{
+					const static CComBSTR LayoutName(L"UserAccountControlLayout");
+				}
 			}
 		}
 	}

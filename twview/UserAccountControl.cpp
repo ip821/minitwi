@@ -169,32 +169,16 @@ void CUserAccountControl::UpdateRects()
 	GetClientRect(&rect);
 	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(m_hWnd, &rect, m_pColumnsInfo, m_pVariantObject));
 
-	UINT uiCount = 0;
-	ASSERT_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
-	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
+		ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Connection::Metadata::UserObject::Image, &pColumnsInfoItem));
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectUserImage));
+	}
 
-		{
-			CComBSTR bstrColumnName;
-			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-			if (bstrColumnName == Twitter::Connection::Metadata::UserObject::Image)
-			{
-				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectUserImage));
-				continue;
-			}
-		}
-
-		{
-			CComBSTR bstrColumnName;
-			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-			if (bstrColumnName == Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
-			{
-				ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectFollowButton));
-				continue;
-			}
-		}
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &pColumnsInfoItem));
+		ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectFollowButton));
 	}
 
 	ASSERT_IF_FAILED(UpdateColumnInfo());
@@ -370,18 +354,9 @@ STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
 
 STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 {
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(m_pColumnsInfo->GetCount(&uiCount));
-	for (size_t i = 0; i < uiCount; i++)
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-		CComBSTR bstrColumnName;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-		if (bstrColumnName != Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON)
-			continue;
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, m_bFollowButtonDisabled));
-		RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_FOLLOWING, m_bFollowing));
-	}
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+	ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &pColumnsInfoItem));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, m_bFollowButtonDisabled));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_FOLLOWING, m_bFollowing));
 	return S_OK;
 }

@@ -76,8 +76,7 @@ STDMETHODIMP CThemeDefault::GetSkinUserAccountControl(ISkinUserAccountControl** 
 {
 	CHECK_E_POINTER(ppSkinUserAccountControl);
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinUserAccountControl, ppSkinUserAccountControl));
-	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetFontMap(m_pThemeFontMap));
-	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetColorMap(m_pThemeColorMap));
+	RETURN_IF_FAILED((*ppSkinUserAccountControl)->SetTheme(this));
 	return S_OK;
 }
 

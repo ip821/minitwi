@@ -27,9 +27,10 @@ public:
 	END_COM_MAP()
 
 private:
-	CComPtr<IThemeColorMap> m_pThemeColorMap;
-	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
+	CComPtr<ILayoutManager> m_pLayoutManager;
+	CComPtr<IVariantObject> m_pLayout;
+	CComPtr<IColumnsInfo> m_pColumnsInfo;
 
 	DWORD m_alpha = 0;
 
@@ -41,8 +42,7 @@ private:
 
 public:
 
-	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
-	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
+	STDMETHOD(SetTheme)(ITheme* pTheme);
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(EraseBackground)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
 	STDMETHOD(Draw)(HDC hdc, LPRECT lpRect, IVariantObject* pObject, IColumnsInfo* pColumnsInfo);
