@@ -512,6 +512,7 @@
                                             {
                                                 "name": "UserName",
                                                 "type": "text_column",
+                                                "text": "@",
                                                 "text_key": "TwitterUserName",
                                                 "font": "TwitterDisplayNameUserAccount",
                                                 "color": "AccountControlText"
@@ -524,10 +525,15 @@
                                 "name": "UserInfoString",
                                 "type": "text_column",
                                 "text_key": "VAR_TWITTER_USER_DESCRIPTION",
+                                "width_percent": 80,
+                                "text_multiline": true,
+                                "align_horizontal": "center",
                                 "font": "TwitterNormalizedText",
                                 "color": "AccountControlText",
                                 "background_style": "rounded",
-                                "color_background": "RoundedColor"
+                                "color_background": "RoundedColor",
+                                "margin_left": "50",
+                                "margin_right": "50"
                             },
                             {
                                 "name": "BottomContainer",
@@ -537,6 +543,7 @@
                                     {
                                         "name": "CounterContainer",
                                         "type": "vertical_container",
+                                        "margin_left": 30,
                                         "elements": [
                                             {
                                                 "name": "TweetsCounter",
@@ -568,6 +575,7 @@
                                         "name": "FollowButtonContainer",
                                         "type": "horizontal_container",
                                         "align_horizontal": "right",
+                                        "margin_right": 30,
                                         "elements": [
                                             {
                                                 "name": "TwitterItemFollowButton",
