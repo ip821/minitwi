@@ -47,7 +47,7 @@ namespace IP
 				{
 					const static CComBSTR DisplayName(L"TwitterUserDisplayName");
 					const static CComBSTR Name(L"TwitterUserName");
-					const static CComBSTR Image(L"VAR_TWITTER_USER_IMAGE");
+					const static CComBSTR Image(L"TwitterUserImage");
 					const static CComBSTR BackColor(L"VAR_TWITTER_USER_BACKCOLOR");
 					const static CComBSTR ForeColor(L"VAR_TWITTER_USER_FORECOLOR");
 					const static CComBSTR Banner(L"VAR_TWITTER_USER_BANNER");

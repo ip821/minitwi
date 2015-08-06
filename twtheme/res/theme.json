@@ -475,7 +475,83 @@
                 "fit_vertical": "parent",
                 "color_background": "UserAccountControlBackground",
                 "elements": [
-
+                    {
+                        "name": "UserAccountControlLayoutBackgroundImage",
+                        "type": "horizontal_container",
+                        "fit_horizontal": "parent",
+                        "fit_vertical": "parent",
+                        "elements": [ ]
+                    },
+                    {
+                        "name": "UserAccountControlLayoutImageViewContainer",
+                        "type": "vertical_container",
+                        "fit_horizontal": "parent",
+                        "fit_vertical": "parent",
+                        "elements": [
+                            {
+                                "name": "UserAccountControlLayoutUserInfoContainer",
+                                "type": "horizontal_container",
+                                "elements": [
+                                    {
+                                        "name": "TwitterUserImage",
+                                        "type": "image_column"
+                                    },
+                                    {
+                                        "name": "UserInfoContainer",
+                                        "type": "vertical_container",
+                                        "elements": [
+                                            {
+                                                "name": "UserDisplayName",
+                                                "type": "text_column"
+                                            },
+                                            {
+                                                "name": "UserName",
+                                                "type": "text_column"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "UserInfoString",
+                                "type": "text_column"
+                            },
+                            {
+                                "name": "BottomContainer",
+                                "type": "horizontal_container",
+                                "elements": [
+                                    {
+                                        "name": "CounterContainer",
+                                        "type": "vertical_container",
+                                        "elements": [
+                                            {
+                                                "name": "TweetsCounter",
+                                                "type": "text_column"
+                                            },
+                                            {
+                                                "name": "FollowingCounter",
+                                                "type": "text_column"
+                                            },
+                                            {
+                                                "name": "FollowedCounter",
+                                                "type": "text_column"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "FollowButtonContainer",
+                                        "type": "horizontal_container",
+                                        "elements": [
+                                            {
+                                                "name": "TwitterItemFollowButton",
+                                                "type": "text_column"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 ]
             }
         ]
