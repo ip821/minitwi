@@ -491,6 +491,7 @@
                             {
                                 "name": "UserAccountControlLayoutUserInfoContainer",
                                 "type": "horizontal_container",
+                                "align_horizontal": "center",
                                 "elements": [
                                     {
                                         "name": "TwitterUserImage",
@@ -505,14 +506,14 @@
                                                 "name": "UserDisplayName",
                                                 "type": "text_column",
                                                 "text_key": "TwitterUserDisplayName",
-                                                "font": "TwitterRetweetedUserDisplayName",
+                                                "font": "TwitterDisplayNameUserAccount",
                                                 "color": "AccountControlText"
                                             },
                                             {
                                                 "name": "UserName",
                                                 "type": "text_column",
                                                 "text_key": "TwitterUserName",
-                                                "font": "TwitterRetweetedUserDisplayName",
+                                                "font": "TwitterDisplayNameUserAccount",
                                                 "color": "AccountControlText"
                                             }
                                         ]
@@ -523,12 +524,15 @@
                                 "name": "UserInfoString",
                                 "type": "text_column",
                                 "text_key": "VAR_TWITTER_USER_DESCRIPTION",
-                                "font": "TwitterRetweetedUserDisplayName",
-                                "color": "AccountControlText"
+                                "font": "TwitterNormalizedText",
+                                "color": "AccountControlText",
+                                "background_style": "rounded",
+                                "color_background": "RoundedColor"
                             },
                             {
                                 "name": "BottomContainer",
                                 "type": "horizontal_container",
+                                "align_vertical": "down",
                                 "elements": [
                                     {
                                         "name": "CounterContainer",
@@ -537,6 +541,7 @@
                                             {
                                                 "name": "TweetsCounter",
                                                 "type": "text_column",
+                                                "text": "Tweets: ",
                                                 "text_key": "VAR_TWITTER_USER_TWEETS_COUNT",
                                                 "font": "TwitterNormalizedText",
                                                 "color": "AccountControlText"
@@ -544,6 +549,7 @@
                                             {
                                                 "name": "FollowingCounter",
                                                 "type": "text_column",
+                                                "text": "Following: ",
                                                 "text_key": "VAR_TWITTER_USER_FRIENDS_COUNT",
                                                 "font": "TwitterNormalizedText",
                                                 "color": "AccountControlText"
@@ -551,6 +557,7 @@
                                             {
                                                 "name": "FollowedCounter",
                                                 "type": "text_column",
+                                                "text": "Followers: ",
                                                 "text_key": "VAR_TWITTER_USER_FOLLOWERS_COUNT",
                                                 "font": "TwitterNormalizedText",
                                                 "color": "AccountControlText"
@@ -560,6 +567,7 @@
                                     {
                                         "name": "FollowButtonContainer",
                                         "type": "horizontal_container",
+                                        "align_horizontal": "right",
                                         "elements": [
                                             {
                                                 "name": "TwitterItemFollowButton",
