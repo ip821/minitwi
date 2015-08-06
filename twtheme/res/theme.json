@@ -494,7 +494,8 @@
                                 "elements": [
                                     {
                                         "name": "TwitterUserImage",
-                                        "type": "image_column"
+                                        "type": "image_column",
+                                        "visible": false
                                     },
                                     {
                                         "name": "UserInfoContainer",
@@ -502,11 +503,17 @@
                                         "elements": [
                                             {
                                                 "name": "UserDisplayName",
-                                                "type": "text_column"
+                                                "type": "text_column",
+                                                "text_key": "TwitterUserDisplayName",
+                                                "font": "TwitterRetweetedUserDisplayName",
+                                                "color": "AccountControlText"
                                             },
                                             {
                                                 "name": "UserName",
-                                                "type": "text_column"
+                                                "type": "text_column",
+                                                "text_key": "TwitterUserName",
+                                                "font": "TwitterRetweetedUserDisplayName",
+                                                "color": "AccountControlText"
                                             }
                                         ]
                                     }
@@ -514,7 +521,10 @@
                             },
                             {
                                 "name": "UserInfoString",
-                                "type": "text_column"
+                                "type": "text_column",
+                                "text_key": "VAR_TWITTER_USER_DESCRIPTION",
+                                "font": "TwitterRetweetedUserDisplayName",
+                                "color": "AccountControlText"
                             },
                             {
                                 "name": "BottomContainer",
@@ -526,15 +536,24 @@
                                         "elements": [
                                             {
                                                 "name": "TweetsCounter",
-                                                "type": "text_column"
+                                                "type": "text_column",
+                                                "text_key": "VAR_TWITTER_USER_TWEETS_COUNT",
+                                                "font": "TwitterNormalizedText",
+                                                "color": "AccountControlText"
                                             },
                                             {
                                                 "name": "FollowingCounter",
-                                                "type": "text_column"
+                                                "type": "text_column",
+                                                "text_key": "VAR_TWITTER_USER_FRIENDS_COUNT",
+                                                "font": "TwitterNormalizedText",
+                                                "color": "AccountControlText"
                                             },
                                             {
                                                 "name": "FollowedCounter",
-                                                "type": "text_column"
+                                                "type": "text_column",
+                                                "text_key": "VAR_TWITTER_USER_FOLLOWERS_COUNT",
+                                                "font": "TwitterNormalizedText",
+                                                "color": "AccountControlText"
                                             }
                                         ]
                                     },
@@ -544,7 +563,12 @@
                                         "elements": [
                                             {
                                                 "name": "TwitterItemFollowButton",
-                                                "type": "text_column"
+                                                "type": "text_column",
+                                                "text": "Follow",
+                                                "font": "TwitterItemFollowButton",
+                                                "color": "TwitterItemFollowButtonRect",
+                                                "color_selected": "TwitterItemFollowButtonRectPushed",
+                                                "color_disabled": "TwitterItemFollowButtonRectDisabled"
                                             }
                                         ]
                                     }
