@@ -538,12 +538,14 @@
                             {
                                 "name": "BottomContainer",
                                 "type": "horizontal_container",
+                                "fit_horizontal": "parent",
                                 "align_vertical": "down",
                                 "elements": [
                                     {
                                         "name": "CounterContainer",
                                         "type": "vertical_container",
                                         "margin_left": 30,
+                                        "margin_bottom": 30,
                                         "elements": [
                                             {
                                                 "name": "TweetsCounter",
@@ -574,8 +576,10 @@
                                     {
                                         "name": "FollowButtonContainer",
                                         "type": "horizontal_container",
+                                        "margin_right": 10,
+                                        "margin_bottom": 20,
                                         "align_horizontal": "right",
-                                        "margin_right": 30,
+                                        "align_vertical": "down",
                                         "elements": [
                                             {
                                                 "name": "TwitterItemFollowButton",
