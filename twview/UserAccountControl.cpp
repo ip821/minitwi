@@ -357,6 +357,7 @@ STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 	ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &pColumnsInfoItem));
 	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, m_bFollowButtonDisabled));
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_FOLLOWING, m_bFollowing));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Layout::Metadata::Element::Selected, m_bFollowing));
+	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Layout::Metadata::TextColumn::Text, m_bFollowing ? L"Following" : L"  Follow  "));
 	return S_OK;
 }

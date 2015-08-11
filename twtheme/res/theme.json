@@ -492,6 +492,7 @@
                                 "name": "UserAccountControlLayoutUserInfoContainer",
                                 "type": "horizontal_container",
                                 "align_horizontal": "center",
+                                "margin_top": 30,
                                 "elements": [
                                     {
                                         "name": "TwitterUserImage",
@@ -580,15 +581,19 @@
                                         "margin_bottom": 20,
                                         "align_horizontal": "right",
                                         "align_vertical": "down",
+                                        "background_style": "rounded",
+                                        "color_background": "TwitterItemFollowButtonRect",
+                                        "color_background_selected": "TwitterItemFollowButtonRectPushed",
+                                        "color_background_disabled": "TwitterItemFollowButtonRectDisabled",
                                         "elements": [
                                             {
                                                 "name": "TwitterItemFollowButton",
                                                 "type": "text_column",
                                                 "text": "Follow",
                                                 "font": "TwitterItemFollowButton",
-                                                "color": "TwitterItemFollowButtonRect",
-                                                "color_selected": "TwitterItemFollowButtonRectPushed",
-                                                "color_disabled": "TwitterItemFollowButtonRectDisabled"
+                                                "color": "AccountControlText",
+                                                "align_horizontal": "center",
+                                                "align_vertical": "center"
                                             }
                                         ]
                                     }
