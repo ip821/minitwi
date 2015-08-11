@@ -391,6 +391,7 @@
     <ClInclude Include="HomeTimeLineControl.h" />
     <ClInclude Include="ListsControl.h" />
     <ClInclude Include="ListTimelineControl.h" />
+    <ClInclude Include="Metadata.h" />
     <ClInclude Include="objmdl_contract_i.h" />
     <ClInclude Include="PictureWindow.h" />
     <ClInclude Include="PictureWindowCopyCommand.h" />

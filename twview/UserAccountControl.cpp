@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UserAccountControl.h"
 #include "Plugins.h"
+#include "Metadata.h"
 
 #define OFFSET_X 10
 #define OFFSET_Y 20
@@ -52,7 +53,8 @@ STDMETHODIMP CUserAccountControl::OnShutdown()
 	m_pAnimationService.Release();
 	m_pTheme.Release();
 	m_pSkinCommonControl.Release();
-	m_pSkinUserAccountControl.Release();
+	m_pLayoutManager.Release();
+	m_pLayout.Release();
 	m_pVariantObject.Release();
 	m_pImageManagerService.Release();
 	m_pThemeColorMap.Release();
@@ -108,9 +110,9 @@ STDMETHODIMP CUserAccountControl::SetTheme(ITheme* pTheme)
 {
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
-	RETURN_IF_FAILED(m_pTheme->GetSkinUserAccountControl(&m_pSkinUserAccountControl));
 	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
-	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
+	RETURN_IF_FAILED(pTheme->GetLayout(Twitter::View::Metadata::UserAccountControl::LayoutName, &m_pLayout));
+	RETURN_IF_FAILED(pTheme->GetLayoutManager(&m_pLayoutManager));
 	UpdateRects();
 	return S_OK;
 }
@@ -120,7 +122,9 @@ LRESULT CUserAccountControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM 
 	CRect rect;
 	GetClientRect(&rect);
 	if (m_pVariantObject)
-		m_pSkinUserAccountControl->EraseBackground((HDC)wParam, &rect, m_pVariantObject);
+	{
+		RETURN_IF_FAILED(m_pLayoutManager->EraseBackground((HDC)wParam, m_pColumnsInfo));
+	}
 
 	return 0;
 }
@@ -129,15 +133,13 @@ LRESULT CUserAccountControl::OnPrintClient(UINT uMsg, WPARAM wParam, LPARAM lPar
 {
 	CRect rect;
 	GetClientRect(&rect);
-	m_pSkinUserAccountControl->Draw((HDC)wParam, &rect, m_pVariantObject, m_pColumnsInfo);
+	RETURN_IF_FAILED(m_pLayoutManager->EraseBackground((HDC)wParam, m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout((HDC)wParam, m_pImageManagerService, m_pColumnsInfo));
 	return 0;
 }
 
 LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if (!m_pSkinUserAccountControl)
-		return 0;
-
 	PAINTSTRUCT ps = { 0 };
 	BeginPaint(&ps);
 
@@ -145,7 +147,9 @@ LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 	GetClientRect(&rect);
 	CDCHandle cdc(ps.hdc);
 
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Draw(cdc, &rect, m_pVariantObject, m_pColumnsInfo));
+	ASSERT_IF_FAILED(m_pLayoutManager->EraseBackground(cdc, m_pColumnsInfo));
+	ASSERT_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, m_pImageManagerService, m_pColumnsInfo));
+
 	EndPaint(&ps);
 	return 0;
 }
@@ -162,12 +166,15 @@ void CUserAccountControl::UpdateRects()
 	m_rectFollowButton.SetRectEmpty();
 	m_pColumnsInfo->Clear();
 
-	if (!m_pSkinUserAccountControl || !m_pVariantObject)
+	if (!m_pVariantObject)
 		return;
+
+	ASSERT_IF_FAILED(UpdateColumnInfo());
 
 	CRect rect;
 	GetClientRect(&rect);
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(m_hWnd, &rect, m_pColumnsInfo, m_pVariantObject));
+	CClientDC cdc(m_hWnd);
+	ASSERT_IF_FAILED(m_pLayoutManager->BuildLayout(cdc, &rect, m_pLayout, m_pVariantObject, m_pImageManagerService, m_pColumnsInfo));
 
 	{
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
@@ -180,13 +187,11 @@ void CUserAccountControl::UpdateRects()
 		ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &pColumnsInfoItem));
 		ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectFollowButton));
 	}
-
-	ASSERT_IF_FAILED(UpdateColumnInfo());
 }
 
 STDMETHODIMP CUserAccountControl::OnActivate()
 {
-	UpdateColumnInfo();
+	UpdateRects();
 	RETURN_IF_FAILED(m_pFollowStatusThreadService->Run());
 
 	CComVar vBannerUrl;
@@ -274,7 +279,7 @@ void CUserAccountControl::StartAnimation()
 
 STDMETHODIMP CUserAccountControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationSetValue(dwValue));
+	//ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationSetValue(dwValue));
 	Invalidate();
 	if (dwStep != STEPS)
 	{
@@ -327,7 +332,7 @@ LRESULT CUserAccountControl::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
 STDMETHODIMP CUserAccountControl::OnStart(IVariantObject *pResult)
 {
 	m_bFollowButtonDisabled = TRUE;
-	UpdateColumnInfo();
+	UpdateRects();
 	Invalidate();
 	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &CComVar(m_bFollowing)));
 	return S_OK;
@@ -347,17 +352,20 @@ STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_IS_FOLLOWING, &vFollowing));
 	m_bFollowing = vFollowing.vt == VT_BOOL && vFollowing.boolVal;
 	m_bFollowButtonDisabled = FALSE;
-	UpdateColumnInfo();
+	UpdateRects();
 	Invalidate();
 	return S_OK;
 }
 
 STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 {
-	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-	ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &pColumnsInfoItem));
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::TwitterItemFollowButtonRectDisabled, m_bFollowButtonDisabled));
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Layout::Metadata::Element::Selected, m_bFollowing));
-	RETURN_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Layout::Metadata::TextColumn::Text, m_bFollowing ? L"Following" : L"  Follow  "));
+	CComPtr<IVariantObject> pItemButtonString;
+	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &pItemButtonString));
+	RETURN_IF_FAILED(pItemButtonString->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(m_bFollowing ? L"Following" : L"  Follow  ")));
+
+	CComPtr<IVariantObject> pItemButtonContainer;
+	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Metadata::Item::FollowButtonContainer, &pItemButtonContainer));
+	RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Disabled, &CComVar(m_bFollowButtonDisabled)));
+	RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(m_bFollowing)));
 	return S_OK;
 }

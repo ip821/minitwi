@@ -294,6 +294,9 @@
     <ClInclude Include="Plugins.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="Metadata.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twview.rc">

@@ -62,7 +62,6 @@ public:
 	void FinalRelease();
 
 private:
-	CComPtr<ISkinUserAccountControl> m_pSkinUserAccountControl;
 	CComPtr<IVariantObject> m_pVariantObject;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
@@ -75,6 +74,8 @@ private:
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	CComPtr<IAnimationService> m_pAnimationService;
+	CComPtr<ILayoutManager> m_pLayoutManager;
+	CComPtr<IVariantObject> m_pLayout;
 
 	const DWORD STEPS = 25;
 
@@ -87,7 +88,7 @@ private:
 	CRect m_rectFollowButton;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
-	BOOL m_bFollowButtonDisabled = FALSE;
+	bool m_bFollowButtonDisabled = FALSE;
 	bool m_bFollowing = FALSE;
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
