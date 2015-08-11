@@ -497,11 +497,12 @@
                                     {
                                         "name": "TwitterUserImage",
                                         "type": "image_column",
-                                        "visible": false
+                                        "align_vertical": "center"
                                     },
                                     {
                                         "name": "UserInfoContainer",
                                         "type": "vertical_container",
+                                        "margin_left": 30,
                                         "elements": [
                                             {
                                                 "name": "UserDisplayName",
@@ -533,8 +534,7 @@
                                 "color": "AccountControlText",
                                 "background_style": "rounded",
                                 "color_background": "RoundedColor",
-                                "margin_left": "50",
-                                "margin_right": "50"
+                                "margin_top": "20"
                             },
                             {
                                 "name": "BottomContainer",
@@ -578,7 +578,7 @@
                                         "name": "FollowButtonContainer",
                                         "type": "horizontal_container",
                                         "margin_right": 10,
-                                        "margin_bottom": 20,
+                                        "margin_bottom": 30,
                                         "align_horizontal": "right",
                                         "align_vertical": "down",
                                         "background_style": "rounded",
@@ -593,7 +593,11 @@
                                                 "font": "TwitterItemFollowButton",
                                                 "color": "AccountControlText",
                                                 "align_horizontal": "center",
-                                                "align_vertical": "center"
+                                                "align_vertical": "center",
+                                                "margin_left": 10,
+                                                "margin_right": 10,
+                                                "margin_top": 5,
+                                                "margin_bottom": 5
                                             }
                                         ]
                                     }

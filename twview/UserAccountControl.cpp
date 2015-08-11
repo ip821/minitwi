@@ -184,7 +184,7 @@ void CUserAccountControl::UpdateRects()
 
 	{
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &pColumnsInfoItem));
+		ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::View::Metadata::UserAccountControl::FollowButtonContainer, &pColumnsInfoItem));
 		ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectFollowButton));
 	}
 }
@@ -275,11 +275,18 @@ void CUserAccountControl::StartAnimation()
 {
 	ASSERT_IF_FAILED(m_pAnimationService->SetParams(0, 255, STEPS, TARGET_INTERVAL));
 	ASSERT_IF_FAILED(m_pAnimationService->StartAnimationTimer());
+
+	CComPtr<IColumnsInfoItem> pItemUserBannerImage;
+	ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)0)));
 }
 
 STDMETHODIMP CUserAccountControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
-	//ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationSetValue(dwValue));
+	CComPtr<IColumnsInfoItem> pItemUserBannerImage;
+	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+	RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValue)));
+
 	Invalidate();
 	if (dwStep != STEPS)
 	{
@@ -359,13 +366,35 @@ STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
 
 STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 {
-	CComPtr<IVariantObject> pItemButtonString;
-	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Metadata::Item::VAR_ITEM_FOLLOW_BUTTON, &pItemButtonString));
-	RETURN_IF_FAILED(pItemButtonString->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(m_bFollowing ? L"Following" : L"  Follow  ")));
+	{
+		CComPtr<IVariantObject> pItemButtonString;
+		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::FollowButtonText, &pItemButtonString));
+		RETURN_IF_FAILED(pItemButtonString->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(m_bFollowing ? L"Following" : L"  Follow  ")));
+	}
 
-	CComPtr<IVariantObject> pItemButtonContainer;
-	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Metadata::Item::FollowButtonContainer, &pItemButtonContainer));
-	RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Disabled, &CComVar(m_bFollowButtonDisabled)));
-	RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(m_bFollowing)));
+	{
+		CComPtr<IVariantObject> pItemButtonContainer;
+		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::FollowButtonContainer, &pItemButtonContainer));
+		RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Disabled, &CComVar(m_bFollowButtonDisabled)));
+		RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(m_bFollowing)));
+	}
+
+	if (m_pVariantObject)
+	{
+		CComVar vUserImage;
+		RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
+		CComPtr<IVariantObject> pItemUserImage;
+		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::TwitterUserImage, &pItemUserImage));
+		RETURN_IF_FAILED(pItemUserImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vUserImage));
+
+		CComVar vBannerUrl;
+		m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl);
+		if (vBannerUrl.vt == VT_BSTR)
+		{
+			CComPtr<IVariantObject> pItemUserBannerImage;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+			RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vUserImage));
+		}
+	}
 	return S_OK;
 }

@@ -52,8 +52,7 @@ namespace IP
 				const static CComBSTR VAR_ITEM_SELECTION_DISABLED(L"VAR_ITEM_SELECTION_DISABLED");
 				const static CComBSTR TwitterItemAnimationInactive(L"TwitterItemAnimationInactive");
 				const static CComBSTR TwitterItemAnimationActive(L"TwitterItemAnimationActive");
-				const static CComBSTR VAR_ITEM_FOLLOW_BUTTON(L"TwitterItemFollowButton");
-				const static CComBSTR FollowButtonContainer(L"FollowButtonContainer");
+				const static CComBSTR UserAccountControlLayoutBackgroundImage(L"FollowButtonContainer");
 				const static CComBSTR TwitterItemFollowButtonRect(L"TwitterItemFollowButtonRect");
 				const static CComBSTR TwitterItemFollowButtonRectPushed(L"TwitterItemFollowButtonRectPushed");
 				const static CComBSTR TwitterItemFollowButtonRectDisabled(L"TwitterItemFollowButtonRectDisabled");
