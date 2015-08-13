@@ -476,11 +476,19 @@
                 "color_background": "UserAccountControlBackground",
                 "elements": [
                     {
-                        "name": "UserAccountControlLayoutBackgroundImage",
+                        "name": "UserAccountControlLayoutBackgroundImageContainer",
                         "type": "horizontal_container",
                         "fit_horizontal": "parent",
                         "fit_vertical": "parent",
-                        "elements": [ ]
+                        "elements": [
+                            {
+                                "name": "UserAccountControlLayoutBackgroundImage",
+                                "type": "image_column",
+                                "fit_horizontal": "parent",
+                                "fit_vertical": "parent",
+                                "image_style": "fill"
+                            }
+                        ]
                     },
                     {
                         "name": "UserAccountControlLayoutImageViewContainer",
@@ -492,17 +500,31 @@
                                 "name": "UserAccountControlLayoutUserInfoContainer",
                                 "type": "horizontal_container",
                                 "align_horizontal": "center",
-                                "margin_top": 30,
+                                "margin_top": 20,
                                 "elements": [
                                     {
-                                        "name": "TwitterUserImage",
-                                        "type": "image_column",
-                                        "align_vertical": "center"
+                                        "name": "TwitterUserImageContainer",
+                                        "type": "horizontal_container",
+                                        "background_style": "rounded_strict",
+                                        "color_background": "RoundedColor",
+                                        "align_vertical": "center",
+                                        "elements": [
+                                            {
+                                                "name": "TwitterUserImage",
+                                                "type": "image_column",
+                                                "margin_left": 5,
+                                                "margin_right": 5,
+                                                "margin_top": 5,
+                                                "margin_bottom": 5
+                                            }
+                                        ]
                                     },
                                     {
                                         "name": "UserInfoContainer",
                                         "type": "vertical_container",
-                                        "margin_left": 30,
+                                        "margin_left": 10,
+                                        "background_style": "rounded",
+                                        "color_background": "RoundedColor",
                                         "elements": [
                                             {
                                                 "name": "UserDisplayName",
@@ -534,7 +556,7 @@
                                 "color": "AccountControlText",
                                 "background_style": "rounded",
                                 "color_background": "RoundedColor",
-                                "margin_top": "20"
+                                "margin_top": 10
                             },
                             {
                                 "name": "BottomContainer",
@@ -546,7 +568,10 @@
                                         "name": "CounterContainer",
                                         "type": "vertical_container",
                                         "margin_left": 30,
-                                        "margin_bottom": 30,
+                                        "margin_bottom": 10,
+                                        "align_vertical": "down",
+                                        "background_style": "rounded",
+                                        "color_background": "RoundedColor",
                                         "elements": [
                                             {
                                                 "name": "TweetsCounter",
@@ -578,10 +603,10 @@
                                         "name": "FollowButtonContainer",
                                         "type": "horizontal_container",
                                         "margin_right": 10,
-                                        "margin_bottom": 30,
+                                        "margin_bottom": 20,
                                         "align_horizontal": "right",
                                         "align_vertical": "down",
-                                        "background_style": "rounded",
+                                        "background_style": "rounded_strict",
                                         "color_background": "TwitterItemFollowButtonRect",
                                         "color_background_selected": "TwitterItemFollowButtonRectPushed",
                                         "color_background_disabled": "TwitterItemFollowButtonRectDisabled",

@@ -113,6 +113,11 @@ STDMETHODIMP CUserAccountControl::SetTheme(ITheme* pTheme)
 	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
 	RETURN_IF_FAILED(pTheme->GetLayout(Twitter::View::Metadata::UserAccountControl::LayoutName, &m_pLayout));
 	RETURN_IF_FAILED(pTheme->GetLayoutManager(&m_pLayoutManager));
+
+	CComPtr<IVariantObject> pItemUserBannerImage;
+	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(false)));
+
 	UpdateRects();
 	return S_OK;
 }
@@ -273,21 +278,24 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 
 void CUserAccountControl::StartAnimation()
 {
+	CComPtr<IVariantObject> pItemUserBannerImage;
+	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)0)));
+	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(true)));
+	UpdateRects();
+
 	ASSERT_IF_FAILED(m_pAnimationService->SetParams(0, 255, STEPS, TARGET_INTERVAL));
 	ASSERT_IF_FAILED(m_pAnimationService->StartAnimationTimer());
-
-	CComPtr<IColumnsInfoItem> pItemUserBannerImage;
-	ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)0)));
 }
 
 STDMETHODIMP CUserAccountControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
-	CComPtr<IColumnsInfoItem> pItemUserBannerImage;
-	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+	CComPtr<IVariantObject> pItemUserBannerImage;
+	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
 	RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValue)));
-
+	UpdateRects();
 	Invalidate();
+
 	if (dwStep != STEPS)
 	{
 		ASSERT_IF_FAILED(m_pAnimationService->StartAnimationTimer());
@@ -379,6 +387,9 @@ STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 		RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(m_bFollowing)));
 	}
 
+	CComPtr<IVariantObject> pItemUserBannerImage;
+	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+
 	if (m_pVariantObject)
 	{
 		CComVar vUserImage;
@@ -391,10 +402,9 @@ STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
 		m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl);
 		if (vBannerUrl.vt == VT_BSTR)
 		{
-			CComPtr<IVariantObject> pItemUserBannerImage;
-			RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-			RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vUserImage));
+			RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vBannerUrl));
 		}
 	}
+
 	return S_OK;
 }
