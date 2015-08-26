@@ -4,7 +4,7 @@ namespace IP
 {
 	namespace Twitter
 	{
-		namespace Themes
+		namespace View
 		{
 			namespace Metadata
 			{
@@ -24,15 +24,6 @@ namespace IP
 						const static CComBSTR Error(L"error");
 						const static CComBSTR Info(L"info");
 					}
-				}
-
-				namespace UserAccountControl
-				{
-					const static CComBSTR LayoutName(L"UserAccountControlLayout");
-					const static CComBSTR FollowButtonText(L"TwitterItemFollowButton");
-					const static CComBSTR FollowButtonContainer(L"FollowButtonContainer");
-					const static CComBSTR UserAccountControlLayoutBackgroundImage(L"UserAccountControlLayoutBackgroundImage");
-					const static CComBSTR TwitterUserImage(L"TwitterUserImage");
 				}
 			}
 		}

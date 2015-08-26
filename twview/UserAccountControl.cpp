@@ -9,13 +9,11 @@
 
 HRESULT CUserAccountControl::FinalConstruct()
 {
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	return S_OK;
 }
 
 void CUserAccountControl::FinalRelease()
 {
-	m_pColumnsInfo.Release();
 	if (m_hWnd)
 		DestroyWindow();
 }
@@ -53,8 +51,7 @@ STDMETHODIMP CUserAccountControl::OnShutdown()
 	m_pAnimationService.Release();
 	m_pTheme.Release();
 	m_pSkinCommonControl.Release();
-	m_pLayoutManager.Release();
-	m_pLayout.Release();
+	m_pSkinUserAccountControl.Release();
 	m_pVariantObject.Release();
 	m_pImageManagerService.Release();
 	m_pThemeColorMap.Release();
@@ -111,26 +108,14 @@ STDMETHODIMP CUserAccountControl::SetTheme(ITheme* pTheme)
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
 	RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
-	RETURN_IF_FAILED(pTheme->GetLayout(Twitter::View::Metadata::UserAccountControl::LayoutName, &m_pLayout));
-	RETURN_IF_FAILED(pTheme->GetLayoutManager(&m_pLayoutManager));
-
-	CComPtr<IVariantObject> pItemUserBannerImage;
-	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(false)));
-
+	RETURN_IF_FAILED(m_pTheme->GetSkinUserAccountControl(&m_pSkinUserAccountControl));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->SetImageManagerService(m_pImageManagerService));
 	UpdateRects();
 	return S_OK;
 }
 
 LRESULT CUserAccountControl::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	CRect rect;
-	GetClientRect(&rect);
-	if (m_pVariantObject)
-	{
-		RETURN_IF_FAILED(m_pLayoutManager->EraseBackground((HDC)wParam, m_pColumnsInfo));
-	}
-
 	return 0;
 }
 
@@ -138,8 +123,8 @@ LRESULT CUserAccountControl::OnPrintClient(UINT uMsg, WPARAM wParam, LPARAM lPar
 {
 	CRect rect;
 	GetClientRect(&rect);
-	RETURN_IF_FAILED(m_pLayoutManager->EraseBackground((HDC)wParam, m_pColumnsInfo));
-	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout((HDC)wParam, m_pImageManagerService, m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->EraseBackground((HDC)wParam));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->Draw((HDC)wParam));
 	return 0;
 }
 
@@ -150,10 +135,9 @@ LRESULT CUserAccountControl::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 	CRect rect;
 	GetClientRect(&rect);
-	CDCHandle cdc(ps.hdc);
 
-	ASSERT_IF_FAILED(m_pLayoutManager->EraseBackground(cdc, m_pColumnsInfo));
-	ASSERT_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, m_pImageManagerService, m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->EraseBackground(ps.hdc));
+	RETURN_IF_FAILED(m_pSkinUserAccountControl->Draw(ps.hdc));
 
 	EndPaint(&ps);
 	return 0;
@@ -169,29 +153,15 @@ void CUserAccountControl::UpdateRects()
 {
 	m_rectUserImage.SetRectEmpty();
 	m_rectFollowButton.SetRectEmpty();
-	m_pColumnsInfo->Clear();
 
 	if (!m_pVariantObject)
 		return;
 
-	ASSERT_IF_FAILED(UpdateColumnInfo());
-
 	CRect rect;
 	GetClientRect(&rect);
 	CClientDC cdc(m_hWnd);
-	ASSERT_IF_FAILED(m_pLayoutManager->BuildLayout(cdc, &rect, m_pLayout, m_pVariantObject, m_pImageManagerService, m_pColumnsInfo));
-
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Connection::Metadata::UserObject::Image, &pColumnsInfoItem));
-		ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectUserImage));
-	}
-
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::View::Metadata::UserAccountControl::FollowButtonContainer, &pColumnsInfoItem));
-		ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectFollowButton));
-	}
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(cdc, &rect, m_pVariantObject, m_bFollowing, m_bFollowButtonDisabled));
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->GetRects(&m_rectUserImage, &m_rectFollowButton));
 }
 
 STDMETHODIMP CUserAccountControl::OnActivate()
@@ -278,10 +248,7 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 
 void CUserAccountControl::StartAnimation()
 {
-	CComPtr<IVariantObject> pItemUserBannerImage;
-	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)0)));
-	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(true)));
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->StartAnimation());
 	UpdateRects();
 
 	ASSERT_IF_FAILED(m_pAnimationService->SetParams(0, 255, STEPS, TARGET_INTERVAL));
@@ -290,9 +257,7 @@ void CUserAccountControl::StartAnimation()
 
 STDMETHODIMP CUserAccountControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
-	CComPtr<IVariantObject> pItemUserBannerImage;
-	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-	RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValue)));
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationSetValue(dwValue));
 	UpdateRects();
 	Invalidate();
 
@@ -369,42 +334,5 @@ STDMETHODIMP CUserAccountControl::OnFinish(IVariantObject *pResult)
 	m_bFollowButtonDisabled = FALSE;
 	UpdateRects();
 	Invalidate();
-	return S_OK;
-}
-
-STDMETHODIMP CUserAccountControl::UpdateColumnInfo()
-{
-	{
-		CComPtr<IVariantObject> pItemButtonString;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::FollowButtonText, &pItemButtonString));
-		RETURN_IF_FAILED(pItemButtonString->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(m_bFollowing ? L"Following" : L"  Follow  ")));
-	}
-
-	{
-		CComPtr<IVariantObject> pItemButtonContainer;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::FollowButtonContainer, &pItemButtonContainer));
-		RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Disabled, &CComVar(m_bFollowButtonDisabled)));
-		RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(m_bFollowing)));
-	}
-
-	CComPtr<IVariantObject> pItemUserBannerImage;
-	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-
-	if (m_pVariantObject)
-	{
-		CComVar vUserImage;
-		RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
-		CComPtr<IVariantObject> pItemUserImage;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::View::Metadata::UserAccountControl::TwitterUserImage, &pItemUserImage));
-		RETURN_IF_FAILED(pItemUserImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vUserImage));
-
-		CComVar vBannerUrl;
-		m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl);
-		if (vBannerUrl.vt == VT_BSTR)
-		{
-			RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vBannerUrl));
-		}
-	}
-
 	return S_OK;
 }

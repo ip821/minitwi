@@ -32,22 +32,16 @@ private:
 	CComPtr<IVariantObject> m_pLayout;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
 
-	DWORD m_alpha = 0;
-
-	int DrawCounter(HDC hdc, int x, int y, int width, IVariantObject* pVariantObject, BSTR bstrName, BSTR bstrMessage);
-	HRESULT MeasureInternal(HDC hdc, RECT clientRect, IVariantObject* pVariantObject, LPRECT lpRectScreenName, LPRECT lpRectDisplayName, LPRECT lpRectUserImage, LPRECT lpRectFollowButton);
-
-	const CString m_strFollow = L"Follow";
-	const CString m_strFollowing = L"Following";
-
 public:
 
 	STDMETHOD(SetTheme)(ITheme* pTheme);
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
-	STDMETHOD(EraseBackground)(HDC hdc, LPRECT lpRect, IVariantObject* pObject);
-	STDMETHOD(Draw)(HDC hdc, LPRECT lpRect, IVariantObject* pObject, IColumnsInfo* pColumnsInfo);
+	STDMETHOD(EraseBackground)(HDC hdc);
+	STDMETHOD(Draw)(HDC hdc);
+	STDMETHOD(StartAnimation)();
 	STDMETHOD(AnimationSetValue)(DWORD dwValue);
-	STDMETHOD(Measure)(HWND hWnd, LPRECT lpRect, IColumnsInfo* pColumnsInfo, IVariantObject* pVariantObject);
+	STDMETHOD(Measure)(HDC hdc, LPRECT lpRect, IVariantObject * pVariantObject, BOOL bIsFollowing, BOOL bFollowButtonDisabled);
+	STDMETHOD(GetRects)(RECT* pRectUserImage, RECT* pRectFollowButton);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinUserAccountControl), CSkinUserAccountControl)

@@ -72,10 +72,8 @@ private:
 	CComPtr<IThreadService> m_pFollowStatusThreadService;
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
-	CComPtr<IColumnsInfo> m_pColumnsInfo;
+	CComPtr<ISkinUserAccountControl> m_pSkinUserAccountControl;
 	CComPtr<IAnimationService> m_pAnimationService;
-	CComPtr<ILayoutManager> m_pLayoutManager;
-	CComPtr<IVariantObject> m_pLayout;
 
 	const DWORD STEPS = 25;
 
@@ -102,7 +100,6 @@ private:
 
 	void StartAnimation();
 	void UpdateRects();
-	STDMETHOD(UpdateColumnInfo)();
 
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);
