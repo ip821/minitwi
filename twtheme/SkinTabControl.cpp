@@ -57,13 +57,7 @@ STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
 	RETURN_IF_FAILED(m_pTheme->GetLayout(Twitter::Themes::Metadata::TabContainer::LayoutName, &m_pLayoutObject));
 	RETURN_IF_FAILED(m_pTheme->GetImageManagerService(&m_pImageManagerService));
-
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTabControl::SetColumnsInfo(IColumnsInfo* pColumnsInfo)
-{
-	m_pColumnsInfo = pColumnsInfo;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	return S_OK;
 }
 
@@ -79,14 +73,15 @@ STDMETHODIMP CSkinTabControl::SetSelectedIndex(UINT uiIndex)
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IVariantObject> pContainer;
-		ASSERT_IF_FAILED(pContainers->GetAt(i, __uuidof(IVariantObject),(LPVOID*)&pContainer));
-		ASSERT_IF_FAILED(HrLayoutSetVariantValueRecursive(pContainer, Layout::Metadata::Element::Selected, &CComVar((BOOL)(uiIndex == static_cast<int>(i)))));
+		ASSERT_IF_FAILED(pContainers->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pContainer));
+		ASSERT_IF_FAILED(HrLayoutSetVariantValueRecursive(pContainer, Layout::Metadata::Element::Selected, &CComVar((bool)(uiIndex == static_cast<int>(i)))));
 	}
 	return S_OK;
 }
 
 STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight)
 {
+	RETURN_IF_FAILED(m_pColumnsInfo->Clear());
 	{
 		CComPtr<IVariantObject> pElement;
 		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pElement));
@@ -227,4 +222,28 @@ STDMETHODIMP CSkinTabControl::GetInfoRect(RECT* pRect)
 	CHECK_E_POINTER(pRect);
 	*pRect = m_rectInfoImage;
 	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::GetPageIndex(POINT pt, UINT* puiIndex)
+{
+	CHECK_E_POINTER(puiIndex);
+	CComPtr<IColumnsInfoItem> pRootContainerItem;
+	RETURN_IF_FAILED(m_pColumnsInfo->GetItem(0, &pRootContainerItem));
+	CComPtr<IColumnsInfo> pChildContainers;
+	RETURN_IF_FAILED(pRootContainerItem->GetChildItems(&pChildContainers));
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(pChildContainers->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		RETURN_IF_FAILED(pChildContainers->GetItem(i, &pColumnsInfoItem));
+		CRect rect;
+		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
+		if (rect.PtInRect(pt))
+		{
+			*puiIndex = i;
+			return S_OK;
+		}
+	}
+	return E_NOT_SET;
 }

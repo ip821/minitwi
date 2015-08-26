@@ -75,7 +75,6 @@ private:
 	CComPtr<IServiceProvider> m_pServiceProvider;
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ISkinTabControl> m_pSkinTabControl;
-	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	CComPtr<IScrollControl> m_pScrollControl;
 	CComPtr<IVariantObject> m_pLayoutObject;
 	UINT m_cAnimationRefs = 0;

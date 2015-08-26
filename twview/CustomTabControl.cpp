@@ -18,7 +18,6 @@ STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
 STDMETHODIMP CCustomTabControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &m_pControls));
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ScrollControl, &m_pScrollControl));
 	*hWnd = __super::Create(hWndParent, 0, L"", WS_VISIBLE | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_COMPOSITED | WS_EX_CONTROLPARENT);
 	RETURN_IF_FAILED(m_pScrollControl->CreateEx(m_hWnd, nullptr));
@@ -411,7 +410,6 @@ STDMETHODIMP CCustomTabControl::OnShutdown()
 	m_pServiceProvider.Release();
 	m_pSettings.Release();
 	m_pSkinTabControl.Release();
-	m_pColumnsInfo.Release();
 	m_pControls.Release();
 	return S_OK;
 }
@@ -466,7 +464,6 @@ HRESULT CCustomTabControl::UpdateSkinSelectedIndex()
 void CCustomTabControl::UpdateChildControlAreaRect()
 {
 	m_rectChildControlArea.SetRectEmpty();
-	m_pColumnsInfo->Clear();
 	CComQIPtr<IObjArray> pObjArray = m_pControls;
 	UINT uiHeight = 0;
 	CRect clientRect;
@@ -486,7 +483,6 @@ STDMETHODIMP CCustomTabControl::SetSkinTabControl(ISkinTabControl* pSkinTabContr
 {
 	CHECK_E_POINTER(pSkinTabControl);
 	m_pSkinTabControl = pSkinTabControl;
-	RETURN_IF_FAILED(m_pSkinTabControl->SetColumnsInfo(m_pColumnsInfo));
 	RETURN_IF_FAILED(m_pSkinTabControl->SetSelectedIndex(m_selectedPageIndex));
 	AdjustSize();
 	return S_OK;
@@ -561,27 +557,17 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	}
 	else
 	{
-		CComPtr<IColumnsInfoItem> pRootContainerItem;
-		ASSERT_IF_FAILED(m_pColumnsInfo->GetItem(0, &pRootContainerItem));
-		CComPtr<IColumnsInfo> pChildContainers;
-		ASSERT_IF_FAILED(pRootContainerItem->GetChildItems(&pChildContainers));
-		UINT uiCount = 0;
-		ASSERT_IF_FAILED(pChildContainers->GetCount(&uiCount));
-		UINT uiControlsCount = 0;
-		ASSERT_IF_FAILED(m_pControls->GetCount(&uiControlsCount));
-		for (size_t i = 0; i < uiCount; i++)
+		UINT uiIndex = 0;
+		if (m_pSkinTabControl->GetPageIndex(CPoint(x, y), &uiIndex) == S_OK)
 		{
-			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-			ASSERT_IF_FAILED(pChildContainers->GetItem(i, &pColumnsInfoItem));
-			CRect rect;
-			ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-			if (rect.PtInRect(CPoint(x, y)) && i < uiControlsCount)
+			UINT uiControlsCount = 0;
+			RETURN_IF_FAILED(m_pControls->GetCount(&uiControlsCount));
+			if (uiIndex < uiControlsCount)
 			{
 				CComPtr<IControl> pControl;
-				m_pControls->GetAt(i, __uuidof(IControl), (LPVOID*)&pControl);
-				Fire_OnTabHeaderClick(pControl);
-				SelectPage(i);
-				break;
+				ASSERT_IF_FAILED(m_pControls->GetAt(uiIndex, __uuidof(IControl), (LPVOID*)&pControl));
+				ASSERT_IF_FAILED(Fire_OnTabHeaderClick(pControl));
+				SelectPage(uiIndex);
 			}
 		}
 	}
