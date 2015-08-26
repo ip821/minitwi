@@ -549,7 +549,7 @@
                                 "name": "UserInfoString",
                                 "type": "text_column",
                                 "text_key": "VAR_TWITTER_USER_DESCRIPTION",
-                                "width_percent": 80,
+                                "width_percent": 90,
                                 "text_multiline": true,
                                 "align_horizontal": "center",
                                 "font": "TwitterNormalizedText",
@@ -566,7 +566,7 @@
                                 "elements": [
                                     {
                                         "name": "CounterContainer",
-                                        "type": "vertical_container",
+                                        "type": "horizontal_container",
                                         "margin_left": 30,
                                         "margin_bottom": 10,
                                         "align_vertical": "down",
@@ -574,28 +574,58 @@
                                         "color_background": "RoundedColor",
                                         "elements": [
                                             {
-                                                "name": "TweetsCounter",
-                                                "type": "text_column",
-                                                "text": "Tweets: ",
-                                                "text_key": "VAR_TWITTER_USER_TWEETS_COUNT",
-                                                "font": "TwitterNormalizedText",
-                                                "color": "AccountControlText"
+                                                "name": "CounterContainerCatpion",
+                                                "type": "vertical_container",
+                                                "elements": [
+                                                    {
+                                                        "name": "TweetsCounter",
+                                                        "type": "text_column",
+                                                        "text": "Tweets: ",
+                                                        "font": "TwitterNormalizedText",
+                                                        "color": "AccountControlText"
+                                                    },
+                                                    {
+                                                        "name": "FollowingCounter",
+                                                        "type": "text_column",
+                                                        "text": "Following: ",
+                                                        "font": "TwitterNormalizedText",
+                                                        "color": "AccountControlText"
+                                                    },
+                                                    {
+                                                        "name": "FollowedCounter",
+                                                        "type": "text_column",
+                                                        "text": "Followers: ",
+                                                        "font": "TwitterNormalizedText",
+                                                        "color": "AccountControlText"
+                                                    }
+                                                ]
                                             },
                                             {
-                                                "name": "FollowingCounter",
-                                                "type": "text_column",
-                                                "text": "Following: ",
-                                                "text_key": "VAR_TWITTER_USER_FRIENDS_COUNT",
-                                                "font": "TwitterNormalizedText",
-                                                "color": "AccountControlText"
-                                            },
-                                            {
-                                                "name": "FollowedCounter",
-                                                "type": "text_column",
-                                                "text": "Followers: ",
-                                                "text_key": "VAR_TWITTER_USER_FOLLOWERS_COUNT",
-                                                "font": "TwitterNormalizedText",
-                                                "color": "AccountControlText"
+                                                "name": "CounterContainerValues",
+                                                "type": "vertical_container",
+                                                "elements": [
+                                                    {
+                                                        "name": "TweetsCounter",
+                                                        "type": "text_column",
+                                                        "text_key": "VAR_TWITTER_USER_TWEETS_COUNT",
+                                                        "font": "TwitterNormalizedText",
+                                                        "color": "AccountControlText"
+                                                    },
+                                                    {
+                                                        "name": "FollowingCounter",
+                                                        "type": "text_column",
+                                                        "text_key": "VAR_TWITTER_USER_FRIENDS_COUNT",
+                                                        "font": "TwitterNormalizedText",
+                                                        "color": "AccountControlText"
+                                                    },
+                                                    {
+                                                        "name": "FollowedCounter",
+                                                        "type": "text_column",
+                                                        "text_key": "VAR_TWITTER_USER_FOLLOWERS_COUNT",
+                                                        "font": "TwitterNormalizedText",
+                                                        "color": "AccountControlText"
+                                                    }
+                                                ]
                                             }
                                         ]
                                     },
@@ -621,8 +651,8 @@
                                                 "align_vertical": "center",
                                                 "margin_left": 10,
                                                 "margin_right": 10,
-                                                "margin_top": 5,
-                                                "margin_bottom": 5
+                                                "margin_top": 8,
+                                                "margin_bottom": 8
                                             }
                                         ]
                                     }
