@@ -373,7 +373,7 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 						GetItemRect(curSel, &itemRect);
 						CRect columnRect;
 						ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(columnRect));
-						HandleCLick(MAKELONG(itemRect.left + columnRect.left + 1, itemRect.top + columnRect.top + 1), NM_LISTBOX_LCLICK);
+						HandleClick(MAKELONG(itemRect.left + columnRect.left + 1, itemRect.top + columnRect.top + 1), NM_LISTBOX_LCLICK);
 						bHandled = TRUE;
 						break;
 					}
@@ -383,7 +383,7 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			{
 				CRect itemRect;
 				GetItemRect(curSel, &itemRect);
-				HandleCLick(MAKELONG(itemRect.left + 1, itemRect.top + 1), NM_LISTBOX_LDOUBLECLICK);
+				HandleClick(MAKELONG(itemRect.left + 1, itemRect.top + 1), NM_LISTBOX_LDOUBLECLICK);
 				bHandled = TRUE;
 			}
 		}
@@ -391,7 +391,7 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	return 0;
 }
 
-LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
+LRESULT CCustomListBox::HandleClick(LPARAM lParam, UINT uiCode)
 {
 	if (!m_columnsInfo.size())
 		return 0;
@@ -459,19 +459,19 @@ LRESULT CCustomListBox::HandleCLick(LPARAM lParam, UINT uiCode)
 LRESULT CCustomListBox::OnLMouseDoubleClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
-	return HandleCLick(lParam, NM_LISTBOX_LDOUBLECLICK);
+	return HandleClick(lParam, NM_LISTBOX_LDOUBLECLICK);
 }
 
 LRESULT CCustomListBox::OnLMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
-	return HandleCLick(lParam, NM_LISTBOX_LCLICK);
+	return HandleClick(lParam, NM_LISTBOX_LCLICK);
 }
 
 LRESULT CCustomListBox::OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
-	return HandleCLick(lParam, NM_LISTBOX_RCLICK);
+	return HandleClick(lParam, NM_LISTBOX_RCLICK);
 }
 
 void CCustomListBox::BeginUpdate()
