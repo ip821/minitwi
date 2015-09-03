@@ -21,7 +21,7 @@ CCustomListBox::~CCustomListBox()
 
 HWND CCustomListBox::Create(HWND hWndParent, ATL::_U_RECT rect, LPCTSTR szWindowName, DWORD dwStyle, DWORD dwExStyle, ATL::_U_MENUorID MenuOrID, LPVOID lpCreateParam)
 {
-	HWND hWnd =  CWindowImpl::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu, lpCreateParam);
+	HWND hWnd = CWindowImpl::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu, lpCreateParam);
 	return hWnd;
 }
 
@@ -167,19 +167,12 @@ void CCustomListBox::OnItemsUpdated()
 		ASSERT_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Item::TwitterRelativeTime, &v));
 		if (v.vt == VT_BSTR)
 		{
-			UINT uiColumnCount = 0;
-			ASSERT_IF_FAILED(m_columnsInfo[i]->GetCount(&uiColumnCount));
-			for (size_t j = 0; j < uiColumnCount; j++)
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(m_columnsInfo[i]->FindItemByName(Twitter::Metadata::Item::TwitterRelativeTime, &pColumnsInfoItem));
+			if (pColumnsInfoItem)
 			{
-				CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-				ASSERT_IF_FAILED(m_columnsInfo[i]->GetItem(j, &pColumnsInfoItem));
-				CComBSTR bstrColumnName;
-				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-				if (bstrColumnName == Twitter::Metadata::Item::TwitterRelativeTime)
-				{
-					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, v.bstrVal));
-					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, v.bstrVal));
-				}
+				ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, v.bstrVal));
+				ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, v.bstrVal));
 			}
 		}
 	}
@@ -204,7 +197,7 @@ void CCustomListBox::InsertItem(IVariantObject* pItemObject, int index)
 		ASSERT_IF_FAILED(m_pItems->InsertObject(pItemObject, index));
 		m_columnsInfo.insert(m_columnsInfo.begin() + index, pColumnsInfo);
 	}
-	
+
 	SendMessage(LB_INSERTSTRING, index, 0);
 
 	ASSERT_IF_FAILED(m_pSkinTimeline->AnimationRegisterItemIndex(index, NULL, INVALID_COLUMN_INDEX));
@@ -483,9 +476,9 @@ LRESULT CCustomListBox::OnRMouseButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 
 void CCustomListBox::BeginUpdate()
 {
-	if (!m_updateTefCount)
+	if (!m_updateRefCount)
 		SetRedraw(FALSE);
-	++m_updateTefCount;
+	++m_updateRefCount;
 }
 
 void CALLBACK TimerCallback3(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2)
@@ -495,9 +488,9 @@ void CALLBACK TimerCallback3(UINT wTimerID, UINT msg, DWORD dwUser, DWORD dw1, D
 
 void CCustomListBox::EndUpdate()
 {
-	--m_updateTefCount;
+	--m_updateRefCount;
 
-	if (m_updateTefCount)
+	if (m_updateRefCount)
 		return;
 
 	SetRedraw();

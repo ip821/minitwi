@@ -67,7 +67,7 @@ private:
 	BOOL m_bAnimationNeeded = FALSE;
 	BOOL m_bAnimating = FALSE;
 	BOOL m_bEnableAnimation;
-	atomic<int> m_updateTefCount = 0;
+	atomic<int> m_updateRefCount = 0;
 	CAnimationTimer<CCustomListBox> m_animationTimerFade;
 	map<IVariantObject*, unordered_set<int>> m_animatedColumns;
 
