@@ -34,6 +34,11 @@ namespace IP
 					const static CComBSTR UserAccountControlLayoutBackgroundImage(L"UserAccountControlLayoutBackgroundImage");
 					const static CComBSTR TwitterUserImage(L"TwitterUserImage");
 				}
+
+				namespace TimelineControl
+				{
+					const static CComBSTR LayoutName(L"TimelineItem");
+				}
 			}
 		}
 	}

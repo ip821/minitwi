@@ -39,8 +39,7 @@ STDMETHODIMP CThemeDefault::GetTimelineSkin(ISkinTimeline** ppSkinTimeline)
 {
 	CHECK_E_POINTER(ppSkinTimeline);
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_SkinTimeline, ppSkinTimeline));
-	RETURN_IF_FAILED((*ppSkinTimeline)->SetFontMap(m_pThemeFontMap));
-	RETURN_IF_FAILED((*ppSkinTimeline)->SetColorMap(m_pThemeColorMap));
+	RETURN_IF_FAILED((*ppSkinTimeline)->SetTheme(this));
 	return S_OK;
 }
 

@@ -1,4 +1,4 @@
-// SkinTimeline.cpp : Implementation of CSkinTimeline
+// cpp.SkinTimeline : Implementation of CSkinTimeline
 
 #include "stdafx.h"
 #include "SkinTimeline.h"
@@ -51,19 +51,6 @@ STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageM
 		m_pBitmapRetweet->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
 		m_pImageManagerService->AddImageFromHBITMAP(RETWEET_IMAGE_KEY, bmp);
 	}
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
-{
-	m_pThemeColorMap = pThemeColorMap;
-	return S_OK;
-}
-
-
-STDMETHODIMP CSkinTimeline::SetFontMap(IThemeFontMap* pThemeFontMap)
-{
-	m_pThemeFontMap = pThemeFontMap;
 	return S_OK;
 }
 
@@ -963,3 +950,16 @@ STDMETHODIMP CSkinTimeline::AnimationNextFrame(BOOL* pbContinueAnimation)
 	return S_OK;
 }
 
+STDMETHODIMP CSkinTimeline::SetTheme(ITheme* pTheme)
+{
+	m_pThemeColorMap.Release();
+	m_pThemeFontMap.Release();
+	m_pLayoutManager.Release();
+	if (pTheme)
+	{
+		RETURN_IF_FAILED(pTheme->GetFontMap(&m_pThemeFontMap));
+		RETURN_IF_FAILED(pTheme->GetColorMap(&m_pThemeColorMap));
+		RETURN_IF_FAILED(pTheme->GetLayoutManager(&m_pLayoutManager));
+	}
+	return S_OK;
+}

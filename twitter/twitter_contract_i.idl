@@ -81,10 +81,8 @@ interface ITimelineQueueService : IUnknown
 	pointer_default(unique),
 	local
 ]
-interface ISkinTimeline : IUnknown
+interface ISkinTimeline : IThemeSupport
 {
-	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
 	HRESULT SetImageManagerService(IImageManagerService* pImageManagerService);
 	HRESULT GetImageManagerService(IImageManagerService** ppImageManagerService);
 

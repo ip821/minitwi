@@ -27,6 +27,7 @@ public:
 
 	BEGIN_COM_MAP(CSkinTimeline)
 		COM_INTERFACE_ENTRY(ISkinTimeline)
+		COM_INTERFACE_ENTRY(IThemeSupport)
 	END_COM_MAP()
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -58,6 +59,7 @@ private:
 	const BYTE STEPS = 5;
 	const BYTE STEP_ALPHA = MAX_ALPHA / STEPS;
 	map<UINT, AnimationItemData> m_steps;
+	CComPtr<ILayoutManager> m_pLayoutManager;
 
 	enum class Justify
 	{
@@ -76,8 +78,7 @@ public:
 	STDMETHOD(DrawItem)(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis);
 	STDMETHOD(MeasureItem)(HDC hdc, RECT* pClientRect, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo);
 
-	STDMETHOD(SetColorMap)(IThemeColorMap* pThemeColorMap);
-	STDMETHOD(SetFontMap)(IThemeFontMap* pThemeFontMap);
+	STDMETHOD(SetTheme)(ITheme* pTheme);
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(GetImageManagerService)(IImageManagerService** ppImageManagerService);
 

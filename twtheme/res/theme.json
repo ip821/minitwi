@@ -281,6 +281,11 @@
                 "name": "error",
                 "type": "png",
                 "data": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuM4zml1AAAAJISURBVEhLrZVLSFRRGMfnTk+pkMIIIRiJiWic98thIocWRbjNae0ujAI3EUGLdCeCKzfVKmgRKoiLFu7cuAhsFUTQptKgIojUIh9pv2/87nDmzO36mPngxzn3e/y/e+bccyawWwuHw0cKhcIpIRKJHFZ3cywWi53MZDKDsATf0un0bZoc13DjhuhDRDcYtwTmC4y9Gm7MEOtCbNEV1wbrMJVIJDo0bX8WCoWOipAImg2Ur/j7S6XSQU3fuyHQB989xIW/xGaSyWRC0/dm+Xz+LAKvREgFl3l+AEPwS30r2Wz23r42nOJBhH6qkHC3WCyeYGyDEcM/T5Oclu3OKLqE+BvGTVeI52saOwR3DL9s+DDztkrxTsZBaiH5MUW/XRHlEWGHTZWNH7Vii/guEw9WRPyM5B54axRXQOAZYScejx/j+YUV3yT+lNF/FSS0whOS17SwCr5ZUhzmrcxf23FYwn+lXC4f2FartyCbdYPE91ZhFSmWu4j5ih0TaPCSz/a06tUa4udImrSLTMi5wOnt9Iq5kDNQdxnKxqVSqVsk/LALLJ7DuOWrgVUsQAxZZ1udSS6X68Q551Vg8IecCZhmvmrFbMarh0+Wg+M+hV73jcmY/Iys9CJz31XAKno35eUDbMp5HB+sBC/kenbcF7JiddDgXTQaPSOfpnns/Zjn7bvhOvO6c+IFTYakQc1d74PcnvJH81nmhv+/kP9JGkiRZ0Kj0OCjNCjDFzPQDOTtGXvkQwrKBSeHCMfVZoB4ux62nS+/xiwQ+AcinvrxdSH3SgAAAABJRU5ErkJggg=="
+            },
+            {
+                "name": "retweet",
+                "type": "png",
+                "data": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAANtJREFUOE+l0kGOAUEYxXEmGMewsbaYA5CMOAFXsLAXaz0XIJzBjOtYCEshIq5gwf91vqpUSi20WfySl1f1VXcrpSzL/iVZFpEsi4iLmlEuo4NupAk/4wM+8Is/y+oGuOEe2MDP+YA53KaFddLG0FywhZ9zYYrwKfIDv9Hs8XRABd/Q9x1wtKyuCr8ZyQNCWtxFXR36LeSMk+U+PsONkjpAxog/cYTkG1wxMT24tSXc8My6pwN0ReFTdIV6Xa3patdYWc5nwmFp4CvSglsP/2g5H96VLItIlq/LSg8TEbg6v0vDJwAAAABJRU5ErkJggg=="
             }
         ]
     },
@@ -310,6 +315,66 @@
     },
     {
         "layouts": [
+            {
+                "name": "TimelineItem",
+                "type": "horizontal_container",
+                "elements": [
+                    {
+                        "name": "UserImageColumn",
+                        "type": "image_column"
+                    },
+                    {
+                        "name": "TextDataContainer",
+                        "type": "vertical_container",
+                        "elements": [
+                            {
+                                "name": "RetweetContainer",
+                                "type": "horizontal_container",
+                                "elements": [
+                                    {
+                                        "name": "RetweetImage",
+                                        "type": "ImageColumn",
+                                        "image": "retweet"
+                                    },
+                                    {
+                                        "name": "RetweetDisplayName",
+                                        "type": "text_column",
+                                        "text_key": "TwitterRetweetedUserDisplayName"
+                                    },
+                                    {
+                                        "name": "RetweetScreenName",
+                                        "type": "text_column",
+                                        "text": "@",
+                                        "text_key": "TwitterRetweetedUserName"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "UserNameContainer",
+                                "type": "horizontal_container",
+                                "elements": [
+                                    {
+                                        "name": "UserDisplayName",
+                                        "type": "text_column",
+                                        "text_key": "TwitterUserDisplayName"
+                                    },
+                                    {
+                                        "name": "UserScreenName",
+                                        "type": "text_column",
+                                        "text": "@",
+                                        "text_key": "TwitterUserName"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "TweetText",
+                                "type": "text_column",
+                                "text_key": "TwitterNormalizedText"
+                            }
+                        ]
+                    }
+                ]
+            },
             {
                 "name": "MainTabContainerHeaderLayout",
                 "type": "horizontal_container",
