@@ -396,13 +396,167 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 
 	{
 		CComPtr<IVariantObject> pItem;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Columns::UserRetweetContainer, &pItem));
+		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UserRetweetContainer, &pItem));
 		if (pItem)
 		{
 			CComVar vRetweetedUserDisplayName;
 			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, &vRetweetedUserDisplayName));
 			RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pItem, Layout::Metadata::Element::Visible, &CComVar(vRetweetedUserDisplayName.vt == VT_BSTR)));
 		}
+	}
+
+	{ // Image and url containers are filled dynamically
+		std::unordered_set<std::wstring> imageUrls;
+
+		{ //Images
+			CComVar vMediaUrls;
+			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
+			if (vMediaUrls.vt == VT_UNKNOWN)
+			{
+				CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+				UINT_PTR uiCount = 0;
+				pObjArray->GetCount(&uiCount);
+
+				if (uiCount)
+				{
+					const size_t processCount = uiCount;
+					for (size_t i = 0; i < processCount; i++)
+					{
+						CComPtr<IVariantObject> pMediaObject;
+						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+						CComVar vMediaUrlShort;
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &vMediaUrlShort);
+
+						imageUrls.insert(vMediaUrlShort.bstrVal);
+					}
+				}
+			}
+		}
+
+		{
+			CComVar vUrls;
+			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls));
+			if (vUrls.vt == VT_UNKNOWN)
+			{
+				CComPtr<IVariantObject> pItem;
+				RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UrlContainer, &pItem));
+				ATLASSERT(pItem);
+				CComVar vElements;
+				RETURN_IF_FAILED(pItem->GetVariantValue(Layout::Metadata::Element::Elements, &vElements));
+				ATLASSERT(vElements.vt == VT_UNKNOWN);
+				CComQIPtr<IObjCollection> pElements = vElements.punkVal;
+				ATLASSERT(pElements);
+				CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
+				UINT_PTR uiCount = 0;
+				RETURN_IF_FAILED(pBstrCollection->GetCount(&uiCount));
+				for (size_t i = 0; i < uiCount; i++)
+				{
+					CComBSTR bstrUrl;
+					RETURN_IF_FAILED(pBstrCollection->GetItem(i, &bstrUrl));
+					if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
+						continue;
+
+					CComPtr<IVariantObject> pUrlItem;
+					RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::Elements::TimelineItemUrlItem, &pUrlItem));
+					RETURN_IF_FAILED(pUrlItem->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(bstrUrl)));
+					RETURN_IF_FAILED(pElements->AddObject(pUrlItem));
+				}
+			}
+		}
+
+		//	{ //Images
+		//		CComVar vMediaUrls;
+		//		pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
+		//		if (vMediaUrls.vt == VT_UNKNOWN)
+		//		{
+		//			CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+		//			UINT_PTR uiCount = 0;
+		//			pObjArray->GetCount(&uiCount);
+
+		//			if (uiCount)
+		//			{
+		//				auto totalImageWidth = 0;
+		//				const size_t processCount = uiCount;
+		//				for (size_t i = 0; i < processCount; i++)
+		//				{
+		//					CComPtr<IVariantObject> pMediaObject;
+		//					pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+		//					CComVar vMediaUrlThumb;
+		//					pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+
+		//					TBITMAP tBitmap = { 0 };
+		//					if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
+		//					{
+		//						CComVar vHeight;
+		//						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
+		//						CComVar vWidth;
+		//						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
+		//						tBitmap.Width = vWidth.intVal;
+		//						tBitmap.Height = vHeight.intVal;
+		//					}
+		//					totalImageWidth += tBitmap.Width;
+		//				}
+
+		//				totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
+
+		//				const UINT oneImageWidthMax = (totalImageWidth / processCount);
+		//				auto xOffset = (clientRect.Width() - totalImageWidth) / 2;
+
+		//				UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
+		//				UINT lastHeight = 0;
+		//				for (size_t i = 0; i < processCount; i++)
+		//				{
+		//					CComPtr<IVariantObject> pMediaObject;
+		//					pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+		//					CComVar vMediaUrl;
+		//					pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
+
+		//					CComVar vMediaVideoUrl;
+		//					pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
+
+		//					CComVar vMediaUrlThumb;
+		//					pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+
+		//					TBITMAP tBitmap = { 0 };
+		//					if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
+		//					{
+		//						CComVar vHeight;
+		//						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
+		//						CComVar vWidth;
+		//						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
+		//						tBitmap.Width = vWidth.intVal;
+		//						tBitmap.Height = vHeight.intVal;
+		//					}
+
+		//					const int oneImageWidth = min(oneImageWidthMax, tBitmap.Width);
+
+		//					auto x = xOffset;
+		//					auto y = lastY;
+		//					auto width = oneImageWidth - 4;
+		//					auto height = min(maxPossibleHeight, tBitmap.Height);
+		//					lastHeight = max(height, lastHeight);
+
+		//					xOffset += oneImageWidth;
+
+		//					CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+		//					ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
+		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::TweetObject::Image));
+		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
+		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, vMediaUrlThumb.bstrVal));
+		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
+		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, vMediaVideoUrl.bstrVal));
+		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
+		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
+		//				}
+
+		//				lastY += lastHeight;
+		//			}
+		//		}
+		//	}
 	}
 
 	CRect rect;

@@ -316,6 +316,12 @@
     {
         "layouts": [
             {
+                "name": "TimelineItemUrlItem",
+                "type": "text_column",
+                "font": "TwitterUrl",
+                "color": "TwitterUrl"
+            },
+            {
                 "name": "TimelineCustomItem",
                 "type": "horizontal_container",
                 "fit_horizontal": "parent",
@@ -441,6 +447,20 @@
                                 "font": "TwitterNormalizedText",
                                 "color": "TwitterNormalizedText",
                                 "text_multiline": true
+                            },
+                            {
+                                "name": "UrlContainer",
+                                "type": "vertical_container",
+                                "elements": [
+
+                                ]
+                            },
+                            {
+                                "name": "ImageContainer",
+                                "type": "horizontal_container",
+                                "elements": [
+
+                                ]
                             }
                         ]
                     }

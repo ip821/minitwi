@@ -41,11 +41,18 @@ namespace IP
 					const static CComBSTR LayoutNameCustomItem(L"TimelineCustomItem");
 					const static CComBSTR LayoutNameListItem(L"TimelineListItem");
 					const static CComBSTR RetweetImageKey(L"retweet");
+					
+					namespace Elements
+					{
+						const static CComBSTR UserRetweetContainer(L"RetweetContainer");
+						const static CComBSTR UrlContainer(L"UrlContainer");
+						const static CComBSTR ImageContainer(L"ImageContainer");
+						const static CComBSTR TimelineItemUrlItem(L"TimelineItemUrlItem");
+					}
 
 					namespace Columns
 					{
 						const static CComBSTR UserImageColumn(L"UserImageColumn");
-						const static CComBSTR UserRetweetContainer(L"RetweetContainer");
 					}
 				}
 			}
