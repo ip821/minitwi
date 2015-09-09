@@ -37,7 +37,16 @@ namespace IP
 
 				namespace TimelineControl
 				{
-					const static CComBSTR LayoutName(L"TimelineItem");
+					const static CComBSTR LayoutNameItem(L"TimelineItem");
+					const static CComBSTR LayoutNameCustomItem(L"TimelineCustomItem");
+					const static CComBSTR LayoutNameListItem(L"TimelineListItem");
+					const static CComBSTR RetweetImageKey(L"retweet");
+
+					namespace Columns
+					{
+						const static CComBSTR UserImageColumn(L"UserImageColumn");
+						const static CComBSTR UserRetweetContainer(L"RetweetContainer");
+					}
 				}
 			}
 		}

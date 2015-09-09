@@ -39,7 +39,6 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<IThemeFontMap> m_pThemeFontMap;
 	CComPtr<IImageManagerService> m_pImageManagerService;
-	shared_ptr<Gdiplus::Bitmap> m_pBitmapRetweet;
 
 	struct AnimationItemImageData
 	{
@@ -72,7 +71,7 @@ private:
 	void GetValue(IVariantObject* pItemObject, const CComBSTR& bstrColumnName, CString& strValue);
 	STDMETHOD(DrawTextColumns)(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis);
 	STDMETHOD(DrawImageColumns)(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis);
-	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
+
 public:
 
 	STDMETHOD(DrawItem)(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis);
