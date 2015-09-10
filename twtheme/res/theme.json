@@ -344,39 +344,63 @@
             },
             {
                 "name": "TimelineListItem",
-                "type": "horizontal_container",
+                "type": "vertical_container",
+                "fit_horizontal": "parent",
+                "border_bottom": true,
+                "border_bottom_width": 1,
+                "border_bottom_color": "TwitterDelimiter",
                 "elements": [
                     {
-                        "name": "UserImageColumn",
-                        "type": "image_column",
-                        "height": 48,
-                        "width": 48
-                    },
-                    {
-                        "name": "TextDataContainer",
-                        "type": "vertical_container",
+                        "name": "UserInfoContainer",
+                        "type": "horizontal_container",
+                        "fit_horizontal": "parent",
+                        "margin_top": 5,
+                        "margin_bottom": 5,
                         "elements": [
                             {
-                                "name": "UserNameContainer",
-                                "type": "horizontal_container",
-                                "elements": [
-                                    {
-                                        "name": "UserDisplayName",
-                                        "type": "text_column",
-                                        "text_key": "TwitterUserDisplayName"
-                                    },
-                                    {
-                                        "name": "UserScreenName",
-                                        "type": "text_column",
-                                        "text": "@",
-                                        "text_key": "TwitterUserName"
-                                    }
-                                ]
+                                "name": "UserImageColumn",
+                                "type": "image_column",
+                                "margin_top": 5,
+                                "margin_bottom": 5,
+                                "margin_left": 5,
+                                "margin_right": 5,
+                                "height": 48,
+                                "width": 48
                             },
                             {
-                                "name": "TweetText",
-                                "type": "text_column",
-                                "text_key": "TwitterNormalizedText"
+                                "name": "TextDataContainer",
+                                "type": "vertical_container",
+                                "elements": [
+                                    {
+                                        "name": "UserNameContainer",
+                                        "type": "horizontal_container",
+                                        "elements": [
+                                            {
+                                                "name": "UserDisplayName",
+                                                "type": "text_column",
+                                                "text_key": "TwitterUserDisplayName",
+                                                "font": "TwitterUserDisplayName",
+                                                "color": "TwitterUserDisplayName"
+
+                                            },
+                                            {
+                                                "name": "UserScreenName",
+                                                "type": "text_column",
+                                                "text": "@",
+                                                "text_key": "TwitterUserName",
+                                                "font": "TwitterUserDisplayName",
+                                                "color": "TwitterUserDisplayName"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "TweetText",
+                                        "type": "text_column",
+                                        "text_key": "TwitterNormalizedText",
+                                        "font": "TwitterNormalizedText",
+                                        "color": "TwitterNormalizedText"
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -395,11 +419,13 @@
                         "type": "horizontal_container",
                         "fit_horizontal": "parent",
                         "margin_top": 5,
+                        "margin_bottom": 5,
                         "elements": [
                             {
                                 "name": "UserImageColumn",
                                 "type": "image_column",
                                 "margin_top": 5,
+                                "margin_bottom": 5,
                                 "margin_left": 5,
                                 "margin_right": 5,
                                 "height": 48,
