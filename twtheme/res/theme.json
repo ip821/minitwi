@@ -384,100 +384,116 @@
             },
             {
                 "name": "TimelineItem",
-                "type": "horizontal_container",
+                "type": "vertical_container",
                 "fit_horizontal": "parent",
+                "border_bottom": true,
+                "border_bottom_width": 1,
+                "border_bottom_color": "TwitterDelimiter",
                 "elements": [
                     {
-                        "name": "UserImageColumn",
-                        "type": "image_column",
-                        "height": 48,
-                        "width": 48
-                    },
-                    {
-                        "name": "TextDataContainer",
-                        "type": "vertical_container",
+                        "name": "UserInfoContainer",
+                        "type": "horizontal_container",
+                        "fit_horizontal": "parent",
+                        "margin_top": 5,
                         "elements": [
                             {
-                                "name": "RetweetContainer",
-                                "type": "horizontal_container",
-                                "elements": [
-                                    {
-                                        "name": "RetweetImage",
-                                        "type": "image_column",
-                                        "image": "retweet"
-                                    },
-                                    {
-                                        "name": "RetweetDisplayName",
-                                        "type": "text_column",
-                                        "text_key": "TwitterRetweetedUserDisplayName",
-                                        "font": "TwitterRetweetedUserDisplayName",
-                                        "color": "TwitterRetweetedUserDisplayName"
-                                    },
-                                    {
-                                        "name": "RetweetScreenName",
-                                        "type": "text_column",
-                                        "text": "@",
-                                        "text_key": "TwitterRetweetedUserName",
-                                        "font": "TwitterRetweetedUserDisplayName",
-                                        "color": "TwitterRetweetedUserDisplayName"
-                                    }
-                                ]
+                                "name": "UserImageColumn",
+                                "type": "image_column",
+                                "margin_top": 5,
+                                "margin_left": 5,
+                                "margin_right": 5,
+                                "height": 48,
+                                "width": 48
                             },
                             {
-                                "name": "UserNameContainer",
-                                "type": "horizontal_container",
-                                "fit_horizontal": "parent",
-                                "elements": [
-                                    {
-                                        "name": "UserDisplayName",
-                                        "type": "text_column",
-                                        "text_key": "TwitterUserDisplayName",
-                                        "font": "TwitterUserDisplayName",
-                                        "color": "TwitterUserDisplayName"
-                                    },
-                                    {
-                                        "name": "UserScreenName",
-                                        "type": "text_column",
-                                        "text": "@",
-                                        "text_key": "TwitterUserName",
-                                        "font": "TwitterUserDisplayName",
-                                        "color": "TwitterUserDisplayName"
-                                    },
-                                    {
-                                        "name": "RelativeTime",
-                                        "type": "text_column",
-                                        "text_key": "TwitterRelativeTime",
-                                        "font": "TwitterRelativeTime",
-                                        "color": "TwitterRelativeTime",
-                                        "align_horizontal": "right"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "TweetText",
-                                "type": "text_column",
-                                "text_key": "TwitterNormalizedText",
-                                "font": "TwitterNormalizedText",
-                                "color": "TwitterNormalizedText",
-                                "text_multiline": true
-                            },
-                            {
-                                "name": "UrlContainer",
+                                "name": "TextDataContainer",
                                 "type": "vertical_container",
                                 "elements": [
+                                    {
+                                        "name": "RetweetContainer",
+                                        "type": "horizontal_container",
+                                        "elements": [
+                                            {
+                                                "name": "RetweetImage",
+                                                "type": "image_column",
+                                                "image": "retweet"
+                                            },
+                                            {
+                                                "name": "RetweetDisplayName",
+                                                "type": "text_column",
+                                                "text_key": "TwitterRetweetedUserDisplayName",
+                                                "font": "TwitterRetweetedUserDisplayName",
+                                                "color": "TwitterRetweetedUserDisplayName"
+                                            },
+                                            {
+                                                "name": "RetweetScreenName",
+                                                "type": "text_column",
+                                                "text": "@",
+                                                "text_key": "TwitterRetweetedUserName",
+                                                "font": "TwitterRetweetedUserDisplayName",
+                                                "color": "TwitterRetweetedUserDisplayName"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "UserNameContainer",
+                                        "type": "horizontal_container",
+                                        "fit_horizontal": "parent",
+                                        "elements": [
+                                            {
+                                                "name": "UserDisplayName",
+                                                "type": "text_column",
+                                                "text_key": "TwitterUserDisplayName",
+                                                "font": "TwitterUserDisplayName",
+                                                "color": "TwitterUserDisplayName"
+                                            },
+                                            {
+                                                "name": "UserScreenName",
+                                                "type": "text_column",
+                                                "text": "@",
+                                                "text_key": "TwitterUserName",
+                                                "font": "TwitterUserDisplayName",
+                                                "color": "TwitterUserDisplayName"
+                                            },
+                                            {
+                                                "name": "RelativeTime",
+                                                "type": "text_column",
+                                                "margin_right": 5,
+                                                "text_key": "TwitterRelativeTime",
+                                                "font": "TwitterRelativeTime",
+                                                "color": "TwitterRelativeTime",
+                                                "align_horizontal": "right"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "TweetText",
+                                        "type": "text_column",
+                                        "text_key": "TwitterNormalizedText",
+                                        "font": "TwitterNormalizedText",
+                                        "color": "TwitterNormalizedText",
+                                        "text_multiline": true
+                                    },
+                                    {
+                                        "name": "UrlContainer",
+                                        "type": "vertical_container",
+                                        "elements": [
 
-                                ]
-                            },
-                            {
-                                "name": "ImageContainer",
-                                "type": "horizontal_container",
-                                "align_horizontal": "center",
-                                "elements": [
-
+                                        ]
+                                    }
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "name": "ImageContainer",
+                        "type": "horizontal_container",
+                        "align_horizontal": "center",
+                        "margin_bottom": 10,
+                        "elements": [
+                        ]
                     }
+
                 ]
             },
             {
