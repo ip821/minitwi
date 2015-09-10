@@ -471,6 +471,8 @@
                                                 "type": "text_column",
                                                 "text_key": "TwitterUserDisplayName",
                                                 "font": "TwitterUserDisplayName",
+                                                "font_selected": "TwitterUserDisplayNameSelected",
+                                                "VAR_IS_URL": true,
                                                 "color": "TwitterUserDisplayName"
                                             },
                                             {

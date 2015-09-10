@@ -61,7 +61,9 @@ private:
 	int m_prevX = 0;
 	int m_prevY = 0;
 	int m_HoveredItemIndex = INVALID_ITEM_INDEX;
-	int m_HoveredColumnIndex = INVALID_COLUMN_INDEX;
+	int m_PrevHoveredItemIndex = INVALID_ITEM_INDEX;
+	CComBSTR m_bstrHoveredColumnName;
+	CComBSTR m_bstrPrevHoveredColumnName;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
 	BOOL m_bAnimationNeeded = FALSE;
