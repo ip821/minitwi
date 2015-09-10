@@ -48,6 +48,7 @@ namespace IP
 						const static CComBSTR UrlContainer(L"UrlContainer");
 						const static CComBSTR ImageContainer(L"ImageContainer");
 						const static CComBSTR TimelineItemUrlItem(L"TimelineItemUrlItem");
+						const static CComBSTR TimelineItemImageItem(L"TimelineItemImageItem");
 					}
 
 					namespace Columns

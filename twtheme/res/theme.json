@@ -322,6 +322,10 @@
                 "color": "TwitterUrl"
             },
             {
+                "name": "TimelineItemImageItem",
+                "type": "image_column"
+            },
+            {
                 "name": "TimelineCustomItem",
                 "type": "horizontal_container",
                 "fit_horizontal": "parent",
@@ -422,6 +426,7 @@
                             {
                                 "name": "UserNameContainer",
                                 "type": "horizontal_container",
+                                "fit_horizontal": "parent",
                                 "elements": [
                                     {
                                         "name": "UserDisplayName",
@@ -437,6 +442,14 @@
                                         "text_key": "TwitterUserName",
                                         "font": "TwitterUserDisplayName",
                                         "color": "TwitterUserDisplayName"
+                                    },
+                                    {
+                                        "name": "RelativeTime",
+                                        "type": "text_column",
+                                        "text_key": "TwitterRelativeTime",
+                                        "font": "TwitterRelativeTime",
+                                        "color": "TwitterRelativeTime",
+                                        "align_horizontal": "right"
                                     }
                                 ]
                             },
@@ -458,6 +471,7 @@
                             {
                                 "name": "ImageContainer",
                                 "type": "horizontal_container",
+                                "align_horizontal": "center",
                                 "elements": [
 
                                 ]

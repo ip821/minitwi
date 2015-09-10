@@ -434,7 +434,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 			}
 		}
 
-		{
+		{ //Urlss
 			CComVar vUrls;
 			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls));
 			if (vUrls.vt == VT_UNKNOWN)
@@ -465,98 +465,91 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 			}
 		}
 
-		//	{ //Images
-		//		CComVar vMediaUrls;
-		//		pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
-		//		if (vMediaUrls.vt == VT_UNKNOWN)
-		//		{
-		//			CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
-		//			UINT_PTR uiCount = 0;
-		//			pObjArray->GetCount(&uiCount);
+		{ //Images
+			CComVar vMediaUrls;
+			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
+			if (vMediaUrls.vt == VT_UNKNOWN)
+			{
+				CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+				UINT_PTR uiCount = 0;
+				pObjArray->GetCount(&uiCount);
 
-		//			if (uiCount)
-		//			{
-		//				auto totalImageWidth = 0;
-		//				const size_t processCount = uiCount;
-		//				for (size_t i = 0; i < processCount; i++)
-		//				{
-		//					CComPtr<IVariantObject> pMediaObject;
-		//					pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+				if (uiCount)
+				{
+					auto totalImageWidth = 0;
+					const size_t processCount = uiCount;
+					for (size_t i = 0; i < processCount; i++)
+					{
+						CComPtr<IVariantObject> pMediaObject;
+						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-		//					CComVar vMediaUrlThumb;
-		//					pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+						CComVar vMediaUrlThumb;
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
-		//					TBITMAP tBitmap = { 0 };
-		//					if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
-		//					{
-		//						CComVar vHeight;
-		//						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
-		//						CComVar vWidth;
-		//						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
-		//						tBitmap.Width = vWidth.intVal;
-		//						tBitmap.Height = vHeight.intVal;
-		//					}
-		//					totalImageWidth += tBitmap.Width;
-		//				}
+						CComVar vWidth;
+						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
+						ATLASSERT(vWidth.vt == VT_I4);
+						totalImageWidth += vWidth.intVal;
+					}
 
-		//				totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
+					totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
 
-		//				const UINT oneImageWidthMax = (totalImageWidth / processCount);
-		//				auto xOffset = (clientRect.Width() - totalImageWidth) / 2;
+					const UINT oneImageWidthMax = (totalImageWidth / processCount);
 
-		//				UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
-		//				UINT lastHeight = 0;
-		//				for (size_t i = 0; i < processCount; i++)
-		//				{
-		//					CComPtr<IVariantObject> pMediaObject;
-		//					pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+					UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
+					CComPtr<IVariantObject> pItem;
+					RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::ImageContainer, &pItem));
+					CComVar vElements;
+					RETURN_IF_FAILED(pItem->GetVariantValue(Layout::Metadata::Element::Elements, &vElements));
+					ATLASSERT(vElements.vt == VT_UNKNOWN);
+					CComQIPtr<IObjCollection> pElements = vElements.punkVal;
+					ATLASSERT(pElements);
+					for (size_t i = 0; i < processCount; i++)
+					{
+						CComPtr<IVariantObject> pMediaObject;
+						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-		//					CComVar vMediaUrl;
-		//					pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
+						CComVar vMediaUrl;
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
 
-		//					CComVar vMediaVideoUrl;
-		//					pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
+						CComVar vMediaVideoUrl;
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
 
-		//					CComVar vMediaUrlThumb;
-		//					pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+						CComVar vMediaUrlThumb;
+						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
-		//					TBITMAP tBitmap = { 0 };
-		//					if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
-		//					{
-		//						CComVar vHeight;
-		//						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
-		//						CComVar vWidth;
-		//						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
-		//						tBitmap.Width = vWidth.intVal;
-		//						tBitmap.Height = vHeight.intVal;
-		//					}
+						CComVar vHeight;
+						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
+						ATLASSERT(vHeight.vt == VT_I4);
+						CComVar vWidth;
+						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
+						ATLASSERT(vWidth.vt == VT_I4);
 
-		//					const int oneImageWidth = min(oneImageWidthMax, tBitmap.Width);
+						const int width = min(oneImageWidthMax, (UINT)vWidth.intVal);
+						const int height = min(maxPossibleHeight, (UINT)vHeight.intVal);
 
-		//					auto x = xOffset;
-		//					auto y = lastY;
-		//					auto width = oneImageWidth - 4;
-		//					auto height = min(maxPossibleHeight, tBitmap.Height);
-		//					lastHeight = max(height, lastHeight);
+						CComPtr<IVariantObject> pImageElement;
+						RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::Elements::TimelineItemImageItem, &pImageElement));
+						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(vMediaUrlThumb.bstrVal)));
+						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Height, &CComVar(height)));
+						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Width, &CComVar(width)));
+						RETURN_IF_FAILED(pElements->AddObject(pImageElement));
+						//CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+						//ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
+						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
+						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::TweetObject::Image));
+						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
+						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, vMediaUrlThumb.bstrVal));
+						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
+						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, vMediaVideoUrl.bstrVal));
+						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
+						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
+					}
 
-		//					xOffset += oneImageWidth;
-
-		//					CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		//					ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
-		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::TweetObject::Image));
-		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
-		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, vMediaUrlThumb.bstrVal));
-		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
-		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, vMediaVideoUrl.bstrVal));
-		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
-		//					ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
-		//				}
-
-		//				lastY += lastHeight;
-		//			}
-		//		}
-		//	}
+					//lastY += lastHeight;
+				}
+			}
+		}
 	}
 
 	CRect rect;
