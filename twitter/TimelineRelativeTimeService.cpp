@@ -93,7 +93,11 @@ HRESULT CTimelineRelativeTimeService::UpdateRelativeTimeForTwit(IVariantObject* 
 
 	CString strRelTime;
 	auto totalSeconds = abs(diff.total_seconds());
-	if (totalSeconds < 60)
+	if (totalSeconds < 10)
+	{
+		strRelTime = L"just now";
+	}
+	else if (totalSeconds < 60)
 	{
 		strRelTime = CString(lexical_cast<wstring>(totalSeconds).c_str()) + L"s";
 	}
