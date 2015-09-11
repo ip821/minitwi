@@ -67,10 +67,7 @@ private:
 		Right
 	};
 
-	SIZE CSkinTimeline::AddColumn(HDC hdc, IColumnsInfo* pColumnsInfo, CString& strColumnName, CString& strDisplayText, CString& strValue, int x, int y, SIZE size, BOOL bIsUrl, BOOL bWordWrap, LONG ulCustomFixedWidth, Justify justify, BOOL bDisabledSelection, BOOL bDoubleSize);
 	void GetValue(IVariantObject* pItemObject, const CComBSTR& bstrColumnName, CString& strValue);
-	STDMETHOD(DrawTextColumns)(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis);
-	STDMETHOD(DrawImageColumns)(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis);
 
 public:
 
