@@ -316,13 +316,14 @@
     {
         "layouts": [
             {
-                "name": "TimelineItemUrlItem",
+                "name": "TwitterUrl",
                 "type": "text_column",
                 "font": "TwitterUrl",
+                "font_selected": "TwitterUrlSelected",
                 "color": "TwitterUrl"
             },
             {
-                "name": "TimelineItemImageItem",
+                "name": "VAR_TWITTER_IMAGE",
                 "type": "image_column"
             },
             {
@@ -358,7 +359,7 @@
                         "margin_bottom": 5,
                         "elements": [
                             {
-                                "name": "UserImageColumn",
+                                "name": "TwitterUserImage",
                                 "type": "image_column",
                                 "margin_top": 5,
                                 "margin_bottom": 5,
@@ -414,6 +415,7 @@
                 "border_bottom": true,
                 "border_bottom_width": 1,
                 "border_bottom_color": "TwitterDelimiter",
+                "color_background_selected": "BrushSelected",
                 "elements": [
                     {
                         "name": "UserInfoContainer",
@@ -423,7 +425,7 @@
                         "margin_bottom": 5,
                         "elements": [
                             {
-                                "name": "UserImageColumn",
+                                "name": "TwitterUserImage",
                                 "type": "image_column",
                                 "margin_top": 5,
                                 "margin_bottom": 5,
@@ -455,7 +457,7 @@
                                                 "margin_right": 2
                                             },
                                             {
-                                                "name": "RetweetDisplayName",
+                                                "name": "TwitterRetweetedUserDisplayName",
                                                 "type": "text_column",
                                                 "text_key": "TwitterRetweetedUserDisplayName",
                                                 "VAR_IS_URL": true,
@@ -464,7 +466,7 @@
                                                 "color": "TwitterRetweetedUserDisplayName"
                                             },
                                             {
-                                                "name": "RetweetScreenName",
+                                                "name": "TwitterRetweetedUserName",
                                                 "type": "text_column",
                                                 "text": "@",
                                                 "text_key": "TwitterRetweetedUserName",
@@ -481,7 +483,7 @@
                                         "fit_horizontal": "parent",
                                         "elements": [
                                             {
-                                                "name": "UserDisplayName",
+                                                "name": "TwitterUserDisplayName",
                                                 "type": "text_column",
                                                 "text_key": "TwitterUserDisplayName",
                                                 "font": "TwitterUserDisplayName",
@@ -491,7 +493,7 @@
                                                 "margin_right": 5
                                             },
                                             {
-                                                "name": "UserScreenName",
+                                                "name": "TwitterUserName",
                                                 "type": "text_column",
                                                 "text": "@",
                                                 "text_key": "TwitterUserName",
@@ -501,7 +503,7 @@
                                                 "color": "TwitterUserName"
                                             },
                                             {
-                                                "name": "RelativeTime",
+                                                "name": "TwitterRelativeTime",
                                                 "type": "text_column",
                                                 "margin_right": 5,
                                                 "text_key": "TwitterRelativeTime",
@@ -745,6 +747,8 @@
                                             {
                                                 "name": "TwitterUserImage",
                                                 "type": "image_column",
+                                                "width": 48,
+                                                "height": 48,
                                                 "margin_left": 5,
                                                 "margin_right": 5,
                                                 "margin_top": 5,

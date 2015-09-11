@@ -14,8 +14,7 @@ struct NMCOLUMNCLICK
 {
 	NMHDR nmhdr;
 	int dwCurrentItem;
-	int dwCurrentColumn;
-	IColumnsInfo* pColumnsInfo;
+	IColumnsInfoItem* pColumnsInfoItem;
 	IVariantObject* pVariantObject;
 	int x;
 	int y;

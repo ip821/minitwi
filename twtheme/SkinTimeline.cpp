@@ -60,6 +60,11 @@ STDMETHODIMP CSkinTimeline::DrawItem(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCT
 	CDCHandle cdcReal = lpdis->lpdi->hDC;
 	CRect rect = lpdis->lpdi->rcItem;
 
+	auto bSelected = (lpdis->lpdi->itemState & ODS_SELECTED) != 0;
+	CComPtr<IColumnsInfoItem> pItem;
+	RETURN_IF_FAILED(pColumnsInfo->GetItem(0, &pItem));
+	RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(bSelected)));
+
 	CDC cdc;
 	cdc.CreateCompatibleDC(cdcReal);
 	CDCSelectBitmapManualScope cdcSelectBitmapManualScope;
@@ -385,12 +390,13 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 
 	{
 		CComPtr<IVariantObject> pItem;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Columns::UserImageColumn, &pItem));
+		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Connection::Metadata::UserObject::Image, &pItem));
 		if (pItem)
 		{
 			CComBSTR bstrImageUrl;
 			RETURN_IF_FAILED(HrVariantObjectGetBSTR(pItemObject, Twitter::Connection::Metadata::UserObject::Image, &bstrImageUrl));
 			RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(bstrImageUrl)));
+			RETURN_IF_FAILED(pItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrImageUrl)));
 		}
 	}
 
@@ -458,8 +464,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 						continue;
 
 					CComPtr<IVariantObject> pUrlItem;
-					RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::Elements::TimelineItemUrlItem, &pUrlItem));
+					RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Url, &pUrlItem));
 					RETURN_IF_FAILED(pUrlItem->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(bstrUrl)));
+					RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrUrl)));
+					RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
 					RETURN_IF_FAILED(pElements->AddObject(pUrlItem));
 				}
 			}
@@ -529,10 +537,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 						const int height = min(maxPossibleHeight, (UINT)vHeight.intVal);
 
 						CComPtr<IVariantObject> pImageElement;
-						RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::Elements::TimelineItemImageItem, &pImageElement));
+						RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Image, &pImageElement));
 						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(vMediaUrlThumb.bstrVal)));
 						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Height, &CComVar(height)));
 						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Width, &CComVar(width)));
+						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
+						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(vMediaUrlThumb.bstrVal)));
+						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(vMediaUrl.bstrVal)));
+						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVar(vMediaVideoUrl.bstrVal)));
+						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_IMAGE, &CComVar(true)));
 						RETURN_IF_FAILED(pElements->AddObject(pImageElement));
 					}
 				}

@@ -384,8 +384,10 @@ LRESULT CCustomListBox::HandleClick(LPARAM lParam, UINT uiCode)
 	auto x = GET_X_LPARAM(lParam);
 	auto y = GET_Y_LPARAM(lParam);
 
+	CPoint pt = { x, y };
+
 	BOOL bOutside = FALSE;
-	auto uiItem = ItemFromPoint(CPoint(x, y), bOutside);
+	auto uiItem = ItemFromPoint(pt, bOutside);
 	RECT itemRect = { 0 };
 	GetItemRect(uiItem, &itemRect);
 	if (bOutside || uiItem == (UINT)INVALID_ITEM_INDEX)
@@ -402,42 +404,28 @@ LRESULT CCustomListBox::HandleClick(LPARAM lParam, UINT uiCode)
 
 	auto nID = GetDlgCtrlID();
 
-	CPoint pt = { x, y };
-	ClientToScreen(&pt);
-
 	CComPtr<IVariantObject> pVariantObject;
 	ASSERT_IF_FAILED(m_pItems->GetAt(uiItem, __uuidof(IVariantObject), (LPVOID*)&pVariantObject));
+
+	CComPtr<IColumnsInfoItem> pItem;
+	{
+		CPoint ptLocal(x, y);
+		ptLocal.Offset(0, -itemRect.top);
+		ASSERT_IF_FAILED(pColumnsInfo->FindItemByPoint(&ptLocal, &pItem));
+	}
+
+	ClientToScreen(&pt);
 
 	NMCOLUMNCLICK nm = { 0 };
 	nm.nmhdr.hwndFrom = m_hWnd;
 	nm.nmhdr.idFrom = nID;
 	nm.nmhdr.code = uiCode;
 	nm.dwCurrentItem = uiItem;
-	nm.pColumnsInfo = pColumnsInfo;
+	nm.pColumnsInfoItem = pItem.p;
 	nm.pVariantObject = pVariantObject.p;
-	nm.dwCurrentColumn = INVALID_COLUMN_INDEX;
 	nm.x = pt.x;
 	nm.y = pt.y;
 
-	UINT uiCount = 0;
-	ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
-
-	for (size_t i = 0; i < uiCount; i++)
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-
-		CRect rect;
-		ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-		rect.top += itemRect.top;
-		rect.bottom += itemRect.top;
-
-		if (rect.PtInRect(CPoint(x, y)))
-		{
-			nm.dwCurrentColumn = i;
-			break;
-		}
-	}
 	::SendMessage(GetParent(), WM_NOTIFY, (WPARAM)nID, (LPARAM)&nm);
 	return 0;
 }
