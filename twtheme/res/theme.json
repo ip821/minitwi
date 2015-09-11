@@ -380,7 +380,8 @@
                                                 "type": "text_column",
                                                 "text_key": "TwitterUserDisplayName",
                                                 "font": "TwitterUserDisplayName",
-                                                "color": "TwitterUserDisplayName"
+                                                "color": "TwitterUserDisplayName",
+                                                "margin_right": 5
 
                                             },
                                             {
@@ -388,8 +389,8 @@
                                                 "type": "text_column",
                                                 "text": "@",
                                                 "text_key": "TwitterUserName",
-                                                "font": "TwitterUserDisplayName",
-                                                "color": "TwitterUserDisplayName"
+                                                "font": "TwitterUserName",
+                                                "color": "TwitterUserName"
                                             }
                                         ]
                                     },
@@ -429,7 +430,8 @@
                                 "margin_left": 5,
                                 "margin_right": 5,
                                 "height": 48,
-                                "width": 48
+                                "width": 48,
+                                "VAR_IS_URL": true
                             },
                             {
                                 "name": "TextDataContainer",
@@ -445,10 +447,20 @@
                                                 "image": "retweet"
                                             },
                                             {
+                                                "name": "RetweetTextStatic",
+                                                "type": "text_column",
+                                                "text": "Retweeted by",
+                                                "font": "TwitterRetweetedUserDisplayName",
+                                                "color": "TwitterRetweetedUserDisplayName",
+                                                "margin_right": 2
+                                            },
+                                            {
                                                 "name": "RetweetDisplayName",
                                                 "type": "text_column",
                                                 "text_key": "TwitterRetweetedUserDisplayName",
+                                                "VAR_IS_URL": true,
                                                 "font": "TwitterRetweetedUserDisplayName",
+                                                "font_selected": "TwitterRetweetedUserDisplayNameSelected",
                                                 "color": "TwitterRetweetedUserDisplayName"
                                             },
                                             {
@@ -456,7 +468,9 @@
                                                 "type": "text_column",
                                                 "text": "@",
                                                 "text_key": "TwitterRetweetedUserName",
+                                                "VAR_IS_URL": true,
                                                 "font": "TwitterRetweetedUserDisplayName",
+                                                "font_selected": "TwitterRetweetedUserDisplayNameSelected",
                                                 "color": "TwitterRetweetedUserDisplayName"
                                             }
                                         ]
@@ -473,22 +487,27 @@
                                                 "font": "TwitterUserDisplayName",
                                                 "font_selected": "TwitterUserDisplayNameSelected",
                                                 "VAR_IS_URL": true,
-                                                "color": "TwitterUserDisplayName"
+                                                "color": "TwitterUserDisplayName",
+                                                "margin_right": 5
                                             },
                                             {
                                                 "name": "UserScreenName",
                                                 "type": "text_column",
                                                 "text": "@",
                                                 "text_key": "TwitterUserName",
-                                                "font": "TwitterUserDisplayName",
-                                                "color": "TwitterUserDisplayName"
+                                                "VAR_IS_URL": true,
+                                                "font": "TwitterUserName",
+                                                "font_selected": "TwitterUserNameSelected",
+                                                "color": "TwitterUserName"
                                             },
                                             {
                                                 "name": "RelativeTime",
                                                 "type": "text_column",
                                                 "margin_right": 5,
                                                 "text_key": "TwitterRelativeTime",
+                                                "VAR_IS_URL": true,
                                                 "font": "TwitterRelativeTime",
+                                                "font_selected": "TwitterRelativeTimeSelected",
                                                 "color": "TwitterRelativeTime",
                                                 "align_horizontal": "right"
                                             }

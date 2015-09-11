@@ -434,7 +434,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 			}
 		}
 
-		{ //Urlss
+		{ //Urls
 			CComVar vUrls;
 			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls));
 			if (vUrls.vt == VT_UNKNOWN)
@@ -534,19 +534,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Height, &CComVar(height)));
 						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Width, &CComVar(width)));
 						RETURN_IF_FAILED(pElements->AddObject(pImageElement));
-						//CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-						//ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
-						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::TweetObject::Image));
-						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
-						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, vMediaUrlThumb.bstrVal));
-						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
-						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, vMediaVideoUrl.bstrVal));
-						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
-						//ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
 					}
-
-					//lastY += lastHeight;
 				}
 			}
 		}
