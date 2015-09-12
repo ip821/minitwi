@@ -26,14 +26,16 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_WindowService, &m_pWindowService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pFollowThreadService));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_STATUS_THREAD, &m_pFollowStatusThreadService));
-	RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_AnimationService, &m_pAnimationService));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_ANIMATION_BACKGROUND, &m_pAnimationServiceBackgroundImage));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_ANIMATION_USER, &m_pAnimationServiceUserImage));
 
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 	RETURN_IF_FAILED(AtlAdvise(m_pDownloadService, pUnk, __uuidof(IDownloadServiceEventSink), &dw_mAdviceDownloadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pFollowThreadService, pUnk, __uuidof(IThreadServiceEventSink), &dw_mAdviceFollowService));
 	RETURN_IF_FAILED(AtlAdvise(m_pFollowStatusThreadService, pUnk, __uuidof(IThreadServiceEventSink), &dw_mAdviceFollowStatusService));
-	RETURN_IF_FAILED(AtlAdvise(m_pAnimationService, pUnk, __uuidof(IAnimationServiceEventSink), &dw_mAdviceAnimationService));
+	RETURN_IF_FAILED(AtlAdvise(m_pAnimationServiceBackgroundImage, pUnk, __uuidof(IAnimationServiceEventSink), &dw_mAdviceAnimationServiceBackgroundImage));
+	RETURN_IF_FAILED(AtlAdvise(m_pAnimationServiceUserImage, pUnk, __uuidof(IAnimationServiceEventSink), &dw_mAdviceAnimationServiceUserImage));
 
 	m_handCursor.LoadSysCursor(IDC_HAND);
 	m_arrowCursor.LoadSysCursor(IDC_ARROW);
@@ -43,12 +45,14 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 
 STDMETHODIMP CUserAccountControl::OnShutdown()
 {
-	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), dw_mAdviceAnimationService));
+	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationServiceUserImage, __uuidof(IAnimationServiceEventSink), dw_mAdviceAnimationServiceUserImage));
+	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationServiceBackgroundImage, __uuidof(IAnimationServiceEventSink), dw_mAdviceAnimationServiceBackgroundImage));
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), dw_mAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pFollowThreadService, __uuidof(IThreadServiceEventSink), dw_mAdviceFollowService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pFollowStatusThreadService, __uuidof(IThreadServiceEventSink), dw_mAdviceFollowStatusService));
 
-	m_pAnimationService.Release();
+	m_pAnimationServiceUserImage.Release();
+	m_pAnimationServiceBackgroundImage.Release();
 	m_pTheme.Release();
 	m_pSkinCommonControl.Release();
 	m_pSkinUserAccountControl.Release();
@@ -85,12 +89,24 @@ STDMETHODIMP CUserAccountControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 
 LRESULT CUserAccountControl::OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	CComQIPtr<IMsgHandler> p = m_pAnimationService;
-	if (p)
 	{
-		LRESULT lRes = 0;
-		BOOL bH = FALSE;
-		ASSERT_IF_FAILED(p->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lRes, &bH));
+		CComQIPtr<IMsgHandler> p = m_pAnimationServiceBackgroundImage;
+		if (p)
+		{
+			LRESULT lRes = 0;
+			BOOL bH = FALSE;
+			ASSERT_IF_FAILED(p->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lRes, &bH));
+		}
+	}
+
+	{
+		CComQIPtr<IMsgHandler> p = m_pAnimationServiceUserImage;
+		if (p)
+		{
+			LRESULT lRes = 0;
+			BOOL bH = FALSE;
+			ASSERT_IF_FAILED(p->ProcessWindowMessage(m_hWnd, uMsg, wParam, lParam, &lRes, &bH));
+		}
 	}
 	return S_OK;
 }
@@ -224,46 +240,74 @@ STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 
 	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserImage && vUrl.vt == VT_BSTR)
 	{
-		BOOL bContains = FALSE;
-		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
-		if (!bContains)
-		{
-			RETURN_IF_FAILED(m_pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
-		}
-		Invalidate();
+		TSTARTANIMATIONPARAMS params = { 0 };
+		params.animationType = SkinUserAccountControlAnimationType::UserImage;
+		params.bstrKey = vUrl.bstrVal;
+		params.pStream = pStream;
+		SendMessage(WM_START_ANIMATION, (WPARAM)&params, 0);
 	}
 
 	if (vType.vt == VT_BSTR && CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::ImageUserBanner && vUrl.vt == VT_BSTR && m_bstrBannerUrl == vUrl.bstrVal)
 	{
-		BOOL bContains = FALSE;
-		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUrl.bstrVal, &bContains));
-		if (!bContains)
-		{
-			RETURN_IF_FAILED(m_pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
-		}
-		StartAnimation();
+		TSTARTANIMATIONPARAMS params = { 0 };
+		params.animationType = SkinUserAccountControlAnimationType::BackgroundImage;
+		params.bstrKey = vUrl.bstrVal;
+		params.pStream = pStream;
+		SendMessage(WM_START_ANIMATION, (WPARAM)&params, 0);
 	}
 	return S_OK;
 }
 
-void CUserAccountControl::StartAnimation()
+LRESULT CUserAccountControl::OnStartAnimation(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->StartAnimation());
+	TSTARTANIMATIONPARAMS* pParams = (TSTARTANIMATIONPARAMS*)wParam;
+	ASSERT_IF_FAILED(m_pSkinUserAccountControl->StartAnimation(pParams->animationType));
+
+	BOOL bContains = FALSE;
+	RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(pParams->bstrKey, &bContains));
+	if (!bContains)
+	{
+		RETURN_IF_FAILED(m_pImageManagerService->AddImageFromStream(pParams->bstrKey, pParams->pStream));
+	}
+
 	UpdateRects();
 
-	ASSERT_IF_FAILED(m_pAnimationService->SetParams(0, 255, STEPS, TARGET_INTERVAL));
-	ASSERT_IF_FAILED(m_pAnimationService->StartAnimationTimer());
+	if (pParams->animationType == SkinUserAccountControlAnimationType::BackgroundImage)
+	{
+		ASSERT_IF_FAILED(m_pAnimationServiceBackgroundImage->SetParams(0, 255, STEPS, TARGET_INTERVAL));
+		ASSERT_IF_FAILED(m_pAnimationServiceBackgroundImage->StartAnimationTimer());
+	}
+	else if (pParams->animationType == SkinUserAccountControlAnimationType::UserImage)
+	{
+		ASSERT_IF_FAILED(m_pAnimationServiceUserImage->SetParams(0, 255, STEPS, TARGET_INTERVAL));
+		ASSERT_IF_FAILED(m_pAnimationServiceUserImage->StartAnimationTimer());
+	}
+	return 0;
 }
 
 STDMETHODIMP CUserAccountControl::OnAnimationStep(IAnimationService *pAnimationService, DWORD dwValue, DWORD dwStep)
 {
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationSetValue(dwValue));
+	if (pAnimationService == m_pAnimationServiceBackgroundImage)
+	{
+		ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationSetValue(SkinUserAccountControlAnimationType::BackgroundImage, dwValue));
+	}
+	else if (pAnimationService == m_pAnimationServiceUserImage)
+	{
+		ASSERT_IF_FAILED(m_pSkinUserAccountControl->AnimationSetValue(SkinUserAccountControlAnimationType::UserImage, dwValue));
+	}
 	UpdateRects();
 	Invalidate();
 
 	if (dwStep != STEPS)
 	{
-		ASSERT_IF_FAILED(m_pAnimationService->StartAnimationTimer());
+		if (pAnimationService == m_pAnimationServiceBackgroundImage)
+		{
+			ASSERT_IF_FAILED(m_pAnimationServiceBackgroundImage->StartAnimationTimer());
+		}
+		else if (pAnimationService == m_pAnimationServiceUserImage)
+		{
+			ASSERT_IF_FAILED(m_pAnimationServiceUserImage->StartAnimationTimer());
+		}
 	}
 	return 0;
 }

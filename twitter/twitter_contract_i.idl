@@ -153,6 +153,12 @@ interface ITimelineService : IUnknown
 
 interface ITheme;
 
+typedef enum 
+{
+	UserImage,
+	BackgroundImage
+} SkinUserAccountControlAnimationType;
+
 [
 	object,
 	uuid(99939FE4-3FE1-4AFE-B8AC-2D10B9A9DDCE),
@@ -165,8 +171,8 @@ interface ISkinUserAccountControl : IUnknown
 	HRESULT EraseBackground(HDC hdc);
 	HRESULT Draw(HDC hdc);
 	HRESULT Measure(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject, BOOL bIsFollowing, BOOL bFollowButtonDisabled);
-	HRESULT StartAnimation();
-	HRESULT AnimationSetValue(DWORD dwValue);
+	HRESULT StartAnimation(SkinUserAccountControlAnimationType animationType);
+	HRESULT AnimationSetValue(SkinUserAccountControlAnimationType animationType, DWORD dwValue);
 	HRESULT GetRects(RECT* pRectUserImage, RECT* pRectFollowButton);
 }
 
