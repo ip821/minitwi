@@ -331,6 +331,16 @@ Exit:
 	return 0;
 }
 
+void CCustomListBox::PreTranslateMessage(HWND hWnd, MSG *pMsg, BOOL *pbResult)
+{
+	if (pMsg->hwnd == m_hWnd && pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
+	{
+		BOOL bHandled = FALSE;
+		OnKeyDown(pMsg->message, pMsg->wParam, pMsg->lParam, bHandled);
+		*pbResult = bHandled;
+	}
+}
+
 LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
@@ -343,17 +353,13 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 			if (keyControlState == 0)
 			{
 				CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[curSel];
-				UINT uiCount = 0;
-				ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
-				for (size_t i = 0; i < uiCount; i++)
+				CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+				ASSERT_IF_FAILED(pColumnsInfo->FindItemByName(Twitter::Connection::Metadata::TweetObject::Image, &pColumnsInfoItem));
+				if (pColumnsInfoItem)
 				{
-					CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-					RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-					CComBSTR bstrColumnName;
-					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 					CComBSTR bstrMediaUrl;
 					ASSERT_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, &bstrMediaUrl));
-					if (bstrColumnName == Twitter::Connection::Metadata::TweetObject::Image && bstrMediaUrl != CComBSTR(L""))
+					if (bstrMediaUrl != CComBSTR(L""))
 					{
 						CRect itemRect;
 						GetItemRect(curSel, &itemRect);
@@ -361,7 +367,6 @@ LRESULT CCustomListBox::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 						ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(columnRect));
 						HandleClick(MAKELONG(itemRect.left + columnRect.left + 1, itemRect.top + columnRect.top + 1), NM_LISTBOX_LCLICK);
 						bHandled = TRUE;
-						break;
 					}
 				}
 			}

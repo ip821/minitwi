@@ -77,6 +77,7 @@ STDMETHODIMP CTimelineControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 	CHECK_E_POINTER(pMsg);
 	CHECK_E_POINTER(pbResult);
 	RETURN_IF_FAILED(m_pCommandSupport->PreTranslateMessage(m_hWnd, pMsg, pbResult));
+	m_listBox.PreTranslateMessage(m_hWnd, pMsg, pbResult);
 	return S_OK;
 }
 

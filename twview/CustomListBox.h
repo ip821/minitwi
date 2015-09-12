@@ -89,6 +89,7 @@ public:
 	LRESULT OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	void DoSize(int cx, int cy);
 
+	void PreTranslateMessage(HWND hWnd, MSG *pMsg, BOOL *pbResult);
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	void InsertItem(IVariantObject* pItemObject, int index);
