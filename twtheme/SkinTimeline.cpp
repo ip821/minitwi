@@ -349,7 +349,7 @@ STDMETHODIMP CSkinTimeline::AnimationGetIndexes(UINT* puiIndexArray, UINT* puiCo
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::AnimationNextFrame(BOOL* pbContinueAnimation)
+STDMETHODIMP CSkinTimeline::AnimationNextFrame(IColumnsInfo** ppColumnsInfoArray, UINT uiCount, BOOL* pbContinueAnimation)
 {
 	CHECK_E_POINTER(pbContinueAnimation);
 
@@ -385,6 +385,25 @@ STDMETHODIMP CSkinTimeline::AnimationNextFrame(BOOL* pbContinueAnimation)
 
 		if (item.second.step > STEPS && item.second.columns.size() == 0)
 			vIndexesToRemove.push_back(item.first);
+	}
+
+	for (auto& item : m_steps)
+	{
+		CComPtr<IObjArray> pImageItems;
+		ASSERT_IF_FAILED(ppColumnsInfoArray[item.first]->FindItemsByProperty(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE, &pImageItems));
+
+		for (auto& imageItem : item.second.columns)
+		{
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pImageItems->GetAt(imageItem.second.index, __uuidof(IColumnsInfoItem), (LPVOID*)&pColumnsInfoItem));
+
+			BOOL bImage = FALSE;
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bImage));
+			if (!bImage)
+				continue;
+
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)imageItem.second.alpha)));
+		}
 	}
 
 	for (auto& item : vIndexesToRemove)
