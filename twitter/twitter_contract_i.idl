@@ -92,7 +92,7 @@ interface ISkinTimeline : IThemeSupport
 	HRESULT AnimationRegisterItemIndex(UINT uiIndex, IColumnsInfoItem* pColumnsInfoItem, int iColumnIndex);
 	HRESULT AnimationGetParams(UINT* puiMilliseconds);
 	HRESULT AnimationGetIndexes(UINT* puiIndexArray, UINT* puiCount);
-	HRESULT AnimationNextFrame(IColumnsInfo** ppColumnsInfoArray, UINT uiCount, BOOL* pbContinueAnimation);
+	HRESULT AnimationNextFrame(BOOL* pbContinueAnimation);
 };
 
 [

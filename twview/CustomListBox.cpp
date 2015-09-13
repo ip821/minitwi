@@ -208,15 +208,12 @@ void CCustomListBox::UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemI
 	CComPtr<IImageManagerService> pImageManagerService;
 	ASSERT_IF_FAILED(m_pSkinTimeline->GetImageManagerService(&pImageManagerService));
 
-	CComPtr<IObjArray> pImageItems;
-	ASSERT_IF_FAILED(pColumnsInfo->FindItemsByProperty(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE, &pImageItems));
-
 	UINT uiCount = 0;
-	ASSERT_IF_FAILED(pImageItems->GetCount(&uiCount));
+	ASSERT_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
 	for (size_t i = 0; i < uiCount; i++)
 	{
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(pImageItems->GetAt(i, __uuidof(IColumnsInfoItem), (LPVOID*)&pColumnsInfoItem));
+		ASSERT_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
 
 		BOOL bImage = FALSE;
 		ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bImage));
@@ -497,8 +494,7 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 	if (wParam == (WPARAM)&m_animationTimerFade)
 	{
 		BOOL bContinueAnimation = FALSE;
-		vector<IColumnsInfo*> v(m_columnsInfo.begin(), m_columnsInfo.end());
-		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationNextFrame(&v[0], v.size(), &bContinueAnimation));
+		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationNextFrame(&bContinueAnimation));
 
 		if (bContinueAnimation)
 		{

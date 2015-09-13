@@ -81,7 +81,7 @@ public:
 	STDMETHOD(AnimationRegisterItemIndex)(UINT uiIndex, IColumnsInfoItem* pColumnsInfoItem, int iColumnIndex);
 	STDMETHOD(AnimationGetParams)(UINT* puiMilliseconds);
 	STDMETHOD(AnimationGetIndexes)(UINT* puiIndexArray, UINT* puiCount);
-	STDMETHOD(AnimationNextFrame)(IColumnsInfo** ppColumnsInfoArray, UINT uiCount, BOOL* pbContinueAnimation);
+	STDMETHOD(AnimationNextFrame)(BOOL* pbContinueAnimation);
 
 };
 
