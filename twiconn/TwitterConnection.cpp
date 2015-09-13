@@ -685,6 +685,11 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	}
 	strText = strText.Trim();
 
+	auto retweetCount = itemObject[L"retweet_count"]->AsNumber();
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetCount, &CComVar((int)retweetCount)));
+	auto favCount = itemObject[L"favorite_count"]->AsNumber();
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::FavoriteCount, &CComVar((int)favCount)));
+
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVar(id.c_str())));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVar(userDisplayName.c_str())));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &CComVar(userScreenName.c_str())));
