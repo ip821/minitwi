@@ -57,6 +57,55 @@ STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageM
 
 STDMETHODIMP CSkinTimeline::DrawItem(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
+	std::unordered_set<UINT> columnIndexesAlreadyAnimated;
+
+	if (lpdis->puiNotAnimatedColumnIndexes)
+	{
+		for (size_t i = 0; i < lpdis->uiNotAnimatedColumnIndexesCount; i++)
+		{
+			columnIndexesAlreadyAnimated.insert(lpdis->puiNotAnimatedColumnIndexes[i]);
+		}
+	}
+
+	auto it = m_steps.find(lpdis->lpdi->itemID);
+	{
+		CComPtr<IObjArray> pImageItems;
+		ASSERT_IF_FAILED(pColumnsInfo->FindItemsByProperty(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE, &pImageItems));
+
+		UINT uiCount = 0;
+		ASSERT_IF_FAILED(pImageItems->GetCount(&uiCount));
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pImageItems->GetAt(i, __uuidof(IColumnsInfoItem), (LPVOID*)&pColumnsInfoItem));
+
+			BOOL bImage = FALSE;
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bImage));
+			if (!bImage)
+				continue;
+
+			DWORD dwAlpha = 0;
+			if (it == m_steps.end())
+			{
+				if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
+				{
+					dwAlpha = MAX_ALPHA;
+				}
+			}
+			else
+			{
+				if (it->second.columns.find(i) != it->second.columns.end())
+					dwAlpha = it->second.columns[i].alpha;
+				else if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
+				{
+					dwAlpha = MAX_ALPHA;
+				}
+			}
+
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwAlpha)));
+		}
+	}
+
 	CDCHandle cdcReal = lpdis->lpdi->hDC;
 	CRect rect = lpdis->lpdi->rcItem;
 
@@ -79,9 +128,9 @@ STDMETHODIMP CSkinTimeline::DrawItem(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCT
 	BLENDFUNCTION bf = { 0 };
 	bf.BlendOp = AC_SRC_OVER;
 	bf.SourceConstantAlpha = MAX_ALPHA;
-	if (m_steps.find(lpdis->lpdi->itemID) != m_steps.end())
+	if (it != m_steps.end())
 	{
-		bf.SourceConstantAlpha = m_steps[lpdis->lpdi->itemID].alpha;
+		bf.SourceConstantAlpha = it->second.alpha;
 	}
 	cdcReal.AlphaBlend(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, rect.Width(), rect.Height(), bf);
 	return S_OK;
@@ -349,7 +398,7 @@ STDMETHODIMP CSkinTimeline::AnimationGetIndexes(UINT* puiIndexArray, UINT* puiCo
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::AnimationNextFrame(BOOL* pbContinueAnimation)
+STDMETHODIMP CSkinTimeline::AnimationNextFrame(IColumnsInfo** ppColumnsInfoArray, UINT uiCount, BOOL* pbContinueAnimation)
 {
 	CHECK_E_POINTER(pbContinueAnimation);
 
