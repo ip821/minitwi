@@ -48,6 +48,7 @@ namespace IP
 						const static CComBSTR UserRetweetContainer(L"RetweetContainer");
 						const static CComBSTR UrlContainer(L"UrlContainer");
 						const static CComBSTR ImageContainer(L"ImageContainer");
+						const static CComBSTR StatsContainer(L"StatsContainer");
 					}
 				}
 			}

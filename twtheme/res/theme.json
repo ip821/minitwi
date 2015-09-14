@@ -548,6 +548,7 @@
                                 "name": "ImageContainer",
                                 "type": "horizontal_container",
                                 "align_horizontal": "center",
+                                "margin_bottom": 5,
                                 "elements": [
                                 ]
                             },
@@ -560,12 +561,11 @@
                                     {
                                         "name": "StatsRetweetContainer",
                                         "type": "horizontal_container",
-                                        "width_percent": 50,
+                                        "margin_left": 58,
                                         "elements": [
                                             {
                                                 "name": "StatsRetweetContentContainer",
                                                 "type": "horizontal_container",
-                                                "align_horizontal": "center",
                                                 "elements": [
                                                     {
                                                         "name": "StatsRetweetContentImage",
@@ -587,12 +587,11 @@
                                     {
                                         "name": "StatsFavContainer",
                                         "type": "horizontal_container",
-                                        "width_percent": 50,
+                                        "margin_left": 20,
                                         "elements": [
                                             {
                                                 "name": "StatsFavContentContainer",
                                                 "type": "horizontal_container",
-                                                "align_horizontal": "center",
                                                 "elements": [
                                                     {
                                                         "name": "StatsFavContentImage",

@@ -166,6 +166,25 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 	}
 
 	{
+		CComVar vRetweetCount;
+		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetCount, &vRetweetCount));
+		CComVar vFavCount;
+		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::FavoriteCount, &vFavCount));
+
+		if (vRetweetCount.vt == VT_EMPTY || (vRetweetCount.vt == VT_I4 && vRetweetCount.intVal == 0)
+			&&
+			vFavCount.vt == VT_EMPTY || (vFavCount.vt == VT_I4 && vFavCount.intVal == 0))
+		{
+			CComPtr<IVariantObject> pItem;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::StatsContainer, &pItem));
+			if (pItem)
+			{
+				RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(false)));
+			}
+		}
+	}
+
+	{
 		CComPtr<IVariantObject> pItem;
 		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Connection::Metadata::UserObject::Image, &pItem));
 		if (pItem)
