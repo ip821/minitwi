@@ -68,7 +68,7 @@ namespace IP
 			namespace Column
 			{
 				const static CComBSTR ShowMoreColumn(L"TwitterColumnShowMoreColumn");
-				const static CComBSTR Name(L"ColumnName");
+				const static CComBSTR Name(L"name");
 			}
 
 			namespace File
