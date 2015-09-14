@@ -150,204 +150,204 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 	RETURN_IF_FAILED(pColumnsInfo->Clear());
 	CComPtr<IVariantObject> pLayoutObject;
 
-	CString strObjectType;
-	GetValue(pItemObject, ObjectModel::Metadata::Object::Type, strObjectType);
-	if (strObjectType == Twitter::Metadata::Types::CustomTimelineObject)
-	{
-		RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameCustomItem, &pLayoutObject));
-	}
-	else if (strObjectType == Twitter::Connection::Metadata::ListObject::TypeId)
-	{
-		RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameListItem, &pLayoutObject));
-	}
-	else if (strObjectType == Twitter::Connection::Metadata::TweetObject::TypeId)
-	{
-		RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameItem, &pLayoutObject));
-	}
-
-	{
-		CComVar vRetweetCount;
-		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetCount, &vRetweetCount));
-		CComVar vFavCount;
-		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::FavoriteCount, &vFavCount));
-
-		if (vRetweetCount.vt == VT_EMPTY || (vRetweetCount.vt == VT_I4 && vRetweetCount.intVal == 0)
-			&&
-			vFavCount.vt == VT_EMPTY || (vFavCount.vt == VT_I4 && vFavCount.intVal == 0))
+		CString strObjectType;
+		GetValue(pItemObject, ObjectModel::Metadata::Object::Type, strObjectType);
+		if (strObjectType == Twitter::Metadata::Types::CustomTimelineObject)
 		{
-			CComPtr<IVariantObject> pItem;
-			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::StatsContainer, &pItem));
-			if (pItem)
-			{
-				RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(false)));
-			}
+			RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameCustomItem, &pLayoutObject));
 		}
-	}
-
-	{
-		CComPtr<IVariantObject> pItem;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Connection::Metadata::UserObject::Image, &pItem));
-		if (pItem)
+		else if (strObjectType == Twitter::Connection::Metadata::ListObject::TypeId)
 		{
-			CComBSTR bstrImageUrl;
-			RETURN_IF_FAILED(HrVariantObjectGetBSTR(pItemObject, Twitter::Connection::Metadata::UserObject::Image, &bstrImageUrl));
-			RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(bstrImageUrl)));
-			RETURN_IF_FAILED(pItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrImageUrl)));
+			RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameListItem, &pLayoutObject));
 		}
-	}
-
-	{
-		CComPtr<IVariantObject> pItem;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UserRetweetContainer, &pItem));
-		if (pItem)
+		else if (strObjectType == Twitter::Connection::Metadata::TweetObject::TypeId)
 		{
-			CComVar vRetweetedUserDisplayName;
-			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, &vRetweetedUserDisplayName));
-			RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pItem, Layout::Metadata::Element::Visible, &CComVar(vRetweetedUserDisplayName.vt == VT_BSTR)));
-		}
-	}
-
-	{ // Image and url containers are filled dynamically
-		std::unordered_set<std::wstring> imageUrls;
-
-		{ //Images
-			CComVar vMediaUrls;
-			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
-			if (vMediaUrls.vt == VT_UNKNOWN)
-			{
-				CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
-				UINT_PTR uiCount = 0;
-				pObjArray->GetCount(&uiCount);
-
-				if (uiCount)
-				{
-					const size_t processCount = uiCount;
-					for (size_t i = 0; i < processCount; i++)
-					{
-						CComPtr<IVariantObject> pMediaObject;
-						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
-
-						CComVar vMediaUrlShort;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &vMediaUrlShort);
-
-						imageUrls.insert(vMediaUrlShort.bstrVal);
-					}
-				}
-			}
+			RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameItem, &pLayoutObject));
 		}
 
-		{ //Urls
-			CComVar vUrls;
-			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls));
-			if (vUrls.vt == VT_UNKNOWN)
+		{
+			CComVar vRetweetCount;
+			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetCount, &vRetweetCount));
+			CComVar vFavCount;
+			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::FavoriteCount, &vFavCount));
+
+			if ((vRetweetCount.vt == VT_EMPTY || (vRetweetCount.vt == VT_I4 && vRetweetCount.intVal == 0))
+				&&
+				(vFavCount.vt == VT_EMPTY || (vFavCount.vt == VT_I4 && vFavCount.intVal == 0)))
 			{
 				CComPtr<IVariantObject> pItem;
-				RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UrlContainer, &pItem));
-				ATLASSERT(pItem);
-				CComVar vElements;
-				RETURN_IF_FAILED(pItem->GetVariantValue(Layout::Metadata::Element::Elements, &vElements));
-				ATLASSERT(vElements.vt == VT_UNKNOWN);
-				CComQIPtr<IObjCollection> pElements = vElements.punkVal;
-				ATLASSERT(pElements);
-				CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
-				UINT_PTR uiCount = 0;
-				RETURN_IF_FAILED(pBstrCollection->GetCount(&uiCount));
-				for (size_t i = 0; i < uiCount; i++)
+				RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::StatsContainer, &pItem));
+				if (pItem)
 				{
-					CComBSTR bstrUrl;
-					RETURN_IF_FAILED(pBstrCollection->GetItem(i, &bstrUrl));
-					if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
-						continue;
-
-					CComPtr<IVariantObject> pUrlItem;
-					RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Url, &pUrlItem));
-					RETURN_IF_FAILED(pUrlItem->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(bstrUrl)));
-					RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrUrl)));
-					RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
-					RETURN_IF_FAILED(pElements->AddObject(pUrlItem));
+					RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(false)));
 				}
 			}
 		}
 
-		{ //Images
-			CComVar vMediaUrls;
-			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
-			if (vMediaUrls.vt == VT_UNKNOWN)
+		{
+			CComPtr<IVariantObject> pItem;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Connection::Metadata::UserObject::Image, &pItem));
+			if (pItem)
 			{
-				CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
-				UINT_PTR uiCount = 0;
-				pObjArray->GetCount(&uiCount);
+				CComBSTR bstrImageUrl;
+				RETURN_IF_FAILED(HrVariantObjectGetBSTR(pItemObject, Twitter::Connection::Metadata::UserObject::Image, &bstrImageUrl));
+				RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(bstrImageUrl)));
+				RETURN_IF_FAILED(pItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrImageUrl)));
+			}
+		}
 
-				if (uiCount)
+		{
+			CComPtr<IVariantObject> pItem;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UserRetweetContainer, &pItem));
+			if (pItem)
+			{
+				CComVar vRetweetedUserDisplayName;
+				RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, &vRetweetedUserDisplayName));
+				RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pItem, Layout::Metadata::Element::Visible, &CComVar(vRetweetedUserDisplayName.vt == VT_BSTR)));
+			}
+		}
+
+		{ // Image and url containers are filled dynamically
+			std::unordered_set<std::wstring> imageUrls;
+
+			{ //Images
+				CComVar vMediaUrls;
+				pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
+				if (vMediaUrls.vt == VT_UNKNOWN)
 				{
-					auto totalImageWidth = 0;
-					const size_t processCount = uiCount;
-					for (size_t i = 0; i < processCount; i++)
+					CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+					UINT_PTR uiCount = 0;
+					pObjArray->GetCount(&uiCount);
+
+					if (uiCount)
 					{
-						CComPtr<IVariantObject> pMediaObject;
-						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+						const size_t processCount = uiCount;
+						for (size_t i = 0; i < processCount; i++)
+						{
+							CComPtr<IVariantObject> pMediaObject;
+							pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-						CComVar vMediaUrlThumb;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+							CComVar vMediaUrlShort;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &vMediaUrlShort);
 
-						CComVar vWidth;
-						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
-						ATLASSERT(vWidth.vt == VT_I4);
-						totalImageWidth += vWidth.intVal;
+							imageUrls.insert(vMediaUrlShort.bstrVal);
+						}
 					}
+				}
+			}
 
-					totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
-
-					const UINT oneImageWidthMax = (totalImageWidth / processCount);
-
-					UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
+			{ //Urls
+				CComVar vUrls;
+				RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls));
+				if (vUrls.vt == VT_UNKNOWN)
+				{
 					CComPtr<IVariantObject> pItem;
-					RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::ImageContainer, &pItem));
+					RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UrlContainer, &pItem));
+					ATLASSERT(pItem);
 					CComVar vElements;
 					RETURN_IF_FAILED(pItem->GetVariantValue(Layout::Metadata::Element::Elements, &vElements));
 					ATLASSERT(vElements.vt == VT_UNKNOWN);
 					CComQIPtr<IObjCollection> pElements = vElements.punkVal;
 					ATLASSERT(pElements);
-					for (size_t i = 0; i < processCount; i++)
+					CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
+					UINT_PTR uiCount = 0;
+					RETURN_IF_FAILED(pBstrCollection->GetCount(&uiCount));
+					for (size_t i = 0; i < uiCount; i++)
 					{
-						CComPtr<IVariantObject> pMediaObject;
-						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+						CComBSTR bstrUrl;
+						RETURN_IF_FAILED(pBstrCollection->GetItem(i, &bstrUrl));
+						if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
+							continue;
 
-						CComVar vMediaUrl;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
+						CComPtr<IVariantObject> pUrlItem;
+						RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Url, &pUrlItem));
+						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(bstrUrl)));
+						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrUrl)));
+						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
+						RETURN_IF_FAILED(pElements->AddObject(pUrlItem));
+					}
+				}
+			}
 
-						CComVar vMediaVideoUrl;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
+			{ //Images
+				CComVar vMediaUrls;
+				pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
+				if (vMediaUrls.vt == VT_UNKNOWN)
+				{
+					CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+					UINT_PTR uiCount = 0;
+					pObjArray->GetCount(&uiCount);
 
-						CComVar vMediaUrlThumb;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+					if (uiCount)
+					{
+						auto totalImageWidth = 0;
+						const size_t processCount = uiCount;
+						for (size_t i = 0; i < processCount; i++)
+						{
+							CComPtr<IVariantObject> pMediaObject;
+							pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-						CComVar vHeight;
-						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
-						ATLASSERT(vHeight.vt == VT_I4);
-						CComVar vWidth;
-						RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
-						ATLASSERT(vWidth.vt == VT_I4);
+							CComVar vMediaUrlThumb;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
 
-						const int width = min(oneImageWidthMax, (UINT)vWidth.intVal);
-						const int height = min(maxPossibleHeight, (UINT)vHeight.intVal);
+							CComVar vWidth;
+							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
+							ATLASSERT(vWidth.vt == VT_I4);
+							totalImageWidth += vWidth.intVal;
+						}
 
-						CComPtr<IVariantObject> pImageElement;
-						RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Image, &pImageElement));
-						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(vMediaUrlThumb.bstrVal)));
-						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Height, &CComVar(height)));
-						RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Width, &CComVar(width)));
-						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
-						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(vMediaUrlThumb.bstrVal)));
-						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(vMediaUrl.bstrVal)));
-						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVar(vMediaVideoUrl.bstrVal)));
-						RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_IMAGE, &CComVar(true)));
-						RETURN_IF_FAILED(pElements->AddObject(pImageElement));
+						totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
+
+						const UINT oneImageWidthMax = (totalImageWidth / processCount);
+
+						UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
+						CComPtr<IVariantObject> pItem;
+						RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::ImageContainer, &pItem));
+						CComVar vElements;
+						RETURN_IF_FAILED(pItem->GetVariantValue(Layout::Metadata::Element::Elements, &vElements));
+						ATLASSERT(vElements.vt == VT_UNKNOWN);
+						CComQIPtr<IObjCollection> pElements = vElements.punkVal;
+						ATLASSERT(pElements);
+						for (size_t i = 0; i < processCount; i++)
+						{
+							CComPtr<IVariantObject> pMediaObject;
+							pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+							CComVar vMediaUrl;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
+
+							CComVar vMediaVideoUrl;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
+
+							CComVar vMediaUrlThumb;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+
+							CComVar vHeight;
+							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
+							ATLASSERT(vHeight.vt == VT_I4);
+							CComVar vWidth;
+							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
+							ATLASSERT(vWidth.vt == VT_I4);
+
+							const int width = min(oneImageWidthMax, (UINT)vWidth.intVal);
+							const int height = min(maxPossibleHeight, (UINT)vHeight.intVal);
+
+							CComPtr<IVariantObject> pImageElement;
+							RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Image, &pImageElement));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(vMediaUrlThumb.bstrVal)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Height, &CComVar(height)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Width, &CComVar(width)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(vMediaUrlThumb.bstrVal)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(vMediaUrl.bstrVal)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVar(vMediaVideoUrl.bstrVal)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_IMAGE, &CComVar(true)));
+							RETURN_IF_FAILED(pElements->AddObject(pImageElement));
+						}
 					}
 				}
 			}
 		}
-	}
 
 	CRect rect;
 	rect.right = pClientRect->right - pClientRect->left;

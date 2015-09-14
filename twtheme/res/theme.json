@@ -470,7 +470,6 @@
                                 "name": "UserInfoContainer",
                                 "type": "horizontal_container",
                                 "fit_horizontal": "parent",
-                                "margin_bottom": 5,
                                 "elements": [
                                     {
                                         "name": "TwitterUserImage",
@@ -513,6 +512,65 @@
                                                         "color": "TwitterUserName"
                                                     },
                                                     {
+                                                        "name": "StatsContainer",
+                                                        "type": "horizontal_container",
+                                                        "margin_top": 1,
+                                                        "elements": [
+                                                            {
+                                                                "name": "StatsRetweetContainer",
+                                                                "type": "horizontal_container",
+                                                                "margin_left": 10,
+                                                                "elements": [
+                                                                    {
+                                                                        "name": "StatsRetweetContentContainer",
+                                                                        "type": "horizontal_container",
+                                                                        "elements": [
+                                                                            {
+                                                                                "name": "StatsRetweetContentImage",
+                                                                                "type": "image_column",
+                                                                                "image": "retweet"
+                                                                            },
+                                                                            {
+                                                                                "name": "StatsRetweetContentCount",
+                                                                                "type": "text_column",
+                                                                                "text_key": "TwitterRetweetCount",
+                                                                                "font": "TwitterRetweetedUserDisplayName",
+                                                                                "font_selected": "TwitterRetweetedUserDisplayNameSelected",
+                                                                                "color": "TwitterRetweetedUserDisplayName"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            {
+                                                                "name": "StatsFavContainer",
+                                                                "type": "horizontal_container",
+                                                                "margin_left": 10,
+                                                                "elements": [
+                                                                    {
+                                                                        "name": "StatsFavContentContainer",
+                                                                        "type": "horizontal_container",
+                                                                        "elements": [
+                                                                            {
+                                                                                "name": "StatsFavContentImage",
+                                                                                "type": "image_column",
+                                                                                "image": "fav"
+                                                                            },
+                                                                            {
+                                                                                "name": "StatsFavContentCount",
+                                                                                "type": "text_column",
+                                                                                "text_key": "TwitterFavoriteCount",
+                                                                                "font": "TwitterRetweetedUserDisplayName",
+                                                                                "font_selected": "TwitterRetweetedUserDisplayNameSelected",
+                                                                                "color": "TwitterRetweetedUserDisplayName"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
                                                         "name": "TwitterRelativeTime",
                                                         "type": "text_column",
                                                         "margin_right": 5,
@@ -528,6 +586,7 @@
                                             {
                                                 "name": "TweetText",
                                                 "type": "text_column",
+                                                "margin_right": 5,
                                                 "text_key": "TwitterNormalizedText",
                                                 "font": "TwitterNormalizedText",
                                                 "color": "TwitterNormalizedText",
@@ -548,68 +607,8 @@
                                 "name": "ImageContainer",
                                 "type": "horizontal_container",
                                 "align_horizontal": "center",
-                                "margin_bottom": 5,
+                                "margin_bottom": 10,
                                 "elements": [
-                                ]
-                            },
-                            {
-                                "name": "StatsContainer",
-                                "type": "horizontal_container",
-                                "fit_horizontal": "parent",
-                                "margin_bottom": 5,
-                                "elements": [
-                                    {
-                                        "name": "StatsRetweetContainer",
-                                        "type": "horizontal_container",
-                                        "margin_left": 58,
-                                        "elements": [
-                                            {
-                                                "name": "StatsRetweetContentContainer",
-                                                "type": "horizontal_container",
-                                                "elements": [
-                                                    {
-                                                        "name": "StatsRetweetContentImage",
-                                                        "type": "image_column",
-                                                        "image": "retweet"
-                                                    },
-                                                    {
-                                                        "name": "StatsRetweetContentCount",
-                                                        "type": "text_column",
-                                                        "text_key": "TwitterRetweetCount",
-                                                        "font": "TwitterRetweetedUserDisplayName",
-                                                        "font_selected": "TwitterRetweetedUserDisplayNameSelected",
-                                                        "color": "TwitterRetweetedUserDisplayName"
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "name": "StatsFavContainer",
-                                        "type": "horizontal_container",
-                                        "margin_left": 20,
-                                        "elements": [
-                                            {
-                                                "name": "StatsFavContentContainer",
-                                                "type": "horizontal_container",
-                                                "elements": [
-                                                    {
-                                                        "name": "StatsFavContentImage",
-                                                        "type": "image_column",
-                                                        "image": "fav"
-                                                    },
-                                                    {
-                                                        "name": "StatsFavContentCount",
-                                                        "type": "text_column",
-                                                        "text_key": "TwitterFavoriteCount",
-                                                        "font": "TwitterRetweetedUserDisplayName",
-                                                        "font_selected": "TwitterRetweetedUserDisplayNameSelected",
-                                                        "color": "TwitterRetweetedUserDisplayName"
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
                                 ]
                             }
                         ]
