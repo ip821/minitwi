@@ -41,6 +41,7 @@ namespace IP
 					const static CComBSTR LayoutNameCustomItem(L"TimelineCustomItem");
 					const static CComBSTR LayoutNameListItem(L"TimelineListItem");
 					const static CComBSTR RetweetImageKey(L"retweet");
+					const static CComBSTR FavoriteImageKey(L"fav");
 					
 					namespace Elements
 					{

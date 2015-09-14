@@ -51,6 +51,7 @@ STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageM
 		CComPtr<IImageManagerService> pLayoutImageManagerService;
 		RETURN_IF_FAILED(m_pLayoutManager->GetImageManagerService(&pLayoutImageManagerService));
 		RETURN_IF_FAILED(pLayoutImageManagerService->CopyImageTo(Twitter::Themes::Metadata::TimelineControl::RetweetImageKey, m_pImageManagerService));
+		RETURN_IF_FAILED(pLayoutImageManagerService->CopyImageTo(Twitter::Themes::Metadata::TimelineControl::FavoriteImageKey, m_pImageManagerService));
 	}
 	return S_OK;
 }

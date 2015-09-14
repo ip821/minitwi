@@ -286,6 +286,11 @@
                 "name": "retweet",
                 "type": "png",
                 "data": "iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAYAAACgu+4kAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC41ZYUyZQAAATpJREFUOE+lUrGKwlAQnMQEQgIKFkmn2FoGEfIHltqn95vyEUl6q9ik0NqkE2wFwaAigvHOHeIR9eDgHBh2dvLe5u3bp3zdgQ+gVvHf+LjAUwtlWTI2Gg3GzWaD2+1G/UCr1UK73a6yWgEJcRzTnEwmUBQFWZbRqxexbRvT6bTKAK2KmM1mWK1W1KZpYjQaod/vw7Is7HY7+kmSvJ2IdzCfz7FYLGgIlsslFwu63S5c1yUNw6BXhyoVO50OfN9nf81mk1o2vv7tN6h3oNfrkbquk49cvl2vV96F8HK5kKLzPOel/zlGTdNQFAXCMMTxeMThcKA+nU6c1luB8/mMNE3J9XpNz/M8DAYDasFwOPzJn95BEATYbrdVxv44UpmGLIuiiN54POaYBU8F9vs9T1CHbHAch/r1oQHAN7S4lwj2sTr8AAAAAElFTkSuQmCC"
+            },
+            {
+                "name": "fav",
+                "type": "png",
+                "data": "iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAIAAAAv2XlzAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC42/Ixj3wAAAOdJREFUKFOVkM0KRGAUhudmbSk/S7kE2WFKlNyARH42IqXcwNyB2LC1MG/fd6bxTTbzrDzn7dX5zuP8k/vCi0Eicl9QVVXTNBKRm0Lf908GPmh04bewrquu68uyzPNsGAaUgg9UCILANE1JkrDMNE18OI4jFENEYRjyIRWqqvJ9/zgOrlcwdF23aRqu35XKsoyiiOQC/l3XNcnPG9I07bqOhNG2bZZlJAyhgCxJEhJGHMd5npMwhILnecMwbNuGG4B93/mJKWYIBVwDHUVRsAmQZRlqWRbFDKFg2zaeTsIoisJxHBJwnm91BzCbWgA7kgAAAABJRU5ErkJggg=="
             }
         ]
     },
@@ -592,7 +597,7 @@
                                                     {
                                                         "name": "StatsFavContentImage",
                                                         "type": "image_column",
-                                                        "image": "retweet"
+                                                        "image": "fav"
                                                     },
                                                     {
                                                         "name": "StatsFavContentCount",
