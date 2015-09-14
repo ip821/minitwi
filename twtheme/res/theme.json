@@ -329,7 +329,8 @@
             },
             {
                 "name": "VAR_TWITTER_IMAGE",
-                "type": "image_column"
+                "type": "image_column",
+                "margin_right": 5
             },
             {
                 "name": "TimelineCustomItem",
