@@ -543,8 +543,69 @@
                                 "name": "ImageContainer",
                                 "type": "horizontal_container",
                                 "align_horizontal": "center",
-                                "margin_bottom": 10,
                                 "elements": [
+                                ]
+                            },
+                            {
+                                "name": "StatsContainer",
+                                "type": "horizontal_container",
+                                "fit_horizontal": "parent",
+                                "margin_bottom": 5,
+                                "elements": [
+                                    {
+                                        "name": "StatsRetweetContainer",
+                                        "type": "horizontal_container",
+                                        "width_percent": 50,
+                                        "elements": [
+                                            {
+                                                "name": "StatsRetweetContentContainer",
+                                                "type": "horizontal_container",
+                                                "align_horizontal": "center",
+                                                "elements": [
+                                                    {
+                                                        "name": "StatsRetweetContentImage",
+                                                        "type": "image_column",
+                                                        "image": "retweet"
+                                                    },
+                                                    {
+                                                        "name": "StatsRetweetContentCount",
+                                                        "type": "text_column",
+                                                        "text_key": "TwitterRetweetCount",
+                                                        "font": "TwitterRetweetedUserDisplayName",
+                                                        "font_selected": "TwitterRetweetedUserDisplayNameSelected",
+                                                        "color": "TwitterRetweetedUserDisplayName"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "StatsFavContainer",
+                                        "type": "horizontal_container",
+                                        "width_percent": 50,
+                                        "elements": [
+                                            {
+                                                "name": "StatsFavContentContainer",
+                                                "type": "horizontal_container",
+                                                "align_horizontal": "center",
+                                                "elements": [
+                                                    {
+                                                        "name": "StatsFavContentImage",
+                                                        "type": "image_column",
+                                                        "image": "retweet"
+                                                    },
+                                                    {
+                                                        "name": "StatsFavContentCount",
+                                                        "type": "text_column",
+                                                        "text_key": "TwitterFavoriteCount",
+                                                        "font": "TwitterRetweetedUserDisplayName",
+                                                        "font_selected": "TwitterRetweetedUserDisplayNameSelected",
+                                                        "color": "TwitterRetweetedUserDisplayName"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
                                 ]
                             }
                         ]
