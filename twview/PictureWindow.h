@@ -76,7 +76,6 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IControl> m_pViewControl;
 	CComPtr<IVariantObject> m_pVariantObject;
-	CComPtr<IVariantObject> m_pLayout;
 	CComPtr<ILayoutManager> m_pLayoutManager;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
 

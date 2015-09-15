@@ -85,7 +85,6 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 	m_pServiceProvider.Release();
 	m_pTheme.Release();
 	m_pVariantObject.Release();
-	m_pLayout.Release();
 	m_pLayoutManager.Release();
 	m_pColumnsInfo.Release();
 	return S_OK;
@@ -124,6 +123,7 @@ STDMETHODIMP CPictureWindow::PreTranslateMessage(MSG *pMsg, BOOL *bResult)
 
 void CPictureWindow::MoveToPicture(BOOL bForward)
 {
+	m_strLastErrorMsg = L"";
 	int currentBitmapIndex = 0;
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
@@ -477,8 +477,11 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 		}
 
 		CBitmap bmp;
-		pBitmap->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
-		ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[currentBitmapIndex], bmp));
+		auto res = pBitmap->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
+		if (res == Gdiplus::Status::Ok)
+		{
+			ASSERT_IF_FAILED(m_pImageManagerService->AddImageFromHBITMAP(m_bitmapsUrls[currentBitmapIndex], bmp));
+		}
 	}
 	else if (CComBSTR(vType.bstrVal) == Twitter::Metadata::Types::VideoPictureWindow)
 	{
@@ -532,12 +535,20 @@ STDMETHODIMP CPictureWindow::RebuildLayout()
 {
 	RETURN_IF_FAILED(m_pColumnsInfo->Clear());
 
+	CComPtr<IVariantObject> pLayout;
+	RETURN_IF_FAILED(m_pTheme->GetLayout(L"PictureWindowLayout", &pLayout));
+
 	CComPtr<IVariantObject> pLayoutItemCenterItem;
-	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, L"CenterString", &pLayoutItemCenterItem));
+	RETURN_IF_FAILED(HrLayoutFindItemByName(pLayout, L"CenterString", &pLayoutItemCenterItem));
 	RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pLayoutItemCenterItem, Layout::Metadata::Element::Visible, &CComVar(m_pViewControl == nullptr)));
 
+	if (!m_strLastErrorMsg.IsEmpty())
+	{
+		RETURN_IF_FAILED(pLayoutItemCenterItem->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(m_strLastErrorMsg)));
+	}
+
 	CComPtr<IVariantObject> pLayoutItemImageNumber;
-	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, L"SelectedImageString", &pLayoutItemImageNumber));
+	RETURN_IF_FAILED(HrLayoutFindItemByName(pLayout, L"SelectedImageString", &pLayoutItemImageNumber));
 	RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pLayoutItemImageNumber, Layout::Metadata::Element::Visible, &CComVar(false)));
 
 	int currentBitmapIndex = m_currentBitmapIndex;
@@ -553,7 +564,7 @@ STDMETHODIMP CPictureWindow::RebuildLayout()
 	CRect rect;
 	GetClientRect(&rect);
 	CClientDC cdc(m_hWnd);
-	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(cdc, &rect, m_pLayout, nullptr, m_pImageManagerService, m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(cdc, &rect, pLayout, nullptr, m_pImageManagerService, m_pColumnsInfo));
 
 	return S_OK;
 }
@@ -683,7 +694,6 @@ STDMETHODIMP CPictureWindow::SetTheme(ITheme* pTheme)
 {
 	CHECK_E_POINTER(pTheme);
 	m_pTheme = pTheme;
-	RETURN_IF_FAILED(m_pTheme->GetLayout(L"PictureWindowLayout", &m_pLayout));
 	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	return S_OK;

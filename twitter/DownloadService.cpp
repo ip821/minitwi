@@ -107,6 +107,7 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 	res = curl_easy_setopt(curl, CURLOPT_WRITEDATA, pStream.p);
 	res = curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
 	res = curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+	res = curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1);
 
 	{
 		WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxyConfig = { 0 };
@@ -141,8 +142,12 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 		HRESULT curlHr = E_FAIL;
 		switch (res)
 		{
-		case CURLE_COULDNT_CONNECT:
-			curlHr = HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+			case CURLE_HTTP_RETURNED_ERROR:
+				curlHr = HTTP_E_STATUS_UNEXPECTED;
+				break;
+			case CURLE_COULDNT_CONNECT:
+				curlHr = HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+				break;
 		}
 		RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Thread::HResult, &CComVar(curlHr)));
 		curl_easy_cleanup(curl);
