@@ -38,8 +38,8 @@ public:
 	STDMETHOD(SetImageManagerService)(IImageManagerService* pImageManagerService);
 	STDMETHOD(EraseBackground)(HDC hdc);
 	STDMETHOD(Draw)(HDC hdc);
-	STDMETHOD(StartAnimation)();
-	STDMETHOD(AnimationSetValue)(DWORD dwValue);
+	STDMETHOD(StartAnimation)(SkinUserAccountControlAnimationType animationType);
+	STDMETHOD(AnimationSetValue)(SkinUserAccountControlAnimationType animationType, DWORD dwValue);
 	STDMETHOD(Measure)(HDC hdc, LPRECT lpRect, IVariantObject * pVariantObject, BOOL bIsFollowing, BOOL bFollowButtonDisabled);
 	STDMETHOD(GetRects)(RECT* pRectUserImage, RECT* pRectFollowButton);
 };

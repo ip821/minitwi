@@ -41,6 +41,8 @@ namespace IP
 					const static CComBSTR RetweetedUserObject(L"VAR_TWITTER_RETWEETED_USER_OBJECT");
 					const static CComBSTR InReplyToStatusId(L"VAR_TWITTER_IN_REPLYTO_STATUS_ID");
 					const static CComBSTR OriginalId(L"VAR_TWITTER_ORIGINAL_ID");
+					const static CComBSTR RetweetCount(L"TwitterRetweetCount");
+					const static CComBSTR FavoriteCount(L"TwitterFavoriteCount");
 				}
 
 				namespace UserObject

@@ -1,9 +1,11 @@
-// SkinTimeline.cpp : Implementation of CSkinTimeline
+// cpp.SkinTimeline : Implementation of CSkinTimeline
 
 #include "stdafx.h"
 #include "SkinTimeline.h"
 #include "Plugins.h"
 #include "GdilPlusUtils.h"
+#include "Metadata.h"
+#include "..\model-libs\\layout\Functions.h"
 
 // CSkinTimeline
 
@@ -22,7 +24,6 @@ CSkinTimeline::CSkinTimeline()
 
 HRESULT CSkinTimeline::FinalConstruct()
 {
-	InitImageFromResource(IDR_RETWEET, L"PNG", m_pBitmapRetweet);
 	return S_OK;
 }
 
@@ -47,38 +48,72 @@ STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageM
 
 	if (m_pImageManagerService)
 	{
-		CBitmap bmp;
-		m_pBitmapRetweet->GetHBITMAP(Color::Transparent, &bmp.m_hBitmap);
-		m_pImageManagerService->AddImageFromHBITMAP(RETWEET_IMAGE_KEY, bmp);
+		CComPtr<IImageManagerService> pLayoutImageManagerService;
+		RETURN_IF_FAILED(m_pLayoutManager->GetImageManagerService(&pLayoutImageManagerService));
+		RETURN_IF_FAILED(pLayoutImageManagerService->CopyImageTo(Twitter::Themes::Metadata::TimelineControl::RetweetImageKey, m_pImageManagerService));
+		RETURN_IF_FAILED(pLayoutImageManagerService->CopyImageTo(Twitter::Themes::Metadata::TimelineControl::FavoriteImageKey, m_pImageManagerService));
 	}
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTimeline::SetColorMap(IThemeColorMap* pThemeColorMap)
-{
-	m_pThemeColorMap = pThemeColorMap;
-	return S_OK;
-}
-
-
-STDMETHODIMP CSkinTimeline::SetFontMap(IThemeFontMap* pThemeFontMap)
-{
-	m_pThemeFontMap = pThemeFontMap;
 	return S_OK;
 }
 
 STDMETHODIMP CSkinTimeline::DrawItem(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
 {
+	std::unordered_set<UINT> columnIndexesAlreadyAnimated;
+
+	if (lpdis->puiNotAnimatedColumnIndexes)
+	{
+		for (size_t i = 0; i < lpdis->uiNotAnimatedColumnIndexesCount; i++)
+		{
+			columnIndexesAlreadyAnimated.insert(lpdis->puiNotAnimatedColumnIndexes[i]);
+		}
+	}
+
+	auto it = m_steps.find(lpdis->lpdi->itemID);
+	{
+		CComPtr<IObjArray> pImageItems;
+		ASSERT_IF_FAILED(pColumnsInfo->FindItemsByProperty(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE, &pImageItems));
+
+		UINT uiCount = 0;
+		ASSERT_IF_FAILED(pImageItems->GetCount(&uiCount));
+		for (size_t i = 0; i < uiCount; i++)
+		{
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pImageItems->GetAt(i, __uuidof(IColumnsInfoItem), (LPVOID*)&pColumnsInfoItem));
+
+			BOOL bImage = FALSE;
+			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bImage));
+			if (!bImage)
+				continue;
+
+			DWORD dwAlpha = 0;
+			if (it == m_steps.end())
+			{
+				if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
+				{
+					dwAlpha = MAX_ALPHA;
+				}
+			}
+			else
+			{
+				if (it->second.columns.find(i) != it->second.columns.end())
+					dwAlpha = it->second.columns[i].alpha;
+				else if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
+				{
+					dwAlpha = MAX_ALPHA;
+				}
+			}
+
+			ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwAlpha)));
+		}
+	}
+
 	CDCHandle cdcReal = lpdis->lpdi->hDC;
 	CRect rect = lpdis->lpdi->rcItem;
 
-	if (m_steps.find(lpdis->lpdi->itemID) == m_steps.end())
-	{
-		RETURN_IF_FAILED(DrawTextColumns(pColumnsInfo, lpdis));
-		RETURN_IF_FAILED(DrawImageColumns(pColumnsInfo, lpdis));
-		return S_OK;
-	}
-
+	auto bSelected = (lpdis->lpdi->itemState & ODS_SELECTED) != 0;
+	CComPtr<IColumnsInfoItem> pItem;
+	RETURN_IF_FAILED(pColumnsInfo->GetItem(0, &pItem));
+	RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(bSelected)));
 
 	CDC cdc;
 	cdc.CreateCompatibleDC(cdcReal);
@@ -88,298 +123,18 @@ STDMETHODIMP CSkinTimeline::DrawItem(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCT
 	pbitmap->CreateCompatibleBitmap(cdcReal, rect.Width(), rect.Height());
 	cdcSelectBitmapManualScope.SelectBitmap(cdc, pbitmap.get()->m_hBitmap);
 
-	lpdis->lpdi->hDC = cdc;
-	lpdis->lpdi->rcItem.left = 0;
-	lpdis->lpdi->rcItem.top = 0;
-	lpdis->lpdi->rcItem.right = rect.Width();
-	lpdis->lpdi->rcItem.bottom = rect.Height();
-	RETURN_IF_FAILED(DrawTextColumns(pColumnsInfo, lpdis));
-	lpdis->lpdi->rcItem = rect;
-	lpdis->lpdi->hDC = cdcReal;
+	RETURN_IF_FAILED(m_pLayoutManager->EraseBackground(cdc, pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->PaintLayout(cdc, m_pImageManagerService, pColumnsInfo));
 
 	BLENDFUNCTION bf = { 0 };
 	bf.BlendOp = AC_SRC_OVER;
 	bf.SourceConstantAlpha = MAX_ALPHA;
-	if (m_steps.find(lpdis->lpdi->itemID) != m_steps.end())
+	if (it != m_steps.end())
 	{
-		bf.SourceConstantAlpha = m_steps[lpdis->lpdi->itemID].alpha;
+		bf.SourceConstantAlpha = it->second.alpha;
 	}
 	cdcReal.AlphaBlend(rect.left, rect.top, rect.Width(), rect.Height(), cdc, 0, 0, rect.Width(), rect.Height(), bf);
-	RETURN_IF_FAILED(DrawImageColumns(pColumnsInfo, lpdis));
 	return S_OK;
-}
-
-STDMETHODIMP CSkinTimeline::DrawImageColumns(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
-{
-	std::unordered_set<UINT> columnIndexesAlreadyAnimated;
-
-	if (lpdis->puiNotAnimatedColumnIndexes)
-	{
-		for (size_t i = 0; i < lpdis->uiNotAnimatedColumnIndexesCount; i++)
-		{
-			columnIndexesAlreadyAnimated.insert(lpdis->puiNotAnimatedColumnIndexes[i]);
-		}
-	}
-
-	CDCHandle cdc = lpdis->lpdi->hDC;
-	cdc.SetBkMode(TRANSPARENT);
-
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
-	for (size_t i = 0; i < uiCount; i++)
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-		CRect rect;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-		CComBSTR bstrColumnName;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-		BOOL bIsImage = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bIsImage));
-		CComBSTR bstrValue;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstrValue));
-
-		if (!bIsImage)
-			continue;
-
-		CBitmap bitmap;
-		m_pImageManagerService->CreateImageBitmap(bstrValue, &bitmap.m_hBitmap);
-		if (!bitmap.m_hBitmap)
-			continue;
-
-		TBITMAP tBitmap = { 0 };
-		RETURN_IF_FAILED(m_pImageManagerService->GetImageInfo(bstrValue, &tBitmap));
-
-		CDC cdcBitmap;
-		cdcBitmap.CreateCompatibleDC(lpdis->lpdi->hDC);
-		CDCSelectBitmapScope cdcSelectBitmapScope(cdcBitmap, bitmap);
-
-		auto x = lpdis->lpdi->rcItem.left;
-		auto y = lpdis->lpdi->rcItem.top;
-		auto width = rect.Width();
-		auto height = rect.Height();
-
-		BLENDFUNCTION bf = { 0 };
-		bf.BlendOp = AC_SRC_OVER;
-		bf.SourceConstantAlpha = 0;
-
-		auto it = m_steps.find(lpdis->lpdi->itemID);
-		if (it == m_steps.end())
-		{
-			if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
-			{
-				bf.SourceConstantAlpha = MAX_ALPHA;
-			}
-		}
-		else
-		{
-			if (it->second.columns.find(i) != it->second.columns.end())
-				bf.SourceConstantAlpha = it->second.columns[i].alpha;
-			else if (columnIndexesAlreadyAnimated.find(i) != columnIndexesAlreadyAnimated.end())
-			{
-				bf.SourceConstantAlpha = MAX_ALPHA;
-			}
-		}
-
-		if ((bstrColumnName == Twitter::Connection::Metadata::UserObject::Image || bstrColumnName == RETWEET_IMAGE_KEY) && bf.SourceConstantAlpha == MAX_ALPHA)
-		{
-			static DWORD dwColor = 0;
-			if (!dwColor)
-			{
-				RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwColor));
-			}
-			cdc.TransparentBlt(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, dwColor);
-		}
-		else
-		{
-			cdc.AlphaBlend(x + rect.left, y + rect.top, width, height, cdcBitmap, 0, 0, width, height, bf);
-		}
-	}
-	return S_OK;
-}
-
-STDMETHODIMP CSkinTimeline::DrawTextColumns(IColumnsInfo* pColumnsInfo, TDRAWITEMSTRUCTTIMELINE* lpdis)
-{
-	std::unordered_set<UINT> columnIndexesAlreadyAnimated;
-
-	if (lpdis->puiNotAnimatedColumnIndexes)
-	{
-		for (size_t i = 0; i < lpdis->uiNotAnimatedColumnIndexesCount; i++)
-		{
-			columnIndexesAlreadyAnimated.insert(lpdis->puiNotAnimatedColumnIndexes[i]);
-		}
-	}
-
-	CDCHandle cdc = lpdis->lpdi->hDC;
-	cdc.SetBkMode(TRANSPARENT);
-
-	BOOL bDisabledSelection = FALSE;
-	ASSERT_IF_FAILED(pColumnsInfo->IsDisabledSelection(&bDisabledSelection));
-
-	if (lpdis->lpdi->itemState & ODS_SELECTED && !bDisabledSelection)
-	{
-		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushSelected, &dwColor));
-		CBrush brush;
-		brush.CreateSolidBrush(dwColor);
-		cdc.FillRect(&(lpdis->lpdi->rcItem), brush);
-	}
-	else
-	{
-		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Drawing::BrushBackground, &dwColor));
-		CBrush brush;
-		brush.CreateSolidBrush(dwColor);
-		RECT rect = lpdis->lpdi->rcItem;
-		rect.bottom -= COLUMN_Y_SPACING;
-		cdc.FillRect(&rect, brush);
-	}
-
-	if (!bDisabledSelection)
-	{
-		DWORD dwColor = 0;
-		RETURN_IF_FAILED(m_pThemeColorMap->GetColor(Twitter::Metadata::Item::TwitterDelimiter, &dwColor));
-		CBrush brush;
-		brush.CreateSolidBrush(dwColor);
-		RECT rect = lpdis->lpdi->rcItem;
-		rect.top = rect.bottom - ITEM_DELIMITER_HEIGHT;
-		cdc.FillRect(&rect, brush);
-	}
-
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pColumnsInfo->GetCount(&uiCount));
-	for (size_t i = 0; i < uiCount; i++)
-	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		RETURN_IF_FAILED(pColumnsInfo->GetItem(i, &pColumnsInfoItem));
-		RECT rect = { 0 };
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
-		CComBSTR bstrColumnName;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
-		CComBSTR bstrText;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Text, &bstrText));
-		BOOL bIsUrl = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, &bIsUrl));
-		BOOL bIsWordWrap = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_WORDWRAP, &bIsWordWrap));
-		BOOL bIsImage = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, &bIsImage));
-		BOOL bDoubleSize = FALSE;
-		RETURN_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &bDoubleSize));
-
-		HFONT font = 0;
-		auto bstrFontName = CComBSTR(bstrColumnName);
-		if (bDoubleSize)
-			bstrFontName += Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX;
-		RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrFontName, &font));
-
-		if (lpdis->iHoveredItem == static_cast<int>(lpdis->lpdi->itemID) && lpdis->iHoveredColumn == static_cast<int>(i) && bIsUrl)
-		{
-			CComBSTR bstrFontNameTemp = bstrFontName;
-			bstrFontNameTemp.Append(Twitter::Metadata::Item::VAR_SELECTED_POSTFIX);
-			RETURN_IF_FAILED(m_pThemeFontMap->GetFont(bstrFontNameTemp, &font));
-		}
-
-		if (!bIsImage)
-		{
-			DWORD dwColor = 0;
-			RETURN_IF_FAILED(m_pThemeColorMap->GetColor(bstrColumnName, &dwColor));
-			cdc.SetTextColor(dwColor);
-
-			auto x = lpdis->lpdi->rcItem.left;
-			auto y = lpdis->lpdi->rcItem.top;
-
-			CString str(bstrText);
-			CDCSelectFontScope cdcSelectFontScope(cdc, font);
-			RECT rectText = { x + rect.left, y + rect.top, x + rect.right, y + rect.bottom };
-			cdc.DrawText(str, str.GetLength(), &rectText, bIsWordWrap ? DT_WORDBREAK : 0);
-		}
-	}
-
-	return S_OK;
-}
-
-SIZE CSkinTimeline::AddColumn(
-	HDC hdc,
-	IColumnsInfo* pColumnsInfo,
-	CString& strColumnName,
-	CString& strDisplayText,
-	CString& strValue,
-	int x,
-	int y,
-	SIZE size,
-	BOOL bIsUrl = TRUE,
-	BOOL bWordWrap = FALSE,
-	LONG ulMinimumFixedWidth = 0,
-	Justify justify = Justify::None,
-	BOOL bDisabledSelection = FALSE,
-	BOOL bDoubleSize = FALSE
-	)
-{
-	CDC cdc;
-	cdc.CreateCompatibleDC(hdc);
-	HFONT font = nullptr;
-	auto bstrFontName = CComBSTR(strColumnName);
-	if (bDoubleSize)
-		bstrFontName += Twitter::Metadata::Item::VAR_DOUBLE_SIZE_POSTFIX;
-	m_pThemeFontMap->GetFont(bstrFontName, &font);
-	CDCSelectFontScope cdcSelectFontScope(cdc, font);
-
-	SIZE sz = { 0 };
-	if (bWordWrap)
-	{
-		RECT rect = { 0 };
-		rect.right = size.cx;
-		rect.bottom = size.cy;
-
-		sz.cx = size.cx;
-		sz.cy = DrawText(cdc, strDisplayText, strDisplayText.GetLength(), &rect, DT_WORDBREAK | DT_CALCRECT);
-	}
-	else
-	{
-		GetTextExtentPoint32(cdc, strDisplayText, strDisplayText.GetLength(), &sz);
-		if (ulMinimumFixedWidth)
-			sz.cx = max(ulMinimumFixedWidth, sz.cx);
-	}
-
-	switch (justify)
-	{
-	case Justify::Center:
-		x = (size.cx / 2) - (sz.cx / 2);
-		break;
-
-	case Justify::Right:
-		x = x - sz.cx;
-		break;
-
-	case Justify::None:
-	default:
-		break;
-	}
-
-	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-	ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-	ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + sz.cx, y + sz.cy)));
-	if (bDisabledSelection)
-	{
-		ASSERT_IF_FAILED(pColumnsInfo->DisableSelection(TRUE));
-	}
-	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, CComBSTR(strColumnName)));
-	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, CComBSTR(strDisplayText)));
-	ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, CComBSTR(strValue)));
-	if (bWordWrap)
-	{
-		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_WORDWRAP, TRUE));
-	}
-	if (bIsUrl)
-	{
-		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
-	}
-	if (bDoubleSize)
-	{
-		ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, TRUE));
-	}
-	return sz;
 }
 
 void CSkinTimeline::GetValue(IVariantObject* pItemObject, const CComBSTR& bstrColumnName, CString& strValue)
@@ -390,476 +145,223 @@ void CSkinTimeline::GetValue(IVariantObject* pItemObject, const CComBSTR& bstrCo
 		strValue = v.bstrVal;
 }
 
-STDMETHODIMP CSkinTimeline::InitImageFromResource(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap)
-{
-	HMODULE hModule = _AtlBaseModule.GetModuleInstance();
-	if (!hModule)
-		return E_UNEXPECTED;
-
-	HRSRC hRsrc = FindResource(hModule, MAKEINTRESOURCE(nId), lpType);
-	if (!hRsrc)
-		return HRESULT_FROM_WIN32(GetLastError());
-
-	HGLOBAL hGlobal = LoadResource(hModule, hRsrc);
-
-	if (!hGlobal)
-		return HRESULT_FROM_WIN32(GetLastError());
-
-	auto dwSizeInBytes = SizeofResource(hModule, hRsrc);
-	LPVOID pvResourceData = LockResource(hGlobal);
-	CComPtr<IStream> pImageStream;
-	pImageStream.Attach(SHCreateMemStream((LPBYTE)pvResourceData, dwSizeInBytes));
-	pBitmap = shared_ptr<Gdiplus::Bitmap>(Gdiplus::Bitmap::FromStream(pImageStream));
-	return S_OK;
-}
-
 STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObject* pItemObject, TMEASUREITEMSTRUCT* lpMeasureItemStruct, IColumnsInfo* pColumnsInfo)
 {
 	RETURN_IF_FAILED(pColumnsInfo->Clear());
+	CComPtr<IVariantObject> pLayoutObject;
 
-	CRect clientRect = *pClientRect;
-
-	CString strObjectType;
-	GetValue(pItemObject, ObjectModel::Metadata::Object::Type, strObjectType);
-
-	if (strObjectType == Twitter::Metadata::Types::CustomTimelineObject)
-	{
-		CString strCustomText;
-		GetValue(pItemObject, Twitter::Metadata::Object::Text, strCustomText);
-
-		CString strCustomDisabledText;
-		GetValue(pItemObject, Twitter::Metadata::Item::VAR_ITEM_DISABLED_TEXT, strCustomDisabledText);
-
-		CComVar vDisabled;
-		pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DISABLED, &vDisabled);
-		auto bDisabled = vDisabled.vt == VT_BOOL && vDisabled.boolVal;
-		auto y = PADDING_Y;
-		CSize sz = AddColumn(
-			hdc,
-			pColumnsInfo,
-			CString(Twitter::Metadata::Column::ShowMoreColumn),
-			bDisabled ? strCustomDisabledText : strCustomText,
-			bDisabled ? strCustomDisabledText : strCustomText,
-			0,
-			y,
-			CSize(clientRect.right - clientRect.left),
-			!bDisabled,
-			FALSE,
-			0,
-			Justify::Center,
-			TRUE
-			);
-
-		lpMeasureItemStruct->itemHeight = y + sz.cy + PADDING_Y;
-		lpMeasureItemStruct->itemWidth = sz.cx;
-	}
-	else if (strObjectType == Twitter::Connection::Metadata::TweetObject::TypeId || strObjectType == Twitter::Connection::Metadata::ListObject::TypeId)
-	{
-		CString strRetweetedDisplayName;
-		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, strRetweetedDisplayName);
-
-		CString strRetweetedName;
-		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::RetweetedUserName, strRetweetedName);
-
-		CString strDisplayName;
-		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::DisplayName, strDisplayName);
-
-		CString strCreatedAt;
-		GetValue(pItemObject, Twitter::Metadata::Item::TwitterRelativeTime, strCreatedAt);
-
-		CString strName;
-		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::Name, strName);
-
-		CString strText;
-		GetValue(pItemObject, Twitter::Connection::Metadata::TweetObject::NormalizedText, strText);
-
-		CString strImageUrl;
-		GetValue(pItemObject, Twitter::Connection::Metadata::UserObject::Image, strImageUrl);
-
-		CComVar vDoubleSize;
-		RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_DOUBLE_SIZE, &vDoubleSize));
-
-		CSize sizeRetweetedDislpayName;
-		UINT uiIndex = 0;
-		if (!strRetweetedDisplayName.IsEmpty())
+		CString strObjectType;
+		GetValue(pItemObject, ObjectModel::Metadata::Object::Type, strObjectType);
+		if (strObjectType == Twitter::Metadata::Types::CustomTimelineObject)
 		{
-			TBITMAP tBitmap = { 0 };
-			ASSERT_IF_FAILED(m_pImageManagerService->GetImageInfo(RETWEET_IMAGE_KEY, &tBitmap));
-
-			{
-				auto x = COL_NAME_LEFT;
-				auto y = COLUMN_Y_SPACING + PADDING_Y;
-
-				CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-				ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-				ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + tBitmap.Width, y + tBitmap.Height)));
-				ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, RETWEET_IMAGE_KEY));
-				ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
-				ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, CComBSTR(RETWEET_IMAGE_KEY)));
-				ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
-				ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, FALSE));
-
-				tBitmap.Width += 3;
-			}
-
-			{
-				auto x = COL_NAME_LEFT + tBitmap.Width;
-				auto y = PADDING_Y;
-
-				sizeRetweetedDislpayName = AddColumn(
-					hdc,
-					pColumnsInfo,
-					CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName),
-					CString(L"Retweeted by "),
-					CString(L"Retweeted by "),
-					x,
-					y,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
-					FALSE,
-					FALSE
-					);
-			}
-
-			{
-				auto x = COL_NAME_LEFT + sizeRetweetedDislpayName.cx + tBitmap.Width;
-				auto y = PADDING_Y;
-
-				CSize temp = AddColumn(
-					hdc,
-					pColumnsInfo,
-					CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName),
-					strRetweetedDisplayName,
-					strRetweetedName,
-					x,
-					y,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
-					TRUE,
-					FALSE
-					);
-
-				sizeRetweetedDislpayName.cx += temp.cx;
-			}
-
-			{
-				auto x = COL_NAME_LEFT + sizeRetweetedDislpayName.cx + tBitmap.Width;
-				auto y = PADDING_Y;
-
-				CSize temp = AddColumn(
-					hdc,
-					pColumnsInfo,
-					CString(Twitter::Connection::Metadata::TweetObject::RetweetedUserName),
-					L"@" + strRetweetedName,
-					strRetweetedName,
-					x,
-					y,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
-					TRUE,
-					FALSE
-					);
-
-				sizeRetweetedDislpayName.cx += temp.cx;
-			}
+			RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameCustomItem, &pLayoutObject));
+		}
+		else if (strObjectType == Twitter::Connection::Metadata::ListObject::TypeId)
+		{
+			RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameListItem, &pLayoutObject));
+		}
+		else if (strObjectType == Twitter::Connection::Metadata::TweetObject::TypeId)
+		{
+			RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameItem, &pLayoutObject));
 		}
 
 		{
-			auto x = 10;
-			auto y = COLUMN_Y_SPACING + PADDING_Y + 4;
+			CComVar vRetweetCount;
+			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetCount, &vRetweetCount));
+			CComVar vFavCount;
+			RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::FavoriteCount, &vFavCount));
 
-			if (sizeRetweetedDislpayName.cy)
+			if ((vRetweetCount.vt == VT_EMPTY || (vRetweetCount.vt == VT_I4 && vRetweetCount.intVal == 0))
+				&&
+				(vFavCount.vt == VT_EMPTY || (vFavCount.vt == VT_I4 && vFavCount.intVal == 0)))
 			{
-				y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
-			}
-
-			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-			ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + 48, y + 48)));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::UserObject::Image));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, CComBSTR(strImageUrl)));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, CComBSTR(strImageUrl)));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
-			ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
-		}
-
-
-		CSize sizeDislpayName;
-		uiIndex = 0;
-		{
-			auto x = COL_NAME_LEFT;
-			auto y = COLUMN_Y_SPACING + PADDING_Y;
-
-			if (sizeRetweetedDislpayName.cy)
-			{
-				y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
-			}
-
-			sizeDislpayName = AddColumn(
-				hdc,
-				pColumnsInfo,
-				CString(Twitter::Connection::Metadata::UserObject::DisplayName),
-				strDisplayName,
-				strDisplayName,
-				x,
-				y,
-				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height())
-				);
-		}
-
-		CSize sizeName;
-		{
-			auto x = COL_NAME_LEFT + sizeDislpayName.cx + COLUMN_X_SPACING;
-			auto y = COLUMN_Y_SPACING + PADDING_Y;
-
-			if (sizeRetweetedDislpayName.cy)
-			{
-				y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
-			}
-
-			sizeName = AddColumn(
-				hdc,
-				pColumnsInfo,
-				CString(Twitter::Connection::Metadata::UserObject::Name),
-				L"@" + strName,
-				strName,
-				x,
-				y,
-				CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height())
-				);
-		}
-
-		if (strObjectType != Twitter::Connection::Metadata::ListObject::TypeId)
-		{
-			CSize sizeDateTime;
-			{
-				auto x = clientRect.right - clientRect.left;
-				auto y = COLUMN_Y_SPACING + PADDING_Y;
-
-				if (sizeRetweetedDislpayName.cy)
+				CComPtr<IVariantObject> pItem;
+				RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::StatsContainer, &pItem));
+				if (pItem)
 				{
-					y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+					RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(false)));
 				}
-
-				if (strCreatedAt.IsEmpty())
-					strCreatedAt = L"0s";
-
-				sizeDateTime = AddColumn(
-					hdc,
-					pColumnsInfo,
-					CString(Twitter::Metadata::Item::TwitterRelativeTime),
-					strCreatedAt,
-					strCreatedAt,
-					x,
-					y,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
-					TRUE,
-					FALSE,
-					30,
-					Justify::Right
-					);
 			}
 		}
 
-		CSize sizeText;
-		if (!strText.IsEmpty())
 		{
-			auto x = COL_NAME_LEFT;
-			auto y = sizeDislpayName.cy + COLUMN_Y_SPACING + COLUMN_Y_SPACING + PADDING_Y;
-
-			if (sizeRetweetedDislpayName.cy)
+			CComPtr<IVariantObject> pItem;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Connection::Metadata::UserObject::Image, &pItem));
+			if (pItem)
 			{
-				y += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+				CComBSTR bstrImageUrl;
+				RETURN_IF_FAILED(HrVariantObjectGetBSTR(pItemObject, Twitter::Connection::Metadata::UserObject::Image, &bstrImageUrl));
+				RETURN_IF_FAILED(pItem->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(bstrImageUrl)));
+				RETURN_IF_FAILED(pItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrImageUrl)));
 			}
-
-			auto bDoubleSize = vDoubleSize.vt == VT_BOOL && vDoubleSize.boolVal;
-			sizeText = AddColumn(
-				hdc,
-				pColumnsInfo,
-				CString(Twitter::Connection::Metadata::TweetObject::NormalizedText),
-				strText,
-				strText,
-				x,
-				y,
-				CSize((clientRect.right - clientRect.left - COLUMN_X_SPACING * 2) - COL_NAME_LEFT, clientRect.Height()),
-				FALSE,
-				TRUE,
-				0,
-				Justify::None,
-				FALSE,
-				bDoubleSize
-				);
 		}
 
-		auto lastY = sizeDislpayName.cy + COLUMN_Y_SPACING + sizeText.cy + PADDING_Y;
-
-		if (sizeRetweetedDislpayName.cy)
 		{
-			lastY += sizeRetweetedDislpayName.cy + COLUMN_Y_SPACING;
+			CComPtr<IVariantObject> pItem;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UserRetweetContainer, &pItem));
+			if (pItem)
+			{
+				CComVar vRetweetedUserDisplayName;
+				RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName, &vRetweetedUserDisplayName));
+				RETURN_IF_FAILED(HrLayoutSetVariantValueRecursive(pItem, Layout::Metadata::Element::Visible, &CComVar(vRetweetedUserDisplayName.vt == VT_BSTR)));
+			}
 		}
 
-		std::unordered_set<std::wstring> imageUrls;
+		{ // Image and url containers are filled dynamically
+			std::unordered_set<std::wstring> imageUrls;
 
-		{ //Images
-			CComVar vMediaUrls;
-			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
-			if (vMediaUrls.vt == VT_UNKNOWN)
-			{
-				CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
-				UINT_PTR uiCount = 0;
-				pObjArray->GetCount(&uiCount);
-
-				if (uiCount)
+			{ //Images
+				CComVar vMediaUrls;
+				pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
+				if (vMediaUrls.vt == VT_UNKNOWN)
 				{
-					const size_t processCount = uiCount;
-					for (size_t i = 0; i < processCount; i++)
+					CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+					UINT_PTR uiCount = 0;
+					pObjArray->GetCount(&uiCount);
+
+					if (uiCount)
 					{
-						CComPtr<IVariantObject> pMediaObject;
-						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+						const size_t processCount = uiCount;
+						for (size_t i = 0; i < processCount; i++)
+						{
+							CComPtr<IVariantObject> pMediaObject;
+							pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
 
-						CComVar vMediaUrlShort;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &vMediaUrlShort);
+							CComVar vMediaUrlShort;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlShort, &vMediaUrlShort);
 
-						imageUrls.insert(vMediaUrlShort.bstrVal);
+							imageUrls.insert(vMediaUrlShort.bstrVal);
+						}
 					}
 				}
 			}
-		}
 
-		CComVar vUrls;
-		pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls);
-		if (vUrls.vt == VT_UNKNOWN)
-		{
-			auto x = COL_NAME_LEFT;
-
-			lastY += COLUMN_Y_SPACING;
-
-			CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
-			UINT_PTR uiCount = 0;
-			pBstrCollection->GetCount(&uiCount);
-			for (size_t i = 0; i < uiCount; i++)
-			{
-				CComBSTR bstrUrl;
-				pBstrCollection->GetItem(i, &bstrUrl);
-				if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
-					continue;
-
-				auto bDoubleSize = vDoubleSize.vt == VT_BOOL && vDoubleSize.boolVal;
-				auto size = AddColumn(
-					hdc,
-					pColumnsInfo,
-					CString(Twitter::Connection::Metadata::TweetObject::Url),
-					CString(bstrUrl),
-					CString(bstrUrl),
-					x,
-					lastY,
-					CSize((clientRect.right - clientRect.left) - COL_NAME_LEFT, clientRect.Height()),
-					TRUE,
-					FALSE,
-					0,
-					Justify::None,
-					FALSE,
-					bDoubleSize
-					);
-
-				lastY += size.cy;
-			}
-		}
-
-		{ //Images
-			CComVar vMediaUrls;
-			pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
-			if (vMediaUrls.vt == VT_UNKNOWN)
-			{
-				CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
-				UINT_PTR uiCount = 0;
-				pObjArray->GetCount(&uiCount);
-
-				if (uiCount)
+			{ //Urls
+				CComVar vUrls;
+				RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls));
+				if (vUrls.vt == VT_UNKNOWN)
 				{
-					auto totalImageWidth = 0;
-					const size_t processCount = uiCount;
-					for (size_t i = 0; i < processCount; i++)
+					CComPtr<IVariantObject> pItem;
+					RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UrlContainer, &pItem));
+					ATLASSERT(pItem);
+					CComVar vElements;
+					RETURN_IF_FAILED(pItem->GetVariantValue(Layout::Metadata::Element::Elements, &vElements));
+					ATLASSERT(vElements.vt == VT_UNKNOWN);
+					CComQIPtr<IObjCollection> pElements = vElements.punkVal;
+					ATLASSERT(pElements);
+					CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
+					UINT_PTR uiCount = 0;
+					RETURN_IF_FAILED(pBstrCollection->GetCount(&uiCount));
+					for (size_t i = 0; i < uiCount; i++)
 					{
-						CComPtr<IVariantObject> pMediaObject;
-						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+						CComBSTR bstrUrl;
+						RETURN_IF_FAILED(pBstrCollection->GetItem(i, &bstrUrl));
+						if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
+							continue;
 
-						CComVar vMediaUrlThumb;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+						CComPtr<IVariantObject> pUrlItem;
+						RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Url, &pUrlItem));
+						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(bstrUrl)));
+						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrUrl)));
+						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
+						RETURN_IF_FAILED(pElements->AddObject(pUrlItem));
+					}
+				}
+			}
 
-						TBITMAP tBitmap = { 0 };
-						if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
+			{ //Images
+				CComVar vMediaUrls;
+				pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls);
+				if (vMediaUrls.vt == VT_UNKNOWN)
+				{
+					CComQIPtr<IObjArray> pObjArray = vMediaUrls.punkVal;
+					UINT_PTR uiCount = 0;
+					pObjArray->GetCount(&uiCount);
+
+					if (uiCount)
+					{
+						auto totalImageWidth = 0;
+						const size_t processCount = uiCount;
+						for (size_t i = 0; i < processCount; i++)
 						{
-							CComVar vHeight;
-							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
+							CComPtr<IVariantObject> pMediaObject;
+							pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+							CComVar vMediaUrlThumb;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+
 							CComVar vWidth;
 							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
-							tBitmap.Width = vWidth.intVal;
-							tBitmap.Height = vHeight.intVal;
+							ATLASSERT(vWidth.vt == VT_I4);
+							totalImageWidth += vWidth.intVal;
 						}
-						totalImageWidth += tBitmap.Width;
-					}
 
-					totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
+						totalImageWidth = min(totalImageWidth, IMAGE_WIDTH_MAX);
 
-					const UINT oneImageWidthMax = (totalImageWidth / processCount);
-					auto xOffset = (clientRect.Width() - totalImageWidth) / 2;
+						const UINT oneImageWidthMax = (totalImageWidth / processCount);
 
-					UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
-					UINT lastHeight = 0;
-					for (size_t i = 0; i < processCount; i++)
-					{
-						CComPtr<IVariantObject> pMediaObject;
-						pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
-
-						CComVar vMediaUrl;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
-
-						CComVar vMediaVideoUrl;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
-
-						CComVar vMediaUrlThumb;
-						pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
-
-						TBITMAP tBitmap = { 0 };
-						if (m_pImageManagerService->GetImageInfo(vMediaUrlThumb.bstrVal, &tBitmap) != S_OK)
+						UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
+						CComPtr<IVariantObject> pItem;
+						RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::ImageContainer, &pItem));
+						CComVar vElements;
+						RETURN_IF_FAILED(pItem->GetVariantValue(Layout::Metadata::Element::Elements, &vElements));
+						ATLASSERT(vElements.vt == VT_UNKNOWN);
+						CComQIPtr<IObjCollection> pElements = vElements.punkVal;
+						ATLASSERT(pElements);
+						for (size_t i = 0; i < processCount; i++)
 						{
+							CComPtr<IVariantObject> pMediaObject;
+							pObjArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaObject);
+
+							CComVar vMediaUrl;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vMediaUrl);
+
+							CComVar vMediaVideoUrl;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &vMediaVideoUrl);
+
+							CComVar vMediaUrlThumb;
+							pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrlThumb, &vMediaUrlThumb);
+
 							CComVar vHeight;
 							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbHeight, &vHeight));
+							ATLASSERT(vHeight.vt == VT_I4);
 							CComVar vWidth;
 							RETURN_IF_FAILED(pMediaObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaThumbWidth, &vWidth));
-							tBitmap.Width = vWidth.intVal;
-							tBitmap.Height = vHeight.intVal;
+							ATLASSERT(vWidth.vt == VT_I4);
+
+							const int width = min(oneImageWidthMax, (UINT)vWidth.intVal);
+							const int height = min(maxPossibleHeight, (UINT)vHeight.intVal);
+
+							CComPtr<IVariantObject> pImageElement;
+							RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Image, &pImageElement));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &CComVar(vMediaUrlThumb.bstrVal)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Height, &CComVar(height)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Layout::Metadata::ImageColumn::Width, &CComVar(width)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(vMediaUrlThumb.bstrVal)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &CComVar(vMediaUrl.bstrVal)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVar(vMediaVideoUrl.bstrVal)));
+							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_IMAGE, &CComVar(true)));
+							RETURN_IF_FAILED(pElements->AddObject(pImageElement));
 						}
-
-						const int oneImageWidth = min(oneImageWidthMax, tBitmap.Width);
-
-						auto x = xOffset;
-						auto y = lastY;
-						auto width = oneImageWidth - 4;
-						auto height = min(maxPossibleHeight, tBitmap.Height);
-						lastHeight = max(height, lastHeight);
-
-						xOffset += oneImageWidth;
-
-						CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-						ASSERT_IF_FAILED(pColumnsInfo->AddItem(&pColumnsInfoItem));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRect(CRect(x, y, x + width, y + height)));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Column::Name, Twitter::Connection::Metadata::TweetObject::Image));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Text, L""));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Metadata::Object::Value, vMediaUrlThumb.bstrVal));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaUrl, vMediaUrl.bstrVal));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectStringProp(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, vMediaVideoUrl.bstrVal));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_IMAGE, TRUE));
-						ASSERT_IF_FAILED(pColumnsInfoItem->SetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, TRUE));
 					}
-
-					lastY += lastHeight;
 				}
 			}
 		}
 
-		lpMeasureItemStruct->itemHeight = max(48 + PADDING_Y * 2 + PADDING_Y * 2, lastY + ITEM_SPACING);
-		lpMeasureItemStruct->itemWidth = sizeText.cx;
+	CRect rect;
+	rect.right = pClientRect->right - pClientRect->left;
+	rect.bottom = pClientRect->bottom - pClientRect->top;
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, &rect, pLayoutObject, pItemObject, m_pImageManagerService, pColumnsInfo));
+
+	{
+		CComPtr<IColumnsInfoItem> pItem;
+		RETURN_IF_FAILED(pColumnsInfo->GetItem(0, &pItem));
+		CRect rectItem;
+		RETURN_IF_FAILED(pItem->GetRect(&rectItem));
+		lpMeasureItemStruct->itemHeight = rectItem.Height();
 	}
+
 	return S_OK;
 }
 
@@ -916,7 +418,7 @@ STDMETHODIMP CSkinTimeline::AnimationGetIndexes(UINT* puiIndexArray, UINT* puiCo
 	return S_OK;
 }
 
-STDMETHODIMP CSkinTimeline::AnimationNextFrame(BOOL* pbContinueAnimation)
+STDMETHODIMP CSkinTimeline::AnimationNextFrame(IColumnsInfo** ppColumnsInfoArray, UINT uiCount, BOOL* pbContinueAnimation)
 {
 	CHECK_E_POINTER(pbContinueAnimation);
 
@@ -963,3 +465,16 @@ STDMETHODIMP CSkinTimeline::AnimationNextFrame(BOOL* pbContinueAnimation)
 	return S_OK;
 }
 
+STDMETHODIMP CSkinTimeline::SetTheme(ITheme* pTheme)
+{
+	m_pThemeColorMap.Release();
+	m_pThemeFontMap.Release();
+	m_pLayoutManager.Release();
+	if (pTheme)
+	{
+		RETURN_IF_FAILED(pTheme->GetFontMap(&m_pThemeFontMap));
+		RETURN_IF_FAILED(pTheme->GetColorMap(&m_pThemeColorMap));
+		RETURN_IF_FAILED(pTheme->GetLayoutManager(&m_pLayoutManager));
+	}
+	return S_OK;
+}

@@ -34,6 +34,23 @@ namespace IP
 					const static CComBSTR UserAccountControlLayoutBackgroundImage(L"UserAccountControlLayoutBackgroundImage");
 					const static CComBSTR TwitterUserImage(L"TwitterUserImage");
 				}
+
+				namespace TimelineControl
+				{
+					const static CComBSTR LayoutNameItem(L"TimelineItem");
+					const static CComBSTR LayoutNameCustomItem(L"TimelineCustomItem");
+					const static CComBSTR LayoutNameListItem(L"TimelineListItem");
+					const static CComBSTR RetweetImageKey(L"retweet");
+					const static CComBSTR FavoriteImageKey(L"fav");
+					
+					namespace Elements
+					{
+						const static CComBSTR UserRetweetContainer(L"RetweetContainer");
+						const static CComBSTR UrlContainer(L"UrlContainer");
+						const static CComBSTR ImageContainer(L"ImageContainer");
+						const static CComBSTR StatsContainer(L"StatsContainer");
+					}
+				}
 			}
 		}
 	}

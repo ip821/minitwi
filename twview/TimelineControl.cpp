@@ -77,6 +77,7 @@ STDMETHODIMP CTimelineControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 	CHECK_E_POINTER(pMsg);
 	CHECK_E_POINTER(pbResult);
 	RETURN_IF_FAILED(m_pCommandSupport->PreTranslateMessage(m_hWnd, pMsg, pbResult));
+	m_listBox.PreTranslateMessage(m_hWnd, pMsg, pbResult);
 	return S_OK;
 }
 
@@ -239,11 +240,10 @@ LRESULT CTimelineControl::OnItemDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 LRESULT CTimelineControl::OnColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMCOLUMNCLICK* pNm = reinterpret_cast<NMCOLUMNCLICK*>(pnmh);
-	if (pNm->dwCurrentColumn == INVALID_COLUMN_INDEX)
+	if (!pNm->pColumnsInfoItem)
 		return 0;
 
-	CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-	ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
+	CComPtr<IColumnsInfoItem> pColumnsInfoItem = pNm->pColumnsInfoItem;
 
 	BOOL bIsUrl = FALSE;
 	ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, &bIsUrl));
@@ -264,10 +264,9 @@ LRESULT CTimelineControl::OnColumnRClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	ASSERT_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
 	ASSERT_IF_FAILED(pNm->pVariantObject->CopyTo(pVariantObject));
 
-	if (pNm->dwCurrentColumn != INVALID_COLUMN_INDEX)
+	if (pNm->pColumnsInfoItem)
 	{
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(pNm->pColumnsInfo->GetItem(pNm->dwCurrentColumn, &pColumnsInfoItem));
+		CComPtr<IColumnsInfoItem> pColumnsInfoItem = pNm->pColumnsInfoItem;
 		ASSERT_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Table::Column::Object, &CComVar(pColumnsInfoItem)));
 	}
 

@@ -31,20 +31,39 @@ STDMETHODIMP CSkinUserAccountControl::Draw(HDC hdc)
 	return S_OK;
 }
 
-STDMETHODIMP CSkinUserAccountControl::StartAnimation()
+STDMETHODIMP CSkinUserAccountControl::StartAnimation(SkinUserAccountControlAnimationType animationType)
 {
-	CComPtr<IVariantObject> pItemUserBannerImage;
-	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)0)));
-	ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(true)));
+	if (animationType == SkinUserAccountControlAnimationType::BackgroundImage)
+	{
+		CComPtr<IVariantObject> pItemUserBannerImage;
+		ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+		ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)0)));
+		ASSERT_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(true)));
+	}
+	else if (animationType == SkinUserAccountControlAnimationType::UserImage)
+	{
+		CComPtr<IVariantObject> pItemUserImage;
+		ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::TwitterUserImage, &pItemUserImage));
+		ASSERT_IF_FAILED(pItemUserImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)0)));
+		ASSERT_IF_FAILED(pItemUserImage->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(true)));
+	}
 	return S_OK;
 }
 
-STDMETHODIMP CSkinUserAccountControl::AnimationSetValue(DWORD dwValue)
+STDMETHODIMP CSkinUserAccountControl::AnimationSetValue(SkinUserAccountControlAnimationType animationType, DWORD dwValue)
 {
-	CComPtr<IVariantObject> pItemUserBannerImage;
-	ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-	RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValue)));
+	if (animationType == SkinUserAccountControlAnimationType::BackgroundImage)
+	{
+		CComPtr<IVariantObject> pItemUserBannerImage;
+		ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+		RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValue)));
+	}
+	else if (animationType == SkinUserAccountControlAnimationType::UserImage)
+	{
+		CComPtr<IVariantObject> pItemUserBannerImage;
+		ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::TwitterUserImage, &pItemUserBannerImage));
+		RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValue)));
+	}
 	return S_OK;
 }
 

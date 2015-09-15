@@ -14,8 +14,7 @@ struct NMCOLUMNCLICK
 {
 	NMHDR nmhdr;
 	int dwCurrentItem;
-	int dwCurrentColumn;
-	IColumnsInfo* pColumnsInfo;
+	IColumnsInfoItem* pColumnsInfoItem;
 	IVariantObject* pVariantObject;
 	int x;
 	int y;
@@ -61,17 +60,19 @@ private:
 	int m_prevX = 0;
 	int m_prevY = 0;
 	int m_HoveredItemIndex = INVALID_ITEM_INDEX;
-	int m_HoveredColumnIndex = INVALID_COLUMN_INDEX;
+	int m_PrevHoveredItemIndex = INVALID_ITEM_INDEX;
+	CComBSTR m_bstrHoveredColumnName;
+	CComBSTR m_bstrPrevHoveredColumnName;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
 	BOOL m_bAnimationNeeded = FALSE;
 	BOOL m_bAnimating = FALSE;
 	BOOL m_bEnableAnimation;
-	atomic<int> m_updateTefCount = 0;
+	atomic<int> m_updateRefCount = 0;
 	CAnimationTimer<CCustomListBox> m_animationTimerFade;
 	map<IVariantObject*, unordered_set<int>> m_animatedColumns;
 
-	LRESULT HandleCLick(LPARAM lParam, UINT uiCode);
+	LRESULT HandleClick(LPARAM lParam, UINT uiCode);
 	void UpdateAnimatedColumns(IColumnsInfo* pColumnsInfo, int itemIndex, IVariantObject* pVariantObject, BOOL bRegisterForAnimation);
 	void StartFadeAnimation();
 
@@ -88,6 +89,7 @@ public:
 	LRESULT OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	void DoSize(int cx, int cy);
 
+	void PreTranslateMessage(HWND hWnd, MSG *pMsg, BOOL *pbResult);
 	void DrawItem(LPDRAWITEMSTRUCT lpdi);
 	void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	void InsertItem(IVariantObject* pItemObject, int index);

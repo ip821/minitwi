@@ -4,6 +4,7 @@
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"
 #include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"
+#include "Plugins.h"
 
 using namespace ATL;
 using namespace std;
@@ -53,6 +54,7 @@ public:
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		MESSAGE_HANDLER(WM_START_ANIMATION, OnStartAnimation)
 		DEFAULT_MESSAGE_HANDLER(OnMessage)
 	END_MSG_MAP()
 
@@ -73,11 +75,13 @@ private:
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	CComPtr<ISkinUserAccountControl> m_pSkinUserAccountControl;
-	CComPtr<IAnimationService> m_pAnimationService;
+	CComPtr<IAnimationService> m_pAnimationServiceBackgroundImage;
+	CComPtr<IAnimationService> m_pAnimationServiceUserImage;
 
 	const DWORD STEPS = 25;
 
-	DWORD dw_mAdviceAnimationService = 0;
+	DWORD dw_mAdviceAnimationServiceBackgroundImage = 0;
+	DWORD dw_mAdviceAnimationServiceUserImage = 0;
 	DWORD dw_mAdviceDownloadService = 0;
 	DWORD dw_mAdviceFollowService = 0;
 	DWORD dw_mAdviceFollowStatusService = 0;
@@ -97,9 +101,16 @@ private:
 	LRESULT OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMessage(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnStartAnimation(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-	void StartAnimation();
 	void UpdateRects();
+
+	struct TSTARTANIMATIONPARAMS
+	{
+		BSTR bstrKey;
+		IStream* pStream;
+		SkinUserAccountControlAnimationType animationType;
+	};
 
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);

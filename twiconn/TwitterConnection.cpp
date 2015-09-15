@@ -12,6 +12,7 @@
 
 #ifdef DEBUG
 #define USE_TEST_DATA
+#define DISABLE_NETWORK
 #endif
 
 STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)
@@ -683,6 +684,11 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		strText.Replace(it->first, it->second);
 	}
 	strText = strText.Trim();
+
+	auto retweetCount = itemObject[L"retweet_count"]->AsNumber();
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetCount, &CComVar((int)retweetCount)));
+	auto favCount = itemObject[L"favorite_count"]->AsNumber();
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::FavoriteCount, &CComVar((int)favCount)));
 
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Id, &CComVar(id.c_str())));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &CComVar(userDisplayName.c_str())));

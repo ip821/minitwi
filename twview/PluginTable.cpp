@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PluginTable.h"
+#include "Plugins.h"
 
 HRESULT CPluginTable::FinalConstruct()
 {
@@ -28,7 +29,8 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_COMMAND, CLSID_PictureWindowCopyCommand, CLSID_PictureWindowCopyCommand, L"Copy commands for picture window"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_PICTUREWINDOW_CONTROL, PVIEWTYPE_COMMAND, CLSID_PictureWindowSaveCommand, CLSID_PictureWindowSaveCommand, L"Save command for picture window"));
 
-	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_AnimationService, CLSID_AnimationService, L"Animation service"));
+	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_ANIMATION_BACKGROUND, CLSID_AnimationService, L"Animation service for background image"));
+	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_ANIMATION_USER, CLSID_AnimationService, L"Animation service for user image"));
 
 	return S_OK;
 }
