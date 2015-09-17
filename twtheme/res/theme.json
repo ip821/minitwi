@@ -338,14 +338,15 @@
                 "fit_horizontal": "parent",
                 "elements": [
                     {
-                        "name": "Text",
+                        "name": "TwitterColumnShowMoreColumn",
                         "type": "text_column",
                         "text_key": "VAR_TEXT",
                         "font": "TwitterColumnShowMoreColumn",
                         "color": "TwitterColumnShowMoreColumn",
                         "align_horizontal": "center",
                         "margin_top": 5,
-                        "margin_bottom": 5
+                        "margin_bottom": 5,
+                        "VAR_IS_URL": true
                     }
                 ]
             },
