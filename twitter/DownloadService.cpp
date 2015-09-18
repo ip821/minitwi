@@ -143,8 +143,10 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 		switch (res)
 		{
 			case CURLE_HTTP_RETURNED_ERROR:
+#ifndef __WINXP__
 				curlHr = HTTP_E_STATUS_UNEXPECTED;
 				break;
+#endif
 			case CURLE_COULDNT_CONNECT:
 				curlHr = HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 				break;
