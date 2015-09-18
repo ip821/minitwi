@@ -58,6 +58,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CE41A2B4-626B-47CD-9921-9C911CB5E27C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelLibsTests", "model-libs\ModelLibsTests\ModelLibsTests.vcxproj", "{93D85D1D-8855-4039-8B5B-88B672E8F2F5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3AD8CC48-9221-480A-9B11-FAA7A54FC340} = {3AD8CC48-9221-480A-9B11-FAA7A54FC340}
+		{8F3FE293-D9B1-4C72-BB96-155AF4A8910B} = {8F3FE293-D9B1-4C72-BB96-155AF4A8910B}
+		{614567E1-0A47-4134-9A0F-2CA28D383B0F} = {614567E1-0A47-4134-9A0F-2CA28D383B0F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -444,7 +449,6 @@ Global
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release_XP|Mixed Platforms.ActiveCfg = Release|Win32
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release_XP|Mixed Platforms.Build.0 = Release|Win32
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release_XP|Win32.ActiveCfg = Release|Win32
-		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release_XP|Win32.Build.0 = Release|Win32
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release_XP|x64.ActiveCfg = Release|x64
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release_XP|x64.Build.0 = Release|x64
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release_XP|x86.ActiveCfg = Release|Win32
@@ -452,7 +456,6 @@ Global
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release|Win32.ActiveCfg = Release|Win32
-		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release|Win32.Build.0 = Release|Win32
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release|x64.ActiveCfg = Release|x64
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release|x64.Build.0 = Release|x64
 		{93D85D1D-8855-4039-8B5B-88B672E8F2F5}.Release|x86.ActiveCfg = Release|Win32
