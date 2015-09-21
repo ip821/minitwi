@@ -586,7 +586,7 @@
                                             },
                                             {
                                                 "name": "TweetText",
-                                                "type": "text_column",
+                                                "type": "text_multi_column",
                                                 "margin_right": 5,
                                                 "text_key": "TwitterNormalizedText",
                                                 "font": "TwitterNormalizedText",
