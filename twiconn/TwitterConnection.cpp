@@ -610,16 +610,20 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	auto text = itemObject[L"text"]->AsString();
 	auto entities = itemObject[L"entities"]->AsObject();
 	auto urls = entities[L"urls"]->AsArray();
-
+	
 	CString strText = text.c_str();
-	unordered_set<wstring> urlsHashSet;
+	unordered_map<wstring, Indexes> urlsMap;
 
 	if (urls.size())
 	{
 		for (size_t i = 0; i < urls.size(); i++)
 		{
 			auto urlObject = urls[i]->AsObject();
-			urlsHashSet.insert(urlObject[L"url"]->AsString().c_str());
+			auto indeciesArray = urlObject[L"indices"]->AsArray();
+			Indexes indexes;
+			indexes.Start = (int)indeciesArray[0]->AsNumber();
+			indexes.End = (int)indeciesArray[1]->AsNumber();
+			urlsMap[urlObject[L"url"]->AsString().c_str()] = indexes;
 		}
 	}
 
@@ -639,6 +643,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		}
 	}
 
+	vector<pair<wstring, Indexes>> otherLinks;
 	if (itemObject.find(L"entities") != itemObject.end())
 	{
 		auto entitiesObj = itemObject[L"entities"]->AsObject();
@@ -647,17 +652,45 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 			auto mediaArray = entitiesObj[L"media"]->AsArray();
 			ParseMedias(mediaArray, pMediaObjectCollection, processedMediaUrls);
 		}
+
+		if (entitiesObj.find(L"hashtags") != entitiesObj.end())
+		{
+			auto hashTagsArray = entitiesObj[L"hashtags"]->AsArray();
+			for (size_t i = 0; i < hashTagsArray.size(); i++)
+			{
+				auto hashTagObject = hashTagsArray[i]->AsObject();
+				auto indeciesArray = hashTagObject[L"indices"]->AsArray();
+				Indexes indexes;
+				indexes.Start = (int)indeciesArray[0]->AsNumber() - 1;
+				indexes.End = (int)indeciesArray[1]->AsNumber();
+				otherLinks.push_back(pair<wstring, Indexes>(hashTagObject[L"text"]->AsString().c_str(), indexes));
+			}
+		}
+
+		if (entitiesObj.find(L"user_mentions") != entitiesObj.end())
+		{
+			auto hashTagsArray = entitiesObj[L"user_mentions"]->AsArray();
+			for (size_t i = 0; i < hashTagsArray.size(); i++)
+			{
+				auto hashTagObject = hashTagsArray[i]->AsObject();
+				auto indeciesArray = hashTagObject[L"indices"]->AsArray();
+				Indexes indexes;
+				indexes.Start = (int)indeciesArray[0]->AsNumber() - 1;
+				indexes.End = (int)indeciesArray[1]->AsNumber();
+				otherLinks.push_back(pair<wstring, Indexes>(hashTagObject[L"text"]->AsString().c_str(), indexes));
+			}
+		}
 	}
 
-	auto urlsVector = vector<wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
-	for (size_t i = 0; i < urlsVector.size(); i++)
-	{
-		strText.Replace(urlsVector[i].c_str(), L"");
-	}
+	//auto urlsVector = vector<pair<wstring, Indecies>>(urlsMap.cbegin(), urlsMap.cend());
+	//for (size_t i = 0; i < urlsVector.size(); i++)
+	//{
+	//	strText.Replace(urlsVector[i].first.c_str(), L"");
+	//}
 
 	wstring stdStr(strText);
 
-#ifndef DEBUG
+//#ifndef DEBUG
 	static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)*)");
 	static boost::regex_constants::match_flag_type fl = boost::regex_constants::match_default;
 
@@ -666,18 +699,22 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	while (regexIterator != regexIteratorEnd)
 	{
 		auto strUrl1 = regexIterator->str();
-		urlsHashSet.insert(strUrl1);
+		Indexes indexes;
+		indexes.Start = regexIterator->position();
+		indexes.End = regexIterator->position() + regexIterator->length();
+		urlsMap[strUrl1] = indexes;
 		regexIterator++;
 	}
-#endif
+//#endif
 
-	urlsVector = vector<wstring>(urlsHashSet.cbegin(), urlsHashSet.cend());
+	auto urlsVector = vector<pair<wstring, Indexes>>(urlsMap.cbegin(), urlsMap.cend());
 	AppendUrls(pVariantObject, urlsVector);
+	AppendUrls(pVariantObject, otherLinks);
 
-	for (size_t i = 0; i < urlsVector.size(); i++)
-	{
-		strText.Replace(urlsVector[i].c_str(), L"");
-	}
+	//for (size_t i = 0; i < urlsVector.size(); i++)
+	//{
+	//	strText.Replace(urlsVector[i].first.c_str(), L"");
+	//}
 
 	for (auto it = NormalizeTable.begin(); it != NormalizeTable.end(); it++)
 	{
@@ -772,26 +809,18 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 	return S_OK;
 }
 
-HRESULT CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, vector<wstring>& urlsVector)
+HRESULT CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, vector<pair<wstring, Indexes>>& urlsVector)
 {
-	CComPtr<IBstrCollection> pBstrCollection;
-	CComVar vCollection;
-	pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vCollection);
-	if (vCollection.vt == VT_UNKNOWN)
-	{
-		CComPtr<IUnknown> pUnknown = vCollection.punkVal;
-		pUnknown->QueryInterface(&pBstrCollection);
-	}
-
-	if (!pBstrCollection)
-	{
-		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_BstrCollection, &pBstrCollection));
-	}
+	CComPtr<IObjCollection> pObjCollection;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjCollection));
 
 	for (size_t i = 0; i < urlsVector.size(); i++)
 	{
-		RETURN_IF_FAILED(pBstrCollection->AddItem(CComBSTR(urlsVector[i].c_str())));
+		CComPtr<IVariantObject> pItem;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pItem));
+		RETURN_IF_FAILED(pItem->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Url, &CComVar(urlsVector[i].first.c_str())));
+		RETURN_IF_FAILED(pObjCollection->AddObject(pItem));
 	}
-	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &CComVar(pBstrCollection)));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &CComVar(pObjCollection)));
 	return S_OK;
 }

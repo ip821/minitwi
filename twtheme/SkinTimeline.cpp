@@ -249,13 +249,15 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 					ATLASSERT(vElements.vt == VT_UNKNOWN);
 					CComQIPtr<IObjCollection> pElements = vElements.punkVal;
 					ATLASSERT(pElements);
-					CComQIPtr<IBstrCollection> pBstrCollection = vUrls.punkVal;
+					CComQIPtr<IObjCollection> pObjCollection = vUrls.punkVal;
 					UINT_PTR uiCount = 0;
-					RETURN_IF_FAILED(pBstrCollection->GetCount(&uiCount));
+					RETURN_IF_FAILED(pObjCollection->GetCount(&uiCount));
 					for (size_t i = 0; i < uiCount; i++)
 					{
+						CComPtr<IVariantObject> pUrlItemOrigin;
+						RETURN_IF_FAILED(pObjCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pUrlItemOrigin));
 						CComBSTR bstrUrl;
-						RETURN_IF_FAILED(pBstrCollection->GetItem(i, &bstrUrl));
+						RETURN_IF_FAILED(HrVariantObjectGetBSTR(pUrlItemOrigin, Twitter::Connection::Metadata::TweetObject::Url, &bstrUrl));
 						if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
 							continue;
 

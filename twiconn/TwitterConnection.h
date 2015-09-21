@@ -38,13 +38,19 @@ public:
 
 	friend class CTwitterStreamingConnection;
 
+	struct Indexes
+	{
+		int Start = 0;
+		int End = 0;
+	};
+
 private:
 
 	CString m_errMsg;
 	shared_ptr<twitCurl> m_pTwitObj;
 	wstring m_strAppToken;
 	STDMETHOD(HandleError)(JSONValue* value);
-	static HRESULT AppendUrls(IVariantObject* pVariantObject, vector<wstring>& urlsVector);
+	static HRESULT AppendUrls(IVariantObject* pVariantObject, vector<pair<wstring, Indexes>>& urlsVector);
 	static HRESULT ParseTweet(JSONObject& itemObject, IVariantObject* pVariantObject);
 	STDMETHOD(ParseTweets)(JSONValue* value, IObjCollection* pObjectCollection);
 	static HRESULT ParseUser(JSONObject& value, IVariantObject* pVariantObject);
