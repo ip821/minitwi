@@ -175,6 +175,11 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 
 		if (bstr.Length() && bstr[0] == L'@')
 		{
+			CComPtr<IVariantObject> pTextObject;
+			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pTextObject));
+			RETURN_IF_FAILED(pTextObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVar(bstr)));
+			RETURN_IF_FAILED(OpenSearchForm(pTextObject));
+
 			/*CComPtr<IVariantObject> pUserObject;
 			RETURN_IF_FAILED();
 			CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;

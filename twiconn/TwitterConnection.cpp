@@ -242,6 +242,36 @@ STDMETHODIMP CTwitterConnection::GetFollowStatus(BSTR bstrTargetUserName, BOOL* 
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::GetUser(BSTR bstrUserName, IVariantObject** ppVariantObject)
+{
+	CHECK_E_POINTER(bstrUserName);
+	CHECK_E_POINTER(ppVariantObject);
+
+	USES_CONVERSION;
+
+	string userName = CW2A(bstrUserName);
+
+	if (!m_pTwitObj->userGet(userName))
+	{
+		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+	}
+
+	string strResponse;
+	m_pTwitObj->getLastWebResponse(strResponse);
+
+	auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+	auto hr = HandleError(value.get());
+	if (FAILED(hr))
+		return hr;
+
+	CComPtr<IVariantObject> pVariantObject;
+	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+	auto userObject = value.get()->AsObject();
+	RETURN_IF_FAILED(ParseUser(userObject, pVariantObject));
+	RETURN_IF_FAILED(pVariantObject->QueryInterface(ppVariantObject));
+	return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::GetUserSettings(IVariantObject** ppVariantObject)
 {
 	CHECK_E_POINTER(ppVariantObject);

@@ -77,6 +77,7 @@ public:
 	STDMETHOD(GetListTweets)(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray);
 	STDMETHOD(GetUserSettings)(IVariantObject** ppVariantObject);
 	STDMETHOD(GetFollowStatus)(BSTR bstrTargetUserName, BOOL* pbFollowing);
+	STDMETHOD(GetUser)(BSTR bstrUserName, IVariantObject** ppVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterConnection), CTwitterConnection)
