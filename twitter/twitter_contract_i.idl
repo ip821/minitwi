@@ -480,7 +480,7 @@ interface ITwitViewRepliesService : ITimelineService
 ]
 interface ISearchControl : IControl2
 {
-
+	HRESULT GetVariantObject(IVariantObject** ppVariantObject);
 };
 
 [

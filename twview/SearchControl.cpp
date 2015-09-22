@@ -48,6 +48,7 @@ STDMETHODIMP CSearchControl::OnShutdown()
 	m_pTimelineControl.Release();
 	m_pTheme.Release();
 	m_pViewControllerService.Release();
+	m_pVariantObject.Release();
 
 	DestroyWindow();
 
@@ -219,4 +220,21 @@ void CSearchControl::EnableControls(BOOL bEnable)
 {
 	m_editText.EnableWindow(bEnable);
 	m_buttonGo.EnableWindow(bEnable);
+}
+
+STDMETHODIMP CSearchControl::GetVariantObject(IVariantObject** ppVariantObject)
+{
+	CHECK_E_POINTER(ppVariantObject);
+	return S_OK;
+}
+
+STDMETHODIMP CSearchControl::SetVariantObject(IVariantObject* pVariantObject)
+{
+	m_pVariantObject = pVariantObject;
+	CComVar vText;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Object::Text, &vText));
+	ATLASSERT(vText.vt == VT_BSTR);
+	m_editText.SetWindowText(vText.bstrVal);
+	RETURN_IF_FAILED(DoSearch());
+	return S_OK;
 }

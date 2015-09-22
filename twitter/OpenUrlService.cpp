@@ -56,6 +56,33 @@ STDMETHODIMP COpenUrlService::OpenUserInfoForm(IVariantObject* pVariantObject)
 	return S_OK;
 }
 
+STDMETHODIMP COpenUrlService::OpenSearchForm(IVariantObject* pVariantObject)
+{
+	CComPtr<IControl> pControl;
+	HRESULT hr = m_pFormManager->FindForm(CLSID_SearchControl, &pControl);
+	if (SUCCEEDED(hr))
+	{
+		CComQIPtr<ISearchControl> pSearchControl = pControl;
+		ATLASSERT(pSearchControl);
+		CComPtr<IVariantObject> pVariantObjectOpened;
+		RETURN_IF_FAILED(pSearchControl->GetVariantObject(&pVariantObjectOpened));
+		CComVar vTextOpened;
+		if (pVariantObjectOpened)
+		{
+			RETURN_IF_FAILED(pVariantObjectOpened->GetVariantValue(Twitter::Metadata::Object::Text, &vTextOpened));
+		}
+		CComVar vText;
+		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Object::Text, &vText));
+		if (vText.vt == VT_BSTR && vTextOpened.vt == VT_BSTR && CComBSTR(vText.bstrVal) == CComBSTR(vTextOpened.bstrVal))
+		{
+			return S_OK;
+		}
+	}
+
+	RETURN_IF_FAILED(m_pFormsService->OpenForm(CLSID_SearchControl, pVariantObject));
+	return S_OK;
+}
+
 STDMETHODIMP COpenUrlService::OpenTwitViewForm(IVariantObject* pVariantObject)
 {
 	CComPtr<IControl> pControl;
@@ -145,6 +172,24 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		{
 			RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Layout::Metadata::TextColumn::TextFullKey, &bstr));
 		}
+
+		if (bstr.Length() && bstr[0] == L'@')
+		{
+			/*CComPtr<IVariantObject> pUserObject;
+			RETURN_IF_FAILED();
+			CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
+			ATLASSERT(pObj);
+			RETURN_IF_FAILED(OpenUserInfoForm(pObj));*/
+		}
+
+		if (bstr.Length() && bstr[0] == L'#') 
+		{
+			CComPtr<IVariantObject> pTextObject;
+			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pTextObject));
+			RETURN_IF_FAILED(pTextObject->SetVariantValue(Twitter::Metadata::Object::Text, &CComVar(bstr)));
+			RETURN_IF_FAILED(OpenSearchForm(pTextObject));
+		}
+
 		strUrl = bstr;
 	}
 

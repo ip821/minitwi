@@ -21,7 +21,8 @@ class ATL_NO_VTABLE CSearchControl :
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
 	public IInitializeWithControlImpl,
-	public IThemeSupport
+	public IThemeSupport,
+	public IInitializeWithVariantObject
 {
 public:
 	CSearchControl()
@@ -40,7 +41,9 @@ public:
 		COM_INTERFACE_ENTRY(IPluginSupportNotifications)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
+		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
 		COM_INTERFACE_ENTRY_AGGREGATE(__uuidof(ITimelineControlSupport), m_pTimelineControl)
+		COM_INTERFACE_ENTRY_AGGREGATE(__uuidof(IServiceProviderSupport), m_pTimelineControl)
 	END_COM_MAP()
 
 	BEGIN_DLGRESIZE_MAP(CSearchControl)
@@ -67,6 +70,7 @@ private:
 	CComPtr<ITheme> m_pTheme;
 	CComPtr<IViewControllerService> m_pViewControllerService;
 	CComPtr<ISkinCommonControl> m_pSkinCommonControl;
+	CComPtr<IVariantObject> m_pVariantObject;
 
 	DWORD m_dwAdvice = 0;
 	HWND m_hWndTimelineControl = 0;
@@ -101,6 +105,9 @@ public:
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
 
 	STDMETHOD(SetTheme)(ITheme* pTheme);
+	STDMETHOD(GetVariantObject)(IVariantObject** ppVariantObject);
+
+	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SearchControl), CSearchControl)
