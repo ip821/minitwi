@@ -662,7 +662,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 				auto indeciesArray = hashTagObject[L"indices"]->AsArray();
 				Indexes indexes;
 				indexes.Start = (int)indeciesArray[0]->AsNumber();
-				indexes.End = (int)indeciesArray[1]->AsNumber();
+				indexes.End = (int)indeciesArray[1]->AsNumber() - 1;
 				otherLinks.push_back(pair<wstring, Indexes>(hashTagObject[L"text"]->AsString().c_str(), indexes));
 			}
 		}
@@ -676,7 +676,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 				auto indeciesArray = userMentionObject[L"indices"]->AsArray();
 				Indexes indexes;
 				indexes.Start = (int)indeciesArray[0]->AsNumber();
-				indexes.End = (int)indeciesArray[1]->AsNumber();
+				indexes.End = (int)indeciesArray[1]->AsNumber() - 1;
 				otherLinks.push_back(pair<wstring, Indexes>(userMentionObject[L"screen_name"]->AsString().c_str(), indexes));
 			}
 		}

@@ -141,6 +141,10 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 	{
 		CComBSTR bstr;
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Object::Value, &bstr));
+		if (bstr == L"")
+		{
+			RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Layout::Metadata::TextColumn::TextFullKey, &bstr));
+		}
 		strUrl = bstr;
 	}
 
