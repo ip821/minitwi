@@ -63,6 +63,7 @@ private:
 	int m_PrevHoveredItemIndex = INVALID_ITEM_INDEX;
 	CComBSTR m_bstrHoveredColumnName;
 	CComBSTR m_bstrPrevHoveredColumnName;
+	CRect m_prevColumnRect;
 	CCursor m_handCursor;
 	CCursor m_arrowCursor;
 	BOOL m_bAnimationNeeded = FALSE;

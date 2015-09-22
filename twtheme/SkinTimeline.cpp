@@ -256,18 +256,11 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 					{
 						CComPtr<IVariantObject> pUrlItemOrigin;
 						RETURN_IF_FAILED(pObjCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pUrlItemOrigin));
-						CComBSTR bstrUrl;
-						RETURN_IF_FAILED(HrVariantObjectGetBSTR(pUrlItemOrigin, Twitter::Connection::Metadata::TweetObject::Url, &bstrUrl));
-						if (imageUrls.find(bstrUrl.m_str) != imageUrls.end())
-							continue;
-
-						CComPtr<IVariantObject> pUrlItem;
-						RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Connection::Metadata::TweetObject::Url, &pUrlItem));
-						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(bstrUrl)));
-						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Object::Value, &CComVar(bstrUrl)));
-						RETURN_IF_FAILED(pUrlItem->SetVariantValue(Twitter::Metadata::Item::VAR_IS_URL, &CComVar(true)));
-						RETURN_IF_FAILED(pElements->AddObject(pUrlItem));
+						CComPtr<IVariantObject> pColumnLayoutItem;
+						RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameUrlColumn, &pColumnLayoutItem));
+						RETURN_IF_FAILED(pUrlItemOrigin->SetVariantValue(Layout::Metadata::TextMultiColumn::ColumnDefinition, &CComVar(pColumnLayoutItem)));
 					}
+					RETURN_IF_FAILED(pItemObject->SetVariantValue(Layout::Metadata::TextMultiColumn::ColumnDefinitions, &CComVar(pObjCollection)));
 				}
 			}
 

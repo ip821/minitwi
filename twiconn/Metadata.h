@@ -33,6 +33,8 @@ namespace IP
 					const static CComBSTR Text(L"VAR_TWITTER_TEXT");
 					const static CComBSTR NormalizedText(L"TwitterNormalizedText");
 					const static CComBSTR Url(L"TwitterUrl");
+					const static CComBSTR StartIndex(L"StartIndex");
+					const static CComBSTR EndIndex(L"EndIndex");
 					const static CComBSTR MediaUrls(L"VAR_TWITTER_MEDIAURLS");
 					const static CComBSTR Urls(L"VAR_TWITTER_URLS");
 					const static CComBSTR CreatedAt(L"VAR_TWITTER_CREATED_AT");

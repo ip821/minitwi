@@ -661,7 +661,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 				auto hashTagObject = hashTagsArray[i]->AsObject();
 				auto indeciesArray = hashTagObject[L"indices"]->AsArray();
 				Indexes indexes;
-				indexes.Start = (int)indeciesArray[0]->AsNumber() - 1;
+				indexes.Start = (int)indeciesArray[0]->AsNumber();
 				indexes.End = (int)indeciesArray[1]->AsNumber();
 				otherLinks.push_back(pair<wstring, Indexes>(hashTagObject[L"text"]->AsString().c_str(), indexes));
 			}
@@ -669,24 +669,18 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 
 		if (entitiesObj.find(L"user_mentions") != entitiesObj.end())
 		{
-			auto hashTagsArray = entitiesObj[L"user_mentions"]->AsArray();
-			for (size_t i = 0; i < hashTagsArray.size(); i++)
+			auto userMentionsArray = entitiesObj[L"user_mentions"]->AsArray();
+			for (size_t i = 0; i < userMentionsArray.size(); i++)
 			{
-				auto hashTagObject = hashTagsArray[i]->AsObject();
-				auto indeciesArray = hashTagObject[L"indices"]->AsArray();
+				auto userMentionObject = userMentionsArray[i]->AsObject();
+				auto indeciesArray = userMentionObject[L"indices"]->AsArray();
 				Indexes indexes;
-				indexes.Start = (int)indeciesArray[0]->AsNumber() - 1;
+				indexes.Start = (int)indeciesArray[0]->AsNumber();
 				indexes.End = (int)indeciesArray[1]->AsNumber();
-				otherLinks.push_back(pair<wstring, Indexes>(hashTagObject[L"text"]->AsString().c_str(), indexes));
+				otherLinks.push_back(pair<wstring, Indexes>(userMentionObject[L"screen_name"]->AsString().c_str(), indexes));
 			}
 		}
 	}
-
-	//auto urlsVector = vector<pair<wstring, Indecies>>(urlsMap.cbegin(), urlsMap.cend());
-	//for (size_t i = 0; i < urlsVector.size(); i++)
-	//{
-	//	strText.Replace(urlsVector[i].first.c_str(), L"");
-	//}
 
 	wstring stdStr(strText);
 
@@ -710,11 +704,6 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	auto urlsVector = vector<pair<wstring, Indexes>>(urlsMap.cbegin(), urlsMap.cend());
 	AppendUrls(pVariantObject, urlsVector);
 	AppendUrls(pVariantObject, otherLinks);
-
-	//for (size_t i = 0; i < urlsVector.size(); i++)
-	//{
-	//	strText.Replace(urlsVector[i].first.c_str(), L"");
-	//}
 
 	for (auto it = NormalizeTable.begin(); it != NormalizeTable.end(); it++)
 	{
@@ -812,13 +801,24 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 HRESULT CTwitterConnection::AppendUrls(IVariantObject* pVariantObject, vector<pair<wstring, Indexes>>& urlsVector)
 {
 	CComPtr<IObjCollection> pObjCollection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjCollection));
+	CComVar vObjCollection;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vObjCollection));
+	if (vObjCollection.vt == VT_UNKNOWN)
+	{
+		RETURN_IF_FAILED(vObjCollection.punkVal->QueryInterface(&pObjCollection));
+	}
+	else
+	{
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjCollection));
+	}
 
 	for (size_t i = 0; i < urlsVector.size(); i++)
 	{
 		CComPtr<IVariantObject> pItem;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pItem));
 		RETURN_IF_FAILED(pItem->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Url, &CComVar(urlsVector[i].first.c_str())));
+		RETURN_IF_FAILED(pItem->SetVariantValue(Twitter::Connection::Metadata::TweetObject::StartIndex, &CComVar(urlsVector[i].second.Start)));
+		RETURN_IF_FAILED(pItem->SetVariantValue(Twitter::Connection::Metadata::TweetObject::EndIndex, &CComVar(urlsVector[i].second.End)));
 		RETURN_IF_FAILED(pObjCollection->AddObject(pItem));
 	}
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &CComVar(pObjCollection)));

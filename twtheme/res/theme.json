@@ -325,7 +325,8 @@
                 "type": "text_column",
                 "font": "TwitterUrl",
                 "font_selected": "TwitterUrlSelected",
-                "color": "TwitterUrl"
+                "color": "TwitterUrl",
+                "VAR_IS_URL": true
             },
             {
                 "name": "VAR_TWITTER_IMAGE",
@@ -591,7 +592,7 @@
                                                 "text_key": "TwitterNormalizedText",
                                                 "font": "TwitterNormalizedText",
                                                 "color": "TwitterNormalizedText",
-                                                "text_multiline": true
+                                                "column_definition_key": true
                                             },
                                             {
                                                 "name": "UrlContainer",

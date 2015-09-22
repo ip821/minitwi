@@ -257,56 +257,59 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	m_bstrHoveredColumnName.Empty();
 
 	if (m_columnsInfo.empty())
-		goto Exit;
+		return 0;
+
+	CRect rectPrevious;
 
 	{ //Current point
 		BOOL bOutside = FALSE;
 		int uiItem = ItemFromPoint(CPoint(x, y), bOutside);
 		RECT itemRect = { 0 };
 		GetItemRect(uiItem, &itemRect);
-		if (bOutside || uiItem == INVALID_ITEM_INDEX)
-			goto Exit;
-
-		CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[uiItem];
-		CPoint pt(x, y);
-		pt.Offset(0, -itemRect.top);
-		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-		ASSERT_IF_FAILED(pColumnsInfo->FindItemByPoint(&pt, &pColumnsInfoItem));
-		if (pColumnsInfoItem)
+		if (!bOutside && uiItem != INVALID_ITEM_INDEX)
 		{
-			BOOL bIsUrl = FALSE;
-			ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, &bIsUrl));
-
-			if (bIsUrl)
+			CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[uiItem];
+			CPoint pt(x, y);
+			pt.Offset(0, -itemRect.top);
+			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
+			ASSERT_IF_FAILED(pColumnsInfo->FindItemByPoint(&pt, &pColumnsInfoItem));
+			if (pColumnsInfoItem)
 			{
-				SetCursor(m_handCursor);
-				m_HoveredItemIndex = uiItem;
-				ASSERT_IF_FAILED(HrVariantObjectGetBSTR(pColumnsInfoItem, Layout::Metadata::Element::Name, &m_bstrHoveredColumnName));
-				if (prevColumnName != m_bstrHoveredColumnName || prevItemIndex != uiItem)
+				BOOL bIsUrl = FALSE;
+				ASSERT_IF_FAILED(pColumnsInfoItem->GetRectBoolProp(Twitter::Metadata::Item::VAR_IS_URL, &bIsUrl));
+
+				if (bIsUrl)
 				{
-					ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(true)));
+					SetCursor(m_handCursor);
+					m_HoveredItemIndex = uiItem;
+					ASSERT_IF_FAILED(HrVariantObjectGetBSTR(pColumnsInfoItem, Layout::Metadata::Element::Name, &m_bstrHoveredColumnName));
 					CRect rect;
 					ASSERT_IF_FAILED(pColumnsInfoItem->GetRect(&rect));
+					rectPrevious = rect;
 					rect.top += itemRect.top;
 					rect.bottom += itemRect.top;
-					InvalidateRect(rect);
+					if (rectPrevious != m_prevColumnRect || prevItemIndex != uiItem)
+					{
+						ASSERT_IF_FAILED(pColumnsInfoItem->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(true)));
+						InvalidateRect(rect);
+					}
 				}
 			}
-		}
 
-		if (m_HoveredItemIndex == INVALID_ITEM_INDEX)
-		{
-			m_HoveredItemIndex = uiItem;
-			m_bstrHoveredColumnName.Empty();
+			if (m_HoveredItemIndex == INVALID_ITEM_INDEX)
+			{
+				m_HoveredItemIndex = uiItem;
+				m_bstrHoveredColumnName.Empty();
+			}
 		}
 	}
 
 	{ //Previous point
-		if (m_PrevHoveredItemIndex != INVALID_ITEM_INDEX && (m_bstrPrevHoveredColumnName != m_bstrHoveredColumnName || m_PrevHoveredItemIndex != m_HoveredItemIndex))
+		if (m_PrevHoveredItemIndex != INVALID_ITEM_INDEX && (m_bstrPrevHoveredColumnName != m_bstrHoveredColumnName || rectPrevious != m_prevColumnRect || m_PrevHoveredItemIndex != m_HoveredItemIndex))
 		{
 			CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[m_PrevHoveredItemIndex];
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
-			ASSERT_IF_FAILED(pColumnsInfo->FindItemByName(m_bstrPrevHoveredColumnName, &pColumnsInfoItem));
+			ASSERT_IF_FAILED(pColumnsInfo->FindItemByPoint(&CPoint(m_prevColumnRect.left, m_prevColumnRect.top), &pColumnsInfoItem));
 			if (pColumnsInfoItem)
 			{
 				BOOL bIsUrl = FALSE;
@@ -326,10 +329,11 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 			}
 		}
 	}
-Exit:
+
 	m_prevX = x;
 	m_prevY = y;
 	m_bstrPrevHoveredColumnName = m_bstrHoveredColumnName;
+	m_prevColumnRect = rectPrevious;
 	m_PrevHoveredItemIndex = m_HoveredItemIndex;
 	return 0;
 }
