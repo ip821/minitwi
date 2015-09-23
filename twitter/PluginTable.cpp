@@ -64,6 +64,8 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_FollowStatusService, CLSID_FollowStatusService, L"Follow status service"));
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_FOLLOW_THREAD, CLSID_ThreadService, L"Thread service for follow service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_FollowService, CLSID_FollowService, L"Follow service"));
+	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_GETUSER_THREAD, CLSID_ThreadService, L"Thread service for get user service"));
+	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_USERINFO_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_GetUserService, CLSID_GetUserService, L"Get user service"));
 
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_TWITVIEW_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ThreadPoolService, CLSID_ThreadPoolService, L"Thread pool service for twit view control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_TWITVIEW_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_DownloadService, CLSID_DownloadService, L"Download service user for twit view control"));

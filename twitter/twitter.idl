@@ -198,6 +198,13 @@ library twitterLib
 	{
 		[default] interface IUnknown;
 	};
+	[
+		uuid(90656AF9-2274-451A-9EF7-5DDFBB7D338F)
+	]
+	coclass GetUserService
+	{
+		[default] interface IUnknown;
+	};
 };
 
 import "shobjidl.idl";

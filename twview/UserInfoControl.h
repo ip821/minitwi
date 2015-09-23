@@ -18,7 +18,8 @@ class CUserInfoControl :
 	public IPluginSupportNotifications,
 	public IInitializeWithSettings,
 	public IServiceProviderSupport,
-	public IControl2
+	public IControl2,
+	public IThreadServiceEventSink
 {
 public:
 	DECLARE_WND_CLASS(L"UserInfoControl")
@@ -37,6 +38,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithSettings)
 		COM_INTERFACE_ENTRY(IServiceProviderSupport)
 		COM_INTERFACE_ENTRY(ITimelineControlSupport)
+		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 	END_COM_MAP()
 
 	BEGIN_MSG_MAP(CUserInfoControl)
@@ -67,6 +69,9 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<ITimelineService> m_pTimelineService;
 	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
+	CComPtr<IThreadService> m_pThreadServiceGetUser;
+
+	DWORD m_dwAdviceGetUser = 0;
 
 	HWND m_hWndUserAccountControl = 0;
 	HWND m_hWndTimelineControl = 0;
@@ -76,6 +81,7 @@ private:
 	LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMessage(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	void AdjustSizes();
+	STDMETHOD(LoadChildControls)();
 
 public:
 	STDMETHOD(GetHWND)(HWND *hWnd);
@@ -101,6 +107,10 @@ public:
 	STDMETHOD(GetServiceProvider)(IServiceProvider** ppServiceProvider);
 
 	STDMETHOD(GetVariantObject)(IVariantObject** ppVariantObject);
+
+	METHOD_EMPTY(STDMETHOD(OnStart)(IVariantObject *pResult));
+	METHOD_EMPTY(STDMETHOD(OnRun)(IVariantObject *pResult));
+	STDMETHOD(OnFinish)(IVariantObject *pResult);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(UserInfoControl), CUserInfoControl)

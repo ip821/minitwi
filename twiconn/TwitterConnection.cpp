@@ -249,9 +249,10 @@ STDMETHODIMP CTwitterConnection::GetUser(BSTR bstrUserName, IVariantObject** ppV
 
 	USES_CONVERSION;
 
+	string strAppToken = CW2A(m_strAppToken.c_str());
 	string userName = CW2A(bstrUserName);
 
-	if (!m_pTwitObj->userGet(userName))
+	if (!m_pTwitObj->userGetWithAppAuth(strAppToken, userName))
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}
@@ -589,6 +590,7 @@ HRESULT CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pVarian
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::FriendsCount, &CComVar((int)friendsCount)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::TweetsCount, &CComVar((int)statusesCount)));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Description, &CComVar(description.c_str())));
+	RETURN_IF_FAILED(pVariantObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Connection::Metadata::UserObject::TypeId)));
 
 	if (value.find(L"profile_banner_url") != value.end())
 	{

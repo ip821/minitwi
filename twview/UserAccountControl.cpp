@@ -116,6 +116,36 @@ STDMETHODIMP CUserAccountControl::SetVariantObject(IVariantObject *pVariantObjec
 	CHECK_E_POINTER(pVariantObject);
 	m_pVariantObject = pVariantObject;
 	UpdateRects();
+	RETURN_IF_FAILED(m_pFollowStatusThreadService->Run());
+
+	CComVar vBannerUrl;
+	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl));
+	if (vBannerUrl.vt == VT_BSTR)
+	{
+		m_bstrBannerUrl = vBannerUrl.bstrVal;
+
+		CComPtr<IVariantObject> pDownloadObject;
+		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObject));
+		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(Twitter::Metadata::Object::Url, &vBannerUrl));
+		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::ImageUserBanner)));
+		RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObject));
+	}
+
+	CComVar vUserImage;
+	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
+	if (vUserImage.vt == VT_BSTR)
+	{
+		BOOL bContains = FALSE;
+		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUserImage.bstrVal, &bContains));
+		if (!bContains)
+		{
+			CComPtr<IVariantObject> pDownloadObjectUserImage;
+			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObjectUserImage));
+			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(Twitter::Metadata::Object::Url, &vUserImage));
+			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::ImageUserImage)));
+			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObjectUserImage));
+		}
+	}
 	return S_OK;
 }
 
@@ -170,7 +200,7 @@ void CUserAccountControl::UpdateRects()
 	m_rectUserImage.SetRectEmpty();
 	m_rectFollowButton.SetRectEmpty();
 
-	if (!m_pVariantObject)
+	if (!m_pSkinUserAccountControl)
 		return;
 
 	CRect rect;
@@ -183,36 +213,6 @@ void CUserAccountControl::UpdateRects()
 STDMETHODIMP CUserAccountControl::OnActivate()
 {
 	UpdateRects();
-	RETURN_IF_FAILED(m_pFollowStatusThreadService->Run());
-
-	CComVar vBannerUrl;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl));
-	if (vBannerUrl.vt == VT_BSTR)
-	{
-		m_bstrBannerUrl = vBannerUrl.bstrVal;
-
-		CComPtr<IVariantObject> pDownloadObject;
-		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObject));
-		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(Twitter::Metadata::Object::Url, &vBannerUrl));
-		RETURN_IF_FAILED(pDownloadObject->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::ImageUserBanner)));
-		RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObject));
-	}
-
-	CComVar vUserImage;
-	RETURN_IF_FAILED(m_pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
-	if (vUserImage.vt == VT_BSTR)
-	{
-		BOOL bContains = FALSE;
-		RETURN_IF_FAILED(m_pImageManagerService->ContainsImageKey(vUserImage.bstrVal, &bContains));
-		if (!bContains)
-		{
-			CComPtr<IVariantObject> pDownloadObjectUserImage;
-			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadObjectUserImage));
-			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(Twitter::Metadata::Object::Url, &vUserImage));
-			RETURN_IF_FAILED(pDownloadObjectUserImage->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::ImageUserImage)));
-			RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadObjectUserImage));
-		}
-	}
 	return S_OK;
 }
 

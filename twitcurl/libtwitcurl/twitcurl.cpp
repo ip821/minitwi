@@ -742,6 +742,24 @@ bool twitCurl::userLookup(std::vector<std::string> &userInfo, bool isUserId)
 	return performPost(buildUrl, userIds);
 }
 
+bool twitCurl::userGetWithAppAuth(std::string& strAppToken, std::string& userInfo, bool isUserId)
+{
+	if (userInfo.empty())
+	{
+		return false;
+	}
+
+	/* Set URL */
+	std::string buildUrl;
+	utilMakeUrlForUser(buildUrl, twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] +
+		twitterDefaults::TWITCURL_SHOWUSERS_URL +
+		twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType],
+		userInfo, isUserId);
+
+	/* Perform GET */
+	return performGetAppAuth(buildUrl, strAppToken);
+}
+
 /*++
 * @method: twitCurl::userGet
 *

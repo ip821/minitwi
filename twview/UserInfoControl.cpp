@@ -51,12 +51,20 @@ STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadServiceUpdateTimeline));
+	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_GETUSER_THREAD, &m_pThreadServiceGetUser));
+
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+
+	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceGetUser, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceGetUser));
 
 	return S_OK;
 }
 
 STDMETHODIMP CUserInfoControl::OnShutdown()
 {
+	RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceGetUser, __uuidof(IThreadServiceEventSink), m_dwAdviceGetUser));
+
 	{
 		CComQIPtr <IPluginSupportNotifications> pPluginSupportNotifications = m_pTimelineControl;
 		if (pPluginSupportNotifications)
@@ -86,6 +94,7 @@ STDMETHODIMP CUserInfoControl::OnShutdown()
 	m_pSettings.Release();
 	m_pTimelineService.Release();
 	m_pThreadServiceUpdateTimeline.Release();
+	m_pThreadServiceGetUser.Release();
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 
 	return S_OK;
@@ -178,13 +187,48 @@ STDMETHODIMP CUserInfoControl::GetVariantObject(IVariantObject** ppVariantObject
 STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 {
 	CHECK_E_POINTER(pVariantObject);
-	m_pVariantObject = pVariantObject;
 
+	CComVar vObjectType;
+	RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
+
+	if (vObjectType.vt == VT_BSTR && CComBSTR(vObjectType.bstrVal) == Twitter::Connection::Metadata::UserObject::TypeId)
+	{
+		m_pVariantObject = pVariantObject;
+		RETURN_IF_FAILED(LoadChildControls());
+	}
+	else
+	{
+		RETURN_IF_FAILED(m_pThreadServiceGetUser->Run());
+	}
+
+	return S_OK;
+}
+
+STDMETHODIMP CUserInfoControl::OnFinish(IVariantObject *pResult)
+{
+	CComVar vHr;
+	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
+
+	if (FAILED(vHr.intVal))
+	{
+		return S_OK;
+	}
+
+	CComVar vUserObject;
+	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &vUserObject));
+	ATLASSERT(vUserObject.vt == VT_UNKNOWN);
+	CComQIPtr<IVariantObject> pUserObject = vUserObject.punkVal;
+	m_pVariantObject = pUserObject;
+	RETURN_IF_FAILED(LoadChildControls());
+	return S_OK;
+}
+
+STDMETHODIMP CUserInfoControl::LoadChildControls()
+{
+	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pPluginSupport, m_pVariantObject));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pUserAccountControl, m_pVariantObject));
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pTimelineControl, m_pVariantObject));
-	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pPluginSupport, m_pVariantObject));
 	RETURN_IF_FAILED(m_pThreadServiceUpdateTimeline->Run());
-
 	return S_OK;
 }
 

@@ -86,6 +86,9 @@
     <Filter Include="Services\FollowStatusService">
       <UniqueIdentifier>{861279f4-f8b0-43fa-8403-0d1ce20a37a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\GetUserService">
+      <UniqueIdentifier>{873db6e0-d7cb-44f0-8bc6-8621f2a4f894}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -195,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="layout_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GetUserService.cpp">
+      <Filter>Services\GetUserService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -323,6 +329,9 @@
     </ClInclude>
     <ClInclude Include="layout_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GetUserService.h">
+      <Filter>Services\GetUserService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

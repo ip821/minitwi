@@ -256,6 +256,7 @@
     <ClCompile Include="FollowStatusService.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="FollowService.cpp" />
+    <ClCompile Include="GetUserService.cpp" />
     <ClCompile Include="HomeTimelineControllerService.cpp" />
     <ClCompile Include="HomeTimelineStreamingService.cpp" />
     <ClCompile Include="layout_contract_i.c">
@@ -348,6 +349,7 @@
     <ClInclude Include="asyncsvc_contract_i.h" />
     <ClInclude Include="FollowStatusService.h" />
     <ClInclude Include="FollowService.h" />
+    <ClInclude Include="GetUserService.h" />
     <ClInclude Include="HomeTimelineControllerService.h" />
     <ClInclude Include="HomeTimelineStreamingService.h" />
     <ClInclude Include="layout_contract_i.h" />

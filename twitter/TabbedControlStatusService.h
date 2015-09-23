@@ -34,12 +34,14 @@ private:
 	CComPtr<IThreadService> m_pThreadServiceFollow;
 	CComPtr<IThreadService> m_pThreadServiceFollowStatus;
 	CComPtr<IThreadService> m_pThreadServiceStreamingTimeline;
+	CComPtr<IThreadService> m_pThreadServiceGetUser;
 
 	DWORD m_dwAdviceUpdateTimeline = 0;
 	DWORD m_dwAdviceShowMoreTimeline = 0;
 	DWORD m_dwAdviceFollow = 0;
 	DWORD m_dwAdviceFollowStatus = 0;
 	DWORD m_dwAdviceStreamingTimeline = 0;
+	DWORD m_dwAdviceGetUser = 0;
 	UINT m_cAnimationRefs = 0;
 
 	STDMETHOD(StartAnimation)();

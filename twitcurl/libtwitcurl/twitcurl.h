@@ -145,6 +145,7 @@ public:
 	bool timelineUserGetWithAppAuth(std::string strAppToken, std::string user, std::string maxId, std::string sinceId, std::string maxCount);
 	bool statusShowByIdWithAppAuth(std::string strAppToken, std::string& statusId);
 	bool searchWithAppAuth(std::string strAppToken, std::string& searchQueryUtf8, std::string& strSinceId, std::string resultCount);
+	bool userGetWithAppAuth(std::string& strAppToken, std::string& userInfo /* in */, bool isUserId = false /* in */);
 
 private:
     /* cURL data */

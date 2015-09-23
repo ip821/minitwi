@@ -49,6 +49,7 @@ namespace IP
 
 				namespace UserObject
 				{
+					const static CComBSTR TypeId(L"TYPE_TWITTER_USER_OBJECT");
 					const static CComBSTR DisplayName(L"TwitterUserDisplayName");
 					const static CComBSTR Name(L"TwitterUserName");
 					const static CComBSTR Image(L"TwitterUserImage");

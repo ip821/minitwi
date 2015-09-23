@@ -17,6 +17,7 @@ STDMETHODIMP CTabbedControlStatusService::OnInitialized(IServiceProvider *pServi
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadServiceShowMoreTimeline));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pThreadServiceFollow));
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FOLLOW_THREAD, &m_pThreadServiceFollowStatus));
+	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_GETUSER_THREAD, &m_pThreadServiceGetUser));
 	
 	if (m_pThreadServiceFollowStatus)
 	{
@@ -33,6 +34,11 @@ STDMETHODIMP CTabbedControlStatusService::OnInitialized(IServiceProvider *pServi
 		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceFollow, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceFollow));
 	}
 
+	if (m_pThreadServiceGetUser)
+	{
+		RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceGetUser, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceGetUser));
+	}
+
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadServiceUpdateTimeline));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadServiceUpdateTimeline, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdateTimeline));
 
@@ -47,6 +53,11 @@ STDMETHODIMP CTabbedControlStatusService::OnInitialized(IServiceProvider *pServi
 
 STDMETHODIMP CTabbedControlStatusService::OnShutdown()
 {
+	if (m_pThreadServiceGetUser)
+	{
+		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceGetUser, __uuidof(IThreadServiceEventSink), m_dwAdviceGetUser));
+	}
+
 	if (m_pThreadServiceStreamingTimeline)
 	{
 		RETURN_IF_FAILED(AtlUnadvise(m_pThreadServiceStreamingTimeline, __uuidof(IThreadServiceEventSink), m_dwAdviceStreamingTimeline));
