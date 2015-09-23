@@ -207,7 +207,10 @@ void CUserAccountControl::UpdateRects()
 	GetClientRect(&rect);
 	CClientDC cdc(m_hWnd);
 	ASSERT_IF_FAILED(m_pSkinUserAccountControl->Measure(cdc, &rect, m_pVariantObject, m_bFollowing, m_bFollowButtonDisabled));
-	ASSERT_IF_FAILED(m_pSkinUserAccountControl->GetRects(&m_rectUserImage, &m_rectFollowButton));
+	if (m_pVariantObject)
+	{
+		ASSERT_IF_FAILED(m_pSkinUserAccountControl->GetRects(&m_rectUserImage, &m_rectFollowButton));
+	}
 }
 
 STDMETHODIMP CUserAccountControl::OnActivate()

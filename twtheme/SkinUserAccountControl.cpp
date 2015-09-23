@@ -69,40 +69,48 @@ STDMETHODIMP CSkinUserAccountControl::AnimationSetValue(SkinUserAccountControlAn
 
 STDMETHODIMP CSkinUserAccountControl::Measure(HDC hdc, LPRECT lpRect, IVariantObject* pVariantObject, BOOL bFollowing, BOOL bFollowButtonDisabled)
 {
-	{
-		CComPtr<IVariantObject> pItemButtonString;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::FollowButtonText, &pItemButtonString));
-		RETURN_IF_FAILED(pItemButtonString->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(bFollowing ? L"Following" : L"  Follow  ")));
-	}
-
-	{
-		CComPtr<IVariantObject> pItemButtonContainer;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::FollowButtonContainer, &pItemButtonContainer));
-		RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Disabled, &CComVar(bFollowButtonDisabled ? true : false)));
-		RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(bFollowing ? true : false)));
-	}
-
-	CComPtr<IVariantObject> pItemUserBannerImage;
-	RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
-
+	CComPtr<IVariantObject> pLayoutObject;
 	if (pVariantObject)
 	{
-		CComVar vUserImage;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
-		CComPtr<IVariantObject> pItemUserImage;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::TwitterUserImage, &pItemUserImage));
-		RETURN_IF_FAILED(pItemUserImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vUserImage));
-
-		CComVar vBannerUrl;
-		pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl);
-		if (vBannerUrl.vt == VT_BSTR)
+		pLayoutObject = m_pLayout;
 		{
-			RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vBannerUrl));
+			CComPtr<IVariantObject> pItemButtonString;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::UserAccountControl::FollowButtonText, &pItemButtonString));
+			RETURN_IF_FAILED(pItemButtonString->SetVariantValue(Layout::Metadata::TextColumn::Text, &CComVar(bFollowing ? L"Following" : L"  Follow  ")));
 		}
+
+		{
+			CComPtr<IVariantObject> pItemButtonContainer;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::UserAccountControl::FollowButtonContainer, &pItemButtonContainer));
+			RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Disabled, &CComVar(bFollowButtonDisabled ? true : false)));
+			RETURN_IF_FAILED(pItemButtonContainer->SetVariantValue(Layout::Metadata::Element::Selected, &CComVar(bFollowing ? true : false)));
+		}
+
+		CComPtr<IVariantObject> pItemUserBannerImage;
+		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::UserAccountControl::UserAccountControlLayoutBackgroundImage, &pItemUserBannerImage));
+
+		{
+			CComVar vUserImage;
+			RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Image, &vUserImage));
+			CComPtr<IVariantObject> pItemUserImage;
+			RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::UserAccountControl::TwitterUserImage, &pItemUserImage));
+			RETURN_IF_FAILED(pItemUserImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vUserImage));
+
+			CComVar vBannerUrl;
+			pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Banner, &vBannerUrl);
+			if (vBannerUrl.vt == VT_BSTR)
+			{
+				RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::ImageKey, &vBannerUrl));
+			}
+		}
+	}
+	else
+	{
+		RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::UserAccountControl::LayoutEmptyName, &pLayoutObject));
 	}
 
 	RETURN_IF_FAILED(m_pColumnsInfo->Clear());
-	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, lpRect, m_pLayout, pVariantObject, m_pImageManagerService, m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, lpRect, pLayoutObject, pVariantObject, m_pImageManagerService, m_pColumnsInfo));
 	return S_OK;
 }
 

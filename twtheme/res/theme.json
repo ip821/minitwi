@@ -334,6 +334,26 @@
                 "margin_right": 5
             },
             {
+                "name": "UserAccountEmptyLayout",
+                "type": "vertical_container",
+                "fit_horizontal": "parent",
+                "fit_vertical": "parent",
+                "color_background": "UserAccountControlBackground",
+                "elements": [
+                    {
+                        "name": "CenterString",
+                        "type": "text_column",
+                        "text": "Downloading...",
+                        "font": "PictureWindowText",
+                        "color": "PictureWindowText",
+                        "align_horizontal": "center",
+                        "align_vertical": "center",
+                        "background_style": "rounded",
+                        "color_background": "RoundedColor"
+                    }
+                ]
+            },
+            {
                 "name": "TimelineCustomItem",
                 "type": "horizontal_container",
                 "fit_horizontal": "parent",

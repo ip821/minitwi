@@ -29,6 +29,7 @@ namespace IP
 				namespace UserAccountControl
 				{
 					const static CComBSTR LayoutName(L"UserAccountControlLayout");
+					const static CComBSTR LayoutEmptyName(L"UserAccountEmptyLayout");
 					const static CComBSTR FollowButtonText(L"TwitterItemFollowButton");
 					const static CComBSTR FollowButtonContainer(L"FollowButtonContainer");
 					const static CComBSTR UserAccountControlLayoutBackgroundImage(L"UserAccountControlLayoutBackgroundImage");
