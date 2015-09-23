@@ -225,7 +225,10 @@ void CSearchControl::EnableControls(BOOL bEnable)
 STDMETHODIMP CSearchControl::GetVariantObject(IVariantObject** ppVariantObject)
 {
 	CHECK_E_POINTER(ppVariantObject);
-	RETURN_IF_FAILED(m_pVariantObject->QueryInterface(ppVariantObject));
+	if (m_pVariantObject)
+	{
+		RETURN_IF_FAILED(m_pVariantObject->QueryInterface(ppVariantObject));
+	}
 	return S_OK;
 }
 
