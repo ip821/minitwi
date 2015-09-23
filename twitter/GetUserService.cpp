@@ -50,15 +50,9 @@ STDMETHODIMP CGetUserService::OnRun(IVariantObject *pResult)
 	CComPtr<ISettings> pSettingsTwitter;
 	RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
 
-	CComBSTR bstrKey;
-	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterKey, &bstrKey));
-
-	CComBSTR bstrSecret;
-	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterSecret, &bstrSecret));
-
 	CComPtr<ITwitterConnection> pConnection;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
+	RETURN_IF_FAILED(pConnection->OpenConnectionWithAppAuth());
 
 	CComVar vUserName;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));

@@ -198,6 +198,7 @@ STDMETHODIMP CUserInfoControl::SetVariantObject(IVariantObject *pVariantObject)
 	}
 	else
 	{
+		RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pPluginSupport, pVariantObject));
 		RETURN_IF_FAILED(m_pThreadServiceGetUser->Run());
 	}
 

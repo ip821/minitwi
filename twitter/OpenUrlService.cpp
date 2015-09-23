@@ -175,6 +175,8 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 
 		if (bstr.Length() && bstr[0] == L'@')
 		{
+			CString strUserName(bstr);
+			strUserName.Mid(1);
 			CComPtr<IVariantObject> pUserObject;
 			RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserObject));
 			RETURN_IF_FAILED(pUserObject->SetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &(CComVar(bstr))));
