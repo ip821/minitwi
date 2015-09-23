@@ -155,8 +155,10 @@ interface ITheme;
 
 typedef enum 
 {
+	AnimationNone,
 	UserImage,
-	BackgroundImage
+	BackgroundImage,
+	UserText
 } SkinUserAccountControlAnimationType;
 
 [

@@ -47,6 +47,13 @@ STDMETHODIMP CSkinUserAccountControl::StartAnimation(SkinUserAccountControlAnima
 		ASSERT_IF_FAILED(pItemUserImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar((DWORD)0)));
 		ASSERT_IF_FAILED(pItemUserImage->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(true)));
 	}
+	else if (animationType == SkinUserAccountControlAnimationType::UserText)
+	{
+		CComPtr<IVariantObject> pItemUserContainer;
+		ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::LayoutName, &pItemUserContainer));
+		ASSERT_IF_FAILED(pItemUserContainer->SetVariantValue(Layout::Metadata::Element::Alpha, &CComVar((DWORD)0)));
+		ASSERT_IF_FAILED(pItemUserContainer->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(true)));
+	}
 	return S_OK;
 }
 
@@ -63,6 +70,12 @@ STDMETHODIMP CSkinUserAccountControl::AnimationSetValue(SkinUserAccountControlAn
 		CComPtr<IVariantObject> pItemUserBannerImage;
 		ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::TwitterUserImage, &pItemUserBannerImage));
 		RETURN_IF_FAILED(pItemUserBannerImage->SetVariantValue(Layout::Metadata::ImageColumn::Alpha, &CComVar(dwValue)));
+	}
+	else if (animationType == SkinUserAccountControlAnimationType::UserText)
+	{
+		CComPtr<IVariantObject> pItemUserContainer;
+		ASSERT_IF_FAILED(HrLayoutFindItemByName(m_pLayout, Twitter::Themes::Metadata::UserAccountControl::LayoutName, &pItemUserContainer));
+		ASSERT_IF_FAILED(pItemUserContainer->SetVariantValue(Layout::Metadata::Element::Alpha, &CComVar(dwValue)));
 	}
 	return S_OK;
 }

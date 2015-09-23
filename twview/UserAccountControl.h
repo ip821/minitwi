@@ -77,14 +77,23 @@ private:
 	CComPtr<ISkinUserAccountControl> m_pSkinUserAccountControl;
 	CComPtr<IAnimationService> m_pAnimationServiceBackgroundImage;
 	CComPtr<IAnimationService> m_pAnimationServiceUserImage;
+	CComPtr<IAnimationService> m_pAnimationUserText;
 
 	const DWORD STEPS = 25;
+	const DWORD MAX_ALPHA = 255;
 
-	DWORD dw_mAdviceAnimationServiceBackgroundImage = 0;
-	DWORD dw_mAdviceAnimationServiceUserImage = 0;
-	DWORD dw_mAdviceDownloadService = 0;
-	DWORD dw_mAdviceFollowService = 0;
-	DWORD dw_mAdviceFollowStatusService = 0;
+	DWORD m_dwAdviceAnimationServiceBackgroundImage = 0;
+	DWORD m_dwAdviceAnimationServiceUserImage = 0;
+	DWORD m_dwAdviceAnimationServiceUserText = 0;
+	DWORD m_dwAdviceDownloadService = 0;
+	DWORD m_dwAdviceFollowService = 0;
+	DWORD m_dwAdviceFollowStatusService = 0;
+
+	BOOL m_bAnimationBackgroundImagePending = FALSE;
+	BOOL m_bAnimationUserImagePending = FALSE;
+	BOOL m_bAnimationUserTextRunning = FALSE;
+	BOOL m_bActivated = FALSE;
+
 	CComBSTR m_bstrBannerUrl;
 	CRect m_rectUserImage;
 	CRect m_rectFollowButton;
@@ -105,11 +114,14 @@ private:
 
 	void UpdateRects();
 
+	STDMETHOD(StartAnimationUserImage)();
+	STDMETHOD(StartAnimationBackgroundImage)();
+
 	struct TSTARTANIMATIONPARAMS
 	{
-		BSTR bstrKey;
-		IStream* pStream;
-		SkinUserAccountControlAnimationType animationType;
+		BSTR bstrKey = nullptr;
+		IStream* pStream = nullptr;
+		SkinUserAccountControlAnimationType animationType = SkinUserAccountControlAnimationType::AnimationNone;
 	};
 
 public:
