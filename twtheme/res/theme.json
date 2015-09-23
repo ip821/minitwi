@@ -608,18 +608,12 @@
                                             {
                                                 "name": "TweetText",
                                                 "type": "text_multi_column",
+                                                "fit_horizontal": "parent",
                                                 "margin_right": 5,
                                                 "text_key": "TwitterNormalizedText",
                                                 "font": "TwitterNormalizedText",
                                                 "color": "TwitterNormalizedText",
                                                 "column_definition_key": true
-                                            },
-                                            {
-                                                "name": "UrlContainer",
-                                                "type": "vertical_container",
-                                                "elements": [
-
-                                                ]
                                             }
                                         ]
                                     }

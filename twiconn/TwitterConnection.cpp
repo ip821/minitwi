@@ -714,6 +714,11 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		}
 	}
 
+	for (auto& it : processedMediaUrls)
+	{
+		strText.Replace(it.c_str(), L"");
+	}
+
 	wstring stdStr(strText);
 
 //#ifndef DEBUG
@@ -787,11 +792,11 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 	for (size_t i = 0; i < mediaArray.size(); i++)
 	{
 		auto mediaObj = mediaArray[i]->AsObject();
-		auto url = mediaObj[L"media_url"]->AsString();
-		if (processedMediaUrls.find(url) != processedMediaUrls.end())
-			continue;
-		processedMediaUrls.insert(url);
 		auto shortUrl = mediaObj[L"url"]->AsString();
+		if (processedMediaUrls.find(shortUrl) != processedMediaUrls.end())
+			continue;
+		processedMediaUrls.insert(shortUrl);
+		auto url = mediaObj[L"media_url"]->AsString();
 		CComPtr<IVariantObject> pMediaObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pMediaObject));
 		RETURN_IF_FAILED(pMediaObjectCollection->AddObject(pMediaObject));

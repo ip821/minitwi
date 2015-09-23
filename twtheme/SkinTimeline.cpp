@@ -241,14 +241,6 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 				RETURN_IF_FAILED(pItemObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Urls, &vUrls));
 				if (vUrls.vt == VT_UNKNOWN)
 				{
-					CComPtr<IVariantObject> pItem;
-					RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::UrlContainer, &pItem));
-					ATLASSERT(pItem);
-					CComVar vElements;
-					RETURN_IF_FAILED(pItem->GetVariantValue(Layout::Metadata::Element::Elements, &vElements));
-					ATLASSERT(vElements.vt == VT_UNKNOWN);
-					CComQIPtr<IObjCollection> pElements = vElements.punkVal;
-					ATLASSERT(pElements);
 					CComQIPtr<IObjCollection> pObjCollection = vUrls.punkVal;
 					UINT_PTR uiCount = 0;
 					RETURN_IF_FAILED(pObjCollection->GetCount(&uiCount));

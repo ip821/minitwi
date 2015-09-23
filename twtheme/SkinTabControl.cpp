@@ -200,6 +200,8 @@ STDMETHODIMP CSkinTabControl::AnimationNextFrame()
 {
 	CComPtr<IColumnsInfoItem> pColumnsItem;
 	RETURN_IF_FAILED(m_pColumnsInfo->FindItemByName(Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pColumnsItem));
+	if (!pColumnsItem)
+		return S_OK;
 	CComVar vValue;
 	RETURN_IF_FAILED(pColumnsItem->GetVariantValue(Layout::Metadata::MarqueeProgressColumn::Value, &vValue));
 	CComVar vItemCount;
