@@ -655,7 +655,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 			auto indeciesArray = urlObject[L"indices"]->AsArray();
 			Indexes indexes;
 			indexes.Start = (int)indeciesArray[0]->AsNumber();
-			indexes.End = (int)indeciesArray[1]->AsNumber();
+			indexes.End = (int)indeciesArray[1]->AsNumber() - 1;
 			urlsMap[urlObject[L"url"]->AsString().c_str()] = indexes;
 		}
 	}
@@ -723,7 +723,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	wstring stdStr(strText);
 
 //#ifndef DEBUG
-	static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)*)");
+	static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)[^.,;]+)");
 	static boost::regex_constants::match_flag_type fl = boost::regex_constants::match_default;
 
 	boost::regex_iterator<wstring::iterator> regexIterator(stdStr.begin(), stdStr.end(), regex);
@@ -733,7 +733,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		auto strUrl1 = regexIterator->str();
 		Indexes indexes;
 		indexes.Start = regexIterator->position();
-		indexes.End = regexIterator->position() + regexIterator->length();
+		indexes.End = regexIterator->position() + regexIterator->length() - 1;
 		urlsMap[strUrl1] = indexes;
 		regexIterator++;
 	}

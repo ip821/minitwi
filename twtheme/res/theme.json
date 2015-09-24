@@ -291,6 +291,11 @@
                 "name": "fav",
                 "type": "png",
                 "data": "iVBORw0KGgoAAAANSUhEUgAAABAAAAANCAIAAAAv2XlzAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUAcGFpbnQubmV0IDQuMC42/Ixj3wAAAOdJREFUKFOVkM0KRGAUhudmbSk/S7kE2WFKlNyARH42IqXcwNyB2LC1MG/fd6bxTTbzrDzn7dX5zuP8k/vCi0Eicl9QVVXTNBKRm0Lf908GPmh04bewrquu68uyzPNsGAaUgg9UCILANE1JkrDMNE18OI4jFENEYRjyIRWqqvJ9/zgOrlcwdF23aRqu35XKsoyiiOQC/l3XNcnPG9I07bqOhNG2bZZlJAyhgCxJEhJGHMd5npMwhILnecMwbNuGG4B93/mJKWYIBVwDHUVRsAmQZRlqWRbFDKFg2zaeTsIoisJxHBJwnm91BzCbWgA7kgAAAABJRU5ErkJggg=="
+            },
+            {
+                "name": "play",
+                "type": "png",
+                "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAANQSURBVHhe7Zo5U1NRFICzuKQAaRwKBZeEiERR2VLYpJPOyriM+4a7Nv4CLK3cFfdlFI3jaKldakJQkSCEZNTRVDYIRdQk+L3kvhmGwYGXkJf3wv1m7px37y2S893zTlaLRCKRSCQSiUQimZfYRdSM1+tdXV1d3V5bW2tJJBI/xbLpsIqoiZaWlouE87mZxTIxMfGe0BkOh18r0+yiSdAsoLW1dSsJvxHTqXy0Wq2doVDoFdemEGETcdaQ/BZxOR0b2H/Z3Nz8gSrxM8+rwvREswBYKuJ/oQoaCS8Q0d/U1LSD63weRxeK+sQQsc5ms3VTDZ8Yu1gynAi9nlAD4ykVMcDY7ff78371mWt0PREqYi3jSSwWi9BM9xpBRElKEglraJaP4vH4IBWxv5QiSn1PupHxgIoYolke9Pl8C8S6bhiiKSHBRbO8NzY2NkSzPKynCEMIUEGEk3BnfHw8yq1xFBkLczvFw1ACJrEKGV1ERUSHx+NZlFuee4wqQGUlIm45HI4o1XC8GCKMLiALElYQbiAiRkWcrKurW5zbKRxTCFBBRA3jWlVVVYyKOE2zdIitvDGVgEksZ1yhWSoVcbYQEWYVoLKMirjEy2e0ra1tk1jThNkFZFFujXQ6HeS2mPGT6lTKQoACEpbw9rpdTGdN2QjIl7IRwOn/ogreiumsKQsBJP/dbrf7ent7NX87bXYBCZI/V1lZ6e7p6VG+mdaMWQX8YJypqKhwhcPhy8FgMJlb1o6pBCilzjg1OjrqotyvFpK4iikEkPQ3wolkMqmc+PWRkZHfuZ3CMbqAryR/jMTdnPjNSCTyR6zPGUYV8IXEO4huTryrGImrGEoASccJR2huSuK3OfW/uZ3iYQgBJB7LZDKHeDmrJ+m7NLeU2Co6pRYQJfkDLpervq+v776eiauURABJD/O2dZ/T6Wyg1B8GAoG02NIdXQWQ+GfGHk7cEwqFHpcycRXNP1/zmbuboPziq4VBxgXu7+fETHbFIBS1AjjtAZrbThJfz3jGkqGSV8hHwIyfuEi8n7Cd+7uR5ma4U5+MZgE0r3ficjqUv8hsI/GNnHiAueH/JiP/JCWiZrxeb00qldqsdHbKXCl5UyUukUgkEolEIpFI5jMWyz+WFz3KadOK6gAAAABJRU5ErkJggg=="
             }
         ]
     },
@@ -331,7 +336,11 @@
             {
                 "name": "VAR_TWITTER_IMAGE",
                 "type": "image_column",
-                "margin_right": 5
+                "margin_right": 5,
+                "image_overlay": {
+                    "image": "play",
+                    "visible": false
+                }
             },
             {
                 "name": "UserAccountEmptyLayout",
@@ -620,11 +629,18 @@
                                 ]
                             },
                             {
-                                "name": "ImageContainer",
+                                "name": "VideoOverlayImageContainer",
                                 "type": "horizontal_container",
                                 "align_horizontal": "center",
-                                "margin_bottom": 10,
                                 "elements": [
+                                    {
+                                        "name": "ImageContainer",
+                                        "type": "horizontal_container",
+                                        "align_horizontal": "center",
+                                        "margin_bottom": 10,
+                                        "elements": [
+                                        ]
+                                    }
                                 ]
                             }
                         ]

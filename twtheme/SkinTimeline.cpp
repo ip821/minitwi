@@ -52,6 +52,7 @@ STDMETHODIMP CSkinTimeline::SetImageManagerService(IImageManagerService* pImageM
 		RETURN_IF_FAILED(m_pLayoutManager->GetImageManagerService(&pLayoutImageManagerService));
 		RETURN_IF_FAILED(pLayoutImageManagerService->CopyImageTo(Twitter::Themes::Metadata::TimelineControl::RetweetImageKey, m_pImageManagerService));
 		RETURN_IF_FAILED(pLayoutImageManagerService->CopyImageTo(Twitter::Themes::Metadata::TimelineControl::FavoriteImageKey, m_pImageManagerService));
+		RETURN_IF_FAILED(pLayoutImageManagerService->CopyImageTo(Twitter::Themes::Metadata::TimelineControl::PlayImageKey, m_pImageManagerService));
 	}
 	return S_OK;
 }
@@ -330,6 +331,17 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVar(vMediaVideoUrl.bstrVal)));
 							RETURN_IF_FAILED(pImageElement->SetVariantValue(Twitter::Metadata::Item::VAR_IS_IMAGE, &CComVar(true)));
 							RETURN_IF_FAILED(pElements->AddObject(pImageElement));
+
+							{
+								CComVar vImageOverlay;
+								RETURN_IF_FAILED(pImageElement->GetVariantValue(Layout::Metadata::ImageColumn::ImageOverlay, &vImageOverlay));
+
+								if (vImageOverlay.vt == VT_UNKNOWN)
+								{
+									CComQIPtr<IVariantObject> pImageOverlay = vImageOverlay.punkVal;
+									RETURN_IF_FAILED(pImageOverlay->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(vMediaVideoUrl.vt != VT_EMPTY)));
+								}
+							}
 						}
 					}
 				}

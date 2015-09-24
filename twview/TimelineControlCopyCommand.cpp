@@ -98,13 +98,42 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 				CComVar vUserName;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 				CComVar vText;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Text, &vText));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::NormalizedText, &vText));
+
 				if (vUserDisplayName.vt == VT_BSTR)
 					str = vUserDisplayName.bstrVal;
 				if (vUserName.vt == VT_BSTR)
 					str += L" @" + CString(vUserName.bstrVal);
 				if (vText.vt == VT_BSTR)
+				{
 					str += L"\n" + CString(vText.bstrVal);
+
+					CComVar vMediaUrls;
+					RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &vMediaUrls));
+
+					if (vMediaUrls.vt == VT_UNKNOWN)
+					{
+						CComQIPtr<IObjArray> pMediaUrlsCollection = vMediaUrls.punkVal;
+						if (pMediaUrlsCollection)
+						{
+							UINT uiCount = 0;
+							RETURN_IF_FAILED(pMediaUrlsCollection->GetCount(&uiCount));
+
+							for (size_t i = 0; i < uiCount; i++)
+							{
+								CComPtr<IVariantObject> pMediaUrlObject;
+								RETURN_IF_FAILED(pMediaUrlsCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaUrlObject));
+								CComVar vUrlText;
+								RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vUrlText));
+								if (vUrlText.vt == VT_BSTR)
+								{
+									str += L"\n";
+									str += vUrlText.bstrVal;
+								}
+							}
+						}
+					}
+				}
 			}
 			else if (IsEqualGUID(guidCommand, COMMAND_COPY_IMAGE_URL))
 			{

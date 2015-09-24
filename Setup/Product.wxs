@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="MiniTwi" Language="1033" Version="3.1.4.0" Manufacturer="IP" UpgradeCode="b3966128-f26b-4da9-8b0c-789798ac020d">
+  <Product Id="*" Name="MiniTwi" Language="1033" Version="3.1.7.0" Manufacturer="IP" UpgradeCode="b3966128-f26b-4da9-8b0c-789798ac020d">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
