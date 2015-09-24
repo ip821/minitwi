@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>   
 
 // CTwitterConnection
 
@@ -809,6 +810,16 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 			auto videoObj = mediaObj[L"video_info"]->AsObject();
 			auto videoVariantsArray = videoObj[L"variants"]->AsArray();
 			auto firstVariantObj = videoVariantsArray[0]->AsObject();
+			for (auto& it : videoVariantsArray)
+			{
+				auto videoVariantObj = it->AsObject();
+				auto strVideoUrl = videoVariantObj[L"url"]->AsString();
+				boost::algorithm::to_lower(strVideoUrl);
+				if (boost::algorithm::ends_with(strVideoUrl, L".mp4"))
+				{
+					firstVariantObj = it->AsObject();
+				}
+			}
 			auto strVideoUrl = firstVariantObj[L"url"]->AsString();
 			RETURN_IF_FAILED(pMediaObject->SetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaVideoUrl, &CComVar(strVideoUrl.c_str())));
 		}
