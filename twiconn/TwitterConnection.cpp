@@ -818,6 +818,7 @@ HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* p
 				if (boost::algorithm::ends_with(strVideoUrl, L".mp4"))
 				{
 					firstVariantObj = it->AsObject();
+					break;
 				}
 			}
 			auto strVideoUrl = firstVariantObj[L"url"]->AsString();
