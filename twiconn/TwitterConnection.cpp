@@ -723,7 +723,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	wstring stdStr(strText);
 
 //#ifndef DEBUG
-	static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)[^.,;]+)");
+	static boost::wregex regex(L"((http|https):(\\/*([A-Za-z0-9]*)\\.*)[^.,;\n]+)");
 	static boost::regex_constants::match_flag_type fl = boost::regex_constants::match_default;
 
 	boost::regex_iterator<wstring::iterator> regexIterator(stdStr.begin(), stdStr.end(), regex);
