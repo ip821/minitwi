@@ -291,10 +291,8 @@ STDMETHODIMP CSettingsControl::OnFinish(IVariantObject *pResult)
 			auto msg = _com_error(HRESULT_FROM_WIN32(errCode)).ErrorMessage();
 			MessageBox(msg, L"Error");
 		}
-		else
-		{
-			SwitchToPinMode();
-		}
+
+		SwitchToPinMode();
 	}
 	else
 	{

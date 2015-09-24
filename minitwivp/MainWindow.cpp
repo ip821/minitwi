@@ -10,7 +10,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 LRESULT CMainWindow::OnSetVideoHwnd(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_hWndVideo = (HWND)wParam;
-	RETURN_IF_FAILED(MFPCreateMediaPlayer(NULL, FALSE, 0, this, m_hWndVideo, &m_pPlayer));
+	NOTIFY_IF_FAILED(m_hWndVideo, MFPCreateMediaPlayer(NULL, FALSE, 0, this, m_hWndVideo, &m_pPlayer));
 	::SendMessage(m_hWndVideo, WM_PLAYER_STARTED, (WPARAM)_Module.GetModuleInstance(), (LPARAM)m_hWnd);
 	return S_OK;
 }
@@ -19,13 +19,13 @@ LRESULT CMainWindow::OnCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 {
 	COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
 	m_strPath = (TCHAR*)pcds->lpData;
-	RETURN_IF_FAILED(m_pPlayer->CreateMediaItemFromURL(m_strPath, FALSE, 0, NULL));
+	NOTIFY_IF_FAILED(m_hWndVideo, m_pPlayer->CreateMediaItemFromURL(m_strPath, FALSE, 0, NULL));
 	return S_OK;
 }
 
 LRESULT CMainWindow::OnPlayerPlay(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	RETURN_IF_FAILED(m_pPlayer->Play());
+	NOTIFY_IF_FAILED(m_hWndVideo, m_pPlayer->Play());
 	return S_OK;
 }
 
@@ -39,6 +39,7 @@ void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventH
 {
 	if (FAILED(pEventHeader->hrEvent))
 	{
+		NOTIFY_IF_FAILED(m_hWndVideo, pEventHeader->hrEvent);
 		return;
 	}
 
@@ -62,7 +63,7 @@ void STDMETHODCALLTYPE CMainWindow::OnMediaPlayerEvent(MFP_EVENT_HEADER *pEventH
 LRESULT CMainWindow::OnPlayerUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	if (m_pPlayer && m_bPlaying)
-		RETURN_IF_FAILED(m_pPlayer->UpdateVideo());
+		NOTIFY_IF_FAILED(m_hWndVideo, m_pPlayer->UpdateVideo());
 	return S_OK;
 }
 
