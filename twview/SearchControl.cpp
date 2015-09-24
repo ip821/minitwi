@@ -70,6 +70,8 @@ STDMETHODIMP CSearchControl::OnDeactivate()
 	CComPtr<ITimelineControl> pControl;
 	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&pControl));
 	RETURN_IF_FAILED(pControl->Clear());
+	m_editText.Clear();
+	m_pVariantObject.Release();
 	return S_OK;
 }
 
