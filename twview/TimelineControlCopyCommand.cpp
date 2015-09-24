@@ -98,7 +98,7 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 				CComVar vUserName;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 				CComVar vText;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::NormalizedText, &vText));
+				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::Text, &vText));
 				if (vUserDisplayName.vt == VT_BSTR)
 					str = vUserDisplayName.bstrVal;
 				if (vUserName.vt == VT_BSTR)
