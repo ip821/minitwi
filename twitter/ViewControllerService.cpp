@@ -40,6 +40,7 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	
 	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(IInfoControlEventSink), &m_dwAdviceTabbedControl));
 	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ITabbedControlEventSink), &m_dwAdviceTabbedControl2));
+	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ICustomTabControlEventSink), &m_dwAdviceCustomtabControl));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_UpdateService, &m_pUpdateService));
 	
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FORMS_SERVICE, &m_pFormsService));
@@ -59,9 +60,7 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 
 STDMETHODIMP CViewControllerService::OnInitCompleted()
 {
-	CComPtr<IFormManager> pFormManager;
-	RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
-	CComPtr<IHomeTimelineControllerService> pHomeTimelineControllerService;
+	RETURN_IF_FAILED(m_pTabbedControl->GetPageCount(&m_dwControlsCount));
 	return S_OK;
 }
 
@@ -71,6 +70,7 @@ STDMETHODIMP CViewControllerService::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pUpdateService, __uuidof(IUpdateServiceEventSink), m_dwAdviceUpdateService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ITabbedControlEventSink), m_dwAdviceTabbedControl2));
 	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
+	RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ICustomTabControlEventSink), m_dwAdviceCustomtabControl));
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
 	m_pMessageLoop.Release();
 	m_pFormsService.Release();
@@ -99,6 +99,28 @@ STDMETHODIMP CViewControllerService::OnTabHeaderClick(IControl* pControl)
 STDMETHODIMP CViewControllerService::OnLinkClick(HWND hWnd)
 {
 	RETURN_IF_FAILED(m_pUpdateService->RunUpdate());
+	return S_OK;
+}
+
+STDMETHODIMP CViewControllerService::OnBackButtonClicked()
+{
+	ATLASSERT(m_controlsStack.size());
+	if (m_controlsStack.size())
+	{
+		if (m_controlsStack.size() > 1)
+		{
+			auto itLast = m_controlsStack.end();
+			--itLast;
+			--itLast;
+			RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(itLast->first));
+		}
+		else
+		{
+			CComPtr<IControl> pControl;
+			RETURN_IF_FAILED(m_pTabbedControl->GetPage(0, &pControl));
+			RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(pControl));
+		}
+	}
 	return S_OK;
 }
 
@@ -166,29 +188,47 @@ STDMETHODIMP CViewControllerService::HideInfo()
 	return S_OK;
 }
 
+STDMETHODIMP CViewControllerService::OnActivate(IControl* pControl)
+{
+	DWORD dwCount = 0;
+	RETURN_IF_FAILED(m_pTabbedControl->GetPageCount(&dwCount));
+	if (dwCount > m_dwControlsCount)
+	{
+		RETURN_IF_FAILED(m_pTabbedControl->ShowBackButton(TRUE));
+		DWORD dwIndex = 0;
+		RETURN_IF_FAILED(m_pTabbedControl->GetPageIndex(pControl, &dwIndex));
+		ATLASSERT(m_controlsStack.find(pControl) == m_controlsStack.end());
+		m_controlsStack[pControl] = dwIndex;
+		return S_OK;
+	}
+	else
+	{
+		RETURN_IF_FAILED(m_pTabbedControl->ShowBackButton(FALSE));
+	}
+
+	if (m_controlsStack.find(pControl) == m_controlsStack.end())
+	{
+		for (auto& it : m_controlsStack)
+		{
+			RETURN_IF_FAILED(m_pFormsService->Close(it.first));
+		}
+	}
+
+	return S_OK;
+}
+
 STDMETHODIMP CViewControllerService::OnDeactivate(IControl *pControl)
 {
-	CComQIPtr<ITwitViewControl> pTwitViewControl = pControl;
-	if (pTwitViewControl)
+	if (m_controlsStack.size())
 	{
-		RETURN_IF_FAILED(m_pFormsService->Close(pControl));
-		return S_OK;
+		auto itLast = --m_controlsStack.end();
+		if (itLast->first == pControl)
+		{
+			m_controlsStack.erase(itLast);
+			RETURN_IF_FAILED(m_pFormsService->Close(pControl));
+			return S_OK;
+		}
 	}
-
-	CComQIPtr<IUserInfoControl> pUserInfoControl = pControl;
-	if (pUserInfoControl)
-	{
-		RETURN_IF_FAILED(m_pFormsService->Close(pControl));
-		return S_OK;
-	}
-
-	CComQIPtr<IListTimelineControl> pListTimelineControl = pControl;
-	if (pListTimelineControl)
-	{
-		RETURN_IF_FAILED(m_pFormsService->Close(pControl));
-		return S_OK;
-	}
-
 	return S_OK;
 }
 

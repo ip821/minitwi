@@ -11,6 +11,7 @@ using namespace Gdiplus;
 class CCustomTabControl;
 typedef IConnectionPointImpl <CCustomTabControl, &__uuidof(IInfoControlEventSink)> IConnectionPointImpl_IInfoControlEventSink;
 typedef IConnectionPointImpl<CCustomTabControl, &__uuidof(ITabbedControlEventSink)> IConnectionPointImpl_ITabbedControlEventSink;
+typedef IConnectionPointImpl<CCustomTabControl, &__uuidof(ICustomTabControlEventSink)> IConnectionPointImpl_ICustomTabControlEventSink;
 
 class CCustomTabControl :
 	public CWindowImpl<CCustomTabControl>,
@@ -24,7 +25,8 @@ class CCustomTabControl :
 	public IPluginSupportNotifications,
 	public IConnectionPointContainerImpl<CCustomTabControl>,
 	public IConnectionPointImpl_ITabbedControlEventSink,
-	public IConnectionPointImpl_IInfoControlEventSink
+	public IConnectionPointImpl_IInfoControlEventSink,
+	public IConnectionPointImpl_ICustomTabControlEventSink
 {
 
 public:
@@ -65,6 +67,7 @@ public:
 	BEGIN_CONNECTION_POINT_MAP(CCustomTabControl)
 		CONNECTION_POINT_ENTRY(__uuidof(ITabbedControlEventSink))
 		CONNECTION_POINT_ENTRY(__uuidof(IInfoControlEventSink))
+		CONNECTION_POINT_ENTRY(__uuidof(ICustomTabControlEventSink))
 	END_CONNECTION_POINT_MAP()
 
 private:
@@ -88,6 +91,7 @@ private:
 	BOOL m_bShowInfoImage = FALSE;
 	BOOL m_bInfoImageIsError = FALSE;
 	CComBSTR m_bstrInfoMessage;
+	BOOL m_bShowBack = FALSE;
 
 	CBitmap m_scrollBitmap;
 
@@ -112,6 +116,7 @@ private:
 	HRESULT Fire_OnDeactivate(IControl* pControl);
 	HRESULT Fire_OnClose(IControl* pControl);
 	HRESULT Fire_OnTabHeaderClick(IControl* pControl);
+	HRESULT Fire_OnBackButtonClicked();
 
 public:
 	STDMETHOD(OnEndScroll)();
@@ -144,7 +149,9 @@ public:
 
 	STDMETHOD(ShowInfo)(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
 	STDMETHOD(HideInfo)();
+	STDMETHOD(ShowBackButton)(BOOL bShow);
 
+	STDMETHOD(GetPageIndex)(IControl* pControl, DWORD* pdwIndex);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(CustomTabControl), CCustomTabControl)

@@ -557,17 +557,27 @@ LRESULT CCustomTabControl::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	}
 	else
 	{
-		UINT uiIndex = 0;
-		if (m_pSkinTabControl->GetPageIndex(CPoint(x, y), &uiIndex) == S_OK)
+		BOOL bBackButton = FALSE;
+		RETURN_IF_FAILED(m_pSkinTabControl->IsBackButton(CPoint(x, y), &bBackButton));
+
+		if (bBackButton)
 		{
-			UINT uiControlsCount = 0;
-			RETURN_IF_FAILED(m_pControls->GetCount(&uiControlsCount));
-			if (uiIndex < uiControlsCount)
+			RETURN_IF_FAILED(Fire_OnBackButtonClicked());
+		}
+		else
+		{
+			UINT uiIndex = 0;
+			if (m_pSkinTabControl->GetPageIndex(CPoint(x, y), &uiIndex) == S_OK)
 			{
-				CComPtr<IControl> pControl;
-				ASSERT_IF_FAILED(m_pControls->GetAt(uiIndex, __uuidof(IControl), (LPVOID*)&pControl));
-				ASSERT_IF_FAILED(Fire_OnTabHeaderClick(pControl));
-				SelectPage(uiIndex);
+				UINT uiControlsCount = 0;
+				RETURN_IF_FAILED(m_pControls->GetCount(&uiControlsCount));
+				if (uiIndex < uiControlsCount)
+				{
+					CComPtr<IControl> pControl;
+					ASSERT_IF_FAILED(m_pControls->GetAt(uiIndex, __uuidof(IControl), (LPVOID*)&pControl));
+					ASSERT_IF_FAILED(Fire_OnTabHeaderClick(pControl));
+					SelectPage(uiIndex);
+				}
 			}
 		}
 	}
@@ -611,6 +621,12 @@ STDMETHODIMP CCustomTabControl::HideInfo()
 	return S_OK;
 }
 
+STDMETHODIMP CCustomTabControl::ShowBackButton(BOOL bShow)
+{
+	RETURN_IF_FAILED(m_pSkinTabControl->ShowBackButton(bShow));
+	return S_OK;
+}
+
 LRESULT CCustomTabControl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	SetCursor(m_arrowCursor);
@@ -623,6 +639,25 @@ LRESULT CCustomTabControl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		SetCursor(m_handCursor);
 	}
 	return 0;
+}
+
+STDMETHODIMP CCustomTabControl::GetPageIndex(IControl* pControl, DWORD* pdwIndex)
+{
+	CHECK_E_POINTER(pControl);
+	CHECK_E_POINTER(pdwIndex);
+	UINT uiCount = 0;
+	RETURN_IF_FAILED(m_pControls->GetCount(&uiCount));
+	for (size_t i = 0; i < uiCount; i++)
+	{
+		CComPtr<IControl> pFoundControl;
+		RETURN_IF_FAILED(m_pControls->GetAt((UINT)i, __uuidof(IControl), (LPVOID*)&pFoundControl));
+		if (pFoundControl == pControl)
+		{
+			*pdwIndex = i;
+			return S_OK;
+		}
+	}
+	return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
 }
 
 HRESULT CCustomTabControl::Fire_OnLinkClick()
@@ -740,6 +775,30 @@ HRESULT CCustomTabControl::Fire_OnClose(IControl* pControl)
 		if (pConnection)
 		{
 			hr = pConnection->OnClose(pControl);
+		}
+	}
+	return hr;
+}
+
+HRESULT CCustomTabControl::Fire_OnBackButtonClicked()
+{
+	CComPtr<IUnknown> pUnk;
+	RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+	HRESULT hr = S_OK;
+	CCustomTabControl* pThis = static_cast<CCustomTabControl*>(this);
+	int cConnections = IConnectionPointImpl_ICustomTabControlEventSink::m_vec.GetSize();
+
+	for (int iConnection = 0; iConnection < cConnections; iConnection++)
+	{
+		pThis->Lock();
+		CComPtr<IUnknown> punkConnection = IConnectionPointImpl_ICustomTabControlEventSink::m_vec.GetAt(iConnection);
+		pThis->Unlock();
+
+		ICustomTabControlEventSink* pConnection = static_cast<ICustomTabControlEventSink*>(punkConnection.p);
+
+		if (pConnection)
+		{
+			hr = pConnection->OnBackButtonClicked();
 		}
 	}
 	return hr;

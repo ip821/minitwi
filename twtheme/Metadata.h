@@ -11,6 +11,7 @@ namespace IP
 				namespace TabContainer
 				{
 					const static CComBSTR LayoutName(L"MainTabContainerHeaderLayout");
+					const static CComBSTR BackLayoutName(L"MainTabContainerHeaderBackLayout");
 					const static CComBSTR InfoContainer(L"InfoContainer");
 					const static CComBSTR InfoImage(L"InfoImage");
 					const static CComBSTR MarqueeProgressBox(L"MarqueeProgressBox");

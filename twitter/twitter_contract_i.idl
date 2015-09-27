@@ -205,6 +205,8 @@ interface ISkinTabControl : IUnknown
 	HRESULT AnimationNextFrame();
 	HRESULT AnimationStart();
 	HRESULT AnimationStop();
+	HRESULT ShowBackButton(BOOL bShow);
+	HRESULT IsBackButton(POINT pt, BOOL* pbIsBackButton);
 };
 
 [
@@ -425,6 +427,17 @@ interface ICustomTabControl : ITabbedControl
 	HRESULT StopAnimation(UINT* puiRefs);
 	HRESULT ShowInfo(BOOL bError, BOOL bInfoImageEnableClick, BSTR bstrMessage);
 	HRESULT HideInfo();
+	HRESULT ShowBackButton(BOOL bShow);
+};
+
+[
+	object,
+	uuid(8D8ABB97-DC7F-4F92-B14C-969F8832ED2C),
+	pointer_default(unique)
+]
+interface ICustomTabControlEventSink : IUnknown
+{
+	HRESULT OnBackButtonClicked();
 };
 
 [

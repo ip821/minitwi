@@ -296,6 +296,11 @@
                 "name": "play",
                 "type": "png",
                 "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAANQSURBVHhe7Zo5U1NRFICzuKQAaRwKBZeEiERR2VLYpJPOyriM+4a7Nv4CLK3cFfdlFI3jaKldakJQkSCEZNTRVDYIRdQk+L3kvhmGwYGXkJf3wv1m7px37y2S893zTlaLRCKRSCQSiUQimZfYRdSM1+tdXV1d3V5bW2tJJBI/xbLpsIqoiZaWlouE87mZxTIxMfGe0BkOh18r0+yiSdAsoLW1dSsJvxHTqXy0Wq2doVDoFdemEGETcdaQ/BZxOR0b2H/Z3Nz8gSrxM8+rwvREswBYKuJ/oQoaCS8Q0d/U1LSD63weRxeK+sQQsc5ms3VTDZ8Yu1gynAi9nlAD4ykVMcDY7ff78371mWt0PREqYi3jSSwWi9BM9xpBRElKEglraJaP4vH4IBWxv5QiSn1PupHxgIoYolke9Pl8C8S6bhiiKSHBRbO8NzY2NkSzPKynCEMIUEGEk3BnfHw8yq1xFBkLczvFw1ACJrEKGV1ERUSHx+NZlFuee4wqQGUlIm45HI4o1XC8GCKMLiALElYQbiAiRkWcrKurW5zbKRxTCFBBRA3jWlVVVYyKOE2zdIitvDGVgEksZ1yhWSoVcbYQEWYVoLKMirjEy2e0ra1tk1jThNkFZFFujXQ6HeS2mPGT6lTKQoACEpbw9rpdTGdN2QjIl7IRwOn/ogreiumsKQsBJP/dbrf7ent7NX87bXYBCZI/V1lZ6e7p6VG+mdaMWQX8YJypqKhwhcPhy8FgMJlb1o6pBCilzjg1OjrqotyvFpK4iikEkPQ3wolkMqmc+PWRkZHfuZ3CMbqAryR/jMTdnPjNSCTyR6zPGUYV8IXEO4huTryrGImrGEoASccJR2huSuK3OfW/uZ3iYQgBJB7LZDKHeDmrJ+m7NLeU2Co6pRYQJfkDLpervq+v776eiauURABJD/O2dZ/T6Wyg1B8GAoG02NIdXQWQ+GfGHk7cEwqFHpcycRXNP1/zmbuboPziq4VBxgXu7+fETHbFIBS1AjjtAZrbThJfz3jGkqGSV8hHwIyfuEi8n7Cd+7uR5ma4U5+MZgE0r3ficjqUv8hsI/GNnHiAueH/JiP/JCWiZrxeb00qldqsdHbKXCl5UyUukUgkEolEIpFI5jMWyz+WFz3KadOK6gAAAABJRU5ErkJggg=="
+            },
+            {
+                "name": "back",
+                "type": "png",
+                "data": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuNvyMY98AAANtSURBVEhLlZVLSJRRFMdHLXu/o4jAXtLDUmccdWxCXJQQIhWEFSWF0CIpFy5aVYsQMijaFBhFhiUYLcqCwLDEHmDQY9NLiLIgM8rEzLTStN//mzPgOI5OB36c+53Xvd+597ufK5Lk5ORMTE5OnpWWlrbN6/VeQj9Ad8Ig4y64DWXp6ekev98/jZTYQOYYkpSUFE/iMiVTrBXdh/6CboYXjJvgJeN3oIl6eK7zeDwbU1NTZ1IiJlBpBNGqSciHBpJ+oJvR1ehiVppBkVUFBQVxGRkZq7HnwlG4i/8bfGJ8LCsrayGlwidRcQI2w2NLqKLopszMzOkWEibkjNNkxB6E5+R2oyvQCbhDJ8GB3XsP3Q7Hed3FmKPqK6ueRI7e/CmoZWc0ubldLgxzWe0pnOppBa1YhDlyL0cQFXS73XnU+gid1CvEHKjBa7rloPgzxusxhaycjZ+K7zw8hHoWsNZcIaIDQp0T8BteYYrR6sdDiYwkl2svAuEBseI18JOYQSiVzdxhQrtmE6PT189bbHAKYLgGLaxsu8U5Yr6rBKuvg/hL1W9zRxRiK+EveWf1MAOewH1mXGMxQ1fuFIcSbPHmHlWI3UJeHzSo/3MwDPBQz5FcooCUlJQprPYitmBb9PXqg/sViaH7Qmw2/MHe4ZwgUJFq88t2AD6bPVrWWbojPGviQecNtDqop0VLzTmZ5wrosmShL/trJPBnOpURnp03EC59qQweEdCE9lpMcJKT0M5YLSyndfPMParQrkLi1dI6pxCo3228QZHFOGJf6BEItuucfeERhRgd+xugU1Tm0uVF4R0YeqES4wKLdSQxMXECdn0nraDNvswKE80dJtTKIUZv3at7KmhcgUGX3AfYOfw46pmiW4nZh38vY10lYaLrGn8taE9rMQWuCmtFMWjDGsGHOc5xRil2G+v67iT/PSSbKyA4EjBWoXVa7uhch9yIo4j9+cqgTfmwG3PoTay94EQlEXQdeuA1gYd8Pt983CPerGodMbnKQXeAbuM9ugUsJExibZIagruNN+zRaXQe2q+3wp/NuAjbTcZtoDP/FnbpFrBaESVWe0KB/RRoAR03FdC1oT/Wd9O90A+6q67Aymhb6ohaphZQIJ/kC+hGtL6FAdB1fAt9mKO43Ar/1w9quChZaONE8HmMoi7XPx2wgdEnegfHAAAAAElFTkSuQmCC"
             }
         ]
     },
@@ -726,6 +731,81 @@
                                 "name": "SettingsCaption",
                                 "type": "text_column",
                                 "text": "Settings",
+                                "style": "TabContainerHeaderTextColumn"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "InfoContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "margin_right": 5,
+                        "align_horizontal": "right",
+                        "elements": [
+                            {
+                                "name": "MarqueeProgressBox",
+                                "type": "marquee_progress",
+                                "visible": false,
+                                "margin_top": 8,
+                                "value": 0,
+                                "item_count": 3,
+                                "item_size": 10,
+                                "item_distance": 5,
+                                "color_active": "TwitterItemAnimationActive",
+                                "color_inactive": "TwitterItemAnimationInactive"
+                            },
+                            {
+                                "name": "InfoImage",
+                                "type": "image_column",
+                                "image": "info"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "MainTabContainerHeaderBackLayout",
+                "type": "horizontal_container",
+                "fit_horizontal": "parent",
+                "border_top": true,
+                "border_top_width": 1,
+                "border_top_color": "TwitterDelimiter",
+                "border_bottom": true,
+                "border_bottom_width": 1,
+                "border_bottom_color": "TwitterDelimiter",
+                "elements": [
+                    {
+                        "name": "HomeContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            {
+                                "name": "HomeImage",
+                                "type": "image_column",
+                                "image": "home"
+                            },
+                            {
+                                "name": "HomeCaption",
+                                "type": "text_column",
+                                "text": "Home",
+                                "style": "TabContainerHeaderTextColumn"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "BackContainer",
+                        "type": "horizontal_container",
+                        "style": "TabContainerHeaderChildContainer",
+                        "elements": [
+                            {
+                                "name": "BackImage",
+                                "type": "image_column",
+                                "image": "back"
+                            },
+                            {
+                                "name": "BackCaption",
+                                "type": "text_column",
+                                "text": "Back",
                                 "style": "TabContainerHeaderTextColumn"
                             }
                         ]

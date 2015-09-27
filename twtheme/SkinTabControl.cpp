@@ -56,6 +56,7 @@ STDMETHODIMP CSkinTabControl::SetTheme(ITheme* pTheme)
 	RETURN_IF_FAILED(m_pTheme->GetColorMap(&m_pThemeColorMap));
 	RETURN_IF_FAILED(m_pTheme->GetLayoutManager(&m_pLayoutManager));
 	RETURN_IF_FAILED(m_pTheme->GetLayout(Twitter::Themes::Metadata::TabContainer::LayoutName, &m_pLayoutObject));
+	RETURN_IF_FAILED(m_pTheme->GetLayout(Twitter::Themes::Metadata::TabContainer::BackLayoutName, &m_pLayoutObjectBackButton));
 	RETURN_IF_FAILED(m_pTheme->GetImageManagerService(&m_pImageManagerService));
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ColumnsInfo, &m_pColumnsInfo));
 	return S_OK;
@@ -79,18 +80,44 @@ STDMETHODIMP CSkinTabControl::SetSelectedIndex(UINT uiIndex)
 	return S_OK;
 }
 
+STDMETHODIMP CSkinTabControl::ShowBackButton(BOOL bShow)
+{
+	m_bShowBackButton = bShow;
+	return S_OK;
+}
+
+STDMETHODIMP CSkinTabControl::IsBackButton(POINT pt, BOOL* pbIsBackButton)
+{
+	CHECK_E_POINTER(pbIsBackButton);
+	if (!m_bShowBackButton)
+	{
+		*pbIsBackButton = FALSE;
+		return S_OK;
+	}
+	UINT uiIndex = 0;
+	GetPageIndex(pt, &uiIndex);
+	*pbIsBackButton = uiIndex == 1; //back button index
+	return S_OK;
+}
+
 STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight)
 {
+	CComPtr<IVariantObject> pLayoutObject;
+	if (m_bShowBackButton)
+		pLayoutObject = m_pLayoutObjectBackButton;
+	else
+		pLayoutObject = m_pLayoutObject;
+
 	RETURN_IF_FAILED(m_pColumnsInfo->Clear());
 	{
 		CComPtr<IVariantObject> pElement;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pElement));
+		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TabContainer::MarqueeProgressBox, &pElement));
 		RETURN_IF_FAILED(pElement->SetVariantValue(Layout::Metadata::Element::Visible, &CComVar(m_bAnimation == TRUE)));
 	}
 
 	{
 		CComPtr<IVariantObject> pElement;
-		RETURN_IF_FAILED(HrLayoutFindItemByName(m_pLayoutObject, Twitter::Themes::Metadata::TabContainer::InfoImage, &pElement));
+		RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TabContainer::InfoImage, &pElement));
 
 		if (m_bstrMessage == L"")
 		{
@@ -111,10 +138,16 @@ STDMETHODIMP CSkinTabControl::MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT*
 		}
 	}
 
-	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, m_pLayoutObject, nullptr, m_pImageManagerService, m_pColumnsInfo));
+	RETURN_IF_FAILED(m_pLayoutManager->BuildLayout(hdc, clientRect, pLayoutObject, nullptr, m_pImageManagerService, m_pColumnsInfo));
 	{
+		CComBSTR bstrLayoutName;
+		if (m_bShowBackButton)
+			bstrLayoutName = Twitter::Themes::Metadata::TabContainer::BackLayoutName;
+		else
+			bstrLayoutName = Twitter::Themes::Metadata::TabContainer::LayoutName;
+
 		UINT uiIndex = 0;
-		RETURN_IF_FAILED(m_pColumnsInfo->FindItemIndex(Twitter::Themes::Metadata::TabContainer::LayoutName, &uiIndex));
+		RETURN_IF_FAILED(m_pColumnsInfo->FindItemIndex(bstrLayoutName, &uiIndex));
 		CComPtr<IColumnsInfoItem> pColumnsInfoItem;
 		RETURN_IF_FAILED(m_pColumnsInfo->GetItem(uiIndex, &pColumnsInfoItem));
 		RETURN_IF_FAILED(pColumnsInfoItem->GetRect(&m_rectHeader));

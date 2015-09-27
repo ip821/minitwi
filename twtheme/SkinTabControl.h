@@ -30,6 +30,7 @@ private:
 	CComPtr<IThemeColorMap> m_pThemeColorMap;
 	CComPtr<ILayoutManager> m_pLayoutManager;
 	CComPtr<IVariantObject> m_pLayoutObject;
+	CComPtr<IVariantObject> m_pLayoutObjectBackButton;
 	CComPtr<IImageManagerService> m_pImageManagerService;
 	CComPtr<IColumnsInfo> m_pColumnsInfo;
 	CRect m_rectHeader;
@@ -39,6 +40,7 @@ private:
 	BOOL m_bError = FALSE;
 	BOOL m_bAnimation = FALSE;
 	CComBSTR m_bstrMessage;
+	BOOL m_bShowBackButton = FALSE;
 
 	STDMETHOD(InitImageFromResource)(int nId, LPCTSTR lpType, shared_ptr<Gdiplus::Bitmap>& pBitmap);
 	STDMETHOD(GetResourceStream)(int nId, LPCTSTR lpType, IStream** ppStream);
@@ -57,6 +59,8 @@ public:
 	STDMETHOD(AnimationNextFrame)();
 	STDMETHOD(AnimationStart)();
 	STDMETHOD(AnimationStop)();
+	STDMETHOD(ShowBackButton)(BOOL bShow);
+	STDMETHOD(IsBackButton)(POINT pt, BOOL* pbIsBackButton);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SkinTabControl), CSkinTabControl)
