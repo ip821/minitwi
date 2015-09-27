@@ -37,12 +37,12 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 	CComPtr<IUnknown> pUnk;
 	RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
-	
+
 	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(IInfoControlEventSink), &m_dwAdviceTabbedControl));
 	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ITabbedControlEventSink), &m_dwAdviceTabbedControl2));
 	RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ICustomTabControlEventSink), &m_dwAdviceCustomtabControl));
 	RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_UpdateService, &m_pUpdateService));
-	
+
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FORMS_SERVICE, &m_pFormsService));
 
 	CComPtr<IThemeService> pThemeService;
@@ -112,7 +112,7 @@ STDMETHODIMP CViewControllerService::OnBackButtonClicked()
 			auto itLast = m_controlsStack.end();
 			--itLast;
 			--itLast;
-			RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(itLast->first));
+			RETURN_IF_FAILED(m_pTabbedControl->ActivatePage(*itLast));
 		}
 		else
 		{
@@ -195,22 +195,35 @@ STDMETHODIMP CViewControllerService::OnActivate(IControl* pControl)
 	if (dwCount > m_dwControlsCount)
 	{
 		RETURN_IF_FAILED(m_pTabbedControl->ShowBackButton(TRUE));
+
 		DWORD dwIndex = 0;
 		RETURN_IF_FAILED(m_pTabbedControl->GetPageIndex(pControl, &dwIndex));
-		ATLASSERT(m_controlsStack.find(pControl) == m_controlsStack.end());
-		m_controlsStack[pControl] = dwIndex;
-		return S_OK;
-	}
-	else
-	{
-		RETURN_IF_FAILED(m_pTabbedControl->ShowBackButton(FALSE));
-	}
 
-	if (m_controlsStack.find(pControl) == m_controlsStack.end())
-	{
-		for (auto& it : m_controlsStack)
+		if (dwIndex == dwCount - 1) //moving forward
 		{
-			RETURN_IF_FAILED(m_pFormsService->Close(it.first));
+			m_controlsStack.push_back(pControl);
+			return S_OK;
+		}
+		else //moving backwards
+		{
+			if (dwIndex > m_dwControlsCount - 1)
+			{
+				//destroy previous control
+				auto itLast = --m_controlsStack.end();
+				RETURN_IF_FAILED(m_pFormsService->Close(*itLast));
+				m_controlsStack.erase(itLast);
+				return S_OK;
+			}
+			else
+			{
+				//moving to home, destroy all
+				for (auto& it : m_controlsStack)
+				{
+					RETURN_IF_FAILED(m_pFormsService->Close(it));
+				}
+				m_controlsStack.clear();
+				RETURN_IF_FAILED(m_pTabbedControl->ShowBackButton(FALSE));
+			}
 		}
 	}
 
@@ -219,15 +232,13 @@ STDMETHODIMP CViewControllerService::OnActivate(IControl* pControl)
 
 STDMETHODIMP CViewControllerService::OnDeactivate(IControl *pControl)
 {
-	if (m_controlsStack.size())
+	DWORD dwIndex = 0;
+	RETURN_IF_FAILED(m_pTabbedControl->GetPageIndex(pControl, &dwIndex));
+
+	CComQIPtr<ISearchControl> pSearchControl = pControl;
+	if (pSearchControl && dwIndex < m_dwControlsCount)
 	{
-		auto itLast = --m_controlsStack.end();
-		if (itLast->first == pControl)
-		{
-			m_controlsStack.erase(itLast);
-			RETURN_IF_FAILED(m_pFormsService->Close(pControl));
-			return S_OK;
-		}
+		RETURN_IF_FAILED(pSearchControl->Clear());
 	}
 	return S_OK;
 }

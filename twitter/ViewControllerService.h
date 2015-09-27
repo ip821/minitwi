@@ -54,7 +54,7 @@ private:
 	CComPtr<IFormsService> m_pFormsService;
 	CComQIPtr<IMessageLoop> m_pMessageLoop;
 
-	map<CComPtr<IControl>, int> m_controlsStack;
+	vector<CComPtr<IControl>> m_controlsStack;
 
 	DWORD m_dwControlsCount = 0;
 	BOOL m_bUpdateAvailable = FALSE;

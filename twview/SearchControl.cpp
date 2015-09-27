@@ -65,12 +65,16 @@ STDMETHODIMP CSearchControl::OnActivate()
 STDMETHODIMP CSearchControl::OnDeactivate()
 {
 	m_bActive = FALSE;
+	return S_OK;
+}
+
+STDMETHODIMP CSearchControl::Clear()
+{
 	CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pTimelineControl;
 	ATLASSERT(pTimelineControlSupport);
 	CComPtr<ITimelineControl> pControl;
 	RETURN_IF_FAILED(pTimelineControlSupport->GetTimelineControl(&pControl));
 	RETURN_IF_FAILED(pControl->Clear());
-	m_editText.Clear();
 	m_pVariantObject.Release();
 	return S_OK;
 }

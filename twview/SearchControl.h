@@ -108,6 +108,7 @@ public:
 	STDMETHOD(GetVariantObject)(IVariantObject** ppVariantObject);
 
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
+	STDMETHOD(Clear)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(SearchControl), CSearchControl)

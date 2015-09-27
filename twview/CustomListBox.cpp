@@ -502,7 +502,10 @@ LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 	{
 		BOOL bContinueAnimation = FALSE;
 		vector<IColumnsInfo*> v(m_columnsInfo.begin(), m_columnsInfo.end());
-		ASSERT_IF_FAILED(m_pSkinTimeline->AnimationNextFrame(&v[0], v.size(), &bContinueAnimation));
+		if (v.size())
+		{
+			ASSERT_IF_FAILED(m_pSkinTimeline->AnimationNextFrame(&v[0], v.size(), &bContinueAnimation));
+		}
 
 		if (bContinueAnimation)
 		{
