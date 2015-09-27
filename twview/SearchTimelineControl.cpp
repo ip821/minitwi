@@ -22,3 +22,9 @@ HRESULT CSearchTimelineControl::Initialized()
 	RETURN_IF_FAILED(__super::Initialized());
 	return S_OK;
 }
+
+HRESULT CSearchTimelineControl::ShuttingDown()
+{
+	DestroyWindow();
+	return S_OK;
+}

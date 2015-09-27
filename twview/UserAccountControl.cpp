@@ -14,8 +14,6 @@ HRESULT CUserAccountControl::FinalConstruct()
 
 void CUserAccountControl::FinalRelease()
 {
-	if (m_hWnd)
-		DestroyWindow();
 }
 
 STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvider)
@@ -68,6 +66,8 @@ STDMETHODIMP CUserAccountControl::OnShutdown()
 	m_pWindowService.Release();
 	m_pFollowThreadService.Release();
 	m_pFollowStatusThreadService.Release();
+
+	DestroyWindow();
 
 	return S_OK;
 }

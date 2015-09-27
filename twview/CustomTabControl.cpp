@@ -5,7 +5,6 @@
 
 CCustomTabControl::~CCustomTabControl()
 {
-	DestroyWindow();
 }
 
 STDMETHODIMP CCustomTabControl::GetHWND(HWND *hWnd)
@@ -411,6 +410,7 @@ STDMETHODIMP CCustomTabControl::OnShutdown()
 	m_pSettings.Release();
 	m_pSkinTabControl.Release();
 	m_pControls.Release();
+	DestroyWindow();
 	return S_OK;
 }
 

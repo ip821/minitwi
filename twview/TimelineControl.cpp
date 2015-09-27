@@ -14,8 +14,6 @@ HRESULT CTimelineControl::FinalConstruct()
 
 void CTimelineControl::FinalRelease()
 {
-	if (m_hWnd)
-		DestroyWindow();
 }
 
 STDMETHODIMP CTimelineControl::OnInitialized(IServiceProvider* pServiceProvider)
@@ -40,6 +38,7 @@ STDMETHODIMP CTimelineControl::OnShutdown()
 	m_pPluginSupport.Release();
 	m_pSettings.Release();
 	m_listBox.SetSkinTimeline(NULL);
+	DestroyWindow();
 	return S_OK;
 }
 

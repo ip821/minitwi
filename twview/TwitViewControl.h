@@ -55,8 +55,6 @@ public:
 
 	void FinalRelease()
 	{
-		if (m_hWnd)
-			DestroyWindow();
 	}
 
 protected:

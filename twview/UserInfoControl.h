@@ -7,7 +7,7 @@
 using namespace ATL;
 using namespace std;
 
-class CUserInfoControl : 
+class CUserInfoControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CUserInfoControl, &CLSID_UserInfoControl>,
 	public CWindowImpl<CUserInfoControl>,
@@ -45,10 +45,10 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
-		bHandled = TRUE;
-		lResult = OnMessage(uMsg, wParam, lParam, bHandled);
-		if (bHandled)
-			return TRUE;
+	bHandled = TRUE;
+	lResult = OnMessage(uMsg, wParam, lParam, bHandled);
+	if (bHandled)
+		return TRUE;
 	END_MSG_MAP()
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()

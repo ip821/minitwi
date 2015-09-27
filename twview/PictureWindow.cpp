@@ -18,8 +18,6 @@ CPictureWindow::CPictureWindow()
 
 CPictureWindow::~CPictureWindow()
 {
-	if (IsWindow())
-		DestroyWindow();
 }
 
 STDMETHODIMP CPictureWindow::Load(ISettings *pSettings)
@@ -87,6 +85,9 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 	m_pVariantObject.Release();
 	m_pLayoutManager.Release();
 	m_pColumnsInfo.Release();
+
+	DestroyWindow();
+
 	return S_OK;
 }
 

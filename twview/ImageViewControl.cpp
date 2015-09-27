@@ -11,8 +11,6 @@ CImageViewControl::CImageViewControl()
 
 CImageViewControl::~CImageViewControl()
 {
-	if (IsWindow())
-		DestroyWindow();
 }
 
 STDMETHODIMP CImageViewControl::GetHWND(HWND* phWnd)
@@ -85,6 +83,7 @@ STDMETHODIMP CImageViewControl::OnInitialized(IServiceProvider *pServiceProvider
 STDMETHODIMP CImageViewControl::OnShutdown()
 {
 	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), m_dwAdviceAnimationService));
+
 	IInitializeWithControlImpl::OnShutdown();
 	m_pAnimationService.Release();
 	m_pVariantObject.Release();
@@ -94,6 +93,9 @@ STDMETHODIMP CImageViewControl::OnShutdown()
 	m_pLayout.Release();
 	m_pLayoutManager.Release();
 	m_pColumnsInfo.Release();
+
+	DestroyWindow();
+
 	return S_OK;
 }
 

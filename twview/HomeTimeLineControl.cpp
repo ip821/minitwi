@@ -20,3 +20,9 @@ HRESULT CHomeTimeLineControl::Initialized()
 	RETURN_IF_FAILED(__super::Initialized());
 	return S_OK;
 }
+
+HRESULT CHomeTimeLineControl::ShuttingDown()
+{
+	DestroyWindow();
+	return S_OK;
+}

@@ -11,8 +11,6 @@ CVideoViewControl::CVideoViewControl()
 
 CVideoViewControl::~CVideoViewControl()
 {
-	if (IsWindow())
-		DestroyWindow();
 }
 
 STDMETHODIMP CVideoViewControl::GetHWND(HWND* phWnd)
@@ -149,6 +147,9 @@ STDMETHODIMP CVideoViewControl::OnShutdown()
 	m_pVariantObject.Release();
 	m_pServiceProvider.Release();
 	m_pTheme.Release();
+
+	DestroyWindow();
+
 	return S_OK;
 }
 

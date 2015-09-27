@@ -61,5 +61,6 @@ HRESULT CTwitViewControl::ShuttingDown()
 {
 	RETURN_IF_FAILED(__super::ShuttingDown());
 	m_pVariantObject.Release();
+	DestroyWindow();
 	return S_OK;
 }

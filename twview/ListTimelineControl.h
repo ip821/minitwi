@@ -55,13 +55,12 @@ public:
 
 	void FinalRelease()
 	{
-		if (m_hWnd)
-			DestroyWindow();
 	}
 
 protected:
 	virtual HRESULT Initializing() override;
 	virtual HRESULT OnActivateInternal() override;
+	virtual HRESULT ShuttingDown() override;
 
 private:
 

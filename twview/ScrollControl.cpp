@@ -13,7 +13,6 @@ CScrollControl::CScrollControl()
 
 CScrollControl::~CScrollControl()
 {
-	DestroyWindow();
 }
 
 STDMETHODIMP CScrollControl::OnInitialized(IServiceProvider *pServiceProvider)
@@ -35,6 +34,7 @@ STDMETHODIMP CScrollControl::OnShutdown()
 	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationService, __uuidof(IAnimationServiceEventSink), m_dwAdvice))
 	RETURN_IF_FAILED(HrNotifyOnShutdown(m_pAnimationService));
 	m_pAnimationService.Release();
+	DestroyWindow();
 	return S_OK;
 }
 

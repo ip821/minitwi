@@ -53,8 +53,6 @@ public:
 
 	void FinalRelease()
 	{
-		if (m_hWnd)
-			DestroyWindow();
 	}
 
 private:
@@ -64,6 +62,7 @@ protected:
 	virtual HRESULT Initialized() override;
 	virtual HRESULT OnActivateInternal() override;
 	virtual HRESULT OnDeactivateInternal() override;
+	virtual HRESULT ShuttingDown() override;
 
 public:
 	STDMETHOD(GetText)(BSTR* pbstr);

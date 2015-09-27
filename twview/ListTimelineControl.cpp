@@ -23,3 +23,9 @@ STDMETHODIMP CListTimelineControl::SetVariantObject(IVariantObject* pVariantObje
 	RETURN_IF_FAILED(HrInitializeWithVariantObject(m_pPluginSupport, pVariantObject));
 	return S_OK;
 }
+
+HRESULT CListTimelineControl::ShuttingDown()
+{
+	DestroyWindow();
+	return S_OK;
+}

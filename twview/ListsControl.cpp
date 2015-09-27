@@ -21,6 +21,12 @@ HRESULT CListsControl::Initialized()
 	return S_OK;
 }
 
+HRESULT CListsControl::ShuttingDown()
+{
+	DestroyWindow();
+	return S_OK;
+}
+
 HRESULT CListsControl::OnActivateInternal()
 {
 	CComPtr<IThreadService> pThreadService;

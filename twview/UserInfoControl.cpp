@@ -15,8 +15,6 @@ HRESULT CUserInfoControl::FinalConstruct()
 
 void CUserInfoControl::FinalRelease()
 {
-	if (m_hWnd)
-		DestroyWindow();
 }
 
 STDMETHODIMP CUserInfoControl::OnInitialized(IServiceProvider* pServiceProvider)
@@ -96,6 +94,8 @@ STDMETHODIMP CUserInfoControl::OnShutdown()
 	m_pThreadServiceUpdateTimeline.Release();
 	m_pThreadServiceGetUser.Release();
 	RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
+
+	DestroyWindow();
 
 	return S_OK;
 }
