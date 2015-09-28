@@ -498,7 +498,7 @@ void CCustomListBox::StartFadeAnimation()
 
 LRESULT CCustomListBox::OnAnimationTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	if (wParam == (WPARAM)&m_animationTimerFade)
+	if (wParam == (WPARAM)&m_animationTimerFade  && IsWindow())
 	{
 		BOOL bContinueAnimation = FALSE;
 		vector<IColumnsInfo*> v(m_columnsInfo.begin(), m_columnsInfo.end());

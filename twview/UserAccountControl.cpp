@@ -45,6 +45,8 @@ STDMETHODIMP CUserAccountControl::OnInitialized(IServiceProvider *pServiceProvid
 
 STDMETHODIMP CUserAccountControl::OnShutdown()
 {
+	boost::lock_guard<boost::mutex> lock(m_mutex);
+
 	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationUserText, __uuidof(IAnimationServiceEventSink), m_dwAdviceAnimationServiceUserText));
 	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationServiceUserImage, __uuidof(IAnimationServiceEventSink), m_dwAdviceAnimationServiceUserImage));
 	RETURN_IF_FAILED(AtlUnadvise(m_pAnimationServiceBackgroundImage, __uuidof(IAnimationServiceEventSink), m_dwAdviceAnimationServiceBackgroundImage));
@@ -268,6 +270,8 @@ STDMETHODIMP CUserAccountControl::OnDeactivate()
 
 STDMETHODIMP CUserAccountControl::OnDownloadComplete(IVariantObject *pResult)
 {
+	boost::lock_guard<boost::mutex> lock(m_mutex);
+
 	CComVar vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 	CComVar vUrl;

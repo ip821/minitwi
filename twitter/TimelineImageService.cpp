@@ -139,14 +139,24 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 		return S_OK;
 	}
 
+
+	UINT uiCount = 0;
 	CComPtr<IImageManagerService> pImageManagerService;
-	CComPtr<ITimelineControl> pTimelineControl;
+
 	{
-		boost::lock_guard<boost::mutex> lock(m_mutex);
-		if (!m_pImageManagerService)
-			return S_OK;
-		pImageManagerService = m_pImageManagerService;
-		pTimelineControl = m_pTimelineControl;
+		CComPtr<ITimelineControl> pTimelineControl;
+		{
+			if (!m_pImageManagerService)
+				return S_OK;
+
+			boost::lock_guard<boost::mutex> lock(m_mutex);
+
+			pImageManagerService = m_pImageManagerService;
+			pTimelineControl = m_pTimelineControl;
+
+		}
+
+		RETURN_IF_FAILED(pTimelineControl->GetItemsCount(&uiCount));
 	}
 
 	CComVar vId;
@@ -157,9 +167,6 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 	CComVar vItemIndex;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &vItemIndex));
-
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pTimelineControl->GetItemsCount(&uiCount));
 
 	if (uiCount)
 	{
@@ -183,6 +190,7 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 				CComQIPtr<IStream> pStream = vStream.punkVal;
 				RETURN_IF_FAILED(pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
 			}
+
 			for (auto& item : it->second)
 			{
 				m_idsToUpdate.insert(item);

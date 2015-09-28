@@ -102,6 +102,8 @@ private:
 	bool m_bFollowButtonDisabled = FALSE;
 	bool m_bFollowing = FALSE;
 
+	boost::mutex m_mutex;
+
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

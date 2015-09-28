@@ -51,6 +51,7 @@ STDMETHODIMP CUpdateService::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CUpdateService::OnShutdown()
 {
+	boost::lock_guard<boost::mutex> lock(m_mutex);
 	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdviceThreadService));
 	RETURN_IF_FAILED(m_pTimerService->StopTimer());
@@ -106,6 +107,8 @@ CString CUpdateService::GetInstalledVersionInternal()
 
 STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 {
+	boost::lock_guard<boost::mutex> lock(m_mutex);
+
 	CComVar vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
@@ -152,7 +155,6 @@ STDMETHODIMP CUpdateService::OnDownloadComplete(IVariantObject *pResult)
 		RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::Path, &vFilePath));
 
 		{
-			boost::lock_guard<boost::mutex> lock(m_mutex);
 			m_bUpdateAvailable = TRUE;
 			if (vFilePath.vt == VT_BSTR)
 			{
