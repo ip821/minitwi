@@ -288,6 +288,7 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 
 						const UINT oneImageWidthMax = (totalImageWidth / processCount);
 
+						const int TIMELINE_IMAGE_HEIGHT = 200;
 						UINT maxPossibleHeight = TIMELINE_IMAGE_HEIGHT;
 						CComPtr<IVariantObject> pItem;
 						RETURN_IF_FAILED(HrLayoutFindItemByName(pLayoutObject, Twitter::Themes::Metadata::TimelineControl::Elements::ImageContainer, &pItem));

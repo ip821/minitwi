@@ -174,22 +174,10 @@ STDMETHODIMP CTimelineImageService::OnDownloadComplete(IVariantObject *pResult)
 		auto it = m_imageRefs.find(vUrl.bstrVal);
 		if (it != m_imageRefs.end())
 		{
-			auto pBitmap = std::make_shared<Gdiplus::Bitmap>(vFilePath.bstrVal);
-			auto height = pBitmap->GetHeight();
-			if (height > TIMELINE_IMAGE_HEIGHT)
-			{
-				ResizeDownImage(pBitmap, TIMELINE_IMAGE_HEIGHT);
-				CBitmap bitmap;
-				pBitmap->GetHBITMAP(Color::Transparent, &bitmap.m_hBitmap);
-				RETURN_IF_FAILED(pImageManagerService->AddImageFromHBITMAP(vUrl.bstrVal, bitmap));
-			}
-			else
-			{
-				CComVar vStream;
-				RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
-				CComQIPtr<IStream> pStream = vStream.punkVal;
-				RETURN_IF_FAILED(pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
-			}
+			CComVar vStream;
+			RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::File::StreamObject, &vStream));
+			CComQIPtr<IStream> pStream = vStream.punkVal;
+			RETURN_IF_FAILED(pImageManagerService->AddImageFromStream(vUrl.bstrVal, pStream));
 
 			for (auto& item : it->second)
 			{
@@ -234,9 +222,12 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 				ASSERT_IF_FAILED(m_pImageManagerService->ContainsImageKey(bstrImageKey, &bContains));
 				if (urls.find(url) == urls.end() && !bContains)
 				{
+					CString strUrl(url.c_str());
+					auto lpszExt = PathFindExtension(strUrl);
 					CComPtr<IVariantObject> pDownloadTask;
 					RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(url.c_str())));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::File::Extension, &CComVar(lpszExt)));
+					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(strUrl)));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Id, &vId));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Item::VAR_ITEM_INDEX, &CComVar(i)));
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::Image)));

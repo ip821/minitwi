@@ -664,7 +664,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pMediaObjectCollection));
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::MediaUrls, &CComVar(pMediaObjectCollection)));
 
-	unordered_set<wstring> processedMediaUrls;
+	unordered_map<wstring,wstring> processedMediaUrls;
 
 	if (itemObject.find(L"extended_entities") != itemObject.end())
 	{
@@ -717,7 +717,7 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 
 	for (auto& it : processedMediaUrls)
 	{
-		strText.Replace(it.c_str(), L"");
+		strText.Replace(it.second.c_str(), L"");
 	}
 
 	wstring stdStr(strText);
@@ -794,16 +794,16 @@ STDMETHODIMP CTwitterConnection::ParseTweets(JSONValue* value, IObjCollection* p
 	return S_OK;
 }
 
-HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, unordered_set<wstring>& processedMediaUrls)
+HRESULT CTwitterConnection::ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, unordered_map<wstring,wstring>& processedMediaUrls)
 {
 	for (size_t i = 0; i < mediaArray.size(); i++)
 	{
 		auto mediaObj = mediaArray[i]->AsObject();
-		auto shortUrl = mediaObj[L"url"]->AsString();
-		if (processedMediaUrls.find(shortUrl) != processedMediaUrls.end())
-			continue;
-		processedMediaUrls.insert(shortUrl);
 		auto url = mediaObj[L"media_url"]->AsString();
+		if (processedMediaUrls.find(url) != processedMediaUrls.end())
+			continue;
+		auto shortUrl = mediaObj[L"url"]->AsString();
+		processedMediaUrls[url] = shortUrl;
 		CComPtr<IVariantObject> pMediaObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pMediaObject));
 		RETURN_IF_FAILED(pMediaObjectCollection->AddObject(pMediaObject));

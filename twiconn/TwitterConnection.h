@@ -54,7 +54,7 @@ private:
 	static HRESULT ParseTweet(JSONObject& itemObject, IVariantObject* pVariantObject);
 	STDMETHOD(ParseTweets)(JSONValue* value, IObjCollection* pObjectCollection);
 	static HRESULT ParseUser(JSONObject& value, IVariantObject* pVariantObject);
-	static HRESULT ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, unordered_set<wstring>& processedMediaUrls);
+	static HRESULT ParseMedias(JSONArray& mediaArray, IObjCollection* pMediaObjectCollection, unordered_map<wstring,wstring>& processedMediaUrls);
 
 public:
 
