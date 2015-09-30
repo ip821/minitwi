@@ -65,6 +65,7 @@ protected:
 
 private:
 	CComPtr<IVariantObject> m_pVariantObject;
+	BOOL m_bWasActivated = FALSE;
 public:
 	METHOD_EMPTY(STDMETHOD(GetText)(BSTR* pbstr));
 	STDMETHOD(SetVariantObject)(IVariantObject* pVariantObject);
