@@ -4,7 +4,7 @@
 #include "resource.h"       // main symbols
 #include "twview_i.h"
 #include "asyncsvc_contract_i.h"
-#include "..\twiconn\twitconn_contract_i.h"
+#include "..\twiconn\twconn_contract_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;

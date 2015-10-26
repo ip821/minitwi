@@ -1,7 +1,7 @@
 #pragma once
 
 #include "..\ObjMdl\\PluginTableBase.h"
-#include "twitter_i.h"
+#include "twmdl_i.h"
 
 using namespace ATL;
 

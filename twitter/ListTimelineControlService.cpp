@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ListTimelineControlService.h"
 #include "Plugins.h"
-#include "twitconn_contract_i.h"
+#include "twconn_contract_i.h"
 #include "HomeTimelineService.h"
 #include "UpdateScope.h"
 

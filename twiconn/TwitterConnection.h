@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twiconn_i.h"
+#include "twconn_i.h"
 
 #include <unordered_set>
 #include <boost\lexical_cast.hpp>

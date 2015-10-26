@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twmdl_i.h"
 #include "asyncsvc_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"

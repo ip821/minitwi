@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5CC01FDF-2C23-4363-9AD5-A1F99A9C7761}</ProjectGuid>
     <Keyword>AtlProj</Keyword>
+    <ProjectName>twmdl</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -307,32 +308,26 @@
     <ClCompile Include="TimelineQueueService.cpp" />
     <ClCompile Include="TimelineRelativeTimeService.cpp" />
     <ClCompile Include="HomeTimelineService.cpp" />
-    <ClCompile Include="twitconn_contract_i.c">
+    <ClCompile Include="twconn_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="twitter.cpp" />
-    <ClCompile Include="twitter_contract_i.c">
+    <ClCompile Include="TwitViewRepliesService.cpp" />
+    <ClCompile Include="twmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="twitter_i.c">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
-      </PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    <ClCompile Include="twmdl_i.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TwitViewRepliesService.cpp" />
     <ClCompile Include="UpdateService.cpp" />
     <ClCompile Include="UserTimelineService.cpp" />
     <ClCompile Include="ViewControllerService.cpp" />
@@ -362,7 +357,6 @@
     <ClInclude Include="TimelineLoadingService.h" />
     <ClInclude Include="TimelineQueueService.h" />
     <ClInclude Include="TimelineRelativeTimeService.h" />
-    <ClInclude Include="twitter_contract_i.h" />
     <ClInclude Include="DownloadService.h" />
     <ClInclude Include="TabbedControlStatusService.h" />
     <ClInclude Include="TimelineCleanupService.h" />
@@ -378,9 +372,10 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="HomeTimelineService.h" />
-    <ClInclude Include="twitconn_contract_i.h" />
-    <ClInclude Include="twitter_i.h" />
+    <ClInclude Include="twconn_contract_i.h" />
     <ClInclude Include="TwitViewRepliesService.h" />
+    <ClInclude Include="twmdl_contract_i.h" />
+    <ClInclude Include="twmdl_i.h" />
     <ClInclude Include="UpdateScope.h" />
     <ClInclude Include="UpdateService.h" />
     <ClInclude Include="UserTimelineService.h" />
@@ -441,19 +436,23 @@
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">objmdl_contract_p.c</ProxyFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">objmdl_contract_p.c</ProxyFileName>
     </Midl>
-    <Midl Include="..\twiconn\twitconn_contract_i.idl">
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_i.h</HeaderFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitconn_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_p.c</ProxyFileName>
-      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitconn_contract_p.c</ProxyFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_i.h</HeaderFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_p.c</ProxyFileName>
-      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_p.c</ProxyFileName>
+    <Midl Include="..\twiconn\twconn_contract_i.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twconn_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twconn_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twconn_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twconn_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ProxyFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
+      </ProxyFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twconn_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twconn_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twconn_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twconn_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ProxyFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
+      </ProxyFileName>
     </Midl>
     <Midl Include="..\model-libs\ViewMdl\viewmdl_contract_i.idl">
       <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">viewmdl_contract_i.h</HeaderFileName>
@@ -469,22 +468,39 @@
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">viewmdl_contract_p.c</ProxyFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">viewmdl_contract_p.c</ProxyFileName>
     </Midl>
-    <Midl Include="twitter.idl" />
-    <Midl Include="twitter_contract_i.idl">
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitter_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitter_contract_i.c</InterfaceIdentifierFileName>
+    <Midl Include="twmdl.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twmdl_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twmdl_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ProxyFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitter_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitter_contract_i.c</InterfaceIdentifierFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twmdl_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twmdl_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
       </ProxyFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitter_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitter_contract_i.c</InterfaceIdentifierFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twmdl_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twmdl_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
       </ProxyFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitter_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitter_contract_i.c</InterfaceIdentifierFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twmdl_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twmdl_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ProxyFileName>
+    </Midl>
+    <Midl Include="twmdl_contract_i.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twmdl_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twmdl_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ProxyFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twmdl_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twmdl_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
+      </ProxyFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twmdl_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twmdl_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
+      </ProxyFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twmdl_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ProxyFileName>
     </Midl>

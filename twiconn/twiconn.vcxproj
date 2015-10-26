@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CB084E48-D765-4982-9F26-817A3E8E968B}</ProjectGuid>
     <Keyword>AtlProj</Keyword>
+    <ProjectName>twconn</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -318,24 +319,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="twconn_contract_i.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="twconn_i.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="TwitterStreamingConnection.cpp" />
     <ClCompile Include="twiconn.cpp" />
-    <ClCompile Include="twiconn_i.c">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">false</CompileAsManaged>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="twitconn_contract_i.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="TwitterConnection.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -355,11 +352,11 @@
     <ClInclude Include="PluginTable.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="twconn_contract_i.h" />
+    <ClInclude Include="twconn_i.h" />
     <ClInclude Include="TwitterStreamingConnection.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TextNormalizeTable.h" />
-    <ClInclude Include="twiconn_i.h" />
-    <ClInclude Include="twitconn_contract_i.h" />
     <ClInclude Include="TwitterConnection.h" />
     <ClInclude Include="xdlldata.h" />
   </ItemGroup>
@@ -389,20 +386,45 @@
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">objmdl_contract_p.c</ProxyFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">objmdl_contract_p.c</ProxyFileName>
     </Midl>
-    <Midl Include="twiconn.idl" />
-    <Midl Include="twitconn_contract_i.idl">
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_i.h</HeaderFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitconn_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitconn_contract_i.p</ProxyFileName>
-      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitconn_contract_i.p</ProxyFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_i.h</HeaderFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_i.c</InterfaceIdentifierFileName>
-      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitconn_contract_i.p</ProxyFileName>
-      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitconn_contract_i.p</ProxyFileName>
+    <Midl Include="twconn.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twconn_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twconn_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ProxyFileName>
+      <TypeLibraryName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)twconn.tlb</TypeLibraryName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twconn_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twconn_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
+      </ProxyFileName>
+      <TypeLibraryName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">$(IntDir)twconn.tlb</TypeLibraryName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twconn_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twconn_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
+      </ProxyFileName>
+      <TypeLibraryName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">$(IntDir)twconn.tlb</TypeLibraryName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twconn_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twconn_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ProxyFileName>
+      <TypeLibraryName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)twconn.tlb</TypeLibraryName>
+    </Midl>
+    <Midl Include="twconn_contract_i.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twconn_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twconn_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twconn_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twconn_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ProxyFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
+      </ProxyFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twconn_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twconn_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twconn_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twconn_contract_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ProxyFileName>
+      <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
+      </ProxyFileName>
     </Midl>
   </ItemGroup>
   <ItemGroup>

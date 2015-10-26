@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "ThemeService.h"
-#include "twitter_i.h"
+#include "twmdl_i.h"
 #include "Plugins.h"
 
 // CThemeService

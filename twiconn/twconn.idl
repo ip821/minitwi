@@ -6,7 +6,7 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
-import "twitconn_contract_i.idl";
+import "twconn_contract_i.idl";
 import "..\model-libs\ObjMdl\objmdl_contract_i.idl";
 
 [

@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include "twitter_i.h"
+#include "twmdl_i.h"
 #include "dllmain.h"
 #include "xdlldata.h"
 

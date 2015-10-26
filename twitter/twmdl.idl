@@ -6,7 +6,7 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
-import "twitter_contract_i.idl";
+import "twmdl_contract_i.idl";
 
 [
 	uuid(12BF3C97-9ACD-43C3-9E73-698AF2DAE645),

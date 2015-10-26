@@ -166,9 +166,6 @@
     <ClCompile Include="objmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="twitter_contract_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="viewmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
@@ -180,6 +177,9 @@
     </ClCompile>
     <ClCompile Include="VideoViewControl.cpp">
       <Filter>Controls\PictureWindow\VideoViewControl</Filter>
+    </ClCompile>
+    <ClCompile Include="twmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -267,9 +267,6 @@
     <ClInclude Include="objmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="twitter_contract_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="viewmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
@@ -297,6 +294,9 @@
     <ClInclude Include="Metadata.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="twmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twview.rc">
@@ -321,7 +321,7 @@
     <Midl Include="..\model-libs\asyncsvc\asyncsvc_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="..\twitter\twitter_contract_i.idl">
+    <Midl Include="..\twitter\twmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

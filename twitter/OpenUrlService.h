@@ -1,6 +1,6 @@
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twmdl_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"
 

@@ -100,9 +100,6 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="twitter_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="PluginTable.cpp">
       <Filter>PluginTable</Filter>
     </ClCompile>
@@ -114,9 +111,6 @@
     </ClCompile>
     <ClCompile Include="FormsService.cpp">
       <Filter>Services\FormsService</Filter>
-    </ClCompile>
-    <ClCompile Include="twitconn_contract_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="ViewControllerService.cpp">
       <Filter>Services\ViewControllerService</Filter>
@@ -166,9 +160,6 @@
     <ClCompile Include="ListTimelineControlService.cpp">
       <Filter>Services\ListTimelineControlService</Filter>
     </ClCompile>
-    <ClCompile Include="twitter_contract_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="LoginService.cpp">
       <Filter>Services\LoginService</Filter>
     </ClCompile>
@@ -202,6 +193,15 @@
     <ClCompile Include="GetUserService.cpp">
       <Filter>Services\GetUserService</Filter>
     </ClCompile>
+    <ClCompile Include="twmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="twmdl_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="twconn_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -219,9 +219,6 @@
     <ClInclude Include="xdlldata.h">
       <Filter>ZZZMisc\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="twitter_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="PluginTable.h">
       <Filter>PluginTable</Filter>
     </ClInclude>
@@ -236,9 +233,6 @@
     </ClInclude>
     <ClInclude Include="Plugins.h">
       <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="twitconn_contract_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="ViewControllerService.h">
       <Filter>Services\ViewControllerService</Filter>
@@ -297,9 +291,6 @@
     <ClInclude Include="Metadata.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="twitter_contract_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="LoginService.h">
       <Filter>Services\LoginService</Filter>
     </ClInclude>
@@ -333,6 +324,15 @@
     <ClInclude Include="GetUserService.h">
       <Filter>Services\GetUserService</Filter>
     </ClInclude>
+    <ClInclude Include="twmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="twmdl_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="twconn_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -345,12 +345,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="twitter.idl">
-      <Filter>ZZZMisc\Source Files</Filter>
-    </Midl>
-    <Midl Include="..\twiconn\twitconn_contract_i.idl">
-      <Filter>ZZZMisc\Source Files</Filter>
-    </Midl>
     <Midl Include="..\model-libs\asyncsvc\asyncsvc_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
@@ -360,10 +354,16 @@
     <Midl Include="..\model-libs\ViewMdl\viewmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="twitter_contract_i.idl">
+    <Midl Include="..\model-libs\layout\layout_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="..\model-libs\layout\layout_contract_i.idl">
+    <Midl Include="twmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="twmdl.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\twiconn\twconn_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

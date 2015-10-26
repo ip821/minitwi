@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include "twiconn_i.h"
+#include "twconn_i.h"
 #include "dllmain.h"
 #include "xdlldata.h"
 

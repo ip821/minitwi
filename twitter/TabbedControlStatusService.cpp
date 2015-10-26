@@ -2,7 +2,7 @@
 #include "TabbedControlStatusService.h"
 
 #include "Plugins.h"
-#include "twitter_i.h"
+#include "twmdl_i.h"
 
 // CTabbedControlStatusService
 

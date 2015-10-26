@@ -96,7 +96,7 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
     <ProjectReference Include="..\twiconn\twiconn.vcxproj">
-      <Name>twiconn</Name>
+      <Name>twconn</Name>
       <Project>{cb084e48-d765-4982-9f26-817a3e8e968b}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>
@@ -104,7 +104,7 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
     <ProjectReference Include="..\twitter\twitter.vcxproj">
-      <Name>twitter</Name>
+      <Name>twmdl</Name>
       <Project>{5cc01fdf-2c23-4363-9ad5-a1f99a9c7761}</Project>
       <Private>True</Private>
       <DoNotHarvest>True</DoNotHarvest>

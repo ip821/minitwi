@@ -10,7 +10,7 @@ import "ocidl.idl";
 import "..\model-libs\objmdl\objmdl_contract_i.idl";
 import "..\model-libs\asyncsvc\asyncsvc_contract_i.idl";
 import "..\model-libs\viewmdl\viewmdl_contract_i.idl";
-import "..\twitter\twitter_contract_i.idl";
+import "..\twitter\twmdl_contract_i.idl";
 
 [
 	object,

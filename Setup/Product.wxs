@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="MiniTwi" Language="1033" Version="3.2.5.0" Manufacturer="IP" UpgradeCode="b3966128-f26b-4da9-8b0c-789798ac020d">
+  <Product Id="*" Name="MiniTwi" Language="1033" Version="3.2.6.0" Manufacturer="IP" UpgradeCode="b3966128-f26b-4da9-8b0c-789798ac020d">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
@@ -53,12 +53,12 @@
         <File Id="asyncsvc.dll" KeyPath="yes" Source="$(var.asyncsvc.TargetPath)"/>
       </Component>
 
-      <Component Id="twiconn.dll" Guid="6C6A6203-A4BB-4701-ABCD-0C5839BC3EB0">
-        <File Id="twiconn.dll" KeyPath="yes" Source="$(var.twiconn.TargetPath)"/>
+      <Component Id="twconn.dll" Guid="1B93F961-F646-44D7-8033-A3083AA52669">
+        <File Id="twiconn.dll" KeyPath="yes" Source="$(var.twconn.TargetPath)"/>
       </Component>
 
-      <Component Id="twitter.dll" Guid="7A62B4B2-326F-489E-8A45-FB120022FC16">
-        <File Id="twitter.dll" KeyPath="yes" Source="$(var.twitter.TargetPath)"/>
+      <Component Id="twmdl.dll" Guid="E3062A5F-5CFF-4891-9DC1-B864E4C9D7FE">
+        <File Id="twmdl.dll" KeyPath="yes" Source="$(var.twmdl.TargetPath)"/>
       </Component>
 
       <Component Id="twview.dll" Guid="4573368F-1FE3-4D9C-83C1-763569F00087">

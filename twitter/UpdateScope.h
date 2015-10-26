@@ -1,6 +1,6 @@
 #pragma once
 
-#include "twitter_i.h"
+#include "twmdl_i.h"
 
 class CUpdateScope
 {

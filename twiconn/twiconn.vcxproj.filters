@@ -55,9 +55,6 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>ZZZMisc\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="twiconn_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="TwitterConnection.cpp">
       <Filter>Connection</Filter>
     </ClCompile>
@@ -85,9 +82,6 @@
     <ClCompile Include="objmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="twitconn_contract_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\model-libs\json\src\JSON.cpp">
       <Filter>ZZZMisc\json</Filter>
     </ClCompile>
@@ -96,6 +90,12 @@
     </ClCompile>
     <ClCompile Include="TwitterStreamingConnection.cpp">
       <Filter>StreamingConnection</Filter>
+    </ClCompile>
+    <ClCompile Include="twconn_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="twconn_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,9 +113,6 @@
     </ClInclude>
     <ClInclude Include="xdlldata.h">
       <Filter>ZZZMisc\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="twiconn_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="TwitterConnection.h">
       <Filter>Connection</Filter>
@@ -156,9 +153,6 @@
     <ClInclude Include="..\json\src\JSONValue.h">
       <Filter>ZZZMisc\json</Filter>
     </ClInclude>
-    <ClInclude Include="twitconn_contract_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="TextNormalizeTable.h">
       <Filter>Connection</Filter>
     </ClInclude>
@@ -167,6 +161,12 @@
     </ClInclude>
     <ClInclude Include="TwitterStreamingConnection.h">
       <Filter>StreamingConnection</Filter>
+    </ClInclude>
+    <ClInclude Include="twconn_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="twconn_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -186,13 +186,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="twiconn.idl">
-      <Filter>ZZZMisc\Source Files</Filter>
-    </Midl>
-    <Midl Include="twitconn_contract_i.idl">
-      <Filter>ZZZMisc\Source Files</Filter>
-    </Midl>
     <Midl Include="..\model-libs\ObjMdl\objmdl_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="twconn.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="twconn_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

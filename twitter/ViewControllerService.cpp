@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "ViewControllerService.h"
 #include "Plugins.h"
-#include "twitter_i.h"
+#include "twmdl_i.h"
 #include <curl/curl.h>
 
 // CViewControllerService

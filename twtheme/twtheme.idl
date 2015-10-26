@@ -8,7 +8,7 @@ import "oaidl.idl";
 import "ocidl.idl";
 import "..\model-libs\objmdl\objmdl_contract_i.idl";
 import "..\model-libs\viewmdl\viewmdl_contract_i.idl";
-import "..\twitter\twitter_contract_i.idl";
+import "..\twitter\twmdl_contract_i.idl";
 
 [
 	uuid(F7BFC6EF-D8BE-4C1A-A9D5-9FC57D58BF5C),

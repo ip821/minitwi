@@ -270,11 +270,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ThemeDefault.cpp" />
-    <ClCompile Include="twitter_contract_i.c">
+    <ClCompile Include="twmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="twtheme.cpp" />
     <ClCompile Include="twtheme_i.c">
@@ -307,7 +307,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ThemeDefault.h" />
-    <ClInclude Include="twitter_contract_i.h" />
+    <ClInclude Include="twmdl_contract_i.h" />
     <ClInclude Include="twtheme_i.h" />
     <ClInclude Include="viewmdl_contract_i.h" />
     <ClInclude Include="xdlldata.h" />
@@ -359,19 +359,19 @@
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">
       </ProxyFileName>
     </Midl>
-    <Midl Include="..\twitter\twitter_contract_i.idl">
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitter_contract_i.h</HeaderFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitter_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twitter_contract_i.c</InterfaceIdentifierFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twitter_contract_i.c</InterfaceIdentifierFileName>
+    <Midl Include="..\twitter\twmdl_contract_i.idl">
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twmdl_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twmdl_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">twmdl_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">twmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ProxyFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">
       </ProxyFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitter_contract_i.h</HeaderFileName>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitter_contract_i.h</HeaderFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twitter_contract_i.c</InterfaceIdentifierFileName>
-      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twitter_contract_i.c</InterfaceIdentifierFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twmdl_contract_i.h</HeaderFileName>
+      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twmdl_contract_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">twmdl_contract_i.c</InterfaceIdentifierFileName>
+      <InterfaceIdentifierFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">twmdl_contract_i.c</InterfaceIdentifierFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ProxyFileName>
       <ProxyFileName Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">

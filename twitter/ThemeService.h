@@ -2,7 +2,7 @@
 
 #pragma once
 #include "resource.h"       // main symbols
-#include "twitter_i.h"
+#include "twmdl_i.h"
 #include "..\ObjMdl\GUIDComparer.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 

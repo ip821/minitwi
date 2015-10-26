@@ -4,7 +4,7 @@
 #include "UserTimelineService.h"
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
-#include "twitconn_contract_i.h"
+#include "twconn_contract_i.h"
 #include "UpdateScope.h"
 
 // CUserTimelineService
