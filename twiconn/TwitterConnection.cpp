@@ -552,7 +552,7 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 			strText.Append(buffer, (int)cbRead);
 		}
 		fs.close();
-		strResponse = W2A(strText);
+		strResponse = CW2A(strText);
 	}
 #else
 	m_pTwitObj->getLastWebResponse(strResponse);

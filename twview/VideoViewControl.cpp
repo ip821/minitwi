@@ -107,6 +107,7 @@ STDMETHODIMP CVideoViewControl::OnInitialized(IServiceProvider *pServiceProvider
 		HandleError(hr);
 	}
 
+    CloseHandle(pi.hThread);
 	m_hProcess = pi.hProcess;
 	SetTimer(1, 10 * 1000); //waiting for child process init
 
@@ -142,6 +143,7 @@ STDMETHODIMP CVideoViewControl::OnShutdown()
 {
 	::SendMessage(m_hWndPlayer, WM_PLAYER_CLOSE, 0, 0);
 	::WaitForSingleObject(m_hProcess, 5 * 1000); //5 seconds
+    CloseHandle(m_hProcess);
 
 	IInitializeWithControlImpl::OnShutdown();
 	m_pVariantObject.Release();
