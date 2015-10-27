@@ -53,7 +53,6 @@ private:
 	CComPtr<ISettings> m_pSettings;
 	CComPtr<IFormsService> m_pFormsService;
 	CComQIPtr<IMessageLoop> m_pMessageLoop;
-    CComPtr<IFormManager> m_pFormManager;
 
 	vector<CComPtr<IControl>> m_controlsStack;
 
