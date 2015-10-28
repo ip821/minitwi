@@ -72,7 +72,7 @@ CString CTimelineControlCopyCommand::MakeTwitterUrl(BSTR bstrUserName, BSTR bstr
 CString CTimelineControlCopyCommand::MakeMediaString(CString& strUrl)
 {
     CString strResultString;
-    strResultString.Format(L"[Media: %s]", strUrl);
+    strResultString.Format(L"[ Media: %s ]", strUrl);
     return strResultString;
 }
 
