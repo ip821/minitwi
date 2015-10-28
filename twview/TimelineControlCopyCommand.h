@@ -38,6 +38,8 @@ public:
 private:
 	CComPtr<IVariantObject> m_pVariantObject;
 
+    CString MakeTwitterUrl(BSTR bstrUserName, BSTR bstrTwitterId);
+    CString MakeMediaString(CString& strUrl);
 public:
 
 	STDMETHOD(GetCommandText)(REFGUID guidCommand, BSTR* bstrText);

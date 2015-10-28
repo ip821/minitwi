@@ -64,6 +64,18 @@ STDMETHODIMP CTimelineControlCopyCommand::InstallMenu(IMenu* pMenu)
 	return S_OK;
 }
 
+CString CTimelineControlCopyCommand::MakeTwitterUrl(BSTR bstrUserName, BSTR bstrTwitterId)
+{
+    return L"https://twitter.com/" + CString(bstrUserName) + L"/status/" + CString(bstrTwitterId);
+}
+
+CString CTimelineControlCopyCommand::MakeMediaString(CString& strUrl)
+{
+    CString strResultString;
+    strResultString.Format(L"[Media: %s]", strUrl);
+    return strResultString;
+}
+
 STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 {
 	UNREFERENCED_PARAMETER(guidCommand);
@@ -80,23 +92,22 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 		{
 			std::wstring str;
 
+            CComVar vUserName;
+            RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
+            CComVar vTwitterId;
+            RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vTwitterId));
+
 			if (IsEqualGUID(guidCommand, COMMAND_COPY_URL))
 			{
-				CComVar vUserName;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
-				CComVar v;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &v));
-				if (vUserName.vt == VT_BSTR && v.vt == VT_BSTR)
+				if (vUserName.vt == VT_BSTR && vTwitterId.vt == VT_BSTR)
 				{
-					str = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(v.bstrVal);
+					str = MakeTwitterUrl(vUserName.bstrVal, vTwitterId.bstrVal);
 				}
 			}
 			else if (IsEqualGUID(guidCommand, COMMAND_COPY_TEXT))
 			{
 				CComVar vUserDisplayName;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::DisplayName, &vUserDisplayName));
-				CComVar vUserName;
-				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
 				CComVar vText;
 				RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::NormalizedText, &vText));
 
@@ -119,18 +130,25 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
 							UINT uiCount = 0;
 							RETURN_IF_FAILED(pMediaUrlsCollection->GetCount(&uiCount));
 
-							for (size_t i = 0; i < uiCount; i++)
-							{
-								CComPtr<IVariantObject> pMediaUrlObject;
-								RETURN_IF_FAILED(pMediaUrlsCollection->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMediaUrlObject));
-								CComVar vUrlText;
-								RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vUrlText));
-								if (vUrlText.vt == VT_BSTR)
-								{
-									str += L"\n";
-									str += vUrlText.bstrVal;
-								}
-							}
+                            if (uiCount)
+                            {
+                                str += L"\n";
+                                if (uiCount == 1)
+                                {
+                                    CComPtr<IVariantObject> pMediaUrlObject;
+                                    RETURN_IF_FAILED(pMediaUrlsCollection->GetAt(0, __uuidof(IVariantObject), (LPVOID*)&pMediaUrlObject));
+                                    CComVar vUrlText;
+                                    RETURN_IF_FAILED(pMediaUrlObject->GetVariantValue(Twitter::Connection::Metadata::MediaObject::MediaUrl, &vUrlText));
+                                    if (vUrlText.vt == VT_BSTR)
+                                    {
+                                        str += MakeMediaString(CString(vUrlText.bstrVal));
+                                    }
+                                }
+                                else if (vUserName.vt == VT_BSTR && vTwitterId.vt == VT_BSTR)
+                                {
+                                    str += MakeMediaString(MakeTwitterUrl(vUserName.bstrVal, vTwitterId.bstrVal));
+                                }
+                            }
 						}
 					}
 				}
