@@ -853,7 +853,8 @@
                         "align_horizontal": "center",
                         "align_vertical": "center",
                         "background_style": "rounded",
-                        "color_background": "RoundedColor"
+                        "color_background": "RoundedColor",
+                        "text_multiline": true
                     },
                     {
                         "name": "SelectedImageString",
