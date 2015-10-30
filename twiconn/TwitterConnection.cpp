@@ -745,15 +745,30 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	}
 //#endif
 
+    for (auto it = NormalizeTable.begin(); it != NormalizeTable.end(); it++)
+    {
+        auto& source = it->first;
+        auto& dest = it->second;
+        auto index = strText.Find(source);
+        if (index != -1)
+        {
+            for (auto& itLink : otherLinks)
+            {
+                if (itLink.second.Start > index)
+                {
+                    auto diff = source.GetLength() - dest.GetLength();
+                    itLink.second.Start -= diff;
+                    itLink.second.End -= diff;
+                }
+            }
+            strText.Replace(source, dest);
+        }
+    }
+    strText = strText.Trim();
+
 	auto urlsVector = vector<pair<wstring, Indexes>>(urlsMap.cbegin(), urlsMap.cend());
 	AppendUrls(pVariantObject, urlsVector);
 	AppendUrls(pVariantObject, otherLinks);
-
-	for (auto it = NormalizeTable.begin(); it != NormalizeTable.end(); it++)
-	{
-		strText.Replace(it->first, it->second);
-	}
-	strText = strText.Trim();
 
 	auto retweetCount = itemObject[L"retweet_count"]->AsNumber();
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetCount, &CComVar((int)retweetCount)));
