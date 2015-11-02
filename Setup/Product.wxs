@@ -49,8 +49,8 @@
         <RemoveFolder Id='RemoveProgramMenuDir' Directory='ApplicationProgramsFolder' On='uninstall' />
       </Component>
 
-      <Component Id="asyncsvc.dll" Guid="8E854380-C025-402B-8F1C-D581280E2A7A">
-        <File Id="asyncsvc.dll" KeyPath="yes" Source="$(var.asyncsvc.TargetPath)"/>
+      <Component Id="asyncmdl.dll" Guid="3BD5EE49-9CAA-4806-9326-56FBEF0C60B7">
+        <File Id="asyncmdl.dll" KeyPath="yes" Source="$(var.asyncmdl.TargetPath)"/>
       </Component>
 
       <Component Id="twconn.dll" Guid="1B93F961-F646-44D7-8033-A3083AA52669">
