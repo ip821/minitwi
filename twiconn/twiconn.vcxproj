@@ -428,7 +428,7 @@
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\curl\projects\Windows\VC12\lib\libcurl.vcxproj">
+    <ProjectReference Include="..\model-libs\curl\projects\Windows\VC12\lib\libcurl.vcxproj">
       <Project>{da6f56b4-06a4-441d-ad70-ac5a7d51fadb}</Project>
     </ProjectReference>
   </ItemGroup>

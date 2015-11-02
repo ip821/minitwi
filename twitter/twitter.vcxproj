@@ -96,7 +96,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>CURL_STATICLIB;WIN32;_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\model-libs\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4238;4100;4239;4458;4459</DisableSpecificWarnings>
@@ -134,7 +134,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>CURL_STATICLIB;WIN32;_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\model-libs\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4238;4100;4239;4458;4459</DisableSpecificWarnings>
@@ -173,7 +173,7 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>CURL_STATICLIB;WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\model-libs\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4238;4100;4239;4458;4459</DisableSpecificWarnings>
@@ -213,7 +213,7 @@
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>CURL_STATICLIB;__WINXP__;WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\model-libs\curl\include;..\boost;..\WTL90_4140_Final\Include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableSpecificWarnings>4238;4100;4239;4458;4459</DisableSpecificWarnings>
@@ -510,7 +510,7 @@
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\curl\projects\Windows\VC12\lib\libcurl.vcxproj">
+    <ProjectReference Include="..\model-libs\curl\projects\Windows\VC12\lib\libcurl.vcxproj">
       <Project>{da6f56b4-06a4-441d-ad70-ac5a7d51fadb}</Project>
     </ProjectReference>
   </ItemGroup>
