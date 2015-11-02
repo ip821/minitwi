@@ -63,6 +63,14 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\model-libs\asyncmdl\asyncmdl.vcxproj">
+      <Name>asyncmdl</Name>
+      <Project>{17f9075f-67ac-4eab-8181-c195a5d52696}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
     <ProjectReference Include="..\model-libs\layout\layout.vcxproj">
       <Name>layout</Name>
       <Project>{614567e1-0a47-4134-9a0f-2ca28d383b0f}</Project>
