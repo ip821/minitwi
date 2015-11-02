@@ -71,8 +71,8 @@
 #include "..\layout\Plugins.h"
 #include "..\layout\Functions.h"
 
-#include "..\model-libs\asyncsvc\Plugins.h"
-#include "..\model-libs\asyncsvc\Metadata.h"
+#include "..\model-libs\asyncmdl\Plugins.h"
+#include "..\model-libs\asyncmdl\Metadata.h"
 
 #include "..\twiconn\Metadata.h"
 

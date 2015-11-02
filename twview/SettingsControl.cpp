@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "SettingsControl.h"
 #include "Plugins.h"
-#include "..\model-libs\asyncsvc\Plugins.h"
+#include "..\model-libs\asyncmdl\Plugins.h"
 #include "..\model-libs\objmdl\stringutils.h"
 #include "..\model-libs\objmdl\stringutils.h"
 #include "..\twiconn\Plugins.h"

@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "twview_i.h"
-#include "asyncsvc_contract_i.h"
+#include "asyncmdl_contract_i.h"
 
 template <class T>
 class ATL_NO_VTABLE CBaseTimeLineControl : 

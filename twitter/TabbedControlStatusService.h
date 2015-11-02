@@ -2,7 +2,7 @@
 
 #include "resource.h"       // main symbols
 #include "twmdl_i.h"
-#include "asyncsvc_contract_i.h"
+#include "asyncmdl_contract_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;

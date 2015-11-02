@@ -3,7 +3,7 @@
 #include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"
-#include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"
+#include "asyncmdl_contract_i.h"
 #include "Plugins.h"
 
 using namespace ATL;

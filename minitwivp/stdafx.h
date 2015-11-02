@@ -42,7 +42,7 @@ extern CAppModule _Module;
 #include "..\model-libs\ObjMdl\Macros.h"
 #include "..\model-libs\ObjMdl\Functions.h"
 #include "..\model-libs\viewmdl\Plugins.h"
-#include "..\model-libs\asyncsvc\Plugins.h"
+#include "..\model-libs\asyncmdl\Plugins.h"
 #include "..\twitter\Plugins.h"
 #include "..\twview\Plugins.h"
 

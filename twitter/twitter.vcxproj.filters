@@ -121,9 +121,6 @@
     <ClCompile Include="OpenUrlService.cpp">
       <Filter>Services\OpenUrlService</Filter>
     </ClCompile>
-    <ClCompile Include="asyncsvc_contract_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="DownloadService.cpp">
       <Filter>Services\DownloadService</Filter>
     </ClCompile>
@@ -202,6 +199,9 @@
     <ClCompile Include="twconn_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="asyncmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -242,9 +242,6 @@
     </ClInclude>
     <ClInclude Include="OpenUrlService.h">
       <Filter>Services\OpenUrlService</Filter>
-    </ClInclude>
-    <ClInclude Include="asyncsvc_contract_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="DownloadService.h">
       <Filter>Services\DownloadService</Filter>
@@ -333,6 +330,9 @@
     <ClInclude Include="twconn_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="asyncmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twitter.rc">
@@ -345,9 +345,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="..\model-libs\asyncsvc\asyncsvc_contract_i.idl">
-      <Filter>ZZZMisc\Source Files</Filter>
-    </Midl>
     <Midl Include="..\model-libs\ObjMdl\objmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
@@ -364,6 +361,9 @@
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
     <Midl Include="..\twiconn\twconn_contract_i.idl">
+      <Filter>ZZZMisc\Source Files</Filter>
+    </Midl>
+    <Midl Include="..\model-libs\asyncmdl\asyncmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

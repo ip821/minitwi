@@ -160,9 +160,6 @@
     <ClCompile Include="PluginTable.cpp">
       <Filter>PluginTable</Filter>
     </ClCompile>
-    <ClCompile Include="asyncsvc_contract_i.c">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="objmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
@@ -179,6 +176,9 @@
       <Filter>Controls\PictureWindow\VideoViewControl</Filter>
     </ClCompile>
     <ClCompile Include="twmdl_contract_i.c">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="asyncmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -261,9 +261,6 @@
     <ClInclude Include="PluginTable.h">
       <Filter>PluginTable</Filter>
     </ClInclude>
-    <ClInclude Include="asyncsvc_contract_i.h">
-      <Filter>ZZZMisc\Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="objmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
@@ -297,6 +294,9 @@
     <ClInclude Include="twmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="asyncmdl_contract_i.h">
+      <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="twview.rc">
@@ -318,10 +318,10 @@
     <Midl Include="..\model-libs\viewmdl\viewmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="..\model-libs\asyncsvc\asyncsvc_contract_i.idl">
+    <Midl Include="..\twitter\twmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
-    <Midl Include="..\twitter\twmdl_contract_i.idl">
+    <Midl Include="..\model-libs\asyncmdl\asyncmdl_contract_i.idl">
       <Filter>ZZZMisc\Source Files</Filter>
     </Midl>
   </ItemGroup>

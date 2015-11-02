@@ -2,7 +2,7 @@
 
 #include "twview_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
-#include "asyncsvc_contract_i.h"
+#include "asyncmdl_contract_i.h"
 #include "BaseTimeLineControl.h"
 
 using namespace ATL;

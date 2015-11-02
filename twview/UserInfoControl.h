@@ -1,7 +1,7 @@
 #pragma once
 
 #include "twview_i.h"
-#include "asyncsvc_contract_i.h"
+#include "asyncmdl_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 
 using namespace ATL;

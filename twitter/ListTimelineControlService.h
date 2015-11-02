@@ -4,7 +4,7 @@ using namespace ATL;
 using namespace std;
 
 #include "twmdl_i.h"
-#include "..\model-libs\asyncsvc\asyncsvc_contract_i.h"
+#include "asyncmdl_contract_i.h"
 #include "..\model-libs\viewmdl\IInitializeWithControlImpl.h"
 #include "..\twiconn\Plugins.h"
 
