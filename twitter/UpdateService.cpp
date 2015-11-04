@@ -77,7 +77,11 @@ STDMETHODIMP CUpdateService::OnRun(IVariantObject *pResult)
 
 	CComPtr<IVariantObject> pDownloadTask;
 	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pDownloadTask));
-	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(L"https://raw.githubusercontent.com/ip821/minitwi.version/master/version.txt")));
+#ifdef __WINXP__
+	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(L"https://raw.githubusercontent.com/ip821/minitwi.version/master/version_XP.txt")));
+#else
+    RETURN_IF_FAILED(pDownloadTask->SetVariantValue(Twitter::Metadata::Object::Url, &CComVar(L"https://raw.githubusercontent.com/ip821/minitwi.version/master/version.txt")));
+#endif
 	RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::SoftwareUpdateVersion)));
 	RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 	return S_OK;
