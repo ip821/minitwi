@@ -23,7 +23,8 @@ class ATL_NO_VTABLE CViewControllerService :
 	public ITabbedControlEventSink,
 	public IMsgFilter,
 	public IUpdateServiceEventSink,
-	public ICustomTabControlEventSink
+	public ICustomTabControlEventSink,
+    public IMainWindowEventSink
 {
 public:
 	CViewControllerService()
@@ -43,6 +44,7 @@ public:
 		COM_INTERFACE_ENTRY(IMsgFilter)
 		COM_INTERFACE_ENTRY(IUpdateServiceEventSink)
 		COM_INTERFACE_ENTRY(ICustomTabControlEventSink)
+        COM_INTERFACE_ENTRY(IMainWindowEventSink)
 	END_COM_MAP()
 
 private:
@@ -54,6 +56,7 @@ private:
 	CComPtr<IFormsService> m_pFormsService;
 	CComQIPtr<IMessageLoop> m_pMessageLoop;
     CComPtr<IFormManager> m_pFormManager;
+    CComPtr<IMainWindow> m_pMainWindow;
 
 	vector<CComPtr<IControl>> m_controlsStack;
 
@@ -62,7 +65,8 @@ private:
 	DWORD m_dwAdviceTabbedControl = 0;
 	DWORD m_dwAdviceTabbedControl2 = 0;
 	DWORD m_dwAdviceUpdateService = 0;
-	DWORD m_dwAdviceCustomtabControl = 0;
+	DWORD m_dwAdviceCustomTabControl = 0;
+    DWORD m_dwAdviceMainWindow = 0;
 
 public:
 
@@ -91,6 +95,8 @@ public:
 	STDMETHOD(OnUpdateAvailable)();
 
 	STDMETHOD(OnBackButtonClicked)();
+
+    STDMETHOD(OnDestroy)();
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ViewControllerService), CViewControllerService)

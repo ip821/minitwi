@@ -23,24 +23,25 @@ STDMETHODIMP CViewControllerService::OnInitialized(IServiceProvider *pServicePro
 
     m_pServiceProvider = pServiceProvider;
 
-    CComQIPtr<IMainWindow> pMainWindow = m_pControl;
-    ATLASSERT(pMainWindow);
-
-    RETURN_IF_FAILED(pMainWindow->GetMessageLoop(&m_pMessageLoop));
-    RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
-
-    CComPtr<IContainerControl> pContainerControl;
-    RETURN_IF_FAILED(pMainWindow->GetContainerControl(&pContainerControl));
-    m_pTabbedControl = pContainerControl;
-    RETURN_IF_FAILED(m_pTabbedControl->EnableCommands(FALSE));
-
     CComPtr<IUnknown> pUnk;
     RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
 
+    m_pMainWindow = m_pControl;
+    ATLASSERT(m_pMainWindow);
+
+    RETURN_IF_FAILED(AtlAdvise(m_pMainWindow, pUnk, __uuidof(IMainWindowEventSink), &m_dwAdviceMainWindow));
+
+    RETURN_IF_FAILED(m_pMainWindow->GetMessageLoop(&m_pMessageLoop));
+    RETURN_IF_FAILED(m_pMessageLoop->AddMessageFilter(this));
+
+    CComPtr<IContainerControl> pContainerControl;
+    RETURN_IF_FAILED(m_pMainWindow->GetContainerControl(&pContainerControl));
+    m_pTabbedControl = pContainerControl;
+    RETURN_IF_FAILED(m_pTabbedControl->EnableCommands(FALSE));
 
     RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(IInfoControlEventSink), &m_dwAdviceTabbedControl));
     RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ITabbedControlEventSink), &m_dwAdviceTabbedControl2));
-    RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ICustomTabControlEventSink), &m_dwAdviceCustomtabControl));
+    RETURN_IF_FAILED(AtlAdvise(m_pTabbedControl, pUnk, __uuidof(ICustomTabControlEventSink), &m_dwAdviceCustomTabControl));
     RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_UpdateService, &m_pUpdateService));
 
     RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_FORMS_SERVICE, &m_pFormsService));
@@ -68,10 +69,11 @@ STDMETHODIMP CViewControllerService::OnInitCompleted()
 STDMETHODIMP CViewControllerService::OnShutdown()
 {
     RETURN_IF_FAILED(m_pMessageLoop->RemoveMessageFilter(this));
+    RETURN_IF_FAILED(AtlUnadvise(m_pMainWindow, __uuidof(IMainWindowEventSink), m_dwAdviceMainWindow));
     RETURN_IF_FAILED(AtlUnadvise(m_pUpdateService, __uuidof(IUpdateServiceEventSink), m_dwAdviceUpdateService));
     RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ITabbedControlEventSink), m_dwAdviceTabbedControl2));
     RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(IInfoControlEventSink), m_dwAdviceTabbedControl));
-    RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ICustomTabControlEventSink), m_dwAdviceCustomtabControl));
+    RETURN_IF_FAILED(AtlUnadvise(m_pTabbedControl, __uuidof(ICustomTabControlEventSink), m_dwAdviceCustomTabControl));
     RETURN_IF_FAILED(IInitializeWithControlImpl::OnShutdown());
     m_pMessageLoop.Release();
     m_pFormManager.Release();
@@ -81,6 +83,7 @@ STDMETHODIMP CViewControllerService::OnShutdown()
     m_pUpdateService.Release();
     m_pTabbedControl.Release();
     m_pSettings.Release();
+
     return S_OK;
 }
 
@@ -264,4 +267,9 @@ STDMETHODIMP CViewControllerService::PreTranslateMessage(MSG *pMsg, BOOL *bResul
         }
     }
     return 0;
+}
+
+STDMETHODIMP CViewControllerService::OnDestroy()
+{
+    exit(0);
 }
