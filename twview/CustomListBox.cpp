@@ -305,7 +305,7 @@ LRESULT CCustomListBox::OnMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 	}
 
 	{ //Previous point
-		if (m_PrevHoveredItemIndex != INVALID_ITEM_INDEX && (m_bstrPrevHoveredColumnName != m_bstrHoveredColumnName || rectPrevious != m_prevColumnRect || m_PrevHoveredItemIndex != m_HoveredItemIndex))
+		if (m_PrevHoveredItemIndex != INVALID_ITEM_INDEX && (size_t)m_PrevHoveredItemIndex < m_columnsInfo.size() && (m_bstrPrevHoveredColumnName != m_bstrHoveredColumnName || rectPrevious != m_prevColumnRect || m_PrevHoveredItemIndex != m_HoveredItemIndex))
 		{
 			CComPtr<IColumnsInfo> pColumnsInfo = m_columnsInfo[m_PrevHoveredItemIndex];
 			CComPtr<IColumnsInfoItem> pColumnsInfoItem;
