@@ -38,10 +38,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
-		bHandled = TRUE;
-		lResult = OnMessage(uMsg, wParam, lParam, bHandled);
-		if (bHandled)
-			return TRUE;
+        DEFAULT_MESSAGE_HANDLER(OnMessage)
 	END_MSG_MAP()
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
