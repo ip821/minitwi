@@ -558,3 +558,23 @@ interface IListTimelineControl : IUnknown
 {
 
 };
+
+[
+    object,
+    uuid(50F32FA1-F3D4-485B-A4F6-3E99B77A1832),
+    pointer_default(unique)
+]
+interface IFollowingControl : IUnknown
+{
+
+};
+
+[
+    object,
+    uuid(194A6E78-8030-4F7D-BE77-11B806AE3932),
+    pointer_default(unique)
+]
+interface IFollowingTimelineControl : IUnknown
+{
+
+};

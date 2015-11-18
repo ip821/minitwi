@@ -190,6 +190,16 @@ LRESULT CSettingsControl::OnClickedEnterPin(WORD wNotifyCode, WORD wID, HWND hWn
 	return 0;
 }
 
+LRESULT CSettingsControl::OnClickedShowFollowing(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+    CComPtr<IFormManager> pFormManager;
+    RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
+    CComPtr<IControl> pFollowingControl;
+    RETURN_IF_FAILED(pFormManager->OpenForm(CLSID_FollowingControl, &pFollowingControl));
+    RETURN_IF_FAILED(pFormManager->ActivateForm2(pFollowingControl));
+    return 0;
+}
+
 LRESULT CSettingsControl::OnClickedCancelPin(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
 	m_accessUrl.Empty();

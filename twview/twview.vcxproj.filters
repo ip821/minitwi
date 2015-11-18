@@ -89,6 +89,9 @@
     <Filter Include="Include">
       <UniqueIdentifier>{009c63e8-5a18-49c0-b1a6-5137020d3bd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Controls\FollowingControl">
+      <UniqueIdentifier>{9dc01c02-7235-426a-8f70-ccdfd477d120}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -180,6 +183,9 @@
     </ClCompile>
     <ClCompile Include="asyncmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowingControl.cpp">
+      <Filter>Controls\FollowingControl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -296,6 +302,9 @@
     </ClInclude>
     <ClInclude Include="asyncmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowingControl.h">
+      <Filter>Controls\FollowingControl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

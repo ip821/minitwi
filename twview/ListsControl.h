@@ -10,7 +10,7 @@ using namespace std;
 
 class ATL_NO_VTABLE CListsControl :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CListsControl, &CLSID_HomeTimeLineControl>,
+	public CComCoClass<CListsControl, &CLSID_ListsControl>,
 	public CWindowImpl<CListsControl>,
 	public CBaseTimeLineControl<CListsControl>,
 	public IListsControl

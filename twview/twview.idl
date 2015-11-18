@@ -183,6 +183,13 @@ library twviewLib
 	{
 		[default] interface IListTimelineControl;
 	};
+    [
+        uuid(6836131D-C5A4-4D09-9023-0AF0782208BC)
+    ]
+    coclass FollowingControl
+    {
+        [default] interface IFollowingControl;
+    };
 	[
 		uuid(7C8FE398-09C0-4779-9D0A-C361294CD7BE)
 	]
