@@ -26,6 +26,7 @@ interface ITwitterConnection : IUnknown
 	HRESULT GetUserSettings(IVariantObject** ppVariantObject);
 	HRESULT GetFollowStatus(BSTR bstrTargetUserName, BOOL* pbFollowing);
 	HRESULT GetUser(BSTR bstrUserName, IVariantObject** ppVariantObject);
+    HRESULT GetFollowingUsers(BSTR bstrUserName, INT uiPageNumber, IVariantObject** ppVariantObject);
 };
 
 [

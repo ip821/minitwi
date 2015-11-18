@@ -192,11 +192,9 @@ LRESULT CSettingsControl::OnClickedEnterPin(WORD wNotifyCode, WORD wID, HWND hWn
 
 LRESULT CSettingsControl::OnClickedShowFollowing(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    CComPtr<IFormManager> pFormManager;
-    RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORM_MANAGER, &pFormManager));
-    CComPtr<IControl> pFollowingControl;
-    RETURN_IF_FAILED(pFormManager->OpenForm(CLSID_FollowingControl, &pFollowingControl));
-    RETURN_IF_FAILED(pFormManager->ActivateForm2(pFollowingControl));
+    CComPtr<IFormsService> pFormsService;
+    RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_FORMS_SERVICE, &pFormsService));
+    RETURN_IF_FAILED(pFormsService->OpenForm(CLSID_FollowingControl, nullptr));
     return 0;
 }
 

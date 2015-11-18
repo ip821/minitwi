@@ -78,6 +78,7 @@ public:
 	STDMETHOD(GetUserSettings)(IVariantObject** ppVariantObject);
 	STDMETHOD(GetFollowStatus)(BSTR bstrTargetUserName, BOOL* pbFollowing);
 	STDMETHOD(GetUser)(BSTR bstrUserName, IVariantObject** ppVariantObject);
+    STDMETHOD(GetFollowingUsers)(BSTR bstrUserName, INT uiPageNumber, IVariantObject** ppVariantObject);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TwitterConnection), CTwitterConnection)

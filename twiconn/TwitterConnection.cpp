@@ -570,6 +570,56 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::GetFollowingUsers(BSTR bstrUserName, INT uiPageNumber, IVariantObject** ppVariantObject)
+{
+    CHECK_E_POINTER(bstrUserName);
+    CHECK_E_POINTER(ppVariantObject);
+
+    USES_CONVERSION;
+
+    string strUserName = CW2A(bstrUserName);
+    string strPageNumber = boost::lexical_cast<string>(uiPageNumber);
+    if (!m_pTwitObj->friendsListGet(strUserName, strPageNumber))
+    {
+        return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+    }
+
+    string strResponse;
+    m_pTwitObj->getLastWebResponse(strResponse);
+
+    auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+    auto hr = HandleError(value.get());
+    if (FAILED(hr))
+        return hr;
+
+    auto item = value.get()->AsObject();
+    auto uiNextCursor = (UINT)item[L"next_cursor"]->AsNumber();
+
+    CComPtr<IVariantObject> pVariantObject;
+    RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
+    RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::CursorObject::NextCursor, &CComVar(uiNextCursor)));
+
+    CComPtr<IObjCollection> pObjectCollection;
+    RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjectCollection));
+
+    auto items = item[L"users"]->AsArray();
+    for (size_t i = 0; i < items.size(); i++)
+    {
+        auto userObj = items[i]->AsObject();
+        CComPtr<IVariantObject> pUserVariantObject;
+        RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));
+        RETURN_IF_FAILED(ParseUser(userObj, pUserVariantObject));
+        RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
+    }
+
+    CComQIPtr<IObjArray> pObjArray = pObjectCollection;
+    RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::CursorObject::Items, &CComVar(pObjArray)));
+
+    RETURN_IF_FAILED(pVariantObject->QueryInterface(ppVariantObject));
+
+    return S_OK;
+}
+
 HRESULT CTwitterConnection::ParseUser(JSONObject& value, IVariantObject* pVariantObject)
 {
 	auto userDisplayName = value[L"name"]->AsString();

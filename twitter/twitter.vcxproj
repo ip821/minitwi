@@ -254,6 +254,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="FollowingControlService.cpp" />
     <ClCompile Include="FollowStatusService.cpp" />
     <ClCompile Include="DownloadService.cpp" />
     <ClCompile Include="FollowService.cpp" />
@@ -342,6 +343,7 @@
   <ItemGroup>
     <ClInclude Include="AnimationTimerSupport.h" />
     <ClInclude Include="asyncmdl_contract_i.h" />
+    <ClInclude Include="FollowingControlService.h" />
     <ClInclude Include="FollowStatusService.h" />
     <ClInclude Include="FollowService.h" />
     <ClInclude Include="GetUserService.h" />

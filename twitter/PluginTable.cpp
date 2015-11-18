@@ -120,5 +120,19 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service for list timeline control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_OPEN_URLS, CLSID_OpenUrlService, L"Open url service for list timeline control"));
 
+    RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ThreadPoolService, CLSID_ThreadPoolService, L"Thread pool service for following control"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_DownloadService, CLSID_DownloadService, L"Download service user for following control"));
+    RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ImageManagerService, CLSID_ImageManagerService, L"Image manager service for following control"));
+    RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_UPDATEIMAGES_TIMER, CLSID_TimerService, L"Timer update images service for following control"));
+    RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_UPDATE_THREAD, CLSID_ThreadService, L"Timeline thread service for following control"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE, CLSID_FollowingControlService, L"Timeline service for following control"));
+    RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_THREAD, CLSID_ThreadService, L"Timeline queue thread service"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_QUEUE, CLSID_TimelineQueueService, L"Timeline queue service"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineLoadingService, CLSID_TimelineLoadingService, L"Timeline loading service for following control"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for following control"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for following control"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service for following control"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_OPEN_URLS, CLSID_OpenUrlService, L"Open url service for list timeline control"));
+
 	return S_OK;
 }

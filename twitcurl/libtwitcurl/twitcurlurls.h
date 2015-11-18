@@ -89,6 +89,7 @@ namespace twitterDefaults
     /* Social graphs URLs */
     const std::string TWITCURL_FRIENDSIDS_URL = TWITCURL_BASE_URL + "friends/ids";
     const std::string TWITCURL_FOLLOWERSIDS_URL = TWITCURL_BASE_URL + "followers/ids";
+    const std::string TWITCURL_FRIENDSLIST_URL = TWITCURL_BASE_URL + "friends/list";
 
     /* Account URLs */
     const std::string TWITCURL_ACCOUNTRATELIMIT_URL = TWITCURL_BASE_URL + "account/rate_limit_status";

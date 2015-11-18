@@ -67,6 +67,12 @@ namespace IP
 				{
 					const static CComBSTR IsFollowing(L"VAR_TWITTER_ISFOLLOWING");
 				}
+
+                namespace CursorObject
+                {
+                    const static CComBSTR NextCursor(L"NextCursor");
+                    const static CComBSTR Items(L"Items");
+                }
 			}
 		}
 	}

@@ -23,6 +23,13 @@ library twitterLib
 	{
 		[default] interface IPluginTable;
 	};
+    [
+        uuid(BB50CFC0-3B7E-47AC-93C9-E3B7A8CD3762)
+    ]
+    coclass FollowingControlService
+    {
+        [default] interface IUnknown;
+    };
 	[
 		uuid(A763588D-7894-4A63-B2A1-87CFA15DC421)
 	]

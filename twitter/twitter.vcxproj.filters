@@ -89,6 +89,9 @@
     <Filter Include="Services\GetUserService">
       <UniqueIdentifier>{873db6e0-d7cb-44f0-8bc6-8621f2a4f894}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\FollowingControlService">
+      <UniqueIdentifier>{e713e55a-056a-456c-b403-2241e2e315a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -201,6 +204,9 @@
     </ClCompile>
     <ClCompile Include="asyncmdl_contract_i.c">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FollowingControlService.cpp">
+      <Filter>Services\FollowingControlService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -332,6 +338,9 @@
     </ClInclude>
     <ClInclude Include="asyncmdl_contract_i.h">
       <Filter>ZZZMisc\Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FollowingControlService.h">
+      <Filter>Services\FollowingControlService</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
