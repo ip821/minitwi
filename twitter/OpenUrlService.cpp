@@ -132,18 +132,28 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 	CComBSTR bstrColumnName;
 	RETURN_IF_FAILED(pColumnsInfoItem->GetRectStringProp(Twitter::Metadata::Column::Name, &bstrColumnName));
 
+    CComVar vObjectType;
+    RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
+
 	CString strUrl;
 	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::UserObject::DisplayName ||
 		CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::UserObject::Name)
 	{
-		CComVar vUserObject;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &vUserObject));
-		if (vUserObject.vt == VT_UNKNOWN)
-		{
-			CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
-			ATLASSERT(pObj);
-			RETURN_IF_FAILED(OpenUserInfoForm(pObj));
-		}
+        if (vObjectType.vt == VT_BSTR && CComBSTR(vObjectType.bstrVal) == Twitter::Connection::Metadata::UserObject::TypeId)
+        {
+            RETURN_IF_FAILED(OpenUserInfoForm(pVariantObject));
+        }
+        else
+        {
+            CComVar vUserObject;
+            RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::TweetObject::UserObject, &vUserObject));
+            if (vUserObject.vt == VT_UNKNOWN)
+            {
+                CComQIPtr<IVariantObject> pObj = vUserObject.punkVal;
+                ATLASSERT(pObj);
+                RETURN_IF_FAILED(OpenUserInfoForm(pObj));
+            }
+        }
 	}
 
 	if (CComBSTR(bstrColumnName) == Twitter::Connection::Metadata::TweetObject::RetweetedUserDisplayName ||
@@ -217,8 +227,6 @@ STDMETHODIMP COpenUrlService::OnColumnClick(IColumnsInfoItem* pColumnsInfoItem, 
 		CComPtr<IVariantObject> pUrlObject;
 		RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUrlObject));
 
-		CComVar vObjectType;
-		RETURN_IF_FAILED(pVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
 		if (vObjectType.vt == VT_BSTR && CComBSTR(vObjectType.bstrVal) == Twitter::Connection::Metadata::TweetObject::TypeId)
 		{
 			CComVar vUserName;

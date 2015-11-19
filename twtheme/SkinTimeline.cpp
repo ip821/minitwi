@@ -161,6 +161,10 @@ STDMETHODIMP CSkinTimeline::MeasureItem(HDC hdc, RECT* pClientRect, IVariantObje
 		{
 			RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameListItem, &pLayoutObject));
 		}
+        else if (strObjectType == Twitter::Connection::Metadata::UserObject::TypeId)
+        {
+            RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameFollowingUserItem, &pLayoutObject));
+        }
 		else if (strObjectType == Twitter::Connection::Metadata::TweetObject::TypeId)
 		{
 			RETURN_IF_FAILED(m_pLayoutManager->GetLayout(Twitter::Themes::Metadata::TimelineControl::LayoutNameItem, &pLayoutObject));

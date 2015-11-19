@@ -451,6 +451,78 @@
                 ]
             },
             {
+                "name": "TimelineFollowingUserItem",
+                "type": "vertical_container",
+                "fit_horizontal": "parent",
+                "border_bottom": true,
+                "border_bottom_width": 1,
+                "border_bottom_color": "TwitterDelimiter",
+                "color_background_selected": "BrushSelected",
+                "elements": [
+                    {
+                        "name": "UserInfoContainer",
+                        "type": "horizontal_container",
+                        "fit_horizontal": "parent",
+                        "margin_top": 5,
+                        "margin_bottom": 5,
+                        "elements": [
+                            {
+                                "name": "TwitterUserImage",
+                                "type": "image_column",
+                                "VAR_IS_URL": true,
+                                "margin_top": 5,
+                                "margin_bottom": 5,
+                                "margin_left": 5,
+                                "margin_right": 5,
+                                "height": 48,
+                                "width": 48
+                            },
+                            {
+                                "name": "TextDataContainer",
+                                "type": "vertical_container",
+                                "elements": [
+                                    {
+                                        "name": "UserNameContainer",
+                                        "type": "horizontal_container",
+                                        "elements": [
+                                            {
+                                                "name": "TwitterUserDisplayName",
+                                                "type": "text_column",
+                                                "text_key": "TwitterUserDisplayName",
+                                                "font": "TwitterUserDisplayName",
+                                                "font_selected": "TwitterUserDisplayNameSelected",
+                                                "color": "TwitterUserDisplayName",
+                                                "VAR_IS_URL": true,
+                                                "margin_right": 5
+
+                                            },
+                                            {
+                                                "name": "TwitterUserName",
+                                                "type": "text_column",
+                                                "text": "@",
+                                                "text_key": "TwitterUserName",
+                                                "font": "TwitterUserName",
+                                                "font_selected": "TwitterUserNameSelected",
+                                                "VAR_IS_URL": true,
+                                                "color": "TwitterUserName"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "UserDescription",
+                                        "type": "text_column",
+                                        "text_key": "VAR_TWITTER_USER_DESCRIPTION",
+                                        "font": "TwitterNormalizedText",
+                                        "color": "TwitterNormalizedText",
+                                        "text_multiline": true
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
                 "name": "TimelineItem",
                 "type": "vertical_container",
                 "fit_horizontal": "parent",

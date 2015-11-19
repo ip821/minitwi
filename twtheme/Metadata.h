@@ -42,6 +42,7 @@ namespace IP
 					const static CComBSTR LayoutNameItem(L"TimelineItem");
 					const static CComBSTR LayoutNameCustomItem(L"TimelineCustomItem");
 					const static CComBSTR LayoutNameListItem(L"TimelineListItem");
+                    const static CComBSTR LayoutNameFollowingUserItem(L"TimelineFollowingUserItem");
 					const static CComBSTR RetweetImageKey(L"retweet");
 					const static CComBSTR FavoriteImageKey(L"fav");
 					const static CComBSTR PlayImageKey(L"play");

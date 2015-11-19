@@ -609,7 +609,7 @@ STDMETHODIMP CTwitterConnection::GetFollowingUsers(BSTR bstrUserName, INT uiPage
         CComPtr<IVariantObject> pUserVariantObject;
         RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pUserVariantObject));
         RETURN_IF_FAILED(ParseUser(userObj, pUserVariantObject));
-        RETURN_IF_FAILED(pObjectCollection->AddObject(pVariantObject));
+        RETURN_IF_FAILED(pObjectCollection->AddObject(pUserVariantObject));
     }
 
     CComQIPtr<IObjArray> pObjArray = pObjectCollection;

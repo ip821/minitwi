@@ -12,9 +12,16 @@ HRESULT CFollowingControl::Initializing()
 HRESULT CFollowingControl::OnActivateInternal()
 {
     __super::OnActivateInternal();
-    CComPtr<IThreadService> pThreadService;
-    RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pThreadService));
-    RETURN_IF_FAILED(pThreadService->Run());
+
+    BOOL bEmpty = FALSE;
+    RETURN_IF_FAILED(m_pTimelineControl->IsEmpty(&bEmpty));
+    if (bEmpty)
+    {
+        CComPtr<IThreadService> pThreadService;
+        RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &pThreadService));
+        RETURN_IF_FAILED(pThreadService->Run());
+    }
+
     return S_OK;
 }
 
