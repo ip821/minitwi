@@ -132,7 +132,9 @@ HRESULT CPluginTable::FinalConstruct()
     RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for following control"));
     RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for following control"));
     RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service for following control"));
-    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_OPEN_URLS, CLSID_OpenUrlService, L"Open url service for list timeline control"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_OPEN_URLS, CLSID_OpenUrlService, L"Open url service for following timeline control"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ShowMoreSupportService, CLSID_ShowMoreSupportService, L"Show more service for following timeline control"));
+    RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_SHOWMORE_THREAD, CLSID_ThreadService, L"Timeline thread show more items service for following timeline control"));
 
 	return S_OK;
 }

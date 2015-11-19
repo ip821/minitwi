@@ -12,8 +12,10 @@ STDMETHODIMP CFollowingControlService::OnInitialized(IServiceProvider* pServiceP
 
     CComPtr<IUnknown> pUnk;
     RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
-    RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadService));
-    RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdvice));
+    RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_UPDATE_THREAD, &m_pThreadUpdateService));
+    RETURN_IF_FAILED(AtlAdvise(m_pThreadUpdateService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceUpdate));
+    RETURN_IF_FAILED(m_pServiceProvider->QueryService(SERVICE_TIMELINE_SHOWMORE_THREAD, &m_pThreadShowMoreService));
+    RETURN_IF_FAILED(AtlAdvise(m_pThreadShowMoreService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceShowMore));
 
     CComQIPtr<ITimelineControlSupport> pTimelineControlSupport = m_pControl;
     ATLASSERT(pTimelineControlSupport);
@@ -31,7 +33,8 @@ STDMETHODIMP CFollowingControlService::OnInitialized(IServiceProvider* pServiceP
 
 STDMETHODIMP CFollowingControlService::OnShutdown()
 {
-    RETURN_IF_FAILED(AtlUnadvise(m_pThreadService, __uuidof(IThreadServiceEventSink), m_dwAdvice));
+    RETURN_IF_FAILED(AtlUnadvise(m_pThreadUpdateService, __uuidof(IThreadServiceEventSink), m_dwAdviceUpdate));
+    RETURN_IF_FAILED(AtlUnadvise(m_pThreadShowMoreService, __uuidof(IThreadServiceEventSink), m_dwAdviceShowMore));
     {
         boost::lock_guard<boost::mutex> lock(m_mutex);
         m_pSettings.Release();
@@ -40,7 +43,8 @@ STDMETHODIMP CFollowingControlService::OnShutdown()
     m_pThreadServiceQueueService.Release();
     m_pTimelineQueueService.Release();
     m_pTimelineControl.Release();
-    m_pThreadService.Release();
+    m_pThreadUpdateService.Release();
+    m_pThreadShowMoreService.Release();
     m_pServiceProvider.Release();
     IInitializeWithControlImpl::OnShutdown();
 
@@ -60,7 +64,6 @@ STDMETHODIMP CFollowingControlService::Load(ISettings* pSettings)
 STDMETHODIMP CFollowingControlService::OnStart(IVariantObject *pResult)
 {
     CHECK_E_POINTER(pResult);
-    RETURN_IF_FAILED(m_pTimelineControl->Clear());
     return S_OK;
 }
 
@@ -90,14 +93,42 @@ STDMETHODIMP CFollowingControlService::OnRun(IVariantObject *pResult)
     RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
     RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
+    CComBSTR bstrNextCursor(L"-1");
+
+    CComVar vId;
+    RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::MaxId, &vId));
+
+    if (vId.vt == VT_BSTR)
+    {
+        bstrNextCursor = vId.bstrVal;
+    }
+
+    if (bstrNextCursor == L"0")
+        return S_OK;
+
     CComPtr<IVariantObject> pVariantObject;
-    RETURN_IF_FAILED(pConnection->GetFollowingUsers(bstrUser, -1, &pVariantObject));
-    
+    RETURN_IF_FAILED(pConnection->GetFollowingUsers(bstrUser, bstrNextCursor, &pVariantObject));
+
+    CComVar vNextCursor;
+    RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::CursorObject::NextCursor, &vNextCursor));
+
     CComVar vItems;
     RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Connection::Metadata::CursorObject::Items, &vItems));
     ATLASSERT(vItems.vt == VT_UNKNOWN);
 
     CComQIPtr<IObjArray> pObjectArray = vItems.punkVal;
+
+    {
+        UINT uiCount = 0;
+        RETURN_IF_FAILED(pObjectArray->GetCount(&uiCount));
+        for (UINT i = 0; i < uiCount; i++)
+        {
+            CComPtr<IVariantObject> pItem;
+            RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pItem));
+            RETURN_IF_FAILED(pItem->SetVariantValue(ObjectModel::Metadata::Object::Id, &vNextCursor));
+        }
+    }
+
     RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVar(pObjectArray)));
 
     return S_OK;
@@ -108,7 +139,6 @@ STDMETHODIMP CFollowingControlService::OnFinish(IVariantObject *pResult)
     CHECK_E_POINTER(pResult);
 
     CUpdateScope scope(m_pTimelineControl);
-    RETURN_IF_FAILED(m_pTimelineControl->Clear());
 
     CComVar vHr;
     RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
@@ -119,6 +149,10 @@ STDMETHODIMP CFollowingControlService::OnFinish(IVariantObject *pResult)
 
     CComVar vResult;
     RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Result, &vResult));
+
+    if (vResult.vt == VT_EMPTY)
+        return S_OK;
+
     CComQIPtr<IObjArray> pObjectArray = vResult.punkVal;
 
     UINT uiCount = 0;

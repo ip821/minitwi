@@ -570,7 +570,7 @@ STDMETHODIMP CTwitterConnection::GetTimeline(BSTR bstrUserId, BSTR bstrMaxId, BS
 	return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetFollowingUsers(BSTR bstrUserName, INT uiPageNumber, IVariantObject** ppVariantObject)
+STDMETHODIMP CTwitterConnection::GetFollowingUsers(BSTR bstrUserName, BSTR bstrNextCursor, IVariantObject** ppVariantObject)
 {
     CHECK_E_POINTER(bstrUserName);
     CHECK_E_POINTER(ppVariantObject);
@@ -578,7 +578,7 @@ STDMETHODIMP CTwitterConnection::GetFollowingUsers(BSTR bstrUserName, INT uiPage
     USES_CONVERSION;
 
     string strUserName = CW2A(bstrUserName);
-    string strPageNumber = boost::lexical_cast<string>(uiPageNumber);
+    string strPageNumber = CW2A(bstrNextCursor);
     if (!m_pTwitObj->friendsListGet(strUserName, strPageNumber))
     {
         return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
@@ -593,11 +593,11 @@ STDMETHODIMP CTwitterConnection::GetFollowingUsers(BSTR bstrUserName, INT uiPage
         return hr;
 
     auto item = value.get()->AsObject();
-    auto uiNextCursor = (UINT)item[L"next_cursor"]->AsNumber();
+    auto strNextCursor = item[L"next_cursor_str"]->AsString();
 
     CComPtr<IVariantObject> pVariantObject;
     RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pVariantObject));
-    RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::CursorObject::NextCursor, &CComVar(uiNextCursor)));
+    RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::CursorObject::NextCursor, &CComVar(strNextCursor.c_str())));
 
     CComPtr<IObjCollection> pObjectCollection;
     RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjectCollection));
