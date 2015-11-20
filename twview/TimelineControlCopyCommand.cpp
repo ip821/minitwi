@@ -64,9 +64,13 @@ STDMETHODIMP CTimelineControlCopyCommand::InstallMenu(IMenu* pMenu)
 	return S_OK;
 }
 
-CString CTimelineControlCopyCommand::MakeTwitterUrl(BSTR bstrUserName, BSTR bstrTwitterId)
+CString CTimelineControlCopyCommand::MakeTwitterUrl(BSTR bstrUserName, BSTR bstrObjectType, BSTR bstrTwitterId)
 {
-    return L"https://twitter.com/" + CString(bstrUserName) + L"/status/" + CString(bstrTwitterId);
+    if(CComBSTR(bstrObjectType) == Twitter::Connection::Metadata::TweetObject::TypeId)
+        return L"https://twitter.com/" + CString(bstrUserName) + L"/status/" + CString(bstrTwitterId);
+    else if(CComBSTR(bstrObjectType) == Twitter::Connection::Metadata::UserObject::TypeId)
+        return L"https://twitter.com/" + CString(bstrUserName);
+    return L"";
 }
 
 CString CTimelineControlCopyCommand::MakeMediaString(CString& strUrl)
@@ -96,12 +100,14 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
             RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
             CComVar vTwitterId;
             RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vTwitterId));
+            CComVar vObjectType;
+            RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
 
 			if (IsEqualGUID(guidCommand, COMMAND_COPY_URL))
 			{
-				if (vUserName.vt == VT_BSTR && vTwitterId.vt == VT_BSTR)
+				if (vUserName.vt == VT_BSTR && vTwitterId.vt == VT_BSTR && vObjectType.vt == VT_BSTR)
 				{
-					str = MakeTwitterUrl(vUserName.bstrVal, vTwitterId.bstrVal);
+					str = MakeTwitterUrl(vUserName.bstrVal, vObjectType.bstrVal, vTwitterId.bstrVal);
 				}
 			}
 			else if (IsEqualGUID(guidCommand, COMMAND_COPY_TEXT))
@@ -144,9 +150,9 @@ STDMETHODIMP CTimelineControlCopyCommand::Invoke(REFGUID guidCommand)
                                         str += MakeMediaString(CString(vUrlText.bstrVal));
                                     }
                                 }
-                                else if (vUserName.vt == VT_BSTR && vTwitterId.vt == VT_BSTR)
+                                else if (vUserName.vt == VT_BSTR && vTwitterId.vt == VT_BSTR && vObjectType.vt == VT_BSTR)
                                 {
-                                    str += MakeMediaString(MakeTwitterUrl(vUserName.bstrVal, vTwitterId.bstrVal));
+                                    str += MakeMediaString(MakeTwitterUrl(vUserName.bstrVal, vObjectType.bstrVal, vTwitterId.bstrVal));
                                 }
                             }
 						}

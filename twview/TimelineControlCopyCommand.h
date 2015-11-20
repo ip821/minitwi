@@ -38,9 +38,9 @@ public:
 private:
 	CComPtr<IVariantObject> m_pVariantObject;
 
-    CString MakeTwitterUrl(BSTR bstrUserName, BSTR bstrTwitterId);
     CString MakeMediaString(CString& strUrl);
 public:
+    static CString MakeTwitterUrl(BSTR bstrUserName, BSTR bstrObjectType, BSTR bstrTwitterId);
 
 	STDMETHOD(GetCommandText)(REFGUID guidCommand, BSTR* bstrText);
 	STDMETHOD(InstallMenu)(IMenu* pMenu);

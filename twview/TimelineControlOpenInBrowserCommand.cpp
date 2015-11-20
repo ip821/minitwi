@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TimelineControlOpenInBrowserCommand.h"
+#include "TimelineControlCopyCommand.h"
 
 #include "Plugins.h"
 #include "..\twiconn\Plugins.h"
@@ -44,11 +45,13 @@ STDMETHODIMP CTimelineControlOpenInBrowserCommand::Invoke(REFGUID guidCommand)
 
 	CComVar vUserName;
 	RETURN_IF_FAILED(pTempObject->GetVariantValue(Twitter::Connection::Metadata::UserObject::Name, &vUserName));
+    CComVar vObjectType;
+    RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
 	CComVar v;
 	RETURN_IF_FAILED(pTempObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &v));
 	if (vUserName.vt == VT_BSTR && v.vt == VT_BSTR)
 	{
-		auto strUrl = L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(v.bstrVal);
+        auto strUrl = CTimelineControlCopyCommand::MakeTwitterUrl(vUserName.bstrVal, vObjectType.bstrVal, v.bstrVal);// L"https://twitter.com/" + CString(vUserName.bstrVal) + L"/status/" + CString(v.bstrVal);
 		ShellExecute(NULL, L"open", strUrl, NULL, NULL, SW_SHOW);
 	}
 
