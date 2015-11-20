@@ -93,7 +93,7 @@ STDMETHODIMP CHomeTimelineControllerService::OnFinish(IVariantObject* pResult)
 STDMETHODIMP CHomeTimelineControllerService::StartConnection()
 {
 	m_running = true;
-	//RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000));
+	RETURN_IF_FAILED(m_pTimerService->StartTimer(60 * 1000));
 	return S_OK;
 }
 
