@@ -770,6 +770,35 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 		strText.Replace(it.second.c_str(), L"");
 	}
 
+    //Handling surrogate pairs
+    auto strLength = strText.GetLength();
+    for (auto i = 0; i < strLength; i++)
+    {
+        auto ch = strText[i];
+        if (IS_HIGH_SURROGATE(ch))
+        {
+            for (auto& it : urlsMap)
+            {
+                if (it.second.Start >= i)
+                {
+                    ++it.second.Start;
+                    if (i < strLength - 1 && IS_LOW_SURROGATE(strText[i + 1]))
+                        ++it.second.End;
+                }
+            }
+
+            for (auto& it : otherLinks)
+            {
+                if (it.second.Start >= i)
+                {
+                    ++it.second.Start;
+                    if (i < strLength - 1 && IS_LOW_SURROGATE(strText[i + 1]))
+                        ++it.second.End;
+                }
+            }
+        }
+    }
+
 	wstring stdStr(strText);
 
 //#ifndef DEBUG
@@ -814,11 +843,12 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
             strText.Replace(source, dest);
         }
     }
-    strText = strText.Trim();
 
-	auto urlsVector = vector<pair<wstring, Indexes>>(urlsMap.cbegin(), urlsMap.cend());
-	AppendUrls(pVariantObject, urlsVector);
-	AppendUrls(pVariantObject, otherLinks);
+    auto urlsVector = vector<pair<wstring, Indexes>>(urlsMap.cbegin(), urlsMap.cend());
+    AppendUrls(pVariantObject, urlsVector);
+    AppendUrls(pVariantObject, otherLinks);
+
+    strText = strText.Trim();
 
 	auto retweetCount = itemObject[L"retweet_count"]->AsNumber();
 	RETURN_IF_FAILED(pVariantObject->SetVariantValue(Twitter::Connection::Metadata::TweetObject::RetweetCount, &CComVar((int)retweetCount)));
