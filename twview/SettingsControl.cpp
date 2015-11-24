@@ -143,7 +143,7 @@ void CSettingsControl::SwitchToLoginMode()
 	::ShowWindow(GetDlgItem(IDC_BUTTON_ENTER_PIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_CANCEL_PIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_LABEL_PIN_INFO), SW_HIDE);
-    ::ShowWindow(GetDlgItem(IDC_BUTTON_FOLLOWING), SW_HIDE);
+    ::EnableWindow(GetDlgItem(IDC_BUTTON_FOLLOWING), FALSE);
 
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGIN), SW_SHOW);
 }
@@ -153,7 +153,7 @@ void CSettingsControl::SwitchToPinMode()
 	m_editPin.SetWindowText(L"");
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_HIDE);
-    ::ShowWindow(GetDlgItem(IDC_BUTTON_FOLLOWING), SW_HIDE);
+    ::EnableWindow(GetDlgItem(IDC_BUTTON_FOLLOWING), FALSE);
 
 	::ShowWindow(GetDlgItem(IDC_LABEL_PIN), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_EDIT_PIN), SW_SHOW);
@@ -168,7 +168,7 @@ void CSettingsControl::SwitchToLogoutMode()
 {
 	::ShowWindow(GetDlgItem(IDC_LABEL_LOGGED_USER), SW_SHOW);
 	::ShowWindow(GetDlgItem(IDC_BUTTON_LOGOUT), SW_SHOW);
-    ::ShowWindow(GetDlgItem(IDC_BUTTON_FOLLOWING), SW_SHOW);
+    ::EnableWindow(GetDlgItem(IDC_BUTTON_FOLLOWING), TRUE);
 
 	::ShowWindow(GetDlgItem(IDC_LABEL_PIN), SW_HIDE);
 	::ShowWindow(GetDlgItem(IDC_EDIT_PIN), SW_HIDE);
