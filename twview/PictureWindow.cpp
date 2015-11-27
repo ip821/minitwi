@@ -62,6 +62,8 @@ STDMETHODIMP CPictureWindow::OnInitialized(IServiceProvider *pServiceProvider)
 
 STDMETHODIMP CPictureWindow::OnShutdown()
 {
+    boost::lock_guard<boost::mutex> lock(m_mutex);
+    RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	RETURN_IF_FAILED(ShutdownViewControl());
 
 	for (auto& it : m_videoFilePaths)
@@ -72,7 +74,6 @@ STDMETHODIMP CPictureWindow::OnShutdown()
 	m_pVariantObject.Release();
 	m_pSettings.Release();
 	m_pMessageLoop.Release();
-	RETURN_IF_FAILED(AtlUnadvise(m_pDownloadService, __uuidof(IDownloadServiceEventSink), m_dwAdviceDownloadService));
 	m_pDownloadService.Release();
 	RETURN_IF_FAILED(m_pCommandSupport->UninstallAll());
 	m_pCommandSupport.Release();
@@ -413,6 +414,8 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 {
 	CHECK_E_POINTER(pResult);
 
+    boost::lock_guard<boost::mutex> lock(m_mutex);
+
 	CComVar vType;
 	RETURN_IF_FAILED(pResult->GetVariantValue(ObjectModel::Metadata::Object::Type, &vType));
 
@@ -454,7 +457,6 @@ STDMETHODIMP CPictureWindow::OnDownloadComplete(IVariantObject *pResult)
 
 	int currentBitmapIndex = 0;
 	{
-		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_currentBitmapIndex = vIndex.intVal;
 		currentBitmapIndex = m_currentBitmapIndex;
 	}
