@@ -771,31 +771,13 @@ HRESULT CTwitterConnection::ParseTweet(JSONObject& itemObject, IVariantObject* p
 	}
 
     //Handling surrogate pairs
-    auto strLength = strText.GetLength();
-    for (auto i = 0; i < strLength; i++)
+    for (auto i = 0; i < strText.GetLength(); i++)
     {
         auto ch = strText[i];
         if (IS_HIGH_SURROGATE(ch))
         {
-            for (auto& it : urlsMap)
-            {
-                if (it.second.Start >= i)
-                {
-                    ++it.second.Start;
-                    if (i < strLength - 1 && IS_LOW_SURROGATE(strText[i + 1]))
-                        ++it.second.End;
-                }
-            }
-
-            for (auto& it : otherLinks)
-            {
-                if (it.second.Start >= i)
-                {
-                    ++it.second.Start;
-                    if (i < strLength - 1 && IS_LOW_SURROGATE(strText[i + 1]))
-                        ++it.second.End;
-                }
-            }
+            ProcessSurrogates(strText, i, urlsMap);
+            ProcessSurrogates(strText, i, otherLinks);
         }
     }
 

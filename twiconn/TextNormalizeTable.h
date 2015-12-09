@@ -2,6 +2,8 @@
 
 using namespace std;
 
+#pragma warning(push)
+#pragma warning( disable : 4592)
 const map<CString, CString> NormalizeTable = 
 {
 	{ L"&lt;", L"<" },
@@ -9,3 +11,4 @@ const map<CString, CString> NormalizeTable =
 	{ L"&amp;", L"&" },
 	{ L"&quot;", L"\"" },
 };
+#pragma warning(pop)

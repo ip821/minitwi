@@ -45,6 +45,21 @@ public:
 	};
 
 private:
+    template<class T>
+    static void ProcessSurrogates(CString strText, int i, T urlCollection)
+    {
+        auto strLength = strText.GetLength();
+        for (auto& it : urlCollection)
+        {
+            if (it.second.Start >= i)
+            {
+                ++it.second.Start;
+                if (i < strLength - 1 && IS_LOW_SURROGATE(strText[i + 1]))
+                    ++it.second.End;
+            }
+        }
+    }
+
 
 	CString m_errMsg;
 	shared_ptr<twitCurl> m_pTwitObj;
