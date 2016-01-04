@@ -46,7 +46,7 @@ public:
 
 private:
     template<class T>
-    static void ProcessSurrogates(CString strText, int i, T urlCollection)
+    static void ProcessSurrogates(CString strText, int i, T& urlCollection)
     {
         auto strLength = strText.GetLength();
         for (auto& it : urlCollection)

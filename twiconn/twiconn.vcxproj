@@ -99,7 +99,7 @@
       <AdditionalIncludeDirectories>..\boost;..\twitcurl\libtwitcurl;..\twitcurl\libtwitcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4238;4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4238;4100;4592</DisableSpecificWarnings>
     </ClCompile>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -136,7 +136,7 @@
       <AdditionalIncludeDirectories>..\boost;..\twitcurl\libtwitcurl;..\twitcurl\libtwitcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4238;4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4238;4100;4592</DisableSpecificWarnings>
     </ClCompile>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -174,7 +174,7 @@
       <AdditionalIncludeDirectories>..\boost\boost;..\twitcurl\libtwitcurl;..\twitcurl\libtwitcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4238;4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4238;4100;4592</DisableSpecificWarnings>
     </ClCompile>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -213,7 +213,7 @@
       <AdditionalIncludeDirectories>..\boost\boost;..\twitcurl\libtwitcurl;..\twitcurl\libtwitcurl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>4238;4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4238;4100;4592</DisableSpecificWarnings>
     </ClCompile>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
