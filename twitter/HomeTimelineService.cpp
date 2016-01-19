@@ -147,6 +147,12 @@ STDMETHODIMP CHomeTimelineService::OnFinish(IVariantObject* pResult)
 		{
 			RETURN_IF_FAILED(pResult->SetVariantValue(AsyncServices::Metadata::Timer::RestartFlag, &CComVar(FALSE)));
 		}
+        else
+        {
+            CComPtr<ITimelineRelativeTimeService> pTimelineRelativeTimeService;
+            RETURN_IF_FAILED(m_pServiceProvider->QueryService(CLSID_TimelineRelativeTimeService, &pTimelineRelativeTimeService));
+            RETURN_IF_FAILED(pTimelineRelativeTimeService->UpdateTime());
+        }
 		return S_OK;
 	}
 

@@ -526,7 +526,7 @@ interface ISearchTimelineService : ITimelineService
 ]
 interface ITimelineRelativeTimeService : IUnknown
 {
-
+    HRESULT UpdateTime();
 };
 
 [

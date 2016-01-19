@@ -41,27 +41,32 @@ STDMETHODIMP CTimelineRelativeTimeService::OnShutdown()
 STDMETHODIMP CTimelineRelativeTimeService::OnFinish(IVariantObject *pResult)
 {
 	CUpdateScope updateScope(m_pTimelineControl);
+    RETURN_IF_FAILED(UpdateTime());
+    return S_OK;
+}
 
-	CComPtr<IObjArray> pAllItemsObjectArray;
-	RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
-	RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
+STDMETHODIMP CTimelineRelativeTimeService::UpdateTime()
+{
+    CComPtr<IObjArray> pAllItemsObjectArray;
+    RETURN_IF_FAILED(m_pTimelineControl->GetItems(&pAllItemsObjectArray));
+    RETURN_IF_FAILED(UpdateRelativeTime(pAllItemsObjectArray));
 
-	UINT uiCount = 0;
-	RETURN_IF_FAILED(pAllItemsObjectArray->GetCount(&uiCount));
-	if (uiCount)
-	{
-		vector<IVariantObject*> vObjects(uiCount);
+    UINT uiCount = 0;
+    RETURN_IF_FAILED(pAllItemsObjectArray->GetCount(&uiCount));
+    if (uiCount)
+    {
+        vector<IVariantObject*> vObjects(uiCount);
 
-		for (size_t i = 0; i < uiCount; i++)
-		{
-			CComPtr<IVariantObject> p;
-			RETURN_IF_FAILED(pAllItemsObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&p));
-			vObjects[i] = p.p;
-		}
+        for (size_t i = 0; i < uiCount; i++)
+        {
+            CComPtr<IVariantObject> p;
+            RETURN_IF_FAILED(pAllItemsObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&p));
+            vObjects[i] = p.p;
+        }
 
-		RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&vObjects[0], vObjects.size()));
-	}
-	return S_OK;
+        RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&vObjects[0], vObjects.size()));
+    }
+    return S_OK;
 }
 
 HRESULT CTimelineRelativeTimeService::UpdateRelativeTimeForTwit(IVariantObject* pVariantObject)
