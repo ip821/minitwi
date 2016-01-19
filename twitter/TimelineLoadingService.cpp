@@ -82,8 +82,17 @@ STDMETHODIMP CTimelineLoadingService::OnFinish(IVariantObject *pResult)
 		RETURN_IF_FAILED(pFirstItem->GetVariantValue(ObjectModel::Metadata::Object::Type, &vObjectType));
 		if (vId.vt == VT_I4 && vObjectType.vt == VT_BSTR && vId.intVal == CUSTOM_OBJECT_LOADING_ID && CComBSTR(vObjectType.bstrVal) == Twitter::Metadata::Types::CustomTimelineObject)
 		{
-			CUpdateScope scope(m_pTimelineControl);
-			RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(0));
+            {
+                CUpdateScope scope(m_pTimelineControl);
+                RETURN_IF_FAILED(m_pTimelineControl->RemoveItemByIndex(0));
+            }
+
+            if (uiCount == 1)
+            {
+                HWND hWnd = 0;
+                RETURN_IF_FAILED(m_pTimelineControl->GetHWND(&hWnd));
+                InvalidateRect(hWnd, nullptr, true);
+            }
 		}
 	}
 
