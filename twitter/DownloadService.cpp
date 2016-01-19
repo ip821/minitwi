@@ -167,6 +167,9 @@ STDMETHODIMP CDownloadService::OnRun(IVariantObject *pResult)
 
 STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 {
+    CComPtr<IVariantObject> pGuard = pResult;
+    CComPtr<CDownloadService> pGuardThis = this;
+
 	CComVar vUrl;
 	RETURN_IF_FAILED(pResult->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));
 	ATLASSERT(vUrl.vt == VT_BSTR);
@@ -176,9 +179,12 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 		wstring strUrl(vUrl.bstrVal);
 		ATLASSERT(m_urls.size());
 #ifndef DEBUG
-		if (m_urls.find(strUrl) != m_urls.end()) // TODO: crash due to unknown reason here... Avoid crash in release build :(
+        auto it = m_urls.find(strUrl);
+        if (it != m_urls.end()) // TODO: crash due to unknown reason here... Avoid crash in release build :(
 #endif
-			m_urls.erase(strUrl);
+        {
+            m_urls.erase(it);
+        }
 	}
 
 	RETURN_IF_FAILED(Fire_OnDownloadComplete(pResult));
@@ -196,9 +202,10 @@ STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 		if (vUrl.vt == VT_BSTR)
 		{
 			wstring strUrl(vUrl.bstrVal);
-			if (m_urls.find(strUrl) != m_urls.end())
+            auto it = m_urls.find(strUrl);
+			if (it != m_urls.end())
 				return S_OK;
-			auto result = m_urls.insert(strUrl);
+            auto result = m_urls.insert(strUrl);
 			ATLASSERT(result.second);
 		}
 	}
