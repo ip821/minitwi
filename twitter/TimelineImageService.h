@@ -21,6 +21,9 @@ class ATL_NO_VTABLE CTimelineImageService :
 	public IInitializeWithControlImpl,
 	public ITimelineControlEventSink,
 	public IThreadServiceEventSink,
+#ifdef DEBUG
+    public IInitializeWithPluginInfo,
+#endif // DEBUG
 	public IDownloadServiceEventSink
 {
 public:
@@ -39,6 +42,9 @@ public:
 		COM_INTERFACE_ENTRY(ITimerServiceEventSink)
 		COM_INTERFACE_ENTRY(IThreadServiceEventSink)
 		COM_INTERFACE_ENTRY(IDownloadServiceEventSink)
+#ifdef DEBUG
+        COM_INTERFACE_ENTRY(IInitializeWithPluginInfo)
+#endif //DEBUG
 	END_COM_MAP()
 
 private:
@@ -62,6 +68,10 @@ private:
 	STDMETHOD(ProcessUrls)(IObjArray* pObjectArray);
 	static HRESULT GetUrls(IVariantObject* pItemObject, vector<wstring>& urls);
 
+#ifdef DEBUG
+    CComPtr<IPluginInfo> m_pPluginInfo;
+#endif // DEBUG
+
 public:
 
 	STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
@@ -78,6 +88,11 @@ public:
 	STDMETHOD(OnItemRemoved)(IVariantObject *pItemObject);
 	METHOD_EMPTY(STDMETHOD(OnColumnClick)(IColumnsInfoItem* pColumnsInfoItem, IVariantObject* pVariantObject));
 	METHOD_EMPTY(STDMETHOD(OnItemDoubleClick)(IVariantObject* pVariantObject));
+
+#ifdef DEBUG
+    METHOD_EMPTY(STDMETHOD(GetPluginInfo)(IPluginInfo **ppPluginInfo));
+    STDMETHOD(SetPluginInfo)(IPluginInfo *pPluginInfo);
+#endif // DEBUG
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineImageService), CTimelineImageService)

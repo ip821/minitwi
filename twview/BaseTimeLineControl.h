@@ -262,7 +262,11 @@ public:
 
 			if (pMsgHandler)
 			{
-				LRESULT lResult = 0;
+#ifdef DEBUG
+                //OutputDebugString(CString(L"OnMessageSource: ") + typeid(*this).name() + L"\n");
+                //OutputDebugString(CString(L"OnMessageListener: ") + typeid(*pMsgHandler).name() + L"\n");
+#endif // DEBUG
+                LRESULT lResult = 0;
 				BOOL bResult = FALSE;
 				pMsgHandler->ProcessWindowMessage(pT->m_hWnd, uMsg, wParam, lParam, &lResult, &bResult);
 				if (bResult)

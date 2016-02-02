@@ -11,6 +11,14 @@
 
 // CDownloadService
 
+#ifdef DEBUG
+STDMETHODIMP CDownloadService::SetPluginInfo(IPluginInfo *pPluginInfo)
+{
+    m_pPluginInfo = pPluginInfo;
+    return S_OK;
+}
+#endif
+
 STDMETHODIMP CDownloadService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CHECK_E_POINTER(pServiceProvider);
@@ -178,10 +186,8 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		wstring strUrl(vUrl.bstrVal);
 		ATLASSERT(m_urls.size());
-#ifndef DEBUG
         auto it = m_urls.find(strUrl);
         if (it != m_urls.end()) // TODO: crash due to unknown reason here... Avoid crash in release build :(
-#endif
         {
             m_urls.erase(it);
         }
@@ -193,6 +199,11 @@ STDMETHODIMP CDownloadService::OnFinish(IVariantObject *pResult)
 
 STDMETHODIMP CDownloadService::AddDownload(IVariantObject* pVariantObject)
 {
+#ifdef DEBUG
+    CComBSTR bstrName;
+    m_pPluginInfo->GetName(&bstrName);
+    OutputDebugString(L"CDownloadService::AddDownload - " + CString(bstrName) + L"\n");
+#endif
 	CHECK_E_POINTER(pVariantObject);
 	CComVar vUrl;
 	RETURN_IF_FAILED(pVariantObject->GetVariantValue(Twitter::Metadata::Object::Url, &vUrl));

@@ -9,6 +9,14 @@
 
 // CTimelineImageService
 
+#ifdef DEBUG
+STDMETHODIMP CTimelineImageService::SetPluginInfo(IPluginInfo *pPluginInfo)
+{
+    m_pPluginInfo = pPluginInfo;
+    return S_OK;
+}
+#endif
+
 STDMETHODIMP CTimelineImageService::OnInitialized(IServiceProvider *pServiceProvider)
 {
 	CComPtr<IUnknown> pUnk;
@@ -233,6 +241,12 @@ STDMETHODIMP CTimelineImageService::ProcessUrls(IObjArray* pObjectArray)
 					RETURN_IF_FAILED(pDownloadTask->SetVariantValue(ObjectModel::Metadata::Object::Type, &CComVar(Twitter::Metadata::Types::Image)));
 					RETURN_IF_FAILED(m_pDownloadService->AddDownload(pDownloadTask));
 					urls.insert(url);
+
+#ifdef DEBUG
+                    CComBSTR bstrName;
+                    m_pPluginInfo->GetName(&bstrName);
+                    OutputDebugString(L"CTimelineImageService::ProcessUrls - AddDownload - " + CString(bstrName) + L" " + strUrl + L"\n");
+#endif
 				}
 			}
 		}

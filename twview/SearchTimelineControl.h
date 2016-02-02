@@ -34,7 +34,7 @@ public:
 		COM_INTERFACE_ENTRY(ITimelineControlSupport)
 	END_COM_MAP()
 
-	BEGIN_MSG_MAP(CUserInfoControl)
+	BEGIN_MSG_MAP(CSearchTimelineControl)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
