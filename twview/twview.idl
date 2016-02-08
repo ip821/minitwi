@@ -58,6 +58,25 @@ interface IAnimationServiceEventSink : IUnknown
 };
 
 [
+    object,
+    uuid(8F41E410-53C3-43D4-961F-0ABE36062C22),
+    pointer_default(unique)
+]
+interface ITimelineSearchControl : IControl
+{
+};
+
+[
+    object,
+    uuid(7E3DDFDD-51A2-4A1D-B9B1-27247385EA9D),
+    pointer_default(unique)
+]
+interface ITimelineSearchControlEventSink : IUnknown
+{
+    HRESULT OnSearch(BSTR bstrSearchPattern);
+};
+
+[
     uuid(C2670317-C208-4C91-A844-75922381F104),
     version(1.0),
 ]
@@ -159,6 +178,14 @@ library twviewLib
         uuid(31699CC6-E397-45CB-BBD6-ECF80D9C343C)
     ]
     coclass SearchControl
+    {
+        [default] interface ISearchControl;
+    };
+
+    [
+        uuid(9FF54DCF-C3BE-46BA-A21F-0C3412FBDE40)
+    ]
+    coclass TimelineSearchControl
     {
         [default] interface ISearchControl;
     };

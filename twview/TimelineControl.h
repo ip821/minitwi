@@ -6,6 +6,7 @@
 #include "CustomListBox.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
 #include "Plugins.h"
+#include "TimelineSearchControl.h"
 
 using namespace ATL;
 

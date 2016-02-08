@@ -190,6 +190,9 @@
     <ClCompile Include="TimelineControlFindCommand.cpp">
       <Filter>Controls\TimelineControl\Commands</Filter>
     </ClCompile>
+    <ClCompile Include="TimelineSearchControl.cpp">
+      <Filter>Controls\TimelineControl\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -311,6 +314,9 @@
     </ClInclude>
     <ClInclude Include="TimelineControlFindCommand.h">
       <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineSearchControl.h">
+      <Filter>Controls\TimelineControl\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

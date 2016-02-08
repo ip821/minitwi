@@ -326,6 +326,7 @@
     <ClCompile Include="TimelineControlCopyCommand.cpp" />
     <ClCompile Include="TimelineControlFindCommand.cpp" />
     <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp" />
+    <ClCompile Include="TimelineSearchControl.cpp" />
     <ClCompile Include="TwitViewControl.cpp" />
     <ClCompile Include="twmdl_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -410,6 +411,7 @@
     <ClInclude Include="TimelineControlCopyCommand.h" />
     <ClInclude Include="TimelineControlFindCommand.h" />
     <ClInclude Include="TimelineControlOpenInBrowserCommand.h" />
+    <ClInclude Include="TimelineSearchControl.h" />
     <ClInclude Include="TwitViewControl.h" />
     <ClInclude Include="twmdl_contract_i.h" />
     <ClInclude Include="UserAccountControl.h" />
