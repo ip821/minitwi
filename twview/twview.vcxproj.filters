@@ -187,6 +187,9 @@
     <ClCompile Include="FollowingControl.cpp">
       <Filter>Controls\FollowingControl</Filter>
     </ClCompile>
+    <ClCompile Include="TimelineControlFindCommand.cpp">
+      <Filter>Controls\TimelineControl\Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -305,6 +308,9 @@
     </ClInclude>
     <ClInclude Include="FollowingControl.h">
       <Filter>Controls\FollowingControl</Filter>
+    </ClInclude>
+    <ClInclude Include="TimelineControlFindCommand.h">
+      <Filter>Controls\TimelineControl\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

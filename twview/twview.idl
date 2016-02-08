@@ -13,176 +13,183 @@ import "..\model-libs\viewmdl\viewmdl_contract_i.idl";
 import "..\twitter\twmdl_contract_i.idl";
 
 [
-	object,
-	uuid(82BBA45A-FEAB-4656-A745-24BFFCEA11F5),
-	pointer_default(unique)
+    object,
+    uuid(82BBA45A-FEAB-4656-A745-24BFFCEA11F5),
+    pointer_default(unique)
 ]
 interface IScrollControlEventSink : IUnknown
 {
-	HRESULT OnEndScroll();
+    HRESULT OnEndScroll();
 };
 [
-	object,
-	uuid(C8567C6E-0BF4-4199-BEA2-9B48D35CDCC9),
-	pointer_default(unique)
+    object,
+    uuid(C8567C6E-0BF4-4199-BEA2-9B48D35CDCC9),
+    pointer_default(unique)
 ]
 interface IScrollControl : IControl
 {
-	HRESULT SetTabControl(IScrollControlEventSink* pCustomTabControl);
-	HRESULT ScrollX(BOOL bRightToLeft, DWORD distance, DWORD steps, DWORD timerInterval);
-	HRESULT ScrollY(BOOL bDownToTop, DWORD distance, DWORD steps, DWORD timerInterval);
-	HRESULT SetBitmap(HBITMAP hBitmap);
-	HRESULT ShowWindow(DWORD dwCommand);
+    HRESULT SetTabControl(IScrollControlEventSink* pCustomTabControl);
+    HRESULT ScrollX(BOOL bRightToLeft, DWORD distance, DWORD steps, DWORD timerInterval);
+    HRESULT ScrollY(BOOL bDownToTop, DWORD distance, DWORD steps, DWORD timerInterval);
+    HRESULT SetBitmap(HBITMAP hBitmap);
+    HRESULT ShowWindow(DWORD dwCommand);
 };
 
 [
-	object,
-	uuid(26859FBC-C493-41F3-BA23-93399E4A8AD6),
-	pointer_default(unique)
+    object,
+    uuid(26859FBC-C493-41F3-BA23-93399E4A8AD6),
+    pointer_default(unique)
 ]
 interface IAnimationService : IUnknown
 {
-	HRESULT SetParams(DWORD dwStart, DWORD dwFinish, DWORD dwSteps, DWORD dwTimerInternal);
-	HRESULT StartAnimationTimer();
-	HRESULT GetCurrentValue(DWORD* pdwValue);
+    HRESULT SetParams(DWORD dwStart, DWORD dwFinish, DWORD dwSteps, DWORD dwTimerInternal);
+    HRESULT StartAnimationTimer();
+    HRESULT GetCurrentValue(DWORD* pdwValue);
 };
 
 [
-	object,
-	uuid(FB87D8C6-B62A-4F99-8F91-097264DB96E5),
-	pointer_default(unique)
+    object,
+    uuid(FB87D8C6-B62A-4F99-8F91-097264DB96E5),
+    pointer_default(unique)
 ]
 interface IAnimationServiceEventSink : IUnknown
 {
-	HRESULT OnAnimationStep(IAnimationService* pAnimationService, DWORD dwValue, DWORD dwStep);
+    HRESULT OnAnimationStep(IAnimationService* pAnimationService, DWORD dwValue, DWORD dwStep);
 };
 
 [
-	uuid(C2670317-C208-4C91-A844-75922381F104),
-	version(1.0),
+    uuid(C2670317-C208-4C91-A844-75922381F104),
+    version(1.0),
 ]
 library twviewLib
 {
-	importlib("stdole2.tlb");
-	[
-		uuid(6EA78630-DC6D-4D2B-91F0-686B260F29D6)
-	]
-	coclass PluginTable
-	{
-		[default] interface IPluginTable;
-	};
-	[
-		uuid(75E49C09-05E4-4643-983F-624DC073535A)
-	]
-	coclass TimelineControl
-	{
-		[default] interface ITimelineControl;
-	};
-	[
-		uuid(6AFA6FA2-12D6-450E-AEFF-60B66F8B7574)
-	]
-	coclass SettingsControl
-	{
-		[default] interface IControl;
-	};
-	[
-		uuid(F09290A9-AF90-416D-9309-C649ECC97935)
-	]
-	coclass TimelineControlCopyCommand
-	{
-		[default] interface ICommand;
-	};
-	[
-		uuid(10AEB079-CE14-4F8F-8CEE-C4C6428BD4E8)
-	]
-	coclass PictureWindow
-	{
-		[default] interface IPictureWindow;
-	};
-	[
-		uuid(5A272730-A01D-48FD-9005-A308F656F12D)
-	]
-	coclass PictureWindowCopyCommand
-	{
-		[default] interface ICommand;
-	};
-	[
-		uuid(262329E2-B603-4FC0-97CB-40D95D41A1C0)
-	]
-	coclass CustomTabControl
-	{
-		[default] interface ICustomTabControl;
-	};
-	[
-		uuid(C65CC0F7-866D-40F6-89E5-652C0295F15C)
-	]
-	coclass UserInfoControl
-	{
-		[default] interface IUserInfoControl;
-	};
-	[
-		uuid(45B12203-6FD3-492E-858A-7EA20454493B)
-	]
-	coclass UserAccountControl
-	{
-		[default] interface IControl;
-	};
-	[
-		uuid(80F4CF87-03B7-4929-8ABB-11DC7D57B99E)
-	]
-	coclass HomeTimeLineControl
-	{
-		[default] interface IHomeTimeLineControl;
-	};
-	[
-		uuid(7C7062D1-A7B6-499B-B6FC-78B2458515DC)
-	]
-	coclass TwitViewControl
-	{
-		[default] interface ITwitViewControl;
-	};
-	[
-		uuid(03598148-FEBB-406A-BA6A-1092C957B600)
-	]
-	coclass TimelineControlOpenInBrowserCommand
-	{
-		[default] interface ICommand;
-	};
-	[
-		uuid(31699CC6-E397-45CB-BBD6-ECF80D9C343C)
-	]
-	coclass SearchControl
-	{
-		[default] interface ISearchControl;
-	};
-	[
-		uuid(DB25B344-8870-45CE-8C9E-CF6F26C32EBE)
-	]
-	coclass SearchTimelineControl
-	{
-		[default] interface ISearchTimelineControl;
-	};
-	[
-		uuid(3D06F6F5-9BDC-47DA-BEE4-A8EEB57C3E57)
-	]
-	coclass PictureWindowSaveCommand
-	{
-		[default] interface ICommand2;
-	};
-	[
-		uuid(B720FBFB-E607-463A-91C6-13D82741F4F2)
-	]
-	coclass ListsControl
-	{
-		[default] interface IListsControl;
-	};
-	[
-		uuid(F35D78C8-546F-4A35-A90C-3FD282925C5A)
-	]
-	coclass ListTimelineControl
-	{
-		[default] interface IListTimelineControl;
-	};
+    importlib("stdole2.tlb");
+    [
+        uuid(6EA78630-DC6D-4D2B-91F0-686B260F29D6)
+    ]
+    coclass PluginTable
+    {
+        [default] interface IPluginTable;
+    };
+    [
+        uuid(75E49C09-05E4-4643-983F-624DC073535A)
+    ]
+    coclass TimelineControl
+    {
+        [default] interface ITimelineControl;
+    };
+    [
+        uuid(6AFA6FA2-12D6-450E-AEFF-60B66F8B7574)
+    ]
+    coclass SettingsControl
+    {
+        [default] interface IControl;
+    };
+    [
+        uuid(F09290A9-AF90-416D-9309-C649ECC97935)
+    ]
+    coclass TimelineControlCopyCommand
+    {
+        [default] interface ICommand;
+    };
+    [
+        uuid(10AEB079-CE14-4F8F-8CEE-C4C6428BD4E8)
+    ]
+    coclass PictureWindow
+    {
+        [default] interface IPictureWindow;
+    };
+    [
+        uuid(5A272730-A01D-48FD-9005-A308F656F12D)
+    ]
+    coclass PictureWindowCopyCommand
+    {
+        [default] interface ICommand;
+    };
+    [
+        uuid(262329E2-B603-4FC0-97CB-40D95D41A1C0)
+    ]
+    coclass CustomTabControl
+    {
+        [default] interface ICustomTabControl;
+    };
+    [
+        uuid(C65CC0F7-866D-40F6-89E5-652C0295F15C)
+    ]
+    coclass UserInfoControl
+    {
+        [default] interface IUserInfoControl;
+    };
+    [
+        uuid(45B12203-6FD3-492E-858A-7EA20454493B)
+    ]
+    coclass UserAccountControl
+    {
+        [default] interface IControl;
+    };
+    [
+        uuid(80F4CF87-03B7-4929-8ABB-11DC7D57B99E)
+    ]
+    coclass HomeTimeLineControl
+    {
+        [default] interface IHomeTimeLineControl;
+    };
+    [
+        uuid(7C7062D1-A7B6-499B-B6FC-78B2458515DC)
+    ]
+    coclass TwitViewControl
+    {
+        [default] interface ITwitViewControl;
+    };
+    [
+        uuid(03598148-FEBB-406A-BA6A-1092C957B600)
+    ]
+    coclass TimelineControlOpenInBrowserCommand
+    {
+        [default] interface ICommand;
+    };
+    [
+        uuid(E1A38CDA-B6EC-4E39-A448-0E2C3CE0D5EC)
+    ]
+    coclass TimelineControlFindCommand
+    {
+        [default] interface ICommand;
+    };
+    [
+        uuid(31699CC6-E397-45CB-BBD6-ECF80D9C343C)
+    ]
+    coclass SearchControl
+    {
+        [default] interface ISearchControl;
+    };
+    [
+        uuid(DB25B344-8870-45CE-8C9E-CF6F26C32EBE)
+    ]
+    coclass SearchTimelineControl
+    {
+        [default] interface ISearchTimelineControl;
+    };
+    [
+        uuid(3D06F6F5-9BDC-47DA-BEE4-A8EEB57C3E57)
+    ]
+    coclass PictureWindowSaveCommand
+    {
+        [default] interface ICommand2;
+    };
+    [
+        uuid(B720FBFB-E607-463A-91C6-13D82741F4F2)
+    ]
+    coclass ListsControl
+    {
+        [default] interface IListsControl;
+    };
+    [
+        uuid(F35D78C8-546F-4A35-A90C-3FD282925C5A)
+    ]
+    coclass ListTimelineControl
+    {
+        [default] interface IListTimelineControl;
+    };
     [
         uuid(6836131D-C5A4-4D09-9023-0AF0782208BC)
     ]
@@ -190,33 +197,33 @@ library twviewLib
     {
         [default] interface IFollowingControl;
     };
-	[
-		uuid(7C8FE398-09C0-4779-9D0A-C361294CD7BE)
-	]
-	coclass ScrollControl
-	{
-		[default] interface IScrollControl;
-	};
-	[
-		uuid(B36DFE3E-3536-4E56-A791-AA0ED18B69E7)
-	]
-	coclass AnimationService
-	{
-		[default] interface IUnknown;
-	};
-	[
-		uuid(B79A41E2-6BAC-4601-9D05-B7308D6664E3)
-	]
-	coclass ImageViewControl
-	{
-		[default] interface IControl;
-	};
-	[
-		uuid(AF0AE497-0FE0-4C5B-9E54-B8968B3BD5A7)
-	]
-	coclass VideoViewControl
-	{
-		[default] interface IControl;
-	};
+    [
+        uuid(7C8FE398-09C0-4779-9D0A-C361294CD7BE)
+    ]
+    coclass ScrollControl
+    {
+        [default] interface IScrollControl;
+    };
+    [
+        uuid(B36DFE3E-3536-4E56-A791-AA0ED18B69E7)
+    ]
+    coclass AnimationService
+    {
+        [default] interface IUnknown;
+    };
+    [
+        uuid(B79A41E2-6BAC-4601-9D05-B7308D6664E3)
+    ]
+    coclass ImageViewControl
+    {
+        [default] interface IControl;
+    };
+    [
+        uuid(AF0AE497-0FE0-4C5B-9E54-B8968B3BD5A7)
+    ]
+    coclass VideoViewControl
+    {
+        [default] interface IControl;
+    };
 };
 

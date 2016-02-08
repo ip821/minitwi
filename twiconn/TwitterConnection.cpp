@@ -13,7 +13,6 @@
 
 #ifdef DEBUG
 #define USE_TEST_DATA
-#define DISABLE_NETWORK
 #endif
 
 STDMETHODIMP CTwitterConnection::HandleError(JSONValue* value)

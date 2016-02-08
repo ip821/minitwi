@@ -130,20 +130,21 @@ LRESULT CTimelineControl::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	auto dwExStyle = GetWindowLong(GWL_EXSTYLE);
 	dwExStyle |= WS_EX_COMPOSITED;
 	SetWindowLong(GWL_EXSTYLE, dwExStyle);
-	HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport);
-	m_pPluginSupport->InitializePlugins(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND);
+    RETURN_IF_FAILED(HrCoCreateInstance(CLSID_PluginSupport, &m_pPluginSupport));
+    RETURN_IF_FAILED(m_pPluginSupport->InitializePlugins(PNAMESP_TIMELINE_CONTROL, PVIEWTYPE_COMMAND));
 	CComQIPtr<IInitializeWithControl> pInit = m_pPluginSupport;
 	if (pInit && m_pControl)
 	{
-		pInit->SetControl(m_pControl);
+        RETURN_IF_FAILED(pInit->SetControl(m_pControl));
 	}
 
-	m_pPluginSupport->OnInitialized();
+    RETURN_IF_FAILED(HrInitializeWithControlT(m_pPluginSupport.p, this));
+	RETURN_IF_FAILED(m_pPluginSupport->OnInitialized());
 
 	m_popupMenu.CreatePopupMenu();
-	HrCoCreateInstance(CLSID_CommandSupport, &m_pCommandSupport);
-	m_pCommandSupport->SetMenu(m_popupMenu);
-	m_pCommandSupport->InstallCommands(m_pPluginSupport);
+    RETURN_IF_FAILED(HrCoCreateInstance(CLSID_CommandSupport, &m_pCommandSupport));
+    RETURN_IF_FAILED(m_pCommandSupport->SetMenu(m_popupMenu));
+    RETURN_IF_FAILED(m_pCommandSupport->InstallCommands(m_pPluginSupport));
 	bHandled = FALSE;
 	AdjustSizes();
 	return 0;

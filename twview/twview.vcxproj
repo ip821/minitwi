@@ -324,6 +324,7 @@
     <ClCompile Include="ImageViewControl.cpp" />
     <ClCompile Include="TimelineControl.cpp" />
     <ClCompile Include="TimelineControlCopyCommand.cpp" />
+    <ClCompile Include="TimelineControlFindCommand.cpp" />
     <ClCompile Include="TimelineControlOpenInBrowserCommand.cpp" />
     <ClCompile Include="TwitViewControl.cpp" />
     <ClCompile Include="twmdl_contract_i.c">
@@ -407,6 +408,7 @@
     <ClInclude Include="StaticListBox.h" />
     <ClInclude Include="TimelineControl.h" />
     <ClInclude Include="TimelineControlCopyCommand.h" />
+    <ClInclude Include="TimelineControlFindCommand.h" />
     <ClInclude Include="TimelineControlOpenInBrowserCommand.h" />
     <ClInclude Include="TwitViewControl.h" />
     <ClInclude Include="twmdl_contract_i.h" />
