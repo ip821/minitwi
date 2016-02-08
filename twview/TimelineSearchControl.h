@@ -18,7 +18,6 @@ class ATL_NO_VTABLE CTimelineSearchControl :
     public CDialogResize<CTimelineSearchControl>,
     public IPluginSupportNotifications,
     public IInitializeWithControlImpl,
-    public IThemeSupport,
     public ITimelineSearchControl,
     public IConnectionPointContainerImpl<CTimelineSearchControl>,
     public IConnectionPointImpl<CTimelineSearchControl, &__uuidof(ITimelineSearchControlEventSink)>
@@ -33,7 +32,6 @@ public:
     BEGIN_COM_MAP(CTimelineSearchControl)
         COM_INTERFACE_ENTRY(IControl)
         COM_INTERFACE_ENTRY(ITimelineSearchControl)
-        COM_INTERFACE_ENTRY(IThemeSupport)
         COM_INTERFACE_ENTRY(IPluginSupportNotifications)
         COM_INTERFACE_ENTRY(IInitializeWithControl)
     END_COM_MAP()
@@ -80,7 +78,7 @@ public:
     STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
     STDMETHOD(OnShutdown)();
 
-    STDMETHOD(SetTheme)(ITheme* pTheme);
+    STDMETHOD(SetSkinCommonControl)(ISkinCommonControl* pSkinCommonControl);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(TimelineSearchControl), CTimelineSearchControl)

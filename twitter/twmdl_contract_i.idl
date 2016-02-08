@@ -35,6 +35,43 @@ typedef struct TtagMEASUREITEMSTRUCT {
 } TMEASUREITEMSTRUCT;
 
 [
+    object,
+    uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
+    pointer_default(unique)
+]
+interface ISkinTabControl : IUnknown
+{
+    HRESULT MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight);
+    HRESULT EraseBackground(HDC hdc);
+    HRESULT DrawHeader(HDC hdc);
+    HRESULT GetInfoRect(RECT* pRect);
+    HRESULT GetPageIndex(POINT pt, UINT* puiIndex);
+    HRESULT SetErrorInfo(HWND hWnd, BOOL bError, BSTR bstrMessage);
+    HRESULT SetSelectedIndex(UINT uiIndex);
+    HRESULT AnimationGetParams(UINT* puiMilliseconds);
+    HRESULT AnimationNextFrame();
+    HRESULT AnimationStart();
+    HRESULT AnimationStop();
+    HRESULT ShowBackButton(BOOL bShow);
+    HRESULT IsBackButton(POINT pt, BOOL* pbIsBackButton);
+};
+
+[
+    object,
+    uuid(83780BED-9F73-4AE3-B583-C1097789398B),
+    pointer_default(unique)
+]
+interface ISkinCommonControl : IUnknown
+{
+    HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
+    HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
+    HRESULT RegisterStaticControl(HWND hWnd);
+    HRESULT UnregisterStaticControl(HWND hWnd);
+    HRESULT RegisterButtonControl(HWND hWnd);
+    HRESULT UnregisterButtonControl(HWND hWnd);
+};
+
+[
 	object,
 	uuid(DC001682-90CC-497F-BCE6-D00D712FD241),
 	pointer_default(unique)
@@ -122,6 +159,7 @@ interface ITimelineControl : IControl2
 	HRESULT InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
 	HRESULT Clear();
 	HRESULT SetSkinTimeline(ISkinTimeline* pSkinTimeline);
+    HRESULT SetSkinCommonControl(ISkinCommonControl* pSkinCommonControl);
 	HRESULT BeginUpdate();
 	HRESULT EndUpdate();
 	HRESULT OnItemsUpdated();
@@ -129,6 +167,7 @@ interface ITimelineControl : IControl2
 	HRESULT GetItemsCount(UINT* puiCount);
 	HRESULT RemoveItemByIndex(UINT uiIndex);
 	HRESULT ScrollToItem(UINT uiIndex);
+    HRESULT ToggleSearch();
 };
 
 [
@@ -185,43 +224,6 @@ interface ISkinUserAccountControl : IUnknown
 ]
 interface IUserAccountControl : IControl2
 {
-};
-
-[
-	object,
-	uuid(DA2856EC-D86F-4F91-9319-602E817AA0C0),
-	pointer_default(unique)
-]
-interface ISkinTabControl : IUnknown
-{
-	HRESULT MeasureHeader(HDC hdc, IObjArray* pObjArray, RECT* clientRect, UINT* puiHeight);
-	HRESULT EraseBackground(HDC hdc);
-	HRESULT DrawHeader(HDC hdc);
-	HRESULT GetInfoRect(RECT* pRect);
-	HRESULT GetPageIndex(POINT pt, UINT* puiIndex);
-	HRESULT SetErrorInfo(HWND hWnd, BOOL bError, BSTR bstrMessage);
-	HRESULT SetSelectedIndex(UINT uiIndex);
-	HRESULT AnimationGetParams(UINT* puiMilliseconds);
-	HRESULT AnimationNextFrame();
-	HRESULT AnimationStart();
-	HRESULT AnimationStop();
-	HRESULT ShowBackButton(BOOL bShow);
-	HRESULT IsBackButton(POINT pt, BOOL* pbIsBackButton);
-};
-
-[
-	object,
-	uuid(83780BED-9F73-4AE3-B583-C1097789398B),
-	pointer_default(unique)
-]
-interface ISkinCommonControl : IUnknown
-{
-	HRESULT SetColorMap(IThemeColorMap* pThemeColorMap);
-	HRESULT SetFontMap(IThemeFontMap* pThemeFontMap);
-	HRESULT RegisterStaticControl(HWND hWnd);
-	HRESULT UnregisterStaticControl(HWND hWnd);
-	HRESULT RegisterButtonControl(HWND hWnd);
-	HRESULT UnregisterButtonControl(HWND hWnd);
 };
 
 [
@@ -506,7 +508,6 @@ interface ISearchControl : IControl2
 ]
 interface ISearchTimelineControl : IUnknown
 {
-
 };
 
 [

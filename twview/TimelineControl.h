@@ -73,6 +73,8 @@ private:
 	CComPtr<IPluginSupport> m_pPluginSupport;
 	CComPtr<ICommandSupport> m_pCommandSupport;
 	CComPtr<ISettings> m_pSettings;
+    CComPtr<ITimelineSearchControl> m_pTimelineSearchControl;
+    CComPtr<ISkinCommonControl> m_pSkinCommonControl;
 	DWORD m_dwAdviceCommandSupport = 0;
 
 	CMenu m_popupMenu;
@@ -113,9 +115,11 @@ public:
 	STDMETHOD(RefreshItems)(IVariantObject** pItemArray, UINT uiCountArray);
 	STDMETHOD(Clear)();
 	STDMETHOD(SetSkinTimeline)(ISkinTimeline* pSkinTimeline);
+    STDMETHOD(SetSkinCommonControl)(ISkinCommonControl* pSkinCommonControl);
 	STDMETHOD(BeginUpdate)();
 	STDMETHOD(EndUpdate)();
 	STDMETHOD(OnItemsUpdated)();
+    STDMETHOD(ToggleSearch)();
 
 	STDMETHOD(OnInitialized)(IServiceProvider* pServiceProvider);
 	STDMETHOD(OnShutdown)();

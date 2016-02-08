@@ -64,6 +64,7 @@ interface IAnimationServiceEventSink : IUnknown
 ]
 interface ITimelineSearchControl : IControl
 {
+    HRESULT SetSkinCommonControl(ISkinCommonControl* pSkinCommonControl);
 };
 
 [

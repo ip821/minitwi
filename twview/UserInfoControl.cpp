@@ -246,6 +246,11 @@ STDMETHODIMP CUserInfoControl::SetTheme(ITheme* pTheme)
 	RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&pSkinTimeline));
 	RETURN_IF_FAILED(pSkinTimeline->SetImageManagerService(m_pImageManagerService));
 	RETURN_IF_FAILED(m_pTimelineControl->SetSkinTimeline(pSkinTimeline));
+
+    CComPtr<ISkinCommonControl> pSkinCommonControl;
+    RETURN_IF_FAILED(pTheme->GetCommonControlSkin(&pSkinCommonControl));
+    RETURN_IF_FAILED(m_pTimelineControl->SetSkinCommonControl(pSkinCommonControl));
+
 	return S_OK;
 }
 

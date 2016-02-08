@@ -216,6 +216,9 @@ public:
 		RETURN_IF_FAILED(m_pTheme->GetTimelineSkin(&m_pSkinTimeline));
 		RETURN_IF_FAILED(m_pSkinTimeline->SetImageManagerService(pImageManagerService));
 		RETURN_IF_FAILED(m_pTimelineControl->SetSkinTimeline(m_pSkinTimeline));
+        CComPtr<ISkinCommonControl> pSkinCommonControl;
+        RETURN_IF_FAILED(pTheme->GetCommonControlSkin(&pSkinCommonControl));
+        RETURN_IF_FAILED(m_pTimelineControl->SetSkinCommonControl(pSkinCommonControl));
 		return S_OK;
 	}
 

@@ -52,12 +52,11 @@ STDMETHODIMP CTimelineSearchControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResu
     return S_OK;
 }
 
-STDMETHODIMP CTimelineSearchControl::SetTheme(ITheme* pTheme)
+STDMETHODIMP CTimelineSearchControl::SetSkinCommonControl(ISkinCommonControl* pSkinCommonControl)
 {
-    CHECK_E_POINTER(pTheme);
-    m_pTheme = pTheme;
+    CHECK_E_POINTER(pSkinCommonControl);
+    m_pSkinCommonControl = pSkinCommonControl;
 
-    RETURN_IF_FAILED(m_pTheme->GetCommonControlSkin(&m_pSkinCommonControl));
     RETURN_IF_FAILED(m_pSkinCommonControl->RegisterStaticControl(m_hWnd));
     RETURN_IF_FAILED(m_pSkinCommonControl->RegisterButtonControl(m_buttonGo));
 

@@ -45,6 +45,7 @@ STDMETHODIMP CTimelineControlFindCommand::Invoke(REFGUID guidCommand)
     if (IsEqualGUID(guidCommand, COMMAND_FIND))
     {
         CComQIPtr<ITimelineControl> m_pTimelineControl = m_pControl;
+        RETURN_IF_FAILED(m_pTimelineControl->ToggleSearch());
     }
     return S_OK;
 }
