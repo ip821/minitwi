@@ -64,7 +64,7 @@ STDMETHODIMP CTimelineControl::GetHWND(HWND *hWnd)
 STDMETHODIMP CTimelineControl::CreateEx(HWND hWndParent, HWND *hWnd)
 {
     CHECK_E_POINTER(hWnd);
-	m_hWnd = __super::Create(hWndParent);
+	m_hWnd = __super::Create(hWndParent, 0, 0, WS_CHILD | WS_VISIBLE | WS_TABSTOP, WS_EX_CONTROLPARENT);
     *hWnd = m_hWnd;
     m_listBox.Create(m_hWnd);
     AdjustSizes();

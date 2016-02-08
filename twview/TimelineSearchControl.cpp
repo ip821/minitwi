@@ -38,6 +38,12 @@ STDMETHODIMP CTimelineSearchControl::CreateEx(HWND hWndParent, HWND *hWnd)
 
 STDMETHODIMP CTimelineSearchControl::PreTranslateMessage(MSG *pMsg, BOOL *pbResult)
 {
+    if ((pMsg->hwnd == m_hWnd || IsChild(pMsg->hwnd)) && IsDialogMessage(pMsg))
+    {
+        *pbResult = TRUE;
+        return S_OK;
+    }
+
     if (
         (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN)
         &&
