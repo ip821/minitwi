@@ -106,5 +106,6 @@ public:
 	void InvalidateItems(IVariantObject** pItemArray, UINT uiCountArray);
 	void RefreshItems(IVariantObject** pItemArray, UINT uiCountArray);
 	void SetSettings(ISettings* pSettings);
+    void SetSearchPattern(BSTR bstrSearchPattern);
 };
 

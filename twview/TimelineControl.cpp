@@ -29,6 +29,10 @@ STDMETHODIMP CTimelineControl::OnInitialized(IServiceProvider* pServiceProvider)
 
 STDMETHODIMP CTimelineControl::OnShutdown()
 {
+    if (m_pTimelineSearchControl)
+    {
+        RETURN_IF_FAILED(AtlUnadvise(m_pTimelineSearchControl, __uuidof(ITimelineSearchControlEventSink), m_dwAdviceTimelineSearchControl));
+    }
     RETURN_IF_FAILED(AtlUnadvise(m_pCommandSupport, __uuidof(ICommandSupportEventSink), m_dwAdviceCommandSupport));
     m_pServiceProvider.Release();
     RETURN_IF_FAILED(m_pPluginSupport->OnShutdown());
@@ -450,6 +454,11 @@ STDMETHODIMP CTimelineControl::ToggleSearch()
         RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TimelineSearchControl, &m_pTimelineSearchControl));
         RETURN_IF_FAILED(m_pTimelineSearchControl->CreateEx(m_hWnd, &hWnd));
         RETURN_IF_FAILED(m_pTimelineSearchControl->SetSkinCommonControl(m_pSkinCommonControl));
+
+        CComPtr<IUnknown> pUnk;
+        RETURN_IF_FAILED(QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+
+        RETURN_IF_FAILED(AtlAdvise(m_pTimelineSearchControl, pUnk, __uuidof(ITimelineSearchControlEventSink), &m_dwAdviceTimelineSearchControl));
     }
 
     if (!hWnd)
@@ -459,5 +468,11 @@ STDMETHODIMP CTimelineControl::ToggleSearch()
 
     ::ShowWindow(hWnd, ::IsWindowVisible(hWnd) ? SW_HIDE : SW_SHOW);
     AdjustSizes();
+    return S_OK;
+}
+
+STDMETHODIMP CTimelineControl::OnSearch(BSTR bstrSearchPattern)
+{
+    m_listBox.SetSearchPattern(bstrSearchPattern);
     return S_OK;
 }

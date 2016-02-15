@@ -596,3 +596,8 @@ void CCustomListBox::SetSettings(ISettings* pSettings)
 	ASSERT_IF_FAILED(pTimelineSettings->GetVariantValue(Twitter::Metadata::Settings::Timeline::DisableAnimation, &vDisableAnimation));
 	m_bEnableAnimation = (vDisableAnimation.vt != VT_I4 || (!vDisableAnimation.intVal));
 }
+
+void CCustomListBox::SetSearchPattern(BSTR bstrSearchPattern)
+{
+
+}

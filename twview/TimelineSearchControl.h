@@ -34,6 +34,7 @@ public:
         COM_INTERFACE_ENTRY(ITimelineSearchControl)
         COM_INTERFACE_ENTRY(IPluginSupportNotifications)
         COM_INTERFACE_ENTRY(IInitializeWithControl)
+        COM_INTERFACE_ENTRY(IConnectionPointContainer)
     END_COM_MAP()
 
     BEGIN_CONNECTION_POINT_MAP(CTimelineSearchControl)
@@ -47,14 +48,14 @@ public:
 
     BEGIN_MSG_MAP(CTimelineSearchControl)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        COMMAND_HANDLER(IDC_BUTTONGO, BN_CLICKED, OnClickedGo)
+        COMMAND_HANDLER(IDC_EDITTEXT, EN_CHANGE, OnTextChanged)
         MESSAGE_HANDLER(WM_SIZE, OnSize)
         CHAIN_MSG_MAP(CDialogResize<CTimelineSearchControl>)
     END_MSG_MAP()
 
 private:
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnClickedGo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnTextChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
     CComPtr<ITheme> m_pTheme;

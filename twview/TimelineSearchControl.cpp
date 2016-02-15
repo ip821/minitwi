@@ -77,9 +77,11 @@ STDMETHODIMP CTimelineSearchControl::DoSearch()
     return S_OK;
 }
 
-LRESULT CTimelineSearchControl::OnClickedGo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT CTimelineSearchControl::OnTextChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    ASSERT_IF_FAILED(DoSearch());
+    CString strText;
+    m_editText.GetWindowText(strText);
+    ASSERT_IF_FAILED(Fire_OnSearch(CComBSTR(strText)));
     return 0;
 }
 
