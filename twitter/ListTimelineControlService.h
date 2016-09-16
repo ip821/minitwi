@@ -14,6 +14,7 @@ class ATL_NO_VTABLE CListTimelineControlService :
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,
+    public IListTimelineControlService,
 	public ITimelineService,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject
@@ -43,6 +44,7 @@ private:
 	CComPtr<IVariantObject> m_pVariantObject;
 	CComPtr<IThreadService> m_pThreadServiceQueueService;
 	CComPtr<ITimelineQueueService> m_pTimelineQueueService;
+    CComPtr<IObjArray> m_pObjectArrayMembers;
 
 	DWORD m_dwAdvice = 0;
 	boost::mutex m_mutex;
@@ -58,6 +60,8 @@ public:
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
+
+    STDMETHOD(GetListMemebers)(IObjArray** ppArrayMembers);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ListTimelineControlService), CListTimelineControlService)

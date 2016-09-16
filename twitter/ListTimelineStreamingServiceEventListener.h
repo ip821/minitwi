@@ -32,7 +32,9 @@ public:
 private:
     CComPtr<IServiceProvider> m_pServiceProvider;
     CComPtr<IUnknown> m_pStreamingServicUnk;
+    CComPtr<IListTimelineControlService> m_pListTimelineService;
     DWORD m_dwAdvice = 0;
+    unordered_set<wstring> m_userIds;
     boost::mutex m_mutex;
 
     HRESULT Fire_OnMessages(IObjArray* pMessageArray);

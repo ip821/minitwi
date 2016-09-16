@@ -118,6 +118,7 @@ public:
 	/*Twitter lists APIs*/
 	bool listsGet();
 	bool listStatuses(std::string listId, std::string strCount);
+    bool listMembers(std::string listId, std::string strCount);
 
     /* cURL APIs */
     bool isCurlInit();

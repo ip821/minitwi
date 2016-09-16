@@ -184,6 +184,42 @@ STDMETHODIMP CTwitterConnection::OpenConnection(BSTR bstrKey, BSTR bstrSecret)
 	return S_OK;
 }
 
+STDMETHODIMP CTwitterConnection::GetListMembers(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray)
+{
+    CHECK_E_POINTER(bstrListId);
+    CHECK_E_POINTER(ppObjectArray);
+
+    USES_CONVERSION;
+
+    string strListId = CW2A(bstrListId);
+    if (!m_pTwitObj->listMembers(strListId, boost::lexical_cast<string>(uiCount)))
+    {
+        return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
+    }
+    string strResponse;
+    m_pTwitObj->getLastWebResponse(strResponse);
+
+    auto value = shared_ptr<JSONValue>(JSON::Parse(strResponse.c_str()));
+    auto hr = HandleError(value.get());
+    if (FAILED(hr))
+        return hr;
+
+    CComPtr<IObjCollection> pObjectCollection;
+    RETURN_IF_FAILED(HrCoCreateInstance(CLSID_ObjectCollection, &pObjectCollection));
+    auto result = value.get()->AsObject();
+    auto usersObj = result[L"users"];
+    for (auto& it : usersObj->AsArray())
+    {
+        CComPtr<IVariantObject> pObj;
+        RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pObj));
+        auto userObj = it->AsObject();
+        RETURN_IF_FAILED(ParseUser(userObj, pObj));
+        RETURN_IF_FAILED(pObjectCollection->AddObject(pObj));
+    }
+    RETURN_IF_FAILED(pObjectCollection->QueryInterface(ppObjectArray));
+    return S_OK;
+}
+
 STDMETHODIMP CTwitterConnection::GetListTweets(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray)
 {
 	CHECK_E_POINTER(bstrListId);

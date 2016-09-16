@@ -123,6 +123,7 @@ namespace twitterDefaults
 	/* Lists URLs*/
 	const std::string TWITCURL_LISTSLIST_URL = TWITCURL_BASE_URL + "lists/list";
 	const std::string TWITCURL_LISTSTATUSES_URL = TWITCURL_BASE_URL + "lists/statuses";
+    const std::string TWITCURL_LISTMEMBERS_URL = TWITCURL_BASE_URL + "lists/members";
 };
 
 namespace oAuthLibDefaults

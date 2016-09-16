@@ -105,6 +105,15 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 	RETURN_IF_FAILED(pConnection->GetListTweets(vListId.bstrVal, COUNT_ITEMS, &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVar(pObjectArray)));
 
+    const auto maxMembersCount = 5000;
+    CComPtr<IObjArray> pObjectArrayMembers;
+    RETURN_IF_FAILED(pConnection->GetListMembers(vListId.bstrVal, maxMembersCount, &pObjectArrayMembers));
+
+    {
+        boost::lock_guard<boost::mutex> lock(m_mutex);
+        m_pObjectArrayMembers = pObjectArrayMembers;
+    }
+
 	return S_OK;
 }
 
@@ -131,4 +140,12 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pResult));
 	RETURN_IF_FAILED(m_pThreadServiceQueueService->Run());
 	return S_OK;
+}
+
+STDMETHODIMP CListTimelineControlService::GetListMemebers(IObjArray** ppArrayMembers)
+{
+    CHECK_E_POINTER(ppArrayMembers);
+    boost::lock_guard<boost::mutex> lock(m_mutex);
+    RETURN_IF_FAILED(m_pObjectArrayMembers->QueryInterface(ppArrayMembers));
+    return S_OK;
 }

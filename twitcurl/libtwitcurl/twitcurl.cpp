@@ -1523,6 +1523,17 @@ bool twitCurl::friendsListGet(std::string strUserName, std::string strPageNumber
     return performGet(url);
 }
 
+bool twitCurl::listMembers(std::string listId, std::string strCount)
+{
+    /* Perform GET */
+    auto url = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] + twitterDefaults::TWITCURL_LISTMEMBERS_URL + twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
+    url += twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_LISTID + listId;
+
+    if (!strCount.empty())
+        url += twitCurlDefaults::TWITCURL_URL_SEP_AMP + twitCurlDefaults::TWITCURL_COUNT + strCount;
+
+    return performGet(url);
+}
 
 bool twitCurl::listStatuses(std::string listId, std::string strCount)
 {
