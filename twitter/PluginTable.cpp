@@ -117,13 +117,14 @@ HRESULT CPluginTable::FinalConstruct()
 	RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_THREAD, CLSID_ThreadService, L"Timeline queue thread service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_QUEUE, CLSID_TimelineQueueService, L"Timeline queue service"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineLoadingService, CLSID_TimelineLoadingService, L"Timeline loading service for list timeline control"));
+    RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_SHOWMORE_THREAD, CLSID_ThreadService, L"Timeline thread show more items service"));
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ShowMoreSupportService, CLSID_ShowMoreSupportService, L"Show more service for list timeline control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineImageService, CLSID_TimelineImageService, L"Timeline control image service for list timeline control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TabbedControlStatusService, CLSID_TabbedControlStatusService, L"Tabbed control animation and errors service for list timeline control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineRelativeTimeService, CLSID_TimelineRelativeTimeService, L"Timeline control relative time update service for list timeline control"));
 	RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_OPEN_URLS, CLSID_OpenUrlService, L"Open url service for list timeline control"));
     RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, SERVICE_TIMELINE_CLENUP_TIMER, CLSID_TimerService, L"Timeline control items clenup timer service"));
-    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineCleanupService, CLSID_TimelineCleanupService, L"Timeline control clenup service"));
-
+    RETURN_IF_FAILED(AddPluginInfo(PNAMESP_LIST_TIMELINE_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_TimelineCleanupService, CLSID_TimelineCleanupService, L"Timeline control clenup service for list timeline control"));
 
     RETURN_IF_FAILED(AddPluginInfoRemote(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_ThreadPoolService, CLSID_ThreadPoolService, L"Thread pool service for following control"));
     RETURN_IF_FAILED(AddPluginInfo(PNAMESP_FOLLOWING_CONTROL, PVIEWTYPE_WINDOW_SERVICE, CLSID_DownloadService, CLSID_DownloadService, L"Download service user for following control"));

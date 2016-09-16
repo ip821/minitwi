@@ -128,7 +128,7 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 
 	CUpdateScope scope(m_pTimelineControl);
-	RETURN_IF_FAILED(m_pTimelineControl->Clear());
+	//RETURN_IF_FAILED(m_pTimelineControl->Clear());
 
 	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
