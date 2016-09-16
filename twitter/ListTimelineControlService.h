@@ -34,6 +34,7 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ITimelineService)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
+        COM_INTERFACE_ENTRY(IListTimelineControlService)
 	END_COM_MAP()
 
 private:

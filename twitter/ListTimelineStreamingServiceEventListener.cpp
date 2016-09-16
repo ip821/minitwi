@@ -12,7 +12,7 @@ STDMETHODIMP CListTimelineStreamingServiceEventListener::OnInitialized(IServiceP
     RETURN_IF_FAILED(AtlAdvise(m_pStreamingServicUnk, pUnk, __uuidof(IHomeTimelineStreamingServiceEventSink), &m_dwAdvice));
 
     CComPtr<IListTimelineControlService> pListTimelineService;
-    RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE, &m_pListTimelineService));
+    RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE, &pListTimelineService));
     {
         boost::lock_guard<boost::mutex> lock(m_mutex);
         m_pListTimelineService = pListTimelineService;
@@ -64,7 +64,7 @@ STDMETHODIMP CListTimelineStreamingServiceEventListener::OnMessages(IObjArray *p
                 CComPtr<IVariantObject> pMember;
                 RETURN_IF_FAILED(pArrayMembers->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pMember));
                 CComBSTR bstrId;
-                RETURN_IF_FAILED(HrVariantObjectGetBSTR(pMember, L"id_str", &bstrId));
+                RETURN_IF_FAILED(HrVariantObjectGetBSTR(pMember, Twitter::Connection::Metadata::UserObject::Name, &bstrId));
                 m_userIds.insert(bstrId.m_str);
             }
         }
@@ -78,11 +78,11 @@ STDMETHODIMP CListTimelineStreamingServiceEventListener::OnMessages(IObjArray *p
         for (size_t i = 0; i < uiCount; i++)
         {
             CComPtr<IVariantObject> pObj;
-            RETURN_IF_FAILED(pArrayMembers->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pObj));
-            if (false)
-            {
+            RETURN_IF_FAILED(pObjectArray->GetAt(i, __uuidof(IVariantObject), (LPVOID*)&pObj));
+            CComBSTR bstrId;
+            RETURN_IF_FAILED(HrVariantObjectGetBSTR(pObj, Twitter::Connection::Metadata::UserObject::Name, &bstrId));
+            if (m_userIds.find(bstrId.m_str) == m_userIds.cend())
                 continue;
-            }
             RETURN_IF_FAILED(pFilteredCollection->AddObject(pObj));
         }
     }

@@ -58,6 +58,7 @@ protected:
 	virtual HRESULT Initializing() override;
 	virtual HRESULT OnActivateInternal() override;
 	virtual HRESULT ShuttingDown() override;
+    BOOL m_bActivated = FALSE;
 
 private:
 
