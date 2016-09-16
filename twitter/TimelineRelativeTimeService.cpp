@@ -65,6 +65,7 @@ STDMETHODIMP CTimelineRelativeTimeService::UpdateTime()
         }
 
         RETURN_IF_FAILED(m_pTimelineControl->RefreshItems(&vObjects[0], vObjects.size()));
+        RETURN_IF_FAILED(m_pTimelineControl->InvalidateItems(&vObjects[0], vObjects.size()));
     }
     return S_OK;
 }
