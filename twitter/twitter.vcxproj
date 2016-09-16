@@ -261,6 +261,7 @@
     <ClCompile Include="GetUserService.cpp" />
     <ClCompile Include="HomeTimelineControllerService.cpp" />
     <ClCompile Include="HomeTimelineStreamingService.cpp" />
+    <ClCompile Include="HomeTimelineStreamingServiceEventListener.cpp" />
     <ClCompile Include="layout_contract_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_XP|Win32'">NotUsing</PrecompiledHeader>
@@ -269,6 +270,7 @@
     </ClCompile>
     <ClCompile Include="ListsTimelineService.cpp" />
     <ClCompile Include="ListTimelineControlService.cpp" />
+    <ClCompile Include="ListTimelineStreamingServiceEventListener.cpp" />
     <ClCompile Include="LoginService.cpp" />
     <ClCompile Include="SearchTimelineService.cpp" />
     <ClCompile Include="ShowMoreSupportService.cpp" />
@@ -349,9 +351,11 @@
     <ClInclude Include="GetUserService.h" />
     <ClInclude Include="HomeTimelineControllerService.h" />
     <ClInclude Include="HomeTimelineStreamingService.h" />
+    <ClInclude Include="HomeTimelineStreamingServiceEventListener.h" />
     <ClInclude Include="layout_contract_i.h" />
     <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="ListTimelineControlService.h" />
+    <ClInclude Include="ListTimelineStreamingServiceEventListener.h" />
     <ClInclude Include="LoginService.h" />
     <ClInclude Include="Metadata.h" />
     <ClInclude Include="SearchTimelineService.h" />

@@ -66,6 +66,16 @@ interface IHomeTimelineStreamingService : IUnknown
 };
 
 [
+    object,
+    uuid(4F2CE583-5235-4699-AA53-9A8A93B61751),
+    pointer_default(unique)
+]
+interface IHomeTimelineStreamingServiceEventSink : IUnknown
+{
+    HRESULT OnMessages(IObjArray* pMessageArray);
+};
+
+[
 	object,
 	uuid(A1787D6C-1366-4A83-92AE-C1B46D457000),
 	pointer_default(unique)

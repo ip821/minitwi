@@ -10,7 +10,7 @@ using namespace std;
 
 class ATL_NO_VTABLE CListTimelineControlService :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CListTimelineControlService, &CLSID_TwitViewRepliesService>,
+	public CComCoClass<CListTimelineControlService, &CLSID_ListTimelineControlService>,
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,

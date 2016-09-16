@@ -24,6 +24,20 @@ library twitterLib
 		[default] interface IPluginTable;
 	};
     [
+        uuid(AFFB6697-F5BE-40E2-8243-1863A6E18FDA)
+    ]
+    coclass ListTimelineStreamingServiceEventListener
+    {
+        [default] interface IPluginTable;
+    };
+    [
+        uuid(FCAB9D95-140C-4D52-9994-D54B3E05BB63)
+    ]
+    coclass HomeTimelineStreamingServiceEventListener
+    {
+        [default] interface IPluginTable;
+    };
+    [
         uuid(BB50CFC0-3B7E-47AC-93C9-E3B7A8CD3762)
     ]
     coclass FollowingControlService

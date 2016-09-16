@@ -29,8 +29,6 @@ STDMETHODIMP CHomeTimelineStreamingService::OnInitialized(IServiceProvider *pSer
 	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_STREAMING_THREAD, &m_pThreadService));
 	RETURN_IF_FAILED(AtlAdvise(m_pThreadService, pUnk, __uuidof(IThreadServiceEventSink), &m_dwAdviceThreadService));
 
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_QUEUE, &m_pTimelineQueueService));
-
 	return S_OK;
 }
 
@@ -40,7 +38,6 @@ STDMETHODIMP CHomeTimelineStreamingService::OnShutdown()
 	{
 		boost::lock_guard<boost::mutex> lock(m_mutex);
 		m_pSettings.Release();
-		m_pTimelineQueueService.Release();
 		m_pServiceProvider.Release();
 	}
 
@@ -106,29 +103,7 @@ STDMETHODIMP CHomeTimelineStreamingService::OnFinish(IVariantObject* pResult)
 
 STDMETHODIMP CHomeTimelineStreamingService::OnMessages(IObjArray *pObjectArray)
 {
-	CComPtr<ITimelineQueueService> pTimelineQueueService;
-	CComPtr<IServiceProvider> pServiceProvider;
-	{
-		boost::lock_guard<boost::mutex> lock(m_mutex);
-		pTimelineQueueService = m_pTimelineQueueService;
-		pServiceProvider = m_pServiceProvider;
-	}
-
-	if (!pTimelineQueueService || !pServiceProvider)
-		return S_OK;
-
-	CComPtr<IVariantObject> pResult;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_VariantObject, &pResult));
-	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVar(pObjectArray)));
-	RETURN_IF_FAILED(pTimelineQueueService->AddToQueue(pResult));
-
-	//temp, replace with timer
-	CComPtr<IThreadService> pThreadService;
-	RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE_THREAD, &pThreadService));
-	if (!pThreadService)
-		return S_OK;
-	RETURN_IF_FAILED(pThreadService->Run());
-
+    RETURN_IF_FAILED(Fire_OnMessages(pObjectArray));
 	return S_OK;
 }
 
@@ -144,4 +119,28 @@ STDMETHODIMP CHomeTimelineStreamingService::Stop()
 		RETURN_IF_FAILED(pTwitterStreamingConnection->StopStream());
 	}
 	return S_OK;
+}
+
+HRESULT CHomeTimelineStreamingService::Fire_OnMessages(IObjArray* pMessageArray)
+{
+    CComPtr<IUnknown> pUnk;
+    RETURN_IF_FAILED(this->QueryInterface(__uuidof(IUnknown), (LPVOID*)&pUnk));
+    HRESULT hr = S_OK;
+    CHomeTimelineStreamingService* pThis = static_cast<CHomeTimelineStreamingService*>(this);
+    int cConnections = m_vec.GetSize();
+
+    for (int iConnection = 0; iConnection < cConnections; iConnection++)
+    {
+        pThis->Lock();
+        CComPtr<IUnknown> punkConnection = m_vec.GetAt(iConnection);
+        pThis->Unlock();
+
+        IHomeTimelineStreamingServiceEventSink* pConnection = static_cast<IHomeTimelineStreamingServiceEventSink*>(punkConnection.p);
+
+        if (pConnection)
+        {
+            hr = pConnection->OnMessages(pMessageArray);
+        }
+    }
+    return hr;
 }
