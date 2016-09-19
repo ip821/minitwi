@@ -268,6 +268,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_XP|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ListsService.cpp" />
     <ClCompile Include="ListsTimelineService.cpp" />
     <ClCompile Include="ListTimelineControlService.cpp" />
     <ClCompile Include="ListTimelineStreamingServiceEventListener.cpp" />
@@ -348,11 +349,13 @@
     <ClInclude Include="FollowingControlService.h" />
     <ClInclude Include="FollowStatusService.h" />
     <ClInclude Include="FollowService.h" />
+    <ClInclude Include="Functions.h" />
     <ClInclude Include="GetUserService.h" />
     <ClInclude Include="HomeTimelineControllerService.h" />
     <ClInclude Include="HomeTimelineStreamingService.h" />
     <ClInclude Include="HomeTimelineStreamingServiceEventListener.h" />
     <ClInclude Include="layout_contract_i.h" />
+    <ClInclude Include="ListsService.h" />
     <ClInclude Include="ListsTimelineService.h" />
     <ClInclude Include="ListTimelineControlService.h" />
     <ClInclude Include="ListTimelineStreamingServiceEventListener.h" />

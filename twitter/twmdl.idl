@@ -24,6 +24,13 @@ library twitterLib
 		[default] interface IPluginTable;
 	};
     [
+        uuid(9D5AED07-D13E-4D6C-B247-A07E3E043737)
+    ]
+    coclass ListsService
+    {
+        [default] interface IPluginTable;
+    };
+    [
         uuid(AFFB6697-F5BE-40E2-8243-1863A6E18FDA)
     ]
     coclass ListTimelineStreamingServiceEventListener

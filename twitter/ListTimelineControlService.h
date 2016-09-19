@@ -14,7 +14,6 @@ class ATL_NO_VTABLE CListTimelineControlService :
 	public IPluginSupportNotifications,
 	public IThreadServiceEventSink,
 	public IInitializeWithSettings,
-    public IListTimelineControlService,
 	public ITimelineService,
 	public IInitializeWithControlImpl,
 	public IInitializeWithVariantObject
@@ -34,7 +33,6 @@ public:
 		COM_INTERFACE_ENTRY(IInitializeWithControl)
 		COM_INTERFACE_ENTRY(ITimelineService)
 		COM_INTERFACE_ENTRY(IInitializeWithVariantObject)
-        COM_INTERFACE_ENTRY(IListTimelineControlService)
 	END_COM_MAP()
 
 private:
@@ -64,8 +62,6 @@ public:
 	STDMETHOD(OnStart)(IVariantObject *pResult);
 	STDMETHOD(OnRun)(IVariantObject *pResult);
 	STDMETHOD(OnFinish)(IVariantObject *pResult);
-
-    STDMETHOD(GetListMemebers)(IObjArray** ppArrayMembers);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(ListTimelineControlService), CListTimelineControlService)

@@ -46,16 +46,6 @@ interface IFormsService : IUnknown
 };
 
 [
-    object,
-    uuid(EE2B718C-A4A4-4AB8-8771-1897F985D65D),
-    pointer_default(unique)
-]
-interface IListTimelineControlService : IUnknown
-{
-    HRESULT GetListMemebers(IObjArray** ppArrayMembers);
-};
-
-[
 	object,
 	uuid(B4254FF7-7C3E-4D20-86A6-1E17BE41F8C5),
 	pointer_default(unique)
@@ -242,6 +232,16 @@ interface ISkinCommonControl : IUnknown
 	HRESULT UnregisterStaticControl(HWND hWnd);
 	HRESULT RegisterButtonControl(HWND hWnd);
 	HRESULT UnregisterButtonControl(HWND hWnd);
+};
+
+[
+    object,
+    uuid(2B88163E-EE4E-4905-AADB-D36C8CB9B1BA),
+    pointer_default(unique)
+]
+interface IListsService : IUnknown
+{
+    HRESULT GetListMemebers(IObjArray** ppArrayMembers);
 };
 
 [

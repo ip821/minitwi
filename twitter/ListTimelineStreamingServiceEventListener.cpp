@@ -11,11 +11,11 @@ STDMETHODIMP CListTimelineStreamingServiceEventListener::OnInitialized(IServiceP
     RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_HomeTimelineStreamingService, &m_pStreamingServicUnk));
     RETURN_IF_FAILED(AtlAdvise(m_pStreamingServicUnk, pUnk, __uuidof(IHomeTimelineStreamingServiceEventSink), &m_dwAdvice));
 
-    CComPtr<IListTimelineControlService> pListTimelineService;
-    RETURN_IF_FAILED(pServiceProvider->QueryService(SERVICE_TIMELINE, &pListTimelineService));
+    CComPtr<IListsService> pListTimelineService;
+    RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ListsService, &pListTimelineService));
     {
         boost::lock_guard<boost::mutex> lock(m_mutex);
-        m_pListTimelineService = pListTimelineService;
+        m_pListsService = pListTimelineService;
     }
 
     return S_OK;
@@ -28,7 +28,7 @@ STDMETHODIMP CListTimelineStreamingServiceEventListener::OnShutdown()
     {
         boost::lock_guard<boost::mutex> lock(m_mutex);
         m_pStreamingServicUnk.Release();
-        m_pListTimelineService.Release();
+        m_pListsService.Release();
         m_pServiceProvider.Release();
     }
     return S_OK;
@@ -36,19 +36,19 @@ STDMETHODIMP CListTimelineStreamingServiceEventListener::OnShutdown()
 
 STDMETHODIMP CListTimelineStreamingServiceEventListener::OnMessages(IObjArray *pObjectArray)
 {
-    CComPtr<IListTimelineControlService> pListTimelineService;
+    CComPtr<IListsService> pListsService;
     CComPtr<IServiceProvider> pServiceProvider;
     {
         boost::lock_guard<boost::mutex> lock(m_mutex);
         pServiceProvider = m_pServiceProvider;
-        pListTimelineService = m_pListTimelineService;
+        pListsService = m_pListsService;
     }
 
-    if (!pListTimelineService)
+    if (!pListsService)
         return S_OK;
 
     CComPtr<IObjArray> pArrayMembers;
-    RETURN_IF_FAILED(pListTimelineService->GetListMemebers(&pArrayMembers));
+    RETURN_IF_FAILED(pListsService->GetListMemebers(&pArrayMembers));
 
     if (!pArrayMembers)
         return S_OK;

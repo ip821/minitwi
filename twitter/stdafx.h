@@ -86,6 +86,7 @@
 
 #include "Plugins.h"
 #include "Metadata.h"
+#include "Functions.h"
 
 using namespace IP;
 

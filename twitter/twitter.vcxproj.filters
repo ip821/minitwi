@@ -92,6 +92,9 @@
     <Filter Include="Services\FollowingControlService">
       <UniqueIdentifier>{e713e55a-056a-456c-b403-2241e2e315a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\ListsService">
+      <UniqueIdentifier>{75bc3ae0-c4a3-407f-9b29-02e3fd9fac5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -213,6 +216,9 @@
     </ClCompile>
     <ClCompile Include="ListTimelineStreamingServiceEventListener.cpp">
       <Filter>Services\ListTimelineControlService</Filter>
+    </ClCompile>
+    <ClCompile Include="ListsService.cpp">
+      <Filter>Services\ListsService</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -353,6 +359,12 @@
     </ClInclude>
     <ClInclude Include="ListTimelineStreamingServiceEventListener.h">
       <Filter>Services\ListTimelineControlService</Filter>
+    </ClInclude>
+    <ClInclude Include="ListsService.h">
+      <Filter>Services\ListsService</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.h">
+      <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -110,19 +110,21 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 		pListVariantObject = m_pVariantObject;
 	}
 
-	CComPtr<ISettings> pSettingsTwitter;
-	RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
+	//CComPtr<ISettings> pSettingsTwitter;
+	//RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
 
-	CComBSTR bstrKey;
-	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterKey, &bstrKey));
+	//CComBSTR bstrKey;
+	//RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterKey, &bstrKey));
 
-	CComBSTR bstrSecret;
-	RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterSecret, &bstrSecret));
+	//CComBSTR bstrSecret;
+	//RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterSecret, &bstrSecret));
 
-	CComPtr<ITwitterConnection> pConnection;
-	RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-	RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
+	//CComPtr<ITwitterConnection> pConnection;
+	//RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
+	//RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
 
+    CComPtr<ITwitterConnection> pConnection;
+    RETURN_IF_FAILED(HrOpenConnection(pSettings, &pConnection));
 	CComVar vListId;
 	RETURN_IF_FAILED(pListVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vListId));
 	ATLASSERT(vListId.vt == VT_BSTR);
@@ -175,7 +177,6 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 		return S_OK;
 
 	CUpdateScope scope(m_pTimelineControl);
-	//RETURN_IF_FAILED(m_pTimelineControl->Clear());
 
 	CComVar vHr;
 	RETURN_IF_FAILED(pResult->GetVariantValue(AsyncServices::Metadata::Thread::HResult, &vHr));
@@ -187,14 +188,4 @@ STDMETHODIMP CListTimelineControlService::OnFinish(IVariantObject *pResult)
 	RETURN_IF_FAILED(m_pTimelineQueueService->AddToQueue(pResult));
 	RETURN_IF_FAILED(m_pThreadServiceQueueService->Run());
 	return S_OK;
-}
-
-STDMETHODIMP CListTimelineControlService::GetListMemebers(IObjArray** ppArrayMembers)
-{
-    CHECK_E_POINTER(ppArrayMembers);
-    boost::lock_guard<boost::mutex> lock(m_mutex);
-    if (!m_pObjectArrayMembers)
-        return S_OK;
-    RETURN_IF_FAILED(m_pObjectArrayMembers->QueryInterface(ppArrayMembers));
-    return S_OK;
 }
