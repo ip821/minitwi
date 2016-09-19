@@ -32,7 +32,10 @@ public:
 
 private:
     CComPtr<IServiceProvider> m_pServiceProvider;
+    CComPtr<IThreadService> m_pThreadService;
+    CComPtr<ITimerService> m_pTimerService;
     boost::mutex m_mutex;
+    DWORD m_dwAdviceThreadService = 0;
 
 public:
     STDMETHOD(OnInitialized)(IServiceProvider *pServiceProvider);
