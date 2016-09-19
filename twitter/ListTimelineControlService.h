@@ -50,6 +50,7 @@ private:
 
 	DWORD m_dwAdvice = 0;
     DWORD m_dwAdviceThreadServiceShowMoreService = 0;
+
 	boost::mutex m_mutex;
 
 public:

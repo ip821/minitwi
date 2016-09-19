@@ -147,7 +147,7 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 
     BOOL bNeedUpdateMembers = FALSE;
     {
-        bNeedUpdateMembers = m_pObjectArrayMembers != nullptr;
+        bNeedUpdateMembers = m_pObjectArrayMembers == nullptr;
     }
 
     if (bNeedUpdateMembers)
