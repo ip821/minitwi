@@ -220,16 +220,28 @@ STDMETHODIMP CTwitterConnection::GetListMembers(BSTR bstrListId, UINT uiCount, I
     return S_OK;
 }
 
-STDMETHODIMP CTwitterConnection::GetListTweets(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray)
+STDMETHODIMP CTwitterConnection::GetListTweets(BSTR bstrListId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray)
 {
 	CHECK_E_POINTER(bstrListId);
 	CHECK_E_POINTER(ppObjectArray);
 
 	USES_CONVERSION;
 
+    string strId;
+    if (bstrMaxId)
+    {
+        strId = CW2A(bstrMaxId);
+    }
+
+    string strSinceId;
+    if (bstrSinceId)
+    {
+        strSinceId = CW2A(bstrSinceId);
+    }
+
 	string strListId = CW2A(bstrListId);
 
-	if (!m_pTwitObj->listStatuses(strListId, boost::lexical_cast<string>(uiCount)))
+	if (!m_pTwitObj->listStatuses(strListId, strId, strSinceId, boost::lexical_cast<string>(uiCount)))
 	{
 		return HRESULT_FROM_WIN32(ERROR_NETWORK_UNREACHABLE);
 	}

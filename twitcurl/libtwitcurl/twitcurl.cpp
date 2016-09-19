@@ -1535,11 +1535,25 @@ bool twitCurl::listMembers(std::string listId, std::string strCount)
     return performGet(url);
 }
 
-bool twitCurl::listStatuses(std::string listId, std::string strCount)
+bool twitCurl::listStatuses(std::string listId, std::string maxId, std::string sinceId, std::string strCount)
 {
     /* Perform GET */
     auto url = twitCurlDefaults::TWITCURL_PROTOCOLS[m_eProtocolType] + twitterDefaults::TWITCURL_LISTSTATUSES_URL + twitCurlDefaults::TWITCURL_EXTENSIONFORMATS[m_eApiFormatType];
     url += twitCurlDefaults::TWITCURL_URL_SEP_QUES + twitCurlDefaults::TWITCURL_LISTID + listId;
+
+    BOOL bFirstParam = FALSE;
+
+    if (sinceId.length())
+    {
+        url += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_SINCEID + sinceId;
+        bFirstParam = FALSE;
+    }
+
+    if (maxId.length())
+    {
+        url += (bFirstParam ? twitCurlDefaults::TWITCURL_URL_SEP_QUES : twitCurlDefaults::TWITCURL_URL_SEP_AMP) + twitCurlDefaults::TWITCURL_MAXID + maxId;
+        bFirstParam = FALSE;
+    }
 
     if (!strCount.empty())
         url += twitCurlDefaults::TWITCURL_URL_SEP_AMP + twitCurlDefaults::TWITCURL_COUNT + strCount;

@@ -46,8 +46,10 @@ private:
 	CComPtr<IThreadService> m_pThreadServiceQueueService;
 	CComPtr<ITimelineQueueService> m_pTimelineQueueService;
     CComPtr<IObjArray> m_pObjectArrayMembers;
+    CComPtr<IThreadService> m_pThreadServiceShowMoreService;
 
 	DWORD m_dwAdvice = 0;
+    DWORD m_dwAdviceThreadServiceShowMoreService = 0;
 	boost::mutex m_mutex;
 
 public:

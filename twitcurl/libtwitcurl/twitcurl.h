@@ -117,7 +117,7 @@ public:
 
 	/*Twitter lists APIs*/
 	bool listsGet();
-	bool listStatuses(std::string listId, std::string strCount);
+	bool listStatuses(std::string listId, std::string maxId = "", std::string sinceId = "", std::string strCount = "");
     bool listMembers(std::string listId, std::string strCount);
 
     /* cURL APIs */

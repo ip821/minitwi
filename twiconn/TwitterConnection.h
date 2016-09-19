@@ -89,7 +89,7 @@ public:
 	STDMETHOD(FollowUser)(BSTR bstrUserName);
 	STDMETHOD(UnfollowUser)(BSTR bstrUserName);
 	STDMETHOD(GetLists)(IObjArray** ppObjectArray);
-	STDMETHOD(GetListTweets)(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray);
+	STDMETHOD(GetListTweets)(BSTR bstrListId, BSTR bstrMaxId, BSTR bstrSinceId, UINT uiCount, IObjArray** ppObjectArray);
     STDMETHOD(GetListMembers)(BSTR bstrListId, UINT uiCount, IObjArray** ppObjectArray);
 	STDMETHOD(GetUserSettings)(IVariantObject** ppVariantObject);
 	STDMETHOD(GetFollowStatus)(BSTR bstrTargetUserName, BOOL* pbFollowing);
