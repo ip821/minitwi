@@ -711,6 +711,7 @@
                                                         "type": "horizontal_container",
                                                         "fit_horizontal": "parent",
                                                         "align_horizontal": "center",
+                                                        "margin_top": 5,
                                                         "margin_bottom": 10,
                                                         "elements": [
                                                         ]
