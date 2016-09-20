@@ -191,6 +191,12 @@ STDMETHODIMP CTwitterConnection::GetListMembers(BSTR bstrListId, UINT uiCount, I
 
     USES_CONVERSION;
 
+    if (!uiCount)
+    {
+        const auto maxCount = 5000;
+        uiCount = maxCount;
+    }
+
     string strListId = CW2A(bstrListId);
     if (!m_pTwitObj->listMembers(strListId, boost::lexical_cast<string>(uiCount)))
     {

@@ -11,8 +11,8 @@ STDMETHODIMP CListTimelineStreamingServiceEventListener::OnInitialized(IServiceP
     RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_HomeTimelineStreamingService, &m_pStreamingServicUnk));
     RETURN_IF_FAILED(AtlAdvise(m_pStreamingServicUnk, pUnk, __uuidof(IHomeTimelineStreamingServiceEventSink), &m_dwAdvice));
 
-    CComPtr<IListsService> pListTimelineService;
-    RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ListsService, &pListTimelineService));
+    CComPtr<IListMembershipService> pListTimelineService;
+    RETURN_IF_FAILED(pServiceProvider->QueryService(CLSID_ListMembershipService, &pListTimelineService));
     {
         boost::lock_guard<boost::mutex> lock(m_mutex);
         m_pListsService = pListTimelineService;
@@ -30,25 +30,40 @@ STDMETHODIMP CListTimelineStreamingServiceEventListener::OnShutdown()
         m_pStreamingServicUnk.Release();
         m_pListsService.Release();
         m_pServiceProvider.Release();
+        m_pVariantObject.Release();
     }
     return S_OK;
 }
 
+STDMETHODIMP CListTimelineStreamingServiceEventListener::SetVariantObject(IVariantObject* pVariantObject)
+{
+    CHECK_E_POINTER(pVariantObject);
+    m_pVariantObject = pVariantObject;
+    return S_OK;
+}
+
+
 STDMETHODIMP CListTimelineStreamingServiceEventListener::OnMessages(IObjArray *pObjectArray)
 {
-    CComPtr<IListsService> pListsService;
+    CComPtr<IListMembershipService> pListsService;
     CComPtr<IServiceProvider> pServiceProvider;
+    CComPtr<IVariantObject> pListVariantObject;
     {
         boost::lock_guard<boost::mutex> lock(m_mutex);
         pServiceProvider = m_pServiceProvider;
         pListsService = m_pListsService;
+        pListVariantObject = m_pVariantObject;
     }
 
     if (!pListsService)
         return S_OK;
 
+    CComVar vListId;
+    RETURN_IF_FAILED(pListVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vListId));
+    ATLASSERT(vListId.vt == VT_BSTR);
+
     CComPtr<IObjArray> pArrayMembers;
-    RETURN_IF_FAILED(pListsService->GetListMemebers(&pArrayMembers));
+    RETURN_IF_FAILED(pListsService->GetListMemebers(vListId.bstrVal, &pArrayMembers));
 
     if (!pArrayMembers)
         return S_OK;

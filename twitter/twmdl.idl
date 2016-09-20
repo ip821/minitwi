@@ -26,7 +26,7 @@ library twitterLib
     [
         uuid(9D5AED07-D13E-4D6C-B247-A07E3E043737)
     ]
-    coclass ListsService
+    coclass ListMembershipService
     {
         [default] interface IPluginTable;
     };

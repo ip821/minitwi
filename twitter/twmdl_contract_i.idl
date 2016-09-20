@@ -239,9 +239,9 @@ interface ISkinCommonControl : IUnknown
     uuid(2B88163E-EE4E-4905-AADB-D36C8CB9B1BA),
     pointer_default(unique)
 ]
-interface IListsService : IUnknown
+interface IListMembershipService : IUnknown
 {
-    HRESULT GetListMemebers(IObjArray** ppArrayMembers);
+    HRESULT GetListMemebers(BSTR bstrListId, IObjArray** ppArrayMembers);
 };
 
 [
