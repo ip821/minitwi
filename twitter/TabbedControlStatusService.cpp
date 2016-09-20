@@ -65,7 +65,7 @@ STDMETHODIMP CTabbedControlStatusService::OnStart(IVariantObject *pResult)
 
     auto it = m_advices.find(SERVICE_TIMELINE_STREAMING_THREAD);
 
-    if (it != m_advices.cend() && it->second.m_pThreadService != pThreadService)
+    if (it == m_advices.cend() || it->second.m_pThreadService != pThreadService)
     {
         RETURN_IF_FAILED(m_pViewControllerService->HideInfo());
         RETURN_IF_FAILED(StartAnimation());
@@ -80,7 +80,7 @@ STDMETHODIMP CTabbedControlStatusService::OnFinish(IVariantObject *pResult)
     CComQIPtr<IThreadService> pThreadService = vThreadId.punkVal;
     auto it = m_advices.find(SERVICE_TIMELINE_STREAMING_THREAD);
 
-    if (it != m_advices.cend() && it->second.m_pThreadService != pThreadService)
+    if (it == m_advices.cend() || it->second.m_pThreadService != pThreadService)
     {
         RETURN_IF_FAILED(StopAnimation());
     }
