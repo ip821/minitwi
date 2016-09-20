@@ -77,21 +77,8 @@ STDMETHODIMP CFollowingControlService::OnRun(IVariantObject *pResult)
         pSettings = m_pSettings;
     }
 
-    CComPtr<ISettings> pSettingsTwitter;
-    RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
-
-    CComBSTR bstrKey;
-    RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterKey, &bstrKey));
-
-    CComBSTR bstrSecret;
-    RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterSecret, &bstrSecret));
-
-    CComBSTR bstrUser;
-    RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::User, &bstrUser));
-
     CComPtr<ITwitterConnection> pConnection;
-    RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-    RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
+    RETURN_IF_FAILED(HrOpenConnection(pSettings, &pConnection));
 
     CComBSTR bstrNextCursor(L"-1");
 
@@ -105,6 +92,12 @@ STDMETHODIMP CFollowingControlService::OnRun(IVariantObject *pResult)
 
     if (bstrNextCursor == L"0")
         return S_OK;
+
+    CComPtr<ISettings> pSettingsTwitter;
+    RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
+
+    CComBSTR bstrUser;
+    RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::User, &bstrUser));
 
     CComPtr<IVariantObject> pVariantObject;
     RETURN_IF_FAILED(pConnection->GetFollowingUsers(bstrUser, bstrNextCursor, &pVariantObject));

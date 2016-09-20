@@ -110,21 +110,9 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
 		pListVariantObject = m_pVariantObject;
 	}
 
-	//CComPtr<ISettings> pSettingsTwitter;
-	//RETURN_IF_FAILED(pSettings->OpenSubSettings(Twitter::Metadata::Settings::PathRoot, &pSettingsTwitter));
-
-	//CComBSTR bstrKey;
-	//RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterKey, &bstrKey));
-
-	//CComBSTR bstrSecret;
-	//RETURN_IF_FAILED(HrSettingsGetBSTR(pSettingsTwitter, Twitter::Metadata::Settings::Twitter::TwitterSecret, &bstrSecret));
-
-	//CComPtr<ITwitterConnection> pConnection;
-	//RETURN_IF_FAILED(HrCoCreateInstance(CLSID_TwitterConnection, &pConnection));
-	//RETURN_IF_FAILED(pConnection->OpenConnection(bstrKey, bstrSecret));
-
     CComPtr<ITwitterConnection> pConnection;
     RETURN_IF_FAILED(HrOpenConnection(pSettings, &pConnection));
+
 	CComVar vListId;
 	RETURN_IF_FAILED(pListVariantObject->GetVariantValue(ObjectModel::Metadata::Object::Id, &vListId));
 	ATLASSERT(vListId.vt == VT_BSTR);
@@ -146,22 +134,6 @@ STDMETHODIMP CListTimelineControlService::OnRun(IVariantObject *pResult)
         vCount.vt == VT_UI4 ? vCount.uintVal : 0,
         &pObjectArray));
 	RETURN_IF_FAILED(pResult->SetVariantValue(Twitter::Metadata::Object::Result, &CComVar(pObjectArray)));
-
-    BOOL bNeedUpdateMembers = FALSE;
-    {
-        bNeedUpdateMembers = m_pObjectArrayMembers == nullptr;
-    }
-
-    if (bNeedUpdateMembers)
-    {
-        const auto maxMembersCount = 5000;
-        CComPtr<IObjArray> pObjectArrayMembers;
-        RETURN_IF_FAILED(pConnection->GetListMembers(vListId.bstrVal, maxMembersCount, &pObjectArrayMembers));
-        {
-            boost::lock_guard<boost::mutex> lock(m_mutex);
-            m_pObjectArrayMembers = pObjectArrayMembers;
-        }
-    }
 
 	return S_OK;
 }
