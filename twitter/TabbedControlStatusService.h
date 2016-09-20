@@ -4,6 +4,7 @@
 #include "twmdl_i.h"
 #include "asyncmdl_contract_i.h"
 #include "..\ViewMdl\IInitializeWithControlImpl.h"
+#include "..\ObjMdl\GUIDComparer.h"
 
 using namespace ATL;
 using namespace std;
@@ -29,20 +30,26 @@ public:
 
 private:
 	CComQIPtr<IViewControllerService> m_pViewControllerService;
-	CComPtr<IThreadService> m_pThreadServiceShowMoreTimeline;
-	CComPtr<IThreadService> m_pThreadServiceUpdateTimeline;
-	CComPtr<IThreadService> m_pThreadServiceFollow;
-	CComPtr<IThreadService> m_pThreadServiceFollowStatus;
-	CComPtr<IThreadService> m_pThreadServiceStreamingTimeline;
-	CComPtr<IThreadService> m_pThreadServiceGetUser;
-
-	DWORD m_dwAdviceUpdateTimeline = 0;
-	DWORD m_dwAdviceShowMoreTimeline = 0;
-	DWORD m_dwAdviceFollow = 0;
-	DWORD m_dwAdviceFollowStatus = 0;
-	DWORD m_dwAdviceStreamingTimeline = 0;
-	DWORD m_dwAdviceGetUser = 0;
 	UINT m_cAnimationRefs = 0;
+
+    struct ThreadHolder
+    {
+        CComPtr<IThreadService> m_pThreadService;
+        DWORD m_dwAdvice = 0;
+    };
+
+    const vector<GUID> m_guids = 
+    {
+        SERVICE_TIMELINE_UPDATE_THREAD,
+        SERVICE_TIMELINE_STREAMING_THREAD,
+        SERVICE_TIMELINE_SHOWMORE_THREAD,
+        SERVICE_FOLLOW_THREAD,
+        SERVICE_FOLLOW_STATUS_THREAD,
+        SERVICE_GETUSER_THREAD,
+        SERVICE_LISTS_THREAD
+    };
+
+    map<GUID, ThreadHolder, GUIDComparer> m_advices;
 
 	STDMETHOD(StartAnimation)();
 	STDMETHOD(StopAnimation)();
